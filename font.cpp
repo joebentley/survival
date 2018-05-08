@@ -28,8 +28,8 @@ int Font::draw(SDL_Renderer *renderer, const std::string &character, int x, int 
             int cellX = i % numPerRow;
             int cellY = i / numPerRow;
 
-            SDL_Rect srcRect = { cellX * cellWidth, cellHeight * cellY, cellWidth, cellHeight };
-            SDL_Rect destRect = { x, y, cellWidth, cellHeight };
+            SDL_Rect srcRect = { cellX * cellWidth, cellY * cellHeight, cellWidth, cellHeight };
+            SDL_Rect destRect = { x * cellWidth, y * cellHeight, cellWidth, cellHeight };
             texture.render(renderer, &srcRect, &destRect);
             return 0;
         }
@@ -39,14 +39,13 @@ int Font::draw(SDL_Renderer *renderer, const std::string &character, int x, int 
     return -1;
 }
 
-int Font::drawText(SDL_Renderer *renderer, const std::string &text, int x0, int y0)
+int Font::drawText(SDL_Renderer *renderer, const std::string &text, int x0, int y)
 {
     int character = 0;
     enum FontColor color = FONT_WHITE;
+    int x = x0;
 
     for (int i = 0; i < text.size(); ++i) {
-        int x = x0 + character * cellWidth;
-
         // parse extended token
         if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '(') {
             ++i;
@@ -54,7 +53,7 @@ int Font::drawText(SDL_Renderer *renderer, const std::string &text, int x0, int 
             while (text[++i] != ')');
             
             character++;
-            if (this->draw(renderer, text.substr(begin, i - begin), x, y0, color) == -1)
+            if (this->draw(renderer, text.substr(begin, i - begin), x, y, color) == -1)
                 return -1;
 
             continue;
@@ -76,12 +75,20 @@ int Font::drawText(SDL_Renderer *renderer, const std::string &text, int x0, int 
             continue;
         }
 
-        character++;
+        if (i + 1 < text.size() && text[i] == '\\' && text[i + 1] != '\\') {
+            if (text[i + 1] == 'n') {
+                y++; // line feed
+            }
+            i += 2;
+            x = x0; // carriage return
+        }
+
+        x++;
         if (text[i] == ' ') {
-            if (this->draw(renderer, "space", x, y0, color) == -1)
+            if (this->draw(renderer, "space", x, y, color) == -1)
                 return -1;
         } else {
-            if (this->draw(renderer, std::string(1, text[i]), x, y0, color) == -1)
+            if (this->draw(renderer, std::string(1, text[i]), x, y, color) == -1)
                 return -1;
         }
     }

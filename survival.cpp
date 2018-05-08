@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
                     }
 
                     SDL_RenderClear(renderer);
-                    if (font.drawText(renderer, "hello$(dwarf2)WORLD$[yellow]dwarf", 10, 10) == -1)
+                    if (font.drawText(renderer, "hello$(dwarf2)WORLD$[yellow]dwarf\\nhello", 2, 2) == -1)
                         return -1;
                     SDL_RenderPresent(renderer);
                 }
