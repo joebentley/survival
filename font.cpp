@@ -41,7 +41,6 @@ int Font::draw(SDL_Renderer *renderer, const std::string &character, int x, int 
 
 int Font::drawText(SDL_Renderer *renderer, const std::string &text, int x0, int y)
 {
-    int character = 0;
     enum FontColor color = FONT_WHITE;
     int x = x0;
 
@@ -52,7 +51,7 @@ int Font::drawText(SDL_Renderer *renderer, const std::string &text, int x0, int 
             int begin = i + 1;
             while (text[++i] != ')');
             
-            character++;
+            x++;
             if (this->draw(renderer, text.substr(begin, i - begin), x, y, color) == -1)
                 return -1;
 
