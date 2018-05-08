@@ -16,6 +16,8 @@ int Texture::LoadFromFile(Texture &texture, SDL_Renderer* renderer, const std::s
         return -1;
     }
     else {
+        SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 0xFF, 0, 0xFF));
+
         texture.texture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
         if (texture.texture == NULL) {
             printf("Unable to create texture from %s! SDL Error: %s\n", filepath.c_str(), SDL_GetError());
@@ -24,5 +26,8 @@ int Texture::LoadFromFile(Texture &texture, SDL_Renderer* renderer, const std::s
 
         SDL_FreeSurface(loadedSurface);
     }
+
+    SDL_QueryTexture(texture.texture, &texture.format, &texture.access, &texture.width, &texture.height);
+
     return 0;
 }

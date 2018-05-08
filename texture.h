@@ -8,7 +8,13 @@ class Texture {
 public:
     SDL_Texture *texture;
 
+    Uint32 format;
+    int access;
+    int width;
+    int height;
+
     Texture() : texture (NULL) {};
+
     ~Texture();
 
     void render(SDL_Renderer *renderer, SDL_Rect *src, SDL_Rect *dst);

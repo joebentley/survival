@@ -1,11 +1,21 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
+#include <string>
 
 #include "texture.h"
+#include "font.h"
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
+
+const std::string CHARS =
+    "space dwarf dwarf2 heart diamond club spade circle emptycircle ring emptyring male female note1 note2 gem "
+    "sloperight slopeleft updown alert pagemark sectionmark thickbottom updown2 up down right left misc leftright slopeup slopedown "
+    "space2 ! \" # $ % & ' ( ) * + , - . / "
+    "0 1 2 3 4 5 6 7 8 9 : ; < = > ? "
+    "@ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ \\ ] ^ _ "
+    "` a b c d e f g h i j k l m n o p q r s t u v w x y z { : } ~ triangle";
 
 int main(int argc, char* args[])
 {
@@ -38,6 +48,8 @@ int main(int argc, char* args[])
                     return -1;
                 }
 
+                Font font(texture, 8, 12, 16, CHARS);
+
                 SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
 
                 bool quit = false;
@@ -52,7 +64,9 @@ int main(int argc, char* args[])
 
                     SDL_RenderClear(renderer);
                     // SDL_RenderCopy( gRenderer, gTexture, NULL, NULL );
-                    texture.render(renderer, NULL, NULL);
+                    
+                    if (font.drawText(renderer, "hello world! $(dwarf)", 10, 10) == -1)
+                        return -1;
                     SDL_RenderPresent(renderer);
                 }
             }

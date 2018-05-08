@@ -3,6 +3,16 @@
   "files.associations": {
     "memory": "cpp",
     "stdexcept": "cpp",
-    "string": "cpp"
+    "string": "cpp",
+    "__bit_reference": "cpp",
+    "__hash_table": "cpp",
+    "__split_buffer": "cpp",
+    "hash_map": "cpp",
+    "initializer_list": "cpp",
+    "iterator": "cpp",
+    "list": "cpp",
+    "string_view": "cpp",
+    "unordered_map": "cpp",
+    "vector": "cpp"
   }
 }
