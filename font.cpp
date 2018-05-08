@@ -12,7 +12,7 @@ void Font::setFontColor(Color c) {
     SDL_SetTextureColorMod(texture.texture, c.r, c.g, c.b);
 }
 
-int Font::draw(SDL_Renderer *renderer, const std::string &character, int x, int y, Color fColor, Color bColor)
+int Font::draw(const std::string &character, int x, int y, Color fColor, Color bColor)
 {
     setFontColor(fColor);
 
@@ -36,7 +36,7 @@ int Font::draw(SDL_Renderer *renderer, const std::string &character, int x, int 
     return -1;
 }
 
-int Font::drawText(SDL_Renderer *renderer, const std::string &text, int x0, int y)
+int Font::drawText(const std::string &text, int x0, int y)
 {
     Color fColor = (struct Color) { 0xFF, 0xFF, 0xFF, 0xFF };
     Color bColor = (struct Color) { 0, 0, 0, 0 };
@@ -50,7 +50,7 @@ int Font::drawText(SDL_Renderer *renderer, const std::string &text, int x0, int 
             while (text[++i] != ')');
             
             x++;
-            if (this->draw(renderer, text.substr(begin, i - begin), x, y, fColor, bColor) == -1)
+            if (this->draw(text.substr(begin, i - begin), x, y, fColor, bColor) == -1)
                 return -1;
 
             continue;
@@ -98,13 +98,47 @@ int Font::drawText(SDL_Renderer *renderer, const std::string &text, int x0, int 
 
         x++;
         if (text[i] == ' ') {
-            if (this->draw(renderer, "space", x, y, fColor, bColor) == -1)
+            if (this->draw("space", x, y, fColor, bColor) == -1)
                 return -1;
         } else {
-            if (this->draw(renderer, std::string(1, text[i]), x, y, fColor, bColor) == -1)
+            if (this->draw(std::string(1, text[i]), x, y, fColor, bColor) == -1)
                 return -1;
         }
     }
 
     return 0;
+}
+
+int getFontStringLength(const std::string& text)
+{
+    int characters = 0;
+    for (int i = 0; i < text.length(); ++i) {
+        if (i + 2 < text.size() && text[i] == '$' && text[i + 1] == '(') {
+            ++i;
+            while (text[++i] != ')');
+            continue;
+        }
+        if (i + 2 < text.size() && text[i] == '$' && text[i + 1] == '[') {
+            ++i;
+            while (text[++i] != ']');
+            continue;
+        }
+        if (i + 2 < text.size() && text[i] == '$' && text[i + 1] == '{') {
+            ++i;
+            while (text[++i] != '}');
+            continue;
+        }
+        if (i + 1 < text.size() && text[i] == '\\' && text[i + 1] != '\\') {
+            i += 2;
+            continue;
+        }
+        if (i + 1 < text.size() && text[i] == '\\' && text[i + 1] == '\\') {
+            i += 2;
+            characters++;
+            continue;
+        }
+        characters++;
+    }
+
+    return characters;
 }

@@ -23,11 +23,14 @@ class Font {
     int numPerRow;
     int cellWidth;
     int cellHeight;
+    SDL_Renderer *renderer;
 public:
     std::vector<std::string> characters;
 
-    Font(const Texture &texture, int cellWidth, int cellHeight, int numPerRow, const std::string &characters)
-        : texture(texture), numPerRow(numPerRow), cellWidth(cellWidth), cellHeight(cellHeight)
+    Font(const Texture &texture, int cellWidth, int cellHeight, int numPerRow,
+         const std::string &characters, SDL_Renderer *renderer)
+        : texture(texture), numPerRow(numPerRow),
+          cellWidth(cellWidth), cellHeight(cellHeight), renderer(renderer)
     {
         std::istringstream iss(characters);
         std::copy(std::istream_iterator<std::string>(iss),
@@ -36,12 +39,14 @@ public:
     }
 
     void setFontColor(Color color);
-    int draw(SDL_Renderer *renderer, const std::string &character, int x, int y, Color fColor)
+    int draw(const std::string &character, int x, int y, Color fColor)
     {
-        return draw(renderer, character, x, y, fColor, (struct Color) { 0, 0, 0, 0 });
+        return draw(character, x, y, fColor, (struct Color) { 0, 0, 0, 0 });
     }
-    int draw(SDL_Renderer *renderer, const std::string &character, int x, int y, Color fColor, Color bColor);
-    int drawText(SDL_Renderer *renderer, const std::string &text, int x, int y);
+    int draw(const std::string &character, int x, int y, Color fColor, Color bColor);
+    int drawText(const std::string &text, int x, int y);
 };
+
+int getFontStringLength(const std::string& string);
 
 #endif // FONT_H_

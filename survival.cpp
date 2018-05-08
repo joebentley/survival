@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
                     return -1;
                 }
 
-                Font font(texture, 8, 12, 16, CHARS);
+                Font font(texture, 8, 12, 16, CHARS, renderer);
 
                 bool quit = false;
                 SDL_Event e;
@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
 
                     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
                     SDL_RenderClear(renderer);
-                    showMessageBox(renderer, font, "Hello world!", 4, 4);
+                    showMessageBox(font, "$[yellow]Hello world!", 4, 4);
                     // if (font.drawText(renderer, "hello$(dwarf2)WORLD$[yellow]dwarf\\nhello$(block)${yellow}$[grey]Hello", 2, 2) == -1)
                     //     return -1;
                     SDL_RenderPresent(renderer);
