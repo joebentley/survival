@@ -17,7 +17,7 @@ const std::string CHARS =
     "@ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ \\ ] ^ _ "
     "` a b c d e f g h i j k l m n o p q r s t u v w x y z { : } ~ triangle";
 
-int main(int argc, char* args[])
+int main(int argc, char* argv[])
 {
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
@@ -63,9 +63,7 @@ int main(int argc, char* args[])
                     }
 
                     SDL_RenderClear(renderer);
-                    // SDL_RenderCopy( gRenderer, gTexture, NULL, NULL );
-                    
-                    if (font.drawText(renderer, "hello world! $(dwarf)", 10, 10) == -1)
+                    if (font.drawText(renderer, "hello$(dwarf2)WORLD$[yellow]dwarf", 10, 10) == -1)
                         return -1;
                     SDL_RenderPresent(renderer);
                 }

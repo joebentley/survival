@@ -10,6 +10,14 @@
 #include <iterator>
 #include <vector>
 
+enum FontColor {
+    FONT_WHITE,
+    FONT_YELLOW,
+    FONT_INVALID
+};
+
+enum FontColor fontColorFromString(const std::string &colorStr);
+
 class Font {
     Texture texture;
     int numPerRow;
@@ -27,7 +35,8 @@ public:
                   std::back_inserter(this->characters));
     }
 
-    int draw(SDL_Renderer *renderer, const std::string &character, int x, int y);
+    void setFontColor(enum FontColor color);
+    int draw(SDL_Renderer *renderer, const std::string &character, int x, int y, enum FontColor color);
     int drawText(SDL_Renderer *renderer, const std::string &text, int x, int y);
 };
 
