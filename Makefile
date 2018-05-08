@@ -6,7 +6,7 @@ OBJ=survival.o
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-calc: $(OBJ)
+survival: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) -lm
 
 clean:
