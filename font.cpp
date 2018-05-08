@@ -1,39 +1,11 @@
 #include "font.h"
 #include <iostream>
 
-enum FontColor fontColorFromString(const std::string &colorStr) {
-    if (colorStr == "white") {
-        return FONT_WHITE;
-    } else if (colorStr == "yellow") {
-        return FONT_YELLOW;
-    } else if (colorStr == "grey") {
-        return FONT_GREY;
-    } else if (colorStr == "transparent") {
-        return FONT_TRANSPARENT;
-    }
-
-    return FONT_INVALID;
-}
-
-struct Color colorFromFontColor(enum FontColor color) {
-    if (color == FONT_WHITE) {
-        return (struct Color) { 0xFF, 0xFF, 0xFF, 0xFF };
-    } else if (color == FONT_YELLOW) {
-        return (struct Color) { 0xFF, 0xFF, 0, 0xFF };
-    } else if (color == FONT_GREY) {
-        return (struct Color) { 0x55, 0x55, 0x55, 0xFF };
-    } else if (color == FONT_TRANSPARENT) {
-        return (struct Color) { 0, 0, 0, 0 };
-    }
-    return (struct Color) { 0xFF, 0xFF, 0xFF, 0xFF };
-}
-
-void Font::setFontColor(enum FontColor color) {
-    struct Color c = colorFromFontColor(color);
+void Font::setFontColor(Color c) {
     SDL_SetTextureColorMod(texture.texture, c.r, c.g, c.b);
 }
 
-int Font::draw(SDL_Renderer *renderer, const std::string &character, int x, int y, enum FontColor fColor, enum FontColor bColor)
+int Font::draw(SDL_Renderer *renderer, const std::string &character, int x, int y, Color fColor, Color bColor)
 {
     setFontColor(fColor);
 
@@ -45,11 +17,8 @@ int Font::draw(SDL_Renderer *renderer, const std::string &character, int x, int 
             SDL_Rect srcRect = { cellX * cellWidth, cellY * cellHeight, cellWidth, cellHeight };
             SDL_Rect destRect = { x * cellWidth, y * cellHeight, cellWidth, cellHeight };
 
-            if (bColor != FONT_TRANSPARENT) {
-                struct Color bc = colorFromFontColor(bColor);
-                SDL_SetRenderDrawColor(renderer, bc.r, bc.g, bc.b, bc.a);
-                SDL_RenderFillRect(renderer, &destRect);
-            }
+            SDL_SetRenderDrawColor(renderer, bColor.r, bColor.g, bColor.b, bColor.a);
+            SDL_RenderFillRect(renderer, &destRect);
 
             texture.render(renderer, &srcRect, &destRect);
             return 0;
@@ -62,8 +31,8 @@ int Font::draw(SDL_Renderer *renderer, const std::string &character, int x, int 
 
 int Font::drawText(SDL_Renderer *renderer, const std::string &text, int x0, int y)
 {
-    enum FontColor fColor = FONT_WHITE;
-    enum FontColor bColor = FONT_TRANSPARENT;
+    Color fColor = (struct Color) { 0xFF, 0xFF, 0xFF, 0xFF };
+    Color bColor = (struct Color) { 0, 0, 0, 0 };
     int x = x0;
 
     for (int i = 0; i < text.size(); ++i) {
@@ -87,12 +56,12 @@ int Font::drawText(SDL_Renderer *renderer, const std::string &text, int x0, int 
             while (text[++i] != ']');
 
             std::string fontStr = text.substr(begin, i - begin);
-            fColor = fontColorFromString(fontStr);
-            if (fColor == FONT_INVALID) {
+            if (colorMap.find(fontStr) == colorMap.end()) {
                 std::cerr << "Invalid foreground font color: " << fontStr << std::endl;
                 return -1;
             }
-            
+            fColor = colorMap[fontStr];
+
             continue;
         }
 
@@ -103,11 +72,11 @@ int Font::drawText(SDL_Renderer *renderer, const std::string &text, int x0, int 
             while (text[++i] != '}');
 
             std::string fontStr = text.substr(begin, i - begin);
-            bColor = fontColorFromString(fontStr);
-            if (bColor == FONT_INVALID) {
+            if (colorMap.find(fontStr) == colorMap.end()) {
                 std::cerr << "Invalid background font color: " << fontStr << std::endl;
                 return -1;
             }
+            bColor = colorMap[fontStr];
             
             continue;
         }

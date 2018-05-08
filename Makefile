@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-Wall -Werror -g
+CFLAGS=-Wall -Werror -g -std=c++11
 
 DEPS=texture.h font.h
 OBJ=survival.o texture.o font.o

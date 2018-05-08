@@ -9,14 +9,7 @@
 #include <algorithm>
 #include <iterator>
 #include <vector>
-
-enum FontColor {
-    FONT_WHITE,
-    FONT_YELLOW,
-    FONT_GREY,
-    FONT_INVALID,
-    FONT_TRANSPARENT
-};
+#include <unordered_map>
 
 struct Color {
     Uint8 r;
@@ -25,8 +18,12 @@ struct Color {
     Uint8 a;
 };
 
-enum FontColor fontColorFromString(const std::string &colorStr);
-struct Color colorFromFontColor(enum FontColor color);
+std::unordered_map<std::string, Color> colorMap = {
+    {"white", (struct Color) { 0xFF, 0xFF, 0xFF, 0xFF }},
+    {"yellow", (struct Color) { 0xFF, 0xFF, 0, 0xFF }},
+    {"grey", (struct Color) { 0x55, 0x55, 0x55, 0xFF }},
+    {"transparent", (struct Color) { 0, 0, 0, 0 }}
+};
 
 class Font {
     Texture texture;
@@ -45,13 +42,12 @@ public:
                   std::back_inserter(this->characters));
     }
 
-    void setFontColor(enum FontColor color);
-    int draw(SDL_Renderer *renderer, const std::string &character, int x, int y, enum FontColor fColor)
+    void setFontColor(Color color);
+    int draw(SDL_Renderer *renderer, const std::string &character, int x, int y, Color fColor)
     {
-        return draw(renderer, character, x, y, fColor, FONT_TRANSPARENT);
+        return draw(renderer, character, x, y, fColor, (struct Color) { 0, 0, 0, 0 });
     }
-    int draw(SDL_Renderer *renderer, const std::string &character, int x, int y,
-             enum FontColor fColor, enum FontColor bColor);
+    int draw(SDL_Renderer *renderer, const std::string &character, int x, int y, Color fColor, Color bColor);
     int drawText(SDL_Renderer *renderer, const std::string &text, int x, int y);
 };
 
