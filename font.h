@@ -18,13 +18,6 @@ struct Color {
     Uint8 a;
 };
 
-std::unordered_map<std::string, Color> colorMap = {
-    {"white", (struct Color) { 0xFF, 0xFF, 0xFF, 0xFF }},
-    {"yellow", (struct Color) { 0xFF, 0xFF, 0, 0xFF }},
-    {"grey", (struct Color) { 0x55, 0x55, 0x55, 0xFF }},
-    {"transparent", (struct Color) { 0, 0, 0, 0 }}
-};
-
 class Font {
     Texture texture;
     int numPerRow;

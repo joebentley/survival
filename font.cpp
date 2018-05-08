@@ -1,6 +1,13 @@
 #include "font.h"
 #include <iostream>
 
+std::unordered_map<std::string, Color> colorMap = {
+    {"white", (struct Color) { 0xFF, 0xFF, 0xFF, 0xFF }},
+    {"yellow", (struct Color) { 0xFF, 0xFF, 0, 0xFF }},
+    {"grey", (struct Color) { 0x55, 0x55, 0x55, 0xFF }},
+    {"transparent", (struct Color) { 0, 0, 0, 0 }}
+};
+
 void Font::setFontColor(Color c) {
     SDL_SetTextureColorMod(texture.texture, c.r, c.g, c.b);
 }

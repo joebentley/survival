@@ -4,6 +4,7 @@
 
 #include "texture.h"
 #include "font.h"
+#include "dialog.h"
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
@@ -70,8 +71,9 @@ int main(int argc, char* argv[])
 
                     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
                     SDL_RenderClear(renderer);
-                    if (font.drawText(renderer, "hello$(dwarf2)WORLD$[yellow]dwarf\\nhello$(block)${yellow}$[grey]Hello", 2, 2) == -1)
-                        return -1;
+                    showMessageBox(renderer, font, "Hello world!", 4, 4);
+                    // if (font.drawText(renderer, "hello$(dwarf2)WORLD$[yellow]dwarf\\nhello$(block)${yellow}$[grey]Hello", 2, 2) == -1)
+                    //     return -1;
                     SDL_RenderPresent(renderer);
                 }
             }

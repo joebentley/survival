@@ -18,6 +18,11 @@
     "utility": "cpp",
     "algorithm": "cpp",
     "__locale": "cpp",
-    "locale": "cpp"
+    "locale": "cpp",
+    "__config": "cpp",
+    "__nullptr": "cpp",
+    "exception": "cpp",
+    "new": "cpp",
+    "typeinfo": "cpp"
   }
 }
