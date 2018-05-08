@@ -1,9 +1,10 @@
 CC=g++
 CFLAGS=-Wall -Werror -g
 
-OBJ=survival.o
+DEPS=texture.h font.h
+OBJ=survival.o texture.o font.o
 
-%.o: %.cpps
+%.o: %.cpp
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 survival: $(OBJ)

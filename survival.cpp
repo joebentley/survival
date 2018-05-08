@@ -1,6 +1,7 @@
-//Using SDL and standard IO
 #include <SDL2/SDL.h>
 #include <stdio.h>
+
+#include "texture.h"
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
@@ -9,7 +10,10 @@ const int SCREEN_HEIGHT = 480;
 int main(int argc, char* args[])
 {
     SDL_Window *window = NULL;
-    SDL_Surface *screenSurface = NULL;
+    SDL_Renderer *renderer = NULL;
+
+    Texture texture;
+    
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
@@ -23,10 +27,35 @@ int main(int argc, char* args[])
             printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
         }
         else {
-            screenSurface = SDL_GetWindowSurface(window);
-            SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
-            SDL_UpdateWindowSurface(window);
-            SDL_Delay(2000);
+            renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+            if (renderer == NULL) {
+                printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
+            }
+            else {
+                if (Texture::LoadFromFile(texture, renderer, "curses_640x300.bmp") == -1) {
+                    printf("Could not load texture!\n");
+                    return -1;
+                }
+
+                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
+
+                bool quit = false;
+                SDL_Event e;
+
+                while (!quit) {
+                    while (SDL_PollEvent(&e) != 0) {
+                        if (e.type == SDL_QUIT) {
+                            quit = true;
+                        }
+                    }
+
+                    SDL_RenderClear(renderer);
+                    // SDL_RenderCopy( gRenderer, gTexture, NULL, NULL );
+                    texture.render(renderer, NULL, NULL);
+                    SDL_RenderPresent(renderer);
+                }
+            }
         }
     }
 
