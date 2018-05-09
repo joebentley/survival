@@ -11,8 +11,8 @@
 #include <vector>
 #include <unordered_map>
 
-const int CHAR_HEIGHT = 12;
-const int CHAR_WIDTH = 8;
+const int CHAR_HEIGHT = 20; // 12;
+const int CHAR_WIDTH = 20; // 8;
 const int NUM_PER_ROW = 16;
 const std::string CHARS =
     "space dwarf dwarf2 heart diamond club spade circle emptycircle ring emptyring male female note1 note2 gem "

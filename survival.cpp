@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
     else {
         window = SDL_CreateWindow("Survival",
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            2*WINDOW_WIDTH, 2*WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
+            WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
 
         if (window == NULL) {
             printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -43,12 +43,13 @@ int main(int argc, char* argv[])
                 printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
             }
             else {
-                if (Texture::LoadFromFile(texture, renderer, "curses_640x300.bmp") == -1) {
+                if (Texture::LoadFromFile(texture, renderer, "Anikki_square_20x20.bmp") == -1) {
+                // if (Texture::LoadFromFile(texture, renderer, "curses_640x300.bmp") == -1) {
                     printf("Could not load texture!\n");
                     return -1;
                 }
 
-                // SDL_RenderSetScale(renderer, 1, 1);
+                // SDL_RenderSetScale(renderer, 1.5, 1.5);
 
                 Font font(texture, CHAR_WIDTH, CHAR_HEIGHT, NUM_PER_ROW, CHARS, renderer);
                 EntityManager manager;
@@ -103,7 +104,7 @@ int main(int argc, char* argv[])
                     if (world.render(font) == -1)
                         return -1;
                     player.render(font);
-                    // showMessageBox(font, "$[yellow]Hello world!", 4, 4);
+                    showMessageBox(font, "${grey}$[yellow]Hello world!", 4, 4);
                     // if (font.drawText(renderer, "hello$(dwarf2)WORLD$[yellow]dwarf\\nhello$(block)${yellow}$[grey]Hello", 2, 2) == -1)
                     //     return -1;
                     SDL_RenderPresent(renderer);

@@ -119,6 +119,7 @@ int getFontStringLength(const std::string& text)
         if (i + 2 < text.size() && text[i] == '$' && text[i + 1] == '(') {
             ++i;
             while (text[++i] != ')');
+            characters++;
             continue;
         }
         if (i + 2 < text.size() && text[i] == '$' && text[i + 1] == '[') {
