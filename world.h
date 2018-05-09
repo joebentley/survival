@@ -10,7 +10,7 @@
 
 class World {
 public:
-    std::string floor[40][80];
+    std::string floor[SCREEN_HEIGHT][SCREEN_WIDTH];
 
     int render(Font& font);
     void randomizeFloor();
