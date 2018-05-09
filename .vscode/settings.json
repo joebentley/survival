@@ -25,6 +25,7 @@
     "new": "cpp",
     "typeinfo": "cpp",
     "__string": "cpp",
-    "ctime": "cpp"
+    "ctime": "cpp",
+    "behaviours.h": "c"
   }
 }

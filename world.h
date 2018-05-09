@@ -5,8 +5,8 @@
 #include "font.h"
 #include <string>
 
-#define SCREEN_WIDTH 80
-#define SCREEN_HEIGHT 40
+#define SCREEN_WIDTH 90
+#define SCREEN_HEIGHT 35
 
 class World {
 public:
