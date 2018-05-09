@@ -4,9 +4,13 @@
 std::unordered_map<std::string, Color> colorMap = {
     {"white", (struct Color) { 0xFF, 0xFF, 0xFF, 0xFF }},
     {"yellow", (struct Color) { 0xFF, 0xFF, 0, 0xFF }},
-    {"grey", (struct Color) { 0x55, 0x55, 0x55, 0xFF }},
+    {"grey", (struct Color) { 0x88, 0x88, 0x88, 0xFF }},
     {"transparent", (struct Color) { 0, 0, 0, 0 }}
 };
+
+Color getColor(const std::string& colorStr) {
+    return colorMap[colorStr];    
+}
 
 void Font::setFontColor(Color c) {
     SDL_SetTextureColorMod(texture.texture, c.r, c.g, c.b);
@@ -49,10 +53,9 @@ int Font::drawText(const std::string &text, int x0, int y)
             int begin = i + 1;
             while (text[++i] != ')');
             
-            x++;
             if (this->draw(text.substr(begin, i - begin), x, y, fColor, bColor) == -1)
                 return -1;
-
+            x++;
             continue;
         }
 
@@ -96,7 +99,6 @@ int Font::drawText(const std::string &text, int x0, int y)
             x = x0; // carriage return
         }
 
-        x++;
         if (text[i] == ' ') {
             if (this->draw("space", x, y, fColor, bColor) == -1)
                 return -1;
@@ -104,6 +106,7 @@ int Font::drawText(const std::string &text, int x0, int y)
             if (this->draw(std::string(1, text[i]), x, y, fColor, bColor) == -1)
                 return -1;
         }
+        x++;        
     }
 
     return 0;

@@ -18,6 +18,8 @@ struct Color {
     Uint8 a;
 };
 
+Color getColor(const std::string& colorStr);
+
 class Font {
     Texture texture;
     int numPerRow;

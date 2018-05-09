@@ -5,11 +5,11 @@
 #include "texture.h"
 #include "font.h"
 #include "dialog.h"
+#include "world.h"
 
-//Screen dimension constants
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
-
+const int CHAR_HEIGHT = 12;
+const int CHAR_WIDTH = 8;
+const int NUM_PER_ROW = 16;
 const std::string CHARS =
     "space dwarf dwarf2 heart diamond club spade circle emptycircle ring emptyring male female note1 note2 gem "
     "sloperight slopeleft updown alert pagemark sectionmark thickbottom updown2 up down right left boxbottomleft leftright slopeup slopedown "
@@ -26,13 +26,20 @@ const std::string CHARS =
     "alpha beta Gamma Pi Sigma sigma mu tau Phi theta Omega delta inf ninf in intersect "
     "equiv pm gteq lteq upperint lowerint div approx degree cdot hyphen sqrt endquote power2 block space3";
 
+//Screen dimension constants
+const int WINDOW_WIDTH = CHAR_WIDTH * SCREEN_WIDTH;
+const int WINDOW_HEIGHT = CHAR_HEIGHT * SCREEN_HEIGHT;
+
 int main(int argc, char* argv[])
 {
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
 
     Texture texture;
+    World world;
+    world.randomizeFloor();
     
+    printf("video mode: %d x %d\n", SCREEN_WIDTH, SCREEN_HEIGHT);
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
@@ -40,7 +47,7 @@ int main(int argc, char* argv[])
     else {
         window = SDL_CreateWindow("Survival",
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+            WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
 
         if (window == NULL) {
             printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -57,7 +64,7 @@ int main(int argc, char* argv[])
                     return -1;
                 }
 
-                Font font(texture, 8, 12, 16, CHARS, renderer);
+                Font font(texture, CHAR_WIDTH, CHAR_HEIGHT, NUM_PER_ROW, CHARS, renderer);
 
                 bool quit = false;
                 SDL_Event e;
@@ -71,6 +78,8 @@ int main(int argc, char* argv[])
 
                     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
                     SDL_RenderClear(renderer);
+                    if (world.render(font) == -1)
+                        return -1;
                     showMessageBox(font, "$[yellow]Hello world!", 4, 4);
                     // if (font.drawText(renderer, "hello$(dwarf2)WORLD$[yellow]dwarf\\nhello$(block)${yellow}$[grey]Hello", 2, 2) == -1)
                     //     return -1;

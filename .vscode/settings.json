@@ -24,6 +24,7 @@
     "exception": "cpp",
     "new": "cpp",
     "typeinfo": "cpp",
-    "__string": "cpp"
+    "__string": "cpp",
+    "ctime": "cpp"
   }
 }
