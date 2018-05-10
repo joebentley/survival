@@ -74,7 +74,7 @@ public:
     void setFontColor(Color color);
     int draw(const std::string &character, int x, int y, Color fColor)
     {
-        return draw(character, x, y, fColor, (struct Color) { 0, 0, 0, 0 });
+        return draw(character, x, y, fColor, Color(0, 0, 0, 0));
     }
     int draw(const std::string &character, int x, int y, Color fColor, Color bColor);
     int drawText(const std::string &text, int x, int y);

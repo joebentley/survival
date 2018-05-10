@@ -51,8 +51,8 @@ int Font::draw(const std::string &character, int x, int y, Color fColor, Color b
 
 int Font::drawText(const std::string &text, int x0, int y)
 {
-    Color fColor = (struct Color) { 0xFF, 0xFF, 0xFF, 0xFF };
-    Color bColor = (struct Color) { 0, 0, 0, 0 };
+    Color fColor = Color(0xFF, 0xFF, 0xFF, 0xFF );
+    Color bColor = Color(0, 0, 0, 0 );
     int x = x0;
 
     for (int i = 0; i < text.size(); ++i) {
