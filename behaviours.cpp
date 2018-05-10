@@ -51,9 +51,10 @@ void AttachmentBehaviour::tick() {
         return;
     }
 
-    if (r < clinginess) {
-        PlayerEntity& p = dynamic_cast<PlayerEntity&>(*parent.manager.getByID("Player"));
+    PlayerEntity& p = dynamic_cast<PlayerEntity&>(*parent.manager.getByID("Player"));
 
+    // Don't follow too closely
+    if (parent.pos.distanceTo(p.pos) > 2 && r < clinginess) {
         if (parent.pos.x < p.pos.x)
             parent.pos.x++;
         else if (parent.pos.x > p.pos.x)

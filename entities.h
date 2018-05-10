@@ -26,10 +26,8 @@ public:
     CatEntity(std::string ID, EntityManager& entityManager)
             : Entity(std::move(ID), "$[yellow]c", entityManager, 10, 10, 0.05)
     {
-        std::shared_ptr<Behaviour> wander = std::make_shared<WanderBehaviour>(*this);
-        std::shared_ptr<Behaviour> attachment = std::make_shared<AttachmentBehaviour>(*this, 0.5, 0.55, 0.05);
-        addBehaviour(attachment);
-        addBehaviour(wander);
+        std::shared_ptr<Behaviour> wanderAttach = std::make_shared<WanderAttachBehaviour>(*this, 0.5, 0.7, 0.05);
+        addBehaviour(wanderAttach);
     }
 };
 

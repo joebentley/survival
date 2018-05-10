@@ -18,6 +18,8 @@ void PlayerEntity::attack(const Point &attackPos) {
         enemy->getBehaviourByID("WanderBehaviour")->enabled = false;
     if (enemy->getBehaviourByID("AttachmentBehaviour") != nullptr)
         enemy->getBehaviourByID("AttachmentBehaviour")->enabled = false;
+    if (enemy->getBehaviourByID("WanderAttachBehaviour") != nullptr)
+        enemy->getBehaviourByID("WanderAttachBehaviour")->enabled = false;
 
     auto& ui = dynamic_cast<StatusUIEntity&>(*manager.getByID("StatusUI"));
     ui.attackTarget = enemy;
