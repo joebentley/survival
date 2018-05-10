@@ -20,8 +20,8 @@ int main(int argc, char* argv[])
     SDL_Renderer *renderer = NULL;
 
     Texture texture;
-    World world;
-    world.randomizeFloor();
+    World* world = new World;
+    world->randomizeFloor();
     
     printf("video mode: %d x %d\n", SCREEN_WIDTH, SCREEN_HEIGHT);
 
@@ -56,6 +56,7 @@ int main(int argc, char* argv[])
                 EntityManager manager;
                 PlayerEntity player(manager);
                 player.setPos(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+                player.setWorldPos(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
                 manager.addEntity(player);
                 manager.initialize();
 
@@ -99,7 +100,7 @@ int main(int argc, char* argv[])
 
                     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
                     SDL_RenderClear(renderer);
-                    if (world.render(font) == -1)
+                    if (world->render(font, player.worldX, player.worldY) == -1)
                         return -1;
                     player.render(font);
                     // showMessageBox(font, "${grey}$[yellow]Hello world!", 4, 4);
@@ -110,6 +111,8 @@ int main(int argc, char* argv[])
             }
         }
     }
+
+    delete world;
 
     SDL_DestroyWindow(window);
     SDL_Quit();
