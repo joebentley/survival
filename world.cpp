@@ -15,8 +15,6 @@ int World::render(Font& font, int worldX, int worldY)
 
 void World::randomizeFloor()
 {
-    srand(time(NULL));
-
     for (int worldY = 0; worldY < SCREEN_HEIGHT; ++worldY)
     for (int worldX = 0; worldX < SCREEN_WIDTH; ++worldX)
     for (int y = 0; y < SCREEN_HEIGHT; ++y)

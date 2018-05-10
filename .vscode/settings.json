@@ -26,6 +26,7 @@
     "typeinfo": "cpp",
     "__string": "cpp",
     "ctime": "cpp",
-    "behaviours.h": "c"
+    "behaviours.h": "c",
+    "cstdlib": "cpp"
   }
 }

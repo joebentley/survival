@@ -3,6 +3,12 @@
 
 #include "entity.h"
 
+class WanderBehaviour : public Behaviour {
+public:
+    WanderBehaviour(Entity& parent) : Behaviour("WanderBehaviour", parent) {}
+    void tick();
+};
+
 class PlayerInputBehaviour : public Behaviour {
 public:
     PlayerInputBehaviour(Entity& parent) : Behaviour("PlayerInputBehaviour", parent) {}

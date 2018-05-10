@@ -63,19 +63,20 @@ public:
     void tick();
     void destroy();
     void emit(const std::string& event);
-    void render(Font& font);
+    void render(Font& font, int currentWorldX, int currentWorldY);
     void setPos(int x, int y) { this->x = x; this->y = y; }
     void setWorldPos(int worldX, int worldY) { this->worldX = worldX; this->worldY = worldY; }    
 };
 
 class EntityManager {
 public:
-    std::vector<Entity> entities;
-    void addEntity(Entity& entity);
+    std::vector<Entity*> entities;
+    void addEntity(Entity* entity);
     void broadcast(const std::string& event);
     void initialize();
     void tick();
     void destroy();
+    void render(Font& font, int currentWorldX, int currentWorldY);
 };
 
 #endif // ENTITY_H_

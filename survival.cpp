@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string>
 #include <memory>
+#include <ctime>
+#include <cstdlib>
 
 #include "texture.h"
 #include "font.h"
@@ -16,6 +18,8 @@ const int WINDOW_HEIGHT = CHAR_HEIGHT * SCREEN_HEIGHT;
 
 int main(int argc, char* argv[])
 {
+    srand(time(NULL));
+    
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
 
@@ -57,7 +61,15 @@ int main(int argc, char* argv[])
                 PlayerEntity player(manager);
                 player.setPos(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
                 player.setWorldPos(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
-                manager.addEntity(player);
+                manager.addEntity(&player);
+
+                Entity entity("cat", "$[yellow]c", manager);
+                entity.setPos(10, 10);
+                entity.setWorldPos(player.worldX, player.worldY);
+                WanderBehaviour wander(entity);
+                entity.addBehaviour(&wander);
+                manager.addEntity(&entity);
+
                 manager.initialize();
 
                 bool quit = false;
@@ -102,7 +114,7 @@ int main(int argc, char* argv[])
                     SDL_RenderClear(renderer);
                     if (world->render(font, player.worldX, player.worldY) == -1)
                         return -1;
-                    player.render(font);
+                    manager.render(font, player.worldX, player.worldY);
                     // showMessageBox(font, "${grey}$[yellow]Hello world!", 4, 4);
                     // if (font.drawText(renderer, "hello$(dwarf2)WORLD$[yellow]dwarf\\nhello$(block)${yellow}$[grey]Hello", 2, 2) == -1)
                     //     return -1;
