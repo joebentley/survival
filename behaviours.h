@@ -5,7 +5,7 @@
 
 class WanderBehaviour : public Behaviour {
 public:
-    WanderBehaviour(Entity& parent) : Behaviour("WanderBehaviour", parent) {}
+    explicit WanderBehaviour(Entity& parent) : Behaviour("WanderBehaviour", parent) {}
     void tick() override;
 };
 

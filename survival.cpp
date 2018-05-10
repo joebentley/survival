@@ -66,10 +66,10 @@ int main(int argc, char* argv[])
                 player->setPos(SCREEN_WIDTH * (SCREEN_WIDTH + 1) / 2, SCREEN_HEIGHT * SCREEN_HEIGHT / 2);
                 manager.addEntity(player);
 
-                auto entity = std::make_shared<Entity>("cat", "$[yellow]c", manager);
+                auto entity = std::make_shared<Entity>("cat", "$[yellow]c", manager, 10, 10);
                 entity->setPos(player->pos.x - 10, player->pos.y - 10);
-                std::unique_ptr<Behaviour> wander = std::make_unique<WanderBehaviour>(*entity);
-                std::unique_ptr<Behaviour> attachment = std::make_unique<AttachmentBehaviour>(*entity, 0.5, 0.55, 0.05);
+                std::shared_ptr<Behaviour> wander = std::make_shared<WanderBehaviour>(*entity);
+                std::shared_ptr<Behaviour> attachment = std::make_shared<AttachmentBehaviour>(*entity, 0.5, 0.55, 0.05);
                 entity->addBehaviour(attachment);
                 entity->addBehaviour(wander);
                 manager.addEntity(entity);
@@ -122,13 +122,15 @@ int main(int argc, char* argv[])
                             }
 
 
-                            if (SDL_GetModState() == KMOD_SHIFT)
+                            if (e.key.keysym.mod & KMOD_SHIFT)
                                 signal |= SIGNAL_FORCE_ATTACK;
 
-                            if (signal > 0)
-                            manager.broadcast(signal);
+                            if (signal != SIGNAL_FORCE_ATTACK) // Don't broadcast on just the modifier key
+                                manager.broadcast(signal);
                         }
                     }
+
+                    manager.cleanup();
 
                     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
                     SDL_RenderClear(renderer);

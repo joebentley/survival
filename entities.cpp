@@ -1,6 +1,31 @@
 #include "entities.h"
 #include "world.h"
 
+void PlayerEntity::attack(const Point &attackPos) {
+    auto entitiesInSquare = manager.getEntitiesAtPos(attackPos);
+
+    if (entitiesInSquare.empty()) {
+        return;
+    }
+
+    auto enemy = entitiesInSquare[0];
+    enemy->hp--;
+
+    // TODO: Make enemy recover their movement after brief period
+    if (enemy->getBehaviourByID("WanderBehaviour") != nullptr)
+        enemy->getBehaviourByID("WanderBehaviour")->enabled = false;
+    if (enemy->getBehaviourByID("AttachmentBehaviour") != nullptr)
+        enemy->getBehaviourByID("AttachmentBehaviour")->enabled = false;
+
+    auto& ui = dynamic_cast<StatusUIEntity&>(*manager.getByID("StatusUI"));
+    ui.attackTarget = enemy;
+
+    if (enemy->hp <= 0) {
+        ui.attackTarget = nullptr;
+        manager.queueForDeletion(enemy->ID);
+    }
+}
+
 void StatusUIEntity::render(Font &font, int currentWorldX, int currentWorldY) {
     std::string colorStr;
     double hpPercent = static_cast<double>(player.hp) / player.maxhp;
@@ -30,6 +55,22 @@ void StatusUIEntity::render(Font &font, int currentWorldX, int currentWorldY) {
         forceTickDisplayTimer = 0;
         ticksWaitedDuringAnimation = 1;
     }
+
+    if (attackTarget != nullptr) {
+        double enemyhpPercent = static_cast<double>(attackTarget->hp) / attackTarget->maxhp;
+        std::string enemyhpString = "${black}";
+
+        if (enemyhpPercent == 1)
+            enemyhpString += "$[white]unscathed";
+        else if (enemyhpPercent > 0.7)
+            enemyhpString += "$[green]moderate";
+        else if (enemyhpPercent > 0.3)
+            enemyhpString += "$[yellow]badly wounded";
+        else
+            enemyhpString += "$[red]near death";
+
+        font.drawText(enemyhpString, SCREEN_WIDTH - X_OFFSET - 2, 4);
+    }
 }
 
 void StatusUIEntity::emit(uint32_t signal) {
@@ -43,4 +84,3 @@ void StatusUIEntity::emit(uint32_t signal) {
 
     Entity::emit(signal);
 }
-

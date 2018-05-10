@@ -42,7 +42,7 @@ void AttachmentBehaviour::tick() {
 
     if (!attached) {
         if (r < attachment) {
-            PlayerEntity& p = static_cast<PlayerEntity&>(*parent.manager.getByID("Player"));
+            PlayerEntity& p = dynamic_cast<PlayerEntity&>(*parent.manager.getByID("Player"));
             if (parent.pos.distanceTo(p.pos) < 10) {
                 std::cout << parent.ID << " has attached itself to player!" << std::endl;
                 attached = true;
@@ -52,7 +52,7 @@ void AttachmentBehaviour::tick() {
     }
 
     if (r < clinginess) {
-        PlayerEntity& p = static_cast<PlayerEntity&>(*parent.manager.getByID("Player"));
+        PlayerEntity& p = dynamic_cast<PlayerEntity&>(*parent.manager.getByID("Player"));
 
         if (parent.pos.x < p.pos.x)
             parent.pos.x++;
@@ -72,14 +72,29 @@ void AttachmentBehaviour::tick() {
 }
 
 void PlayerInputBehaviour::handle(uint32_t signal) {
-    parent.manager.tick(); // Only tick on player movement
+    if (signal & SIGNAL_FORCE_ATTACK) {
+        Point posOffset;
+        if (signal & SIGNAL_INPUT_UP)
+            posOffset.y = -1;
+        else if (signal & SIGNAL_INPUT_DOWN)
+            posOffset.y = 1;
+        if (signal & SIGNAL_INPUT_LEFT)
+            posOffset.x = -1;
+        else if (signal & SIGNAL_INPUT_RIGHT)
+            posOffset.x = 1;
 
-    if (signal & SIGNAL_INPUT_UP)
-        parent.pos.y--;
-    if (signal & SIGNAL_INPUT_DOWN)
-        parent.pos.y++;        
-    if (signal & SIGNAL_INPUT_LEFT)
-        parent.pos.x--;
-    if (signal & SIGNAL_INPUT_RIGHT)
-        parent.pos.x++;
+        auto& player = dynamic_cast<PlayerEntity&>(parent);
+        player.attack(player.pos + posOffset);
+    } else {
+        if (signal & SIGNAL_INPUT_UP)
+            parent.pos.y--;
+        if (signal & SIGNAL_INPUT_DOWN)
+            parent.pos.y++;
+        if (signal & SIGNAL_INPUT_LEFT)
+            parent.pos.x--;
+        if (signal & SIGNAL_INPUT_RIGHT)
+            parent.pos.x++;
+    }
+
+    parent.manager.tick(); // Only tick on player movement
 }
