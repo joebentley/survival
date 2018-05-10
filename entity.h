@@ -52,14 +52,16 @@ class EntityManager;
 
 class Entity {
 public:
-    Entity(std::string ID, std::string graphic, EntityManager& entityManager, int hp, int maxhp)
-            : hp(hp), maxhp(maxhp), ID(std::move(ID)), graphic(std::move(graphic)), pos(0, 0), manager(entityManager) {}
+    Entity(std::string ID, std::string graphic, EntityManager& entityManager, double hp, double maxhp, double regenPerTick)
+            : hp(hp), maxhp(maxhp), regenPerTick(regenPerTick), ID(std::move(ID)),
+              graphic(std::move(graphic)), pos(0, 0), manager(entityManager) {}
 
     Entity(std::string ID, std::string graphic, EntityManager& entityManager)
-            : Entity(std::move(ID), std::move(graphic), entityManager, 0, 0) {}
+            : Entity(std::move(ID), std::move(graphic), entityManager, 0, 0, 0) {}
 
-    int hp;
-    int maxhp;
+    double hp;
+    double maxhp;
+    double regenPerTick;
     std::string ID;
     std::string graphic;
     Point pos;

@@ -6,16 +6,19 @@
 
 class PlayerEntity : public Entity {
 public:
-    int hunger;
+    double hunger;
+    double hungerRate; // hunger per tick
+    double hungerDamageRate; // hp loss per tick while starving
 
     explicit PlayerEntity(EntityManager& entityManager)
-            : Entity("Player", "$[white]$(dwarf)", entityManager, 10, 10), hunger(10)
+            : Entity("Player", "$[white]$(dwarf)", entityManager, 10, 10, 0.1), hunger(1), hungerRate(0.05), hungerDamageRate(0.15)
     {
         std::shared_ptr<Behaviour> behaviour = std::make_shared<PlayerInputBehaviour>(*this);
         addBehaviour(behaviour);
     }
 
     void attack(const Point& attackPos);
+    void tick() override;
 };
 
 class StatusUIEntity : public Entity {

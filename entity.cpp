@@ -11,6 +11,9 @@ void Entity::initialize() {
 }
 
 void Entity::tick() {
+    if (hp < maxhp)
+        hp += regenPerTick;
+
     for (auto& behaviour : behaviours) {
         if (behaviour->enabled)
             behaviour->tick();

@@ -11,6 +11,8 @@ void PlayerEntity::attack(const Point &attackPos) {
     auto enemy = entitiesInSquare[0];
     enemy->hp--;
 
+    // TODO: Proper stats and attack rolling
+    // TODO: Health regen over time
     // TODO: Make enemy recover their movement after brief period
     if (enemy->getBehaviourByID("WanderBehaviour") != nullptr)
         enemy->getBehaviourByID("WanderBehaviour")->enabled = false;
@@ -26,9 +28,18 @@ void PlayerEntity::attack(const Point &attackPos) {
     }
 }
 
+void PlayerEntity::tick() {
+    hunger -= hungerRate;
+
+    if (hunger < 0.3)
+        hp -= hungerDamageRate;
+
+    Entity::tick();
+}
+
 void StatusUIEntity::render(Font &font, int currentWorldX, int currentWorldY) {
     std::string colorStr;
-    double hpPercent = static_cast<double>(player.hp) / player.maxhp;
+    double hpPercent = player.hp / player.maxhp;
 
     if (hpPercent > 0.7)
         colorStr = "$[green]";
@@ -37,11 +48,12 @@ void StatusUIEntity::render(Font &font, int currentWorldX, int currentWorldY) {
     else
         colorStr = "$[red]";
 
-    font.drawText("${black}" + colorStr + "hp " + std::to_string(player.hp) + "/" + std::to_string(player.maxhp), SCREEN_WIDTH - X_OFFSET, 1);
+    font.drawText("${black}" + colorStr + "hp " + std::to_string((int)round(player.hp))
+                  + "/" + std::to_string((int)round(player.maxhp)), SCREEN_WIDTH - X_OFFSET, 1);
 
-    if (player.hunger > 7)
+    if (player.hunger > 0.7)
         font.drawText("${black}$[green]sated", SCREEN_WIDTH - X_OFFSET, 2);
-    else if (player.hunger > 3)
+    else if (player.hunger > 0.3)
         font.drawText("${black}$[yellow]hungry", SCREEN_WIDTH - X_OFFSET, 2);
     else
         font.drawText("${black}$[red]starving", SCREEN_WIDTH - X_OFFSET, 2);

@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
                 player->setPos(SCREEN_WIDTH * (SCREEN_WIDTH + 1) / 2, SCREEN_HEIGHT * SCREEN_HEIGHT / 2);
                 manager.addEntity(player);
 
-                auto entity = std::make_shared<Entity>("cat", "$[yellow]c", manager, 10, 10);
+                auto entity = std::make_shared<Entity>("cat", "$[yellow]c", manager, 10, 10, 0.05);
                 entity->setPos(player->pos.x - 10, player->pos.y - 10);
                 std::shared_ptr<Behaviour> wander = std::make_shared<WanderBehaviour>(*entity);
                 std::shared_ptr<Behaviour> attachment = std::make_shared<AttachmentBehaviour>(*entity, 0.5, 0.55, 0.05);
