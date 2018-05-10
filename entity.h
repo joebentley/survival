@@ -10,6 +10,7 @@
 #include "font.h"
 #include "world.h"
 #include "point.h"
+#include "flags.h"
 
 class Entity;
 
@@ -21,7 +22,7 @@ public:
     Entity& parent;
     virtual void initialize() {};
     virtual void tick() {};
-    virtual void handle(const std::string& event) {};
+    virtual void handle(uint32_t signal) {};
 };
 
 //class ExampleBehaviour : public Behaviour {
@@ -48,9 +49,14 @@ class EntityManager;
 
 class Entity {
 public:
-    Entity(std::string ID, std::string graphic, EntityManager& entityManager)
-        : ID(std::move(ID)), graphic(std::move(graphic)), pos(0, 0), manager(entityManager) {}
+    Entity(std::string ID, std::string graphic, EntityManager& entityManager, int hp, int maxhp)
+            : hp(hp), maxhp(maxhp), ID(std::move(ID)), graphic(std::move(graphic)), pos(0, 0), manager(entityManager) {}
 
+    Entity(std::string ID, std::string graphic, EntityManager& entityManager)
+            : Entity(ID, graphic, entityManager, 0, 0) {}
+
+    int hp;
+    int maxhp;
     std::string ID;
     std::string graphic;
     Point pos;
@@ -61,7 +67,7 @@ public:
     virtual void initialize();
     virtual void tick();
     virtual void destroy() { }
-    virtual void emit(const std::string& event);
+    virtual void emit(uint32_t signal);
     virtual void render(Font& font, int currentWorldX, int currentWorldY);
     virtual void render(Font& font, std::tuple<int, int> currentWorldPos) {
         render(font, std::get<0>(currentWorldPos), std::get<1>(currentWorldPos));
@@ -77,15 +83,16 @@ class EntityManager {
 public:
     std::vector<std::shared_ptr<Entity>> entities;
     void addEntity(std::shared_ptr<Entity> entity);
-    void broadcast(const std::string& event);
+    void broadcast(uint32_t signal);
     void initialize();
     void tick();
-    void destroy();
+    virtual void destroy() { }
     void render(Font& font, int currentWorldX, int currentWorldY);
     void render(Font& font, std::tuple<int, int> currentWorldPos) {
         render(font, std::get<0>(currentWorldPos), std::get<1>(currentWorldPos));
     }
     std::shared_ptr<Entity> getByID(const std::string& ID) const;
+    std::vector<std::shared_ptr<Entity>> getEntitiesAtPos(const Point& pos) const;
 };
 
 #endif // ENTITY_H_

@@ -32,8 +32,8 @@ void StatusUIEntity::render(Font &font, int currentWorldX, int currentWorldY) {
     }
 }
 
-void StatusUIEntity::emit(const std::string &event) {
-    if (event == "force tick") {
+void StatusUIEntity::emit(uint32_t signal) {
+    if (signal & FORCE_WAIT) {
         if (forceTickDisplayTimer > 0) {
             ticksWaitedDuringAnimation++;
         }
@@ -41,6 +41,6 @@ void StatusUIEntity::emit(const std::string &event) {
         forceTickDisplayTimer = 100;
     }
 
-    Entity::emit(event);
+    Entity::emit(signal);
 }
 

@@ -16,9 +16,9 @@ void Entity::tick() {
     }
 }
 
-void Entity::emit(const std::string& event) {
+void Entity::emit(uint32_t signal) {
     for (auto& behaviour : behaviours) {
-        behaviour->handle(event);
+        behaviour->handle(signal);
     }
 }
 
@@ -38,9 +38,9 @@ void EntityManager::addEntity(std::shared_ptr<Entity> entity) {
     entities.push_back(entity);
 }
 
-void EntityManager::broadcast(const std::string& event) {
+void EntityManager::broadcast(uint32_t signal) {
     for (auto entity : entities) {
-        entity->emit(event);
+        entity->emit(signal);
     }
 }
 
@@ -69,4 +69,15 @@ std::shared_ptr<Entity> EntityManager::getByID(const std::string& ID) const {
         return nullptr;
     else
         return *entity;
+}
+
+std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesAtPos(const Point &pos) const {
+    std::vector<std::shared_ptr<Entity>> entitiesAtPos;
+
+    for (auto entity : entities) {
+        if (entity->pos == pos)
+            entitiesAtPos.push_back(entity);
+    }
+
+    return entitiesAtPos;
 }

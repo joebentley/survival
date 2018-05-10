@@ -71,28 +71,15 @@ void AttachmentBehaviour::tick() {
     }
 }
 
-void PlayerInputBehaviour::handle(const std::string& event) {
+void PlayerInputBehaviour::handle(uint32_t signal) {
     parent.manager.tick(); // Only tick on player movement
 
-    if (event == "input up")
+    if (signal & INPUT_UP)
         parent.pos.y--;
-    else if (event == "input down")
+    if (signal & INPUT_DOWN)
         parent.pos.y++;        
-    else if (event == "input left")
+    if (signal & INPUT_LEFT)
         parent.pos.x--;
-    else if (event == "input right")
+    if (signal & INPUT_RIGHT)
         parent.pos.x++;
-    else if (event == "input upleft") {
-        parent.pos.y--;
-        parent.pos.x--;
-    } else if (event == "input upright") {
-        parent.pos.y--;
-        parent.pos.x++;        
-    } else if (event == "input downleft") {
-        parent.pos.y++;
-        parent.pos.x--;
-    } else if (event == "input downright") {
-        parent.pos.y++;
-        parent.pos.x++;
-    }
 }

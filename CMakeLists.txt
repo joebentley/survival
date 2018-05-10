@@ -23,7 +23,7 @@ add_executable(survival
         texture.cpp
         texture.h
         world.cpp
-        world.h)
+        world.h flags.h)
 
 
 INCLUDE(FindPkgConfig)

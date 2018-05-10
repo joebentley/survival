@@ -12,11 +12,20 @@ struct Point {
     Point(int x, int y) : x(x), y(y) {}
 
     friend Point operator-(Point lhs, const Point& rhs) {
-        return Point(lhs.x - rhs.x, lhs.y - rhs.y);
+        return { lhs.x - rhs.x, lhs.y - rhs.y };
     }
 
     friend Point operator+(Point lhs, const Point& rhs) {
-        return Point(lhs.x + rhs.x, lhs.y + rhs.y);
+        return { lhs.x + rhs.x, lhs.y + rhs.y };
+    }
+
+    bool operator==(const Point &rhs) const {
+        return x == rhs.x &&
+               y == rhs.y;
+    }
+
+    bool operator!=(const Point &rhs) const {
+        return !(rhs == *this);
     }
 
     double distanceTo(const Point& to) {

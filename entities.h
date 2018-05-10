@@ -6,12 +6,10 @@
 
 class PlayerEntity : public Entity {
 public:
-    int hp;
-    int maxhp;
     int hunger;
 
     explicit PlayerEntity(EntityManager& entityManager)
-            : Entity("Player", "$[white]$(dwarf)", entityManager), hp(10), maxhp(10), hunger(10)
+            : Entity("Player", "$[white]$(dwarf)", entityManager, 10, 10), hunger(10)
     {
         std::unique_ptr<Behaviour> behaviour = std::make_unique<PlayerInputBehaviour>(*this);
         addBehaviour(behaviour);
@@ -35,7 +33,7 @@ public:
               player(player), shown(false), forceTickDisplayTimer(0), ticksWaitedDuringAnimation(1) { }
 
     void render(Font &font, int currentWorldX, int currentWorldY) override;
-    void emit(const std::string &event) override;
+    void emit(uint32_t signal) override;
 };
 
 #endif // ENTITIES_H_

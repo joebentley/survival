@@ -11,6 +11,7 @@
 #include "entity.h"
 #include "world.h"
 #include "entities.h"
+#include "flags.h"
 
 //Screen dimension constants
 const int WINDOW_WIDTH = CHAR_WIDTH * SCREEN_WIDTH;
@@ -87,36 +88,40 @@ int main(int argc, char* argv[])
                             quit = true;
                         }
                         else if (e.type == SDL_KEYDOWN) {
+                            uint32_t signal;
+
                             switch (e.key.keysym.sym) {
                                 case SDLK_h:
-                                    manager.broadcast("input left");
+                                    signal = INPUT_LEFT;
                                     break;
                                 case SDLK_j:
-                                    manager.broadcast("input down");
+                                    signal = INPUT_DOWN;
                                     break;
                                 case SDLK_k:
-                                    manager.broadcast("input up");
+                                    signal = INPUT_UP;
                                     break;
                                 case SDLK_l:
-                                    manager.broadcast("input right");
+                                    signal = INPUT_RIGHT;
                                     break;
                                 case SDLK_y:
-                                    manager.broadcast("input upleft");
+                                    signal = INPUT_UP | INPUT_LEFT;
                                     break;
-                                case SDLK_u:                      
-                                    manager.broadcast("input upright");
+                                case SDLK_u:
+                                    signal = INPUT_UP | INPUT_RIGHT;
                                     break;
                                 case SDLK_b:
-                                    manager.broadcast("input downleft");
+                                    signal = INPUT_DOWN | INPUT_LEFT;
                                     break;
                                 case SDLK_n:
-                                    manager.broadcast("input downright");
+                                    signal = INPUT_DOWN | INPUT_RIGHT;
                                     break;
                                 case SDLK_PERIOD:
-                                    manager.broadcast("force tick");
+                                    signal = FORCE_WAIT;
                                     manager.tick();
                                     break;
                             }
+
+                            manager.broadcast(signal);
                         }
                     }
 
