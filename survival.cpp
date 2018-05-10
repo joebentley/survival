@@ -64,8 +64,10 @@ int main(int argc, char* argv[])
                 manager.addEntity(player);
 
                 auto entity = std::make_shared<Entity>("cat", "$[yellow]c", manager);
-                entity->setPos(player->x - 10, player->y - 10);
+                entity->setPos(player->pos.x - 10, player->pos.y - 10);
                 std::unique_ptr<Behaviour> wander = std::make_unique<WanderBehaviour>(*entity);
+                std::unique_ptr<Behaviour> attachment = std::make_unique<AttachmentBehaviour>(*entity, 0.5, 0.5, 0.05);
+                entity->addBehaviour(attachment);
                 entity->addBehaviour(wander);
                 manager.addEntity(entity);
 

@@ -9,6 +9,7 @@
 #include <memory>
 #include "font.h"
 #include "world.h"
+#include "point.h"
 
 class Entity;
 
@@ -48,13 +49,12 @@ class EntityManager;
 class Entity {
 public:
     Entity(const std::string& ID, const std::string& graphic, EntityManager& entityManager)
-        : ID(ID), graphic(graphic), x(0), y(0), entityManager(entityManager) {}
+        : ID(ID), graphic(graphic), pos(0, 0), manager(entityManager) {}
 
     std::string ID;
     std::string graphic;
-    int x;
-    int y;
-    EntityManager& entityManager;
+    Point pos;
+    EntityManager& manager;
     std::vector<std::unique_ptr<Behaviour>> behaviours;
 
     void addBehaviour(std::unique_ptr<Behaviour>& behaviour);
@@ -66,10 +66,10 @@ public:
     void render(Font& font, std::tuple<int, int> currentWorldPos) {
         render(font, std::get<0>(currentWorldPos), std::get<1>(currentWorldPos));
     }
-    void setPos(int x, int y) { this->x = x; this->y = y; }
+    void setPos(int x, int y) { pos = Point(x, y); }
 
     std::tuple<int, int> getWorldPos() {
-        return std::make_tuple(this->x / SCREEN_WIDTH, this->y / SCREEN_HEIGHT);
+        return std::make_tuple(this->pos.x / SCREEN_WIDTH, this->pos.y / SCREEN_HEIGHT);
     }
 };
 
@@ -85,6 +85,7 @@ public:
     void render(Font& font, std::tuple<int, int> currentWorldPos) {
         render(font, std::get<0>(currentWorldPos), std::get<1>(currentWorldPos));
     }
+    std::shared_ptr<Entity> getByID(const std::string& ID) const;
 };
 
 #endif // ENTITY_H_
