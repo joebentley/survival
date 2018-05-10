@@ -9,13 +9,13 @@ public:
     int hp;
 
     PlayerEntity(EntityManager& entityManager) : Entity("Player", "$[white]$(dwarf)", entityManager) {
-        PlayerInputBehaviour *behaviour = new PlayerInputBehaviour(*this);
+        std::unique_ptr<Behaviour> behaviour = std::make_unique<PlayerInputBehaviour>(*this);
         addBehaviour(behaviour);
     }
 
-    ~PlayerEntity () {
-        free(behaviours[0]);
-    }
+    // ~PlayerEntity () {
+    //     free(behaviours[0]);
+    // }
 };
 
 #endif // ENTITIES_H_

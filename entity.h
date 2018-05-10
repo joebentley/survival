@@ -56,9 +56,9 @@ public:
     int worldX;
     int worldY;
     EntityManager& entityManager;
-    std::vector<Behaviour*> behaviours;
+    std::vector<std::unique_ptr<Behaviour>> behaviours;
 
-    void addBehaviour(Behaviour* behaviour);
+    void addBehaviour(std::unique_ptr<Behaviour>& behaviour);
     void initialize();
     void tick();
     void destroy();
@@ -70,8 +70,8 @@ public:
 
 class EntityManager {
 public:
-    std::vector<Entity*> entities;
-    void addEntity(Entity* entity);
+    std::vector<std::shared_ptr<Entity>> entities;
+    void addEntity(std::shared_ptr<Entity> entity);
     void broadcast(const std::string& event);
     void initialize();
     void tick();

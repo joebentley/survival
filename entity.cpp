@@ -1,23 +1,23 @@
 #include "entity.h"
 
-void Entity::addBehaviour(Behaviour* behaviour) {
-    behaviours.push_back(behaviour);
+void Entity::addBehaviour(std::unique_ptr<Behaviour>& behaviour) {
+    behaviours.push_back(std::move(behaviour));
 }
 
 void Entity::initialize() {
-    for (auto behaviour : behaviours) {
+    for (auto& behaviour : behaviours) {
         behaviour->initialize();
     }
 }
 
 void Entity::tick() {
-    for (auto behaviour : behaviours) {
+    for (auto& behaviour : behaviours) {
         behaviour->tick();
     }
 }
 
 void Entity::emit(const std::string& event) {
-    for (auto behaviour : behaviours) {
+    for (auto& behaviour : behaviours) {
         behaviour->handle(event);
     }
 }
@@ -28,7 +28,7 @@ void Entity::render(Font& font, int currentWorldX, int currentWorldY) {
         font.drawText(graphic, this->x, this->y);
 }
 
-void EntityManager::addEntity(Entity* entity) {
+void EntityManager::addEntity(std::shared_ptr<Entity> entity) {
     entities.push_back(entity);
 }
 

@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
     SDL_Renderer *renderer = NULL;
 
     Texture texture;
-    World* world = new World;
+    auto world = std::make_unique<World>();
     world->randomizeFloor();
     
     printf("video mode: %d x %d\n", SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -58,17 +58,17 @@ int main(int argc, char* argv[])
 
                 Font font(texture, CHAR_WIDTH, CHAR_HEIGHT, NUM_PER_ROW, CHARS, renderer);
                 EntityManager manager;
-                PlayerEntity player(manager);
-                player.setPos(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
-                player.setWorldPos(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
-                manager.addEntity(&player);
+                std::shared_ptr<Entity> player = std::make_shared<PlayerEntity>(manager);
+                player->setPos(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+                player->setWorldPos(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+                manager.addEntity(player);
 
-                Entity entity("cat", "$[yellow]c", manager);
-                entity.setPos(10, 10);
-                entity.setWorldPos(player.worldX, player.worldY);
-                WanderBehaviour wander(entity);
-                entity.addBehaviour(&wander);
-                manager.addEntity(&entity);
+                auto entity = std::make_shared<Entity>("cat", "$[yellow]c", manager);
+                entity->setPos(10, 10);
+                entity->setWorldPos(player->worldX, player->worldY);
+                std::unique_ptr<Behaviour> wander = std::make_unique<WanderBehaviour>(*entity);
+                entity->addBehaviour(wander);
+                manager.addEntity(entity);
 
                 manager.initialize();
 
@@ -112,9 +112,9 @@ int main(int argc, char* argv[])
 
                     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
                     SDL_RenderClear(renderer);
-                    if (world->render(font, player.worldX, player.worldY) == -1)
+                    if (world->render(font, player->worldX, player->worldY) == -1)
                         return -1;
-                    manager.render(font, player.worldX, player.worldY);
+                    manager.render(font, player->worldX, player->worldY);
                     // showMessageBox(font, "${grey}$[yellow]Hello world!", 4, 4);
                     // if (font.drawText(renderer, "hello$(dwarf2)WORLD$[yellow]dwarf\\nhello$(block)${yellow}$[grey]Hello", 2, 2) == -1)
                     //     return -1;
@@ -123,8 +123,6 @@ int main(int argc, char* argv[])
             }
         }
     }
-
-    delete world;
 
     SDL_DestroyWindow(window);
     SDL_Quit();
