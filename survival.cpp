@@ -76,6 +76,7 @@ int main(int argc, char* argv[])
                 manager.initialize();
 
                 bool quit = false;
+                bool dead = false;
                 SDL_Event e;
 
                 while (!quit) {
@@ -115,13 +116,17 @@ int main(int argc, char* argv[])
                                     signal = SIGNAL_FORCE_WAIT;
                                     manager.tick();
                                     break;
+                                case SDLK_RETURN:
+                                    if (dead)
+                                        quit = true;
+                                    break;
                             }
 
 
                             if (e.key.keysym.mod & KMOD_SHIFT)
                                 signal |= SIGNAL_FORCE_ATTACK;
 
-                            if (signal != SIGNAL_FORCE_ATTACK) // Don't broadcast on just the modifier key
+                            if (!dead && signal != 0 && signal != SIGNAL_FORCE_ATTACK) // Don't broadcast on just the modifier key
                                 manager.broadcast(signal);
                         }
                     }
@@ -136,6 +141,16 @@ int main(int argc, char* argv[])
                     // showMessageBox(font, "${grey}$[yellow]Hello world!", 4, 4);
                     // if (font.drawText(renderer, "hello$(dwarf2)WORLD$[yellow]dwarf\\nhello$(block)${yellow}$[grey]Hello", 2, 2) == -1)
                     //     return -1;
+
+
+                    if (player->hp <= 0)
+                        dead = true;
+
+                    if (dead) {
+                        showMessageBox(font, "$[red]You died!", 10, 10);
+                        font.drawText("${black}press return to quit!", 20, 20);
+                    }
+
                     SDL_RenderPresent(renderer);
                 }
             }

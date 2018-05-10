@@ -50,8 +50,8 @@ void StatusUIEntity::render(Font &font, int currentWorldX, int currentWorldY) {
     else
         colorStr = "$[red]";
 
-    font.drawText("${black}" + colorStr + "hp " + std::to_string((int)round(player.hp))
-                  + "/" + std::to_string((int)round(player.maxhp)), SCREEN_WIDTH - X_OFFSET, 1);
+    font.drawText("${black}" + colorStr + "hp " + std::to_string((int)ceil(player.hp))
+                  + "/" + std::to_string((int)ceil(player.maxhp)), SCREEN_WIDTH - X_OFFSET, 1);
 
     if (player.hunger > 0.7)
         font.drawText("${black}$[green]sated", SCREEN_WIDTH - X_OFFSET, 2);
