@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
             else {
                 // if (Texture::LoadFromFile(texture, renderer, "Anikki_square_20x20.bmp") == -1) {
                 // if (Texture::LoadFromFile(texture, renderer, "curses_640x300.bmp") == -1) {
-                if (Texture::LoadFromFile(texture, renderer, "curses_800x600.bmp") == -1) {
+                if (Texture::LoadFromFile(texture, renderer, "resources/curses_800x600.bmp") == -1) {
                     printf("Could not load texture!\n");
                     return -1;
                 }
