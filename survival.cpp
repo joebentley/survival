@@ -8,7 +8,7 @@
 #include "dialog.h"
 #include "entity.h"
 #include "world.h"
-#include "behaviours.h"
+#include "entities.h"
 
 //Screen dimension constants
 const int WINDOW_WIDTH = CHAR_WIDTH * SCREEN_WIDTH;
@@ -54,11 +54,8 @@ int main(int argc, char* argv[])
 
                 Font font(texture, CHAR_WIDTH, CHAR_HEIGHT, NUM_PER_ROW, CHARS, renderer);
                 EntityManager manager;
-                Entity player("player", "$[white]$(dwarf)", manager);
+                PlayerEntity player(manager);
                 player.setPos(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
-                PlayerInputBehaviour playerInputBehaviour(player);
-                player.addBehaviour(&playerInputBehaviour);
-                
                 manager.addEntity(player);
                 manager.initialize();
 
