@@ -74,12 +74,12 @@ void AttachmentBehaviour::tick() {
 void PlayerInputBehaviour::handle(uint32_t signal) {
     parent.manager.tick(); // Only tick on player movement
 
-    if (signal & INPUT_UP)
+    if (signal & SIGNAL_INPUT_UP)
         parent.pos.y--;
-    if (signal & INPUT_DOWN)
+    if (signal & SIGNAL_INPUT_DOWN)
         parent.pos.y++;        
-    if (signal & INPUT_LEFT)
+    if (signal & SIGNAL_INPUT_LEFT)
         parent.pos.x--;
-    if (signal & INPUT_RIGHT)
+    if (signal & SIGNAL_INPUT_RIGHT)
         parent.pos.x++;
 }

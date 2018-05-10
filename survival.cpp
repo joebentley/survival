@@ -92,37 +92,41 @@ int main(int argc, char* argv[])
 
                             switch (e.key.keysym.sym) {
                                 case SDLK_h:
-                                    signal = INPUT_LEFT;
+                                    signal = SIGNAL_INPUT_LEFT;
                                     break;
                                 case SDLK_j:
-                                    signal = INPUT_DOWN;
+                                    signal = SIGNAL_INPUT_DOWN;
                                     break;
                                 case SDLK_k:
-                                    signal = INPUT_UP;
+                                    signal = SIGNAL_INPUT_UP;
                                     break;
                                 case SDLK_l:
-                                    signal = INPUT_RIGHT;
+                                    signal = SIGNAL_INPUT_RIGHT;
                                     break;
                                 case SDLK_y:
-                                    signal = INPUT_UP | INPUT_LEFT;
+                                    signal = SIGNAL_INPUT_UP | SIGNAL_INPUT_LEFT;
                                     break;
                                 case SDLK_u:
-                                    signal = INPUT_UP | INPUT_RIGHT;
+                                    signal = SIGNAL_INPUT_UP | SIGNAL_INPUT_RIGHT;
                                     break;
                                 case SDLK_b:
-                                    signal = INPUT_DOWN | INPUT_LEFT;
+                                    signal = SIGNAL_INPUT_DOWN | SIGNAL_INPUT_LEFT;
                                     break;
                                 case SDLK_n:
-                                    signal = INPUT_DOWN | INPUT_RIGHT;
+                                    signal = SIGNAL_INPUT_DOWN | SIGNAL_INPUT_RIGHT;
                                     break;
                                 case SDLK_PERIOD:
-                                    signal = FORCE_WAIT;
+                                    signal = SIGNAL_FORCE_WAIT;
                                     manager.tick();
                                     break;
                             }
 
+
+                            if (SDL_GetModState() == KMOD_SHIFT)
+                                signal |= SIGNAL_FORCE_ATTACK;
+
                             if (signal > 0)
-                                manager.broadcast(signal);
+                            manager.broadcast(signal);
                         }
                     }
 

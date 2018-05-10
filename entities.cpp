@@ -33,7 +33,7 @@ void StatusUIEntity::render(Font &font, int currentWorldX, int currentWorldY) {
 }
 
 void StatusUIEntity::emit(uint32_t signal) {
-    if (signal & FORCE_WAIT) {
+    if (signal & SIGNAL_FORCE_WAIT) {
         if (forceTickDisplayTimer > 0) {
             ticksWaitedDuringAnimation++;
         }
