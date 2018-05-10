@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-Wall -Werror -g -std=c++11
+CFLAGS=-Wall -Werror -std=c++11 -g
 
 DEPS=texture.h font.h dialog.h world.h entity.h behaviours.h entities.h
 OBJ=survival.o texture.o font.o dialog.o world.o entity.o behaviours.o
