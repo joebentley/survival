@@ -1,5 +1,6 @@
 #include "font.h"
 #include <iostream>
+#include <stdexcept>
 
 std::unordered_map<std::string, Color> colorMap = {
     {"white", (struct Color) { 0xFF, 0xFF, 0xFF, 0xFF }},
@@ -18,26 +19,29 @@ void Font::setFontColor(Color c) {
 
 int Font::draw(const std::string &character, int x, int y, Color fColor, Color bColor)
 {
-    setFontColor(fColor);
+    std::tuple<int, int> position;
 
-    for (int i = 0; i < characters.size(); ++i) {
-        if (characters[i] == character) {
-            int cellX = i % numPerRow;
-            int cellY = i / numPerRow;
-
-            SDL_Rect srcRect = { cellX * cellWidth, cellY * cellHeight, cellWidth, cellHeight };
-            SDL_Rect destRect = { x * cellWidth, y * cellHeight, cellWidth, cellHeight };
-
-            SDL_SetRenderDrawColor(renderer, bColor.r, bColor.g, bColor.b, bColor.a);
-            SDL_RenderFillRect(renderer, &destRect);
-
-            texture.render(renderer, &srcRect, &destRect);
-            return 0;
-        }
+    try {
+        position = characters.at(character);
+    } catch (const std::out_of_range& oor) {
+        std::cerr << "Out of range error: " << oor.what() << std::endl;
+        std::cerr << "Invalid rendering token: " << character << std::endl;
+        return -1;
     }
 
-    std::cerr << "Invalid rendering token: " << character << std::endl;
-    return -1;
+    setFontColor(fColor);
+
+    int cellX = std::get<0>(position);
+    int cellY = std::get<1>(position);
+
+    SDL_Rect srcRect = { cellX * cellWidth, cellY * cellHeight, cellWidth, cellHeight };
+    SDL_Rect destRect = { x * cellWidth, y * cellHeight, cellWidth, cellHeight };
+
+    SDL_SetRenderDrawColor(renderer, bColor.r, bColor.g, bColor.b, bColor.a);
+    SDL_RenderFillRect(renderer, &destRect);
+
+    texture.render(renderer, &srcRect, &destRect);
+    return 0;
 }
 
 int Font::drawText(const std::string &text, int x0, int y)

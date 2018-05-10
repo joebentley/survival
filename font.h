@@ -10,6 +10,7 @@
 #include <iterator>
 #include <vector>
 #include <unordered_map>
+#include <tuple>
 
 const int CHAR_HEIGHT = 12; // 20; // 12;
 const int CHAR_WIDTH = 10; // 20; // 8;
@@ -42,22 +43,29 @@ Color getColor(const std::string& colorStr);
 
 class Font {
     Texture texture;
-    int numPerRow;
     int cellWidth;
     int cellHeight;
     SDL_Renderer *renderer;
 public:
-    std::vector<std::string> characters;
+    std::unordered_map<std::string, std::tuple<int, int> > characters;
 
     Font(const Texture &texture, int cellWidth, int cellHeight, int numPerRow,
          const std::string &characters, SDL_Renderer *renderer)
-        : texture(texture), numPerRow(numPerRow),
-          cellWidth(cellWidth), cellHeight(cellHeight), renderer(renderer)
+        : texture(texture), cellWidth(cellWidth),
+          cellHeight(cellHeight), renderer(renderer)
     {
+        std::vector<std::string> words;
         std::istringstream iss(characters);
         std::copy(std::istream_iterator<std::string>(iss),
                   std::istream_iterator<std::string>(),
-                  std::back_inserter(this->characters));
+                  std::back_inserter(words));
+        
+        for (int i = 0; i < words.size(); ++i) {
+            int x = i % numPerRow;
+            int y = i / numPerRow;
+
+            this->characters[words[i]] = std::make_tuple(x, y);
+        }
     }
 
     void setFontColor(Color color);
