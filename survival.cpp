@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
                 entity->addBehaviour(wander);
                 manager.addEntity(entity);
 
-                std::shared_ptr<Entity> healthUI = std::make_shared<HealthUIEntity>(manager, dynamic_cast<PlayerEntity&>(*player));
+                std::shared_ptr<Entity> healthUI = std::make_shared<HealthHungerUIEntity>(manager, dynamic_cast<PlayerEntity&>(*player));
                 manager.addEntity(healthUI);
 
                 manager.initialize();
@@ -111,6 +111,9 @@ int main(int argc, char* argv[])
                                     break;
                                 case SDLK_n:
                                     manager.broadcast("input downright");
+                                    break;
+                                case SDLK_5:
+                                    manager.tick();
                                     break;
                             }
                         }

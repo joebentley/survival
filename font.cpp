@@ -5,7 +5,11 @@
 std::unordered_map<std::string, Color> colorMap = {
     {"white", (struct Color) { 0xFF, 0xFF, 0xFF, 0xFF }},
     {"yellow", (struct Color) { 0xFF, 0xFF, 0, 0xFF }},
+    {"red", (struct Color) { 0xFF, 0, 0, 0xFF }},
+    {"green", (struct Color) { 0, 0xFF, 0, 0xFF }},
+    {"blue", (struct Color) { 0, 0, 0xFF, 0xFF }},
     {"grey", (struct Color) { 0x88, 0x88, 0x88, 0xFF }},
+    {"black", (struct Color) { 0, 0, 0, 0xFF }},
     {"transparent", (struct Color) { 0, 0, 0, 0 }}
 };
 

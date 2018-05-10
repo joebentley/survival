@@ -10,28 +10,30 @@ public:
     int maxhp;
     int hunger;
 
-    PlayerEntity(EntityManager& entityManager) : Entity("Player", "$[white]$(dwarf)", entityManager), hp(10), maxhp(10), hunger(10) {
+    explicit PlayerEntity(EntityManager& entityManager)
+            : Entity("Player", "$[white]$(dwarf)", entityManager), hp(10), maxhp(10), hunger(10)
+    {
         std::unique_ptr<Behaviour> behaviour = std::make_unique<PlayerInputBehaviour>(*this);
         addBehaviour(behaviour);
     }
 };
 
-class HealthUIEntity : public Entity {
+class HealthHungerUIEntity : public Entity {
 public:
     PlayerEntity& player;
     bool shown;
 
-    HealthUIEntity(EntityManager& entityManager)
+    explicit HealthHungerUIEntity(EntityManager& entityManager)
             : Entity("HealthUI", "", entityManager),
               player(dynamic_cast<PlayerEntity&>(*entityManager.getByID("Player"))),
               shown(false) { }
 
-    HealthUIEntity(EntityManager& entityManager, PlayerEntity& player)
+    HealthHungerUIEntity(EntityManager& entityManager, PlayerEntity& player)
             : Entity("HealthUI", "", entityManager),
               player(player),
               shown(false) { }
 
-    void render(Font &font, int currentWorldX, int currentWorldY);
+    void render(Font &font, int currentWorldX, int currentWorldY) override;
 };
 
 #endif // ENTITIES_H_
