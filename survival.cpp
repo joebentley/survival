@@ -1,9 +1,9 @@
 #include <SDL2/SDL.h>
-#include <stdio.h>
 #include <string>
 #include <memory>
 #include <ctime>
 #include <cstdlib>
+#include <cstdio>
 
 #include "texture.h"
 #include "font.h"
@@ -59,13 +59,12 @@ int main(int argc, char* argv[])
                 Font font(texture, CHAR_WIDTH, CHAR_HEIGHT, NUM_PER_ROW, CHARS, renderer);
                 EntityManager manager;
                 std::shared_ptr<Entity> player = std::make_shared<PlayerEntity>(manager);
-                player->setPos(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
-                player->setWorldPos(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+                // Place player in center of world
+                player->setPos(SCREEN_WIDTH * (SCREEN_WIDTH + 1) / 2, SCREEN_HEIGHT * SCREEN_HEIGHT / 2);
                 manager.addEntity(player);
 
                 auto entity = std::make_shared<Entity>("cat", "$[yellow]c", manager);
-                entity->setPos(10, 10);
-                entity->setWorldPos(player->worldX, player->worldY);
+                entity->setPos(player->x - 10, player->y - 10);
                 std::unique_ptr<Behaviour> wander = std::make_unique<WanderBehaviour>(*entity);
                 entity->addBehaviour(wander);
                 manager.addEntity(entity);
@@ -112,9 +111,9 @@ int main(int argc, char* argv[])
 
                     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
                     SDL_RenderClear(renderer);
-                    if (world->render(font, player->worldX, player->worldY) == -1)
+                    if (world->render(font, player->getWorldPos()) == -1)
                         return -1;
-                    manager.render(font, player->worldX, player->worldY);
+                    manager.render(font, player->getWorldPos());
                     // showMessageBox(font, "${grey}$[yellow]Hello world!", 4, 4);
                     // if (font.drawText(renderer, "hello$(dwarf2)WORLD$[yellow]dwarf\\nhello$(block)${yellow}$[grey]Hello", 2, 2) == -1)
                     //     return -1;

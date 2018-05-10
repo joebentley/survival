@@ -8,6 +8,7 @@
 #include <iostream>
 #include <memory>
 #include "font.h"
+#include "world.h"
 
 class Entity;
 
@@ -47,14 +48,12 @@ class EntityManager;
 class Entity {
 public:
     Entity(const std::string& ID, const std::string& graphic, EntityManager& entityManager)
-        : ID(ID), graphic(graphic), x(0), y(0), worldX(0), worldY(0), entityManager(entityManager) {}
+        : ID(ID), graphic(graphic), x(0), y(0), entityManager(entityManager) {}
 
     std::string ID;
     std::string graphic;
     int x;
     int y;
-    int worldX;
-    int worldY;
     EntityManager& entityManager;
     std::vector<std::unique_ptr<Behaviour>> behaviours;
 
@@ -64,8 +63,14 @@ public:
     void destroy();
     void emit(const std::string& event);
     void render(Font& font, int currentWorldX, int currentWorldY);
+    void render(Font& font, std::tuple<int, int> currentWorldPos) {
+        render(font, std::get<0>(currentWorldPos), std::get<1>(currentWorldPos));
+    }
     void setPos(int x, int y) { this->x = x; this->y = y; }
-    void setWorldPos(int worldX, int worldY) { this->worldX = worldX; this->worldY = worldY; }    
+
+    std::tuple<int, int> getWorldPos() {
+        return std::make_tuple(this->x / SCREEN_WIDTH, this->y / SCREEN_HEIGHT);
+    }
 };
 
 class EntityManager {
@@ -77,6 +82,9 @@ public:
     void tick();
     void destroy();
     void render(Font& font, int currentWorldX, int currentWorldY);
+    void render(Font& font, std::tuple<int, int> currentWorldPos) {
+        render(font, std::get<0>(currentWorldPos), std::get<1>(currentWorldPos));
+    }
 };
 
 #endif // ENTITY_H_

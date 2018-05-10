@@ -13,6 +13,9 @@ public:
     std::string floor[SCREEN_HEIGHT][SCREEN_WIDTH][SCREEN_HEIGHT][SCREEN_WIDTH];
 
     int render(Font& font, int worldX, int worldY);
+    int render(Font& font, std::tuple<int, int> worldPos) {
+        return render(font, std::get<0>(worldPos), std::get<1>(worldPos));
+    }
     void randomizeFloor();
 };
 

@@ -24,8 +24,13 @@ void Entity::emit(const std::string& event) {
 
 void Entity::render(Font& font, int currentWorldX, int currentWorldY) {
     // Only draw if the entity is on the current world screen
-    if (worldX == currentWorldX && worldY == currentWorldY)
-        font.drawText(graphic, this->x, this->y);
+    if (
+        x >= SCREEN_WIDTH * currentWorldX && x < SCREEN_WIDTH * (currentWorldX + 1) &&
+        y >= SCREEN_HEIGHT * currentWorldY && y < SCREEN_HEIGHT * (currentWorldY + 1)
+    )
+    {
+        font.drawText(graphic, this->x - SCREEN_WIDTH * currentWorldX, this->y - SCREEN_HEIGHT * currentWorldY);
+    }
 }
 
 void EntityManager::addEntity(std::shared_ptr<Entity> entity) {
