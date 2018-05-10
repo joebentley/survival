@@ -15,7 +15,7 @@ class Entity;
 
 class Behaviour {
 public:
-    Behaviour(const std::string& ID, Entity& parent) : ID(ID), parent(parent) {}
+    Behaviour(std::string ID, Entity& parent) : ID(std::move(ID)), parent(parent) {}
 
     std::string ID;
     Entity& parent;
@@ -24,32 +24,32 @@ public:
     virtual void handle(const std::string& event) {};
 };
 
-class ExampleBehaviour : public Behaviour {
-public:
-    ExampleBehaviour(const std::string& ID, Entity& parent) : Behaviour(ID, parent) {}
-
-    void initialize() {
-        printf("Initialized\n");
-    }
-
-    void tick() {
-        printf("Ticked\n");
-    }
-
-    void handle(const std::string& event) {
-        if (event == "smell")
-            printf("I can smell something\n");
-        else
-            printf("I can't smell anything\n");
-    }
-};
+//class ExampleBehaviour : public Behaviour {
+//public:
+//    ExampleBehaviour(std::string ID, Entity& parent) : Behaviour(std::move(ID), parent) {}
+//
+//    void initialize() {
+//        printf("Initialized\n");
+//    }
+//
+//    void tick() {
+//        printf("Ticked\n");
+//    }
+//
+//    void handle(const std::string& event) {
+//        if (event == "smell")
+//            printf("I can smell something\n");
+//        else
+//            printf("I can't smell anything\n");
+//    }
+//};
 
 class EntityManager;
 
 class Entity {
 public:
-    Entity(const std::string& ID, const std::string& graphic, EntityManager& entityManager)
-        : ID(ID), graphic(graphic), pos(0, 0), manager(entityManager) {}
+    Entity(std::string ID, std::string graphic, EntityManager& entityManager)
+        : ID(std::move(ID)), graphic(std::move(graphic)), pos(0, 0), manager(entityManager) {}
 
     std::string ID;
     std::string graphic;
