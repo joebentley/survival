@@ -57,11 +57,11 @@ public:
     EntityManager& manager;
     std::vector<std::unique_ptr<Behaviour>> behaviours;
 
-    void addBehaviour(std::unique_ptr<Behaviour>& behaviour);
-    void initialize();
-    void tick();
-    void destroy();
-    void emit(const std::string& event);
+    virtual void addBehaviour(std::unique_ptr<Behaviour>& behaviour);
+    virtual void initialize();
+    virtual void tick();
+    virtual void destroy() { }
+    virtual void emit(const std::string& event);
     virtual void render(Font& font, int currentWorldX, int currentWorldY);
     virtual void render(Font& font, std::tuple<int, int> currentWorldPos) {
         render(font, std::get<0>(currentWorldPos), std::get<1>(currentWorldPos));

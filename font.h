@@ -33,6 +33,9 @@ const std::string CHARS =
 
 
 struct Color {
+    Color() {}
+    Color(Uint8 r, Uint8 g, Uint8 b, Uint8 a) : r(r), g(g), b(b), a(a) {}
+
     Uint8 r;
     Uint8 g;
     Uint8 b;
@@ -75,6 +78,7 @@ public:
     }
     int draw(const std::string &character, int x, int y, Color fColor, Color bColor);
     int drawText(const std::string &text, int x, int y);
+    int drawText(const std::string &text, int x, int y, Color fColor, Color bColor);
 };
 
 int getFontStringLength(const std::string& string);

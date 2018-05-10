@@ -18,22 +18,24 @@ public:
     }
 };
 
-class HealthHungerUIEntity : public Entity {
+class StatusUIEntity : public Entity {
 public:
     PlayerEntity& player;
     bool shown;
+    int forceTickDisplayTimer;
+    int ticksWaitedDuringAnimation;
 
-    explicit HealthHungerUIEntity(EntityManager& entityManager)
-            : Entity("HealthUI", "", entityManager),
-              player(dynamic_cast<PlayerEntity&>(*entityManager.getByID("Player"))),
-              shown(false) { }
+    const int X_OFFSET = 10;
 
-    HealthHungerUIEntity(EntityManager& entityManager, PlayerEntity& player)
+    explicit StatusUIEntity(EntityManager& entityManager)
+            : StatusUIEntity(entityManager, dynamic_cast<PlayerEntity&>(*entityManager.getByID("Player"))) { }
+
+    StatusUIEntity(EntityManager& entityManager, PlayerEntity& player)
             : Entity("HealthUI", "", entityManager),
-              player(player),
-              shown(false) { }
+              player(player), shown(false), forceTickDisplayTimer(0), ticksWaitedDuringAnimation(1) { }
 
     void render(Font &font, int currentWorldX, int currentWorldY) override;
+    void emit(const std::string &event) override;
 };
 
 #endif // ENTITIES_H_

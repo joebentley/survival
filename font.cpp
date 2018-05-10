@@ -3,14 +3,14 @@
 #include <stdexcept>
 
 std::unordered_map<std::string, Color> colorMap = {
-    {"white", (struct Color) { 0xFF, 0xFF, 0xFF, 0xFF }},
-    {"yellow", (struct Color) { 0xFF, 0xFF, 0, 0xFF }},
-    {"red", (struct Color) { 0xFF, 0, 0, 0xFF }},
-    {"green", (struct Color) { 0, 0xFF, 0, 0xFF }},
-    {"blue", (struct Color) { 0, 0, 0xFF, 0xFF }},
-    {"grey", (struct Color) { 0x88, 0x88, 0x88, 0xFF }},
-    {"black", (struct Color) { 0, 0, 0, 0xFF }},
-    {"transparent", (struct Color) { 0, 0, 0, 0 }}
+    {"white", Color(0xFF, 0xFF, 0xFF, 0xFF)},
+    {"yellow", Color(0xFF, 0xFF, 0, 0xFF)},
+    {"red", Color(0xFF, 0, 0, 0xFF)},
+    {"green", Color(0, 0xFF, 0, 0xFF)},
+    {"blue", Color(0, 0, 0xFF, 0xFF)},
+    {"grey", Color(0x88, 0x88, 0x88, 0xFF)},
+    {"black", Color(0, 0, 0, 0xFF)},
+    {"transparent", Color(0, 0, 0, 0)}
 };
 
 Color getColor(const std::string& colorStr) {
@@ -19,6 +19,7 @@ Color getColor(const std::string& colorStr) {
 
 void Font::setFontColor(Color c) {
     SDL_SetTextureColorMod(texture.texture, c.r, c.g, c.b);
+    SDL_SetTextureAlphaMod(texture.texture, c.a);
 }
 
 int Font::draw(const std::string &character, int x, int y, Color fColor, Color bColor)
@@ -115,6 +116,44 @@ int Font::drawText(const std::string &text, int x0, int y)
                 return -1;
         }
         x++;        
+    }
+
+    return 0;
+}
+
+int Font::drawText(const std::string &text, int x0, int y, Color fColor, Color bColor)
+{
+    int x = x0;
+
+    for (int i = 0; i < text.size(); ++i) {
+        // parse extended token
+        if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '(') {
+            ++i;
+            int begin = i + 1;
+            while (text[++i] != ')');
+
+            if (this->draw(text.substr(begin, i - begin), x, y, fColor, bColor) == -1)
+                return -1;
+            x++;
+            continue;
+        }
+
+        if (i + 1 < text.size() && text[i] == '\\' && text[i + 1] != '\\') {
+            if (text[i + 1] == 'n') {
+                y++; // line feed
+            }
+            i += 2;
+            x = x0; // carriage return
+        }
+
+        if (text[i] == ' ') {
+            if (this->draw("space", x, y, fColor, bColor) == -1)
+                return -1;
+        } else {
+            if (this->draw(std::string(1, text[i]), x, y, fColor, bColor) == -1)
+                return -1;
+        }
+        x++;
     }
 
     return 0;
