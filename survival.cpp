@@ -55,9 +55,11 @@ int main(int argc, char* argv[])
                 }
 
                 // SDL_RenderSetScale(renderer, 1.5, 1.5);
+                SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
                 Font font(texture, CHAR_WIDTH, CHAR_HEIGHT, NUM_PER_ROW, CHARS, renderer);
                 EntityManager manager;
+
                 std::shared_ptr<Entity> player = std::make_shared<PlayerEntity>(manager);
                 // Place player in center of world
                 player->setPos(SCREEN_WIDTH * (SCREEN_WIDTH + 1) / 2, SCREEN_HEIGHT * SCREEN_HEIGHT / 2);
@@ -66,10 +68,13 @@ int main(int argc, char* argv[])
                 auto entity = std::make_shared<Entity>("cat", "$[yellow]c", manager);
                 entity->setPos(player->pos.x - 10, player->pos.y - 10);
                 std::unique_ptr<Behaviour> wander = std::make_unique<WanderBehaviour>(*entity);
-                std::unique_ptr<Behaviour> attachment = std::make_unique<AttachmentBehaviour>(*entity, 0.5, 0.5, 0.05);
+                std::unique_ptr<Behaviour> attachment = std::make_unique<AttachmentBehaviour>(*entity, 0.5, 0.55, 0.05);
                 entity->addBehaviour(attachment);
                 entity->addBehaviour(wander);
                 manager.addEntity(entity);
+
+                std::shared_ptr<Entity> healthUI = std::make_shared<HealthUIEntity>(manager, dynamic_cast<PlayerEntity&>(*player));
+                manager.addEntity(healthUI);
 
                 manager.initialize();
 
@@ -86,7 +91,7 @@ int main(int argc, char* argv[])
                                 case SDLK_h:
                                     manager.broadcast("input left");
                                     break;
-                                case SDLK_j:                      
+                                case SDLK_j:
                                     manager.broadcast("input down");
                                     break;
                                 case SDLK_k:

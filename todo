@@ -1,3 +1,5 @@
 * Add dialog box for entering text (hard)
+* Add UI elements
 * Add message log
 * Add descriptions and look command
+* Sort out rendering layers, maybe flash between two icons when both on same square?

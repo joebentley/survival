@@ -62,8 +62,8 @@ public:
     void tick();
     void destroy();
     void emit(const std::string& event);
-    void render(Font& font, int currentWorldX, int currentWorldY);
-    void render(Font& font, std::tuple<int, int> currentWorldPos) {
+    virtual void render(Font& font, int currentWorldX, int currentWorldY);
+    virtual void render(Font& font, std::tuple<int, int> currentWorldPos) {
         render(font, std::get<0>(currentWorldPos), std::get<1>(currentWorldPos));
     }
     void setPos(int x, int y) { pos = Point(x, y); }
