@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
                             quit = true;
                         }
                         else if (e.type == SDL_KEYDOWN) {
-                            uint32_t signal;
+                            uint32_t signal = 0;
 
                             switch (e.key.keysym.sym) {
                                 case SDLK_h:
@@ -121,7 +121,8 @@ int main(int argc, char* argv[])
                                     break;
                             }
 
-                            manager.broadcast(signal);
+                            if (signal > 0)
+                                manager.broadcast(signal);
                         }
                     }
 
