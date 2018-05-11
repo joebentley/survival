@@ -51,7 +51,7 @@ public:
 class CorpseEntity : public EatableEntity {
 public:
     CorpseEntity(EntityManager& entityManager, std::string ID, double hungerRestoration, const std::string& corpseOf)
-            : EatableEntity(entityManager, std::move(ID), "corpse", "Corpse of" + corpseOf, "${black}$[red]x", hungerRestoration)
+            : EatableEntity(entityManager, std::move(ID), "corpse", "Corpse of " + corpseOf, "${black}$[red]x", hungerRestoration)
     { canBePickedUp = true; }
 };
 
