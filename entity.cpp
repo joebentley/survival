@@ -60,6 +60,9 @@ int Entity::rollDamage() {
 
 void EntityManager::addEntity(std::shared_ptr<Entity> entity) {
     entities.push_back(entity);
+
+    // Sort by rendering layer
+    std::sort(entities.begin(), entities.end(), [](auto& a, auto& b) { return a->renderingLayer > b->renderingLayer; });
 }
 
 void EntityManager::broadcast(Uint32 signal) {

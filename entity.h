@@ -74,6 +74,8 @@ public:
     EntityManager& manager;
     std::vector<std::shared_ptr<Behaviour>> behaviours;
 
+    int renderingLayer {0};
+
     virtual void addBehaviour(std::shared_ptr<Behaviour>& behaviour);
     virtual void initialize();
     virtual void tick();

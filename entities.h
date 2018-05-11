@@ -13,7 +13,9 @@ public:
 
     explicit PlayerEntity(EntityManager& entityManager)
             : Entity("Player", "$[white]$(dwarf)", entityManager, 10, 10, 0.1, 1, 4), hunger(1), hungerRate(0.01), hungerDamageRate(0.15)
-    {}
+    {
+        renderingLayer = -1;
+    }
 
     bool attack(const Point& attackPos);
     void tick() override;
