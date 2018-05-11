@@ -1,6 +1,7 @@
 #include "dialog.h"
 #include "utils.h"
 #include "behaviours.h"
+#include "world.h"
 
 #include <sstream>
 #include <algorithm>
@@ -74,22 +75,26 @@ void InventoryScreen::render(Font &font) {
     if (viewingDescription) {
         auto item = player.inventory[chosenIndex];
 
-        font.drawText(item->name, 3, Y_OFFSET);
-        font.drawText(item->shortDesc, 3, Y_OFFSET + 2);
+        font.drawText(item->graphic + " " + item->name, X_OFFSET, Y_OFFSET);
+        font.drawText(item->shortDesc, X_OFFSET, Y_OFFSET + 2);
 
         auto words = wordWrap(item->longDesc, WORD_WRAP_COLUMN);
         for (int i = 0; i < words.size(); ++i) {
-            font.drawText(words[i], 3, Y_OFFSET + 4 + i);
+            font.drawText(words[i], X_OFFSET, Y_OFFSET + 4 + i);
         }
+
+        font.drawText("esc-return to inv", 1, SCREEN_HEIGHT - 2);
 
         return;
     }
 
-    font.draw("right", 2, chosenIndex + Y_OFFSET);
+    font.draw("right", X_OFFSET - 1, chosenIndex + Y_OFFSET);
 
     for (int i = 0; i < player.inventory.size(); ++i) {
         auto item = player.inventory[i];
 
-        font.drawText(item->name, 3, i + Y_OFFSET);
+        font.drawText(item->graphic + " " + item->name, X_OFFSET, i + Y_OFFSET);
     }
+
+    font.drawText("e-eat  d-drop  return-view desc  esc-exit inv", 1, SCREEN_HEIGHT - 2);
 }

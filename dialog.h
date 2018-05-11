@@ -15,6 +15,7 @@ class PlayerEntity;
 
 class InventoryScreen {
 public:
+    const int X_OFFSET = 4;
     const int Y_OFFSET = 4;
     const int WORD_WRAP_COLUMN = 60;
 
