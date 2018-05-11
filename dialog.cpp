@@ -23,6 +23,18 @@ void showMessageBox(Font& font, const std::string& message, int x, int y) {
     font.drawText("${black}$(p22)" + repeat(numChars + 4, "$(p27)") + "$(p10)", x, y+4);
 }
 
+void drawDescriptionScreen(Font& font, Entity& item) {
+    font.drawText(item.graphic + " " + item.name, InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET);
+    font.drawText(item.shortDesc, InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 2);
+
+    auto words = wordWrap(item.longDesc, InventoryScreen::WORD_WRAP_COLUMN);
+    for (int i = 0; i < words.size(); ++i) {
+        font.drawText(words[i], InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + i);
+    }
+
+    font.drawText("esc-back", 1, SCREEN_HEIGHT - 2);
+}
+
 void InventoryScreen::handleInput(SDL_KeyboardEvent &e) {
     switch (e.keysym.sym) {
         case SDLK_ESCAPE:
@@ -73,18 +85,7 @@ void InventoryScreen::handleInput(SDL_KeyboardEvent &e) {
 
 void InventoryScreen::render(Font &font) {
     if (viewingDescription) {
-        auto item = player.inventory[chosenIndex];
-
-        font.drawText(item->graphic + " " + item->name, X_OFFSET, Y_OFFSET);
-        font.drawText(item->shortDesc, X_OFFSET, Y_OFFSET + 2);
-
-        auto words = wordWrap(item->longDesc, WORD_WRAP_COLUMN);
-        for (int i = 0; i < words.size(); ++i) {
-            font.drawText(words[i], X_OFFSET, Y_OFFSET + 4 + i);
-        }
-
-        font.drawText("esc-return to inv", 1, SCREEN_HEIGHT - 2);
-
+        drawDescriptionScreen(font, *player.inventory[chosenIndex]);
         return;
     }
 
@@ -106,6 +107,12 @@ void LootingDialog::showItemsToLoot(std::vector<std::shared_ptr<Entity>> items) 
 
 void LootingDialog::handleInput(SDL_KeyboardEvent &e) {
     switch (e.keysym.sym) {
+        case SDLK_ESCAPE:
+            if (viewingDescription)
+                viewingDescription = false;
+            else
+                enabled = false;
+            break;
         case SDLK_j:
             if (!itemsToShow.empty()) {
                 if (chosenIndex < (itemsToShow.size() - 1))
@@ -122,18 +129,23 @@ void LootingDialog::handleInput(SDL_KeyboardEvent &e) {
                     chosenIndex = (int) itemsToShow.size() - 1;
             }
             break;
-        case SDLK_ESCAPE:
-            enabled = false;
-            break;
         case SDLK_g:
             player.addToInventory(itemsToShow[chosenIndex]);
             itemsToShow.erase(itemsToShow.begin() + chosenIndex);
             chosenIndex = 0;
             break;
+        case SDLK_RETURN:
+            viewingDescription = true;
+            break;
     }
 }
 
 void LootingDialog::render(Font &font) {
+    if (viewingDescription) {
+        drawDescriptionScreen(font, *itemsToShow[chosenIndex]);
+        return;
+    }
+
     auto numItems = (int)itemsToShow.size();
 
     if (numItems == 0) {
@@ -156,7 +168,7 @@ void LootingDialog::render(Font &font) {
     font.draw("right", x + 2, y + 2 + chosenIndex);
 
     font.drawText("${black}$(p8)" + std::string(DIALOG_WIDTH + 4, ' ') + "$(p8)", x, y+numItems+2);
-    const std::string& string = "g-loot  esc-quit";
+    std::string string = "g-loot  esc-quit  return-desc";
     font.drawText("${black}$(p8)  " + string + std::string(DIALOG_WIDTH - string.size() + 2, ' ') + "$(p8)", x, y+numItems+3);
     font.drawText("${black}$(p22)" + repeat(DIALOG_WIDTH + 4, "$(p27)") + "$(p10)", x, y+numItems+4);
 }

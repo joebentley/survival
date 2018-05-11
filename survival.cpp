@@ -119,7 +119,7 @@ int main(int argc, char* argv[])
 
                     if (inventoryScreen.enabled)
                         inventoryScreen.render(font);
-                    else {
+                    else if (!lootingDialog.viewingDescription) {
                         if (world->render(font, player->getWorldPos()) == -1)
                             return -1;
                         manager.render(font, player->getWorldPos());

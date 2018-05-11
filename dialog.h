@@ -15,9 +15,9 @@ class PlayerEntity;
 
 class InventoryScreen {
 public:
-    const int X_OFFSET = 4;
-    const int Y_OFFSET = 4;
-    const int WORD_WRAP_COLUMN = 60;
+    static const int X_OFFSET = 4;
+    static const int Y_OFFSET = 4;
+    static const int WORD_WRAP_COLUMN = 60;
 
     PlayerEntity &player;
     int chosenIndex {0};
@@ -35,6 +35,7 @@ public:
     const int DIALOG_WIDTH = 30;
 
     bool enabled {false};
+    bool viewingDescription {false};
     PlayerEntity &player;
     std::vector<std::shared_ptr<Entity>> itemsToShow;
     int chosenIndex {0};
