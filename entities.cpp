@@ -51,8 +51,7 @@ void PlayerEntity::tick() {
 void PlayerEntity::emit(Uint32 signal) {
     Entity::emit(signal);
 
-    if ((signal & SIGNAL_INPUT_UP || signal & SIGNAL_INPUT_DOWN || signal & SIGNAL_INPUT_LEFT || signal & SIGNAL_INPUT_RIGHT) // Only ever attack if moving
-        && (signal & SIGNAL_FORCE_ATTACK || attacking))
+    if ((signal & SIGNAL_INPUT_UP || signal & SIGNAL_INPUT_DOWN || signal & SIGNAL_INPUT_LEFT || signal & SIGNAL_INPUT_RIGHT)) // Only ever attack if moving
     {
         Point posOffset;
         if (signal & SIGNAL_INPUT_UP)
@@ -64,20 +63,17 @@ void PlayerEntity::emit(Uint32 signal) {
         else if (signal & SIGNAL_INPUT_RIGHT)
             posOffset.x = 1;
 
-        bool isThereEnemyInSpace = attack(pos + posOffset);
-
-        if (!(signal & SIGNAL_FORCE_ATTACK) && attacking && !isThereEnemyInSpace) // True if we are attacking and move away from enemy
-            goto move_anyway;
-    } else {
-        move_anyway:
-        if (signal & SIGNAL_INPUT_UP)
-            pos.y--;
-        if (signal & SIGNAL_INPUT_DOWN)
-            pos.y++;
-        if (signal & SIGNAL_INPUT_LEFT)
-            pos.x--;
-        if (signal & SIGNAL_INPUT_RIGHT)
-            pos.x++;
+        auto enemiesInSpace = manager.getEntitiesAtPos(pos + posOffset);
+        // TODO: what if more than one enemy in space?
+        if (!enemiesInSpace.empty()
+            && ((enemiesInSpace[0]->getBehaviourByID("HostilityBehaviour") != nullptr
+                 && enemiesInSpace[0]->getBehaviourByID("HostilityBehaviour")->enabled)
+                || (signal & SIGNAL_FORCE_ATTACK)
+                || attacking))
+        {
+            attack(pos + posOffset);
+        } else
+            pos += posOffset;
     }
 
     if (!(signal & SIGNAL_FORCE_WAIT))

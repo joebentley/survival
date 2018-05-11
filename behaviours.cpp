@@ -102,7 +102,7 @@ void ChaseAndAttackBehaviour::tick() {
                 }
                 if (parent.getBehaviourByID("HostilityBehaviour") != nullptr) {
                     parent.getBehaviourByID("HostilityBehaviour")->enabled = true;
-                } else {
+                } else if (postHostility != 0) { // Don't bother adding hostility if it won't ever be triggered
                     std::shared_ptr<Behaviour> hostilityBehaviour =
                             std::make_shared<HostilityBehaviour>(parent, postHostilityRange, postHostility);
                     parent.addBehaviour(hostilityBehaviour);
