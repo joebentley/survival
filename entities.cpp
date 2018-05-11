@@ -59,73 +59,77 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit) {
 
     bool didAction = false;
 
-    if (key == SDLK_e) {
-        auto entitiesAtPos = manager.getEntitiesAtPos(pos);
-        auto it = std::find_if(entitiesAtPos.begin(), entitiesAtPos.end(), [](auto &a) { return a->type == "corpse"; });
-        if (it == entitiesAtPos.end())
-            return;
-        else {
-            manager.queueForDeletion((*it)->ID);
-            hunger += dynamic_cast<CorpseEntity&>(**it).hungerRestoration;
-            didAction = true;
-            return;
-        }
-    }
-
-    if (key == SDLK_h || key == SDLK_j || key == SDLK_k || key == SDLK_l ||
-        key == SDLK_y || key == SDLK_u || key == SDLK_b || key == SDLK_n) // Only ever attack if moving
-    {
-        Point posOffset;
-        switch (key) {
-            case SDLK_h:
-                posOffset = Point(-1, 0);
-                break;
-            case SDLK_j:
-                posOffset = Point(0, 1);
-                break;
-            case SDLK_k:
-                posOffset = Point(0, -1);
-                break;
-            case SDLK_l:
-                posOffset = Point(1, 0);
-                break;
-            case SDLK_y:
-                posOffset = Point(-1, -1);
-                break;
-            case SDLK_u:
-                posOffset = Point(1, -1);
-                break;
-            case SDLK_b:
-                posOffset = Point(-1, 1);
-                break;
-            case SDLK_n:
-                posOffset = Point(1, 1);
-                break;
+    if (hp > 0) {
+        if (key == SDLK_e) {
+            auto entitiesAtPos = manager.getEntitiesAtPos(pos);
+            auto it = std::find_if(entitiesAtPos.begin(), entitiesAtPos.end(),
+                                   [](auto &a) { return a->type == "corpse"; });
+            if (it == entitiesAtPos.end())
+                return;
+            else {
+                manager.queueForDeletion((*it)->ID);
+                hunger += dynamic_cast<CorpseEntity &>(**it).hungerRestoration;
+                didAction = true;
+                return;
+            }
         }
 
-        auto enemiesInSpace = manager.getEntitiesAtPos(pos + posOffset);
-        // TODO: what if more than one enemy in space?
-        if (!enemiesInSpace.empty()
-            && ((enemiesInSpace[0]->getBehaviourByID("HostilityBehaviour") != nullptr
-                 && enemiesInSpace[0]->getBehaviourByID("HostilityBehaviour")->enabled)
-                || (mod & KMOD_SHIFT)
-                || attacking))
+        if (hp > 0 && (key == SDLK_h || key == SDLK_j || key == SDLK_k || key == SDLK_l ||
+                       key == SDLK_y || key == SDLK_u || key == SDLK_b || key == SDLK_n)) // Only ever attack if moving
         {
-            attack(pos + posOffset);
-        } else
-            pos += posOffset;
+            Point posOffset;
+            switch (key) {
+                case SDLK_h:
+                    posOffset = Point(-1, 0);
+                    break;
+                case SDLK_j:
+                    posOffset = Point(0, 1);
+                    break;
+                case SDLK_k:
+                    posOffset = Point(0, -1);
+                    break;
+                case SDLK_l:
+                    posOffset = Point(1, 0);
+                    break;
+                case SDLK_y:
+                    posOffset = Point(-1, -1);
+                    break;
+                case SDLK_u:
+                    posOffset = Point(1, -1);
+                    break;
+                case SDLK_b:
+                    posOffset = Point(-1, 1);
+                    break;
+                case SDLK_n:
+                    posOffset = Point(1, 1);
+                    break;
+            }
 
-        didAction = true;
+            auto enemiesInSpace = manager.getEntitiesAtPos(pos + posOffset);
+            // TODO: what if more than one enemy in space?
+            if (!enemiesInSpace.empty()
+                && ((enemiesInSpace[0]->getBehaviourByID("HostilityBehaviour") != nullptr
+                     && enemiesInSpace[0]->getBehaviourByID("HostilityBehaviour")->enabled)
+                    || (mod & KMOD_SHIFT)
+                    || attacking)) {
+                attack(pos + posOffset);
+            } else
+                pos += posOffset;
+
+            didAction = true;
+        }
+
+        if (key == SDLK_PERIOD) {
+            manager.broadcast(SIGNAL_FORCE_WAIT);
+            didAction = true;
+        }
+
+        if (didAction)
+            manager.tick();
     }
-
-    if (key == SDLK_PERIOD)
-        didAction = true;
 
     if (hp <= 0 && key == SDLK_RETURN)
         quit = true;
-
-    if (didAction)
-        manager.tick();
 }
 
 void StatusUIEntity::render(Font &font, int currentWorldX, int currentWorldY) {
