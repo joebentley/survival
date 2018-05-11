@@ -9,9 +9,13 @@ bool PlayerEntity::attack(const Point &attackPos) {
     }
 
     auto enemy = entitiesInSquare[0];
-    enemy->hp -= rollDamage();
+    int damage = rollDamage();
+    enemy->hp -= damage;
+
+    std::cout << "Player hit " << enemy->ID << " with " << hitTimes << "d" << hitAmount << " for " << damage << "\n";
 
     // TODO: Add AV
+    // TODO: Add avoidance
     if (enemy->getBehaviourByID("WanderBehaviour") != nullptr)
         enemy->getBehaviourByID("WanderBehaviour")->enabled = false;
     if (enemy->getBehaviourByID("AttachmentBehaviour") != nullptr)
@@ -28,6 +32,7 @@ bool PlayerEntity::attack(const Point &attackPos) {
         ui.attackTarget = nullptr;
         manager.queueForDeletion(enemy->ID);
         attacking = false;
+        std::cout << enemy->ID << " was destroyed!" << "\n";
     }
 
     attacking = true;

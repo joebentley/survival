@@ -115,7 +115,10 @@ void ChaseAndAttackBehaviour::tick() {
         return;
     }
 
-    player.hp -= parent.rollDamage();
+    int damage = parent.rollDamage();
+    player.hp -= damage;
+    std::cout << parent.ID << " hit player with " << parent.hitTimes << "d" << parent.hitAmount << " for " << damage << "\n";
+
 }
 
 void HostilityBehaviour::tick() {
@@ -125,7 +128,7 @@ void HostilityBehaviour::tick() {
     if (chaseAndAttack != nullptr && !chaseAndAttack->enabled && player != nullptr
         && parent.pos.distanceTo(player->pos) < range && randFloat() < hostility)
     {
-        std::cout << "Cat became hostile!" << std::endl;
+        std::cout << "Cat became hostile!\n";
         chaseAndAttack->enabled = true;
     }
 }
