@@ -9,9 +9,9 @@ bool PlayerEntity::attack(const Point &attackPos) {
     }
 
     auto enemy = entitiesInSquare[0];
-    enemy->hp--;
+    enemy->hp -= rollDamage();
 
-    // TODO: Proper stats and attack rolling
+    // TODO: Add AV
     // TODO: Make enemy recover their movement after brief period
     if (enemy->getBehaviourByID("WanderBehaviour") != nullptr)
         enemy->getBehaviourByID("WanderBehaviour")->enabled = false;

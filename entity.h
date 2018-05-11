@@ -52,16 +52,22 @@ class EntityManager;
 
 class Entity {
 public:
-    Entity(std::string ID, std::string graphic, EntityManager& entityManager, double hp, double maxhp, double regenPerTick)
-            : hp(hp), maxhp(maxhp), regenPerTick(regenPerTick), ID(std::move(ID)),
+    Entity(std::string ID, std::string graphic, EntityManager& entityManager, double hp, double maxhp, double regenPerTick, int hitTimes, int hitAmount)
+            : hp(hp), maxhp(maxhp), regenPerTick(regenPerTick), hitTimes(hitTimes), hitAmount(hitAmount), ID(std::move(ID)),
               graphic(std::move(graphic)), pos(0, 0), manager(entityManager) {}
 
+    Entity(std::string ID, std::string graphic, EntityManager& entityManager, double hp, double maxhp, double regenPerTick)
+            : Entity(std::move(ID), std::move(graphic), entityManager, hp, maxhp, regenPerTick, 1, 2) {}
+
     Entity(std::string ID, std::string graphic, EntityManager& entityManager)
-            : Entity(std::move(ID), std::move(graphic), entityManager, 0, 0, 0) {}
+            : Entity(std::move(ID), std::move(graphic), entityManager, 0, 0, 0, 1, 2) {}
 
     double hp;
     double maxhp;
     double regenPerTick;
+    int hitTimes;
+    int hitAmount;
+
     std::string ID;
     std::string graphic;
     Point pos;
@@ -84,6 +90,8 @@ public:
     }
 
     std::shared_ptr<Behaviour> getBehaviourByID(const std::string& ID) const;
+
+    int rollDamage();
 };
 
 class EntityManager {

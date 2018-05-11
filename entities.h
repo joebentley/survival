@@ -12,7 +12,7 @@ public:
     bool attacking; // whether or not player is attacking something
 
     explicit PlayerEntity(EntityManager& entityManager)
-            : Entity("Player", "$[white]$(dwarf)", entityManager, 10, 10, 0.1), hunger(1), hungerRate(0.05), hungerDamageRate(0.15)
+            : Entity("Player", "$[white]$(dwarf)", entityManager, 10, 10, 0.1, 1, 4), hunger(1), hungerRate(0.05), hungerDamageRate(0.15)
     {}
 
     bool attack(const Point& attackPos);

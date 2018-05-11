@@ -47,6 +47,14 @@ std::shared_ptr<Behaviour> Entity::getBehaviourByID(const std::string& ID) const
         return *behaviour;
 }
 
+int Entity::rollDamage() {
+    int totalDamage = 0;
+    for (int i = 0; i < hitTimes; ++i) {
+        totalDamage += rand() % (hitAmount + 1);
+    }
+    return totalDamage;
+}
+
 void EntityManager::addEntity(std::shared_ptr<Entity> entity) {
     entities.push_back(entity);
 }

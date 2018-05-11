@@ -92,5 +92,5 @@ void ChaseAndAttackBehaviour::tick() {
         return;
     }
 
-    player.hp--;
+    player.hp -= parent.rollDamage();
 }
