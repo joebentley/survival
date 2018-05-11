@@ -89,13 +89,13 @@ void EntityManager::render(Font& font, int currentWorldX, int currentWorldY) {
     }
 }
 
-std::shared_ptr<Entity> EntityManager::getByID(const std::string& ID) const {
-    auto entity = std::find_if(entities.begin(), entities.end(), [ID](auto& a) { return a->ID == ID; });
+std::shared_ptr<Entity> EntityManager::getEntityByTag(const std::string &tag) const {
+    auto it = std::find_if(entities.begin(), entities.end(), [tag](auto& a) { return a->tag == tag; });
 
-    if (entity == entities.end())
-        return nullptr;
+    if (it != entities.end())
+        return *it;
     else
-        return *entity;
+        return nullptr;
 }
 
 std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesAtPos(const Point &pos) const {
@@ -111,7 +111,7 @@ std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesAtPos(const Point
 
 void EntityManager::cleanup() {
     while (!toBeDeleted.empty()) {
-        eraseByID(toBeDeleted.front());
+        eraseByTag(toBeDeleted.front());
         toBeDeleted.pop();
     }
 }
@@ -120,8 +120,8 @@ void EntityManager::queueForDeletion(const std::string& ID) {
     toBeDeleted.push(ID);
 }
 
-void EntityManager::eraseByID(const std::string &ID) {
-    auto it = std::find_if(entities.begin(), entities.end(), [ID](auto& a) { return a->ID == ID; });
+void EntityManager::eraseByTag(const std::string &tag) {
+    auto it = std::find_if(entities.begin(), entities.end(), [tag](auto& a) { return a->tag == tag; });
 
     if (it != entities.end())
         entities.erase(it);

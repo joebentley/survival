@@ -42,16 +42,16 @@ void AttachmentBehaviour::tick() {
 
     if (!attached) {
         if (r < attachment) {
-            PlayerEntity& p = dynamic_cast<PlayerEntity&>(*parent.manager.getByID("Player"));
+            PlayerEntity& p = dynamic_cast<PlayerEntity&>(*parent.manager.getEntityByTag("Player"));
             if (parent.pos.distanceTo(p.pos) < 10) {
-                std::cout << parent.ID << " has attached itself to player!" << std::endl;
+                std::cout << parent.name << " has attached itself to player!" << std::endl;
                 attached = true;
             }
         }
         return;
     }
 
-    PlayerEntity& p = dynamic_cast<PlayerEntity&>(*parent.manager.getByID("Player"));
+    PlayerEntity& p = dynamic_cast<PlayerEntity&>(*parent.manager.getEntityByTag("Player"));
 
     // Don't follow too closely
     if (parent.pos.distanceTo(p.pos) > 2 && r < clinginess) {
@@ -66,14 +66,14 @@ void AttachmentBehaviour::tick() {
     }
 
     if (r < unattachment) {
-        std::cout << parent.ID << " has detached itself from player!" << std::endl;
+        std::cout << parent.name << " has detached itself from player!" << std::endl;
         attached = false;
         return;
     }
 }
 
 void ChaseAndAttackBehaviour::tick() {
-    auto& player = *parent.manager.getByID("Player");
+    auto& player = *parent.manager.getEntityByTag("Player");
     Point posOffset;
 
     if (player.pos.x > parent.pos.x)
@@ -87,7 +87,7 @@ void ChaseAndAttackBehaviour::tick() {
 
     auto entitiesInSquare = parent.manager.getEntitiesAtPos(parent.pos + posOffset);
 
-    if (entitiesInSquare.empty() || entitiesInSquare[0]->ID != "Player") {
+    if (entitiesInSquare.empty() || entitiesInSquare[0]->tag != "Player") {
         if (parent.pos.distanceTo(player.pos) > range) {
             float r = randFloat();
             if (r < unattachment) { // Stop attacking if far away
@@ -117,18 +117,18 @@ void ChaseAndAttackBehaviour::tick() {
 
     int damage = parent.rollDamage();
     player.hp -= damage;
-    std::cout << parent.ID << " hit player with " << parent.hitTimes << "d" << parent.hitAmount << " for " << damage << "\n";
+    std::cout << parent.name << " hit player with " << parent.hitTimes << "d" << parent.hitAmount << " for " << damage << "\n";
 
 }
 
 void HostilityBehaviour::tick() {
     auto chaseAndAttack = parent.getBehaviourByID("ChaseAndAttackBehaviour");
-    auto player = parent.manager.getByID("Player");
+    auto player = parent.manager.getEntityByTag("Player");
 
     if (chaseAndAttack != nullptr && !chaseAndAttack->enabled && player != nullptr
         && parent.pos.distanceTo(player->pos) < range && randFloat() < hostility)
     {
-        std::cout << "Cat became hostile!\n";
+        std::cout << parent.name << " became hostile!\n";
         chaseAndAttack->enabled = true;
     }
 }

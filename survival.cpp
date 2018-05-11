@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
                 player->setPos(SCREEN_WIDTH * (SCREEN_WIDTH + 1) / 2, SCREEN_HEIGHT * SCREEN_HEIGHT / 2);
                 manager.addEntity(player);
 
-                auto cat = std::make_shared<CatEntity>("cat1", manager);
+                auto cat = std::make_shared<CatEntity>(manager, "cat1");
                 cat->setPos(player->pos.x - 10, player->pos.y - 10);
                 manager.addEntity(cat);
 

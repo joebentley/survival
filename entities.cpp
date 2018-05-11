@@ -12,7 +12,7 @@ bool PlayerEntity::attack(const Point &attackPos) {
     int damage = rollDamage();
     enemy->hp -= damage;
 
-    std::cout << "Player hit " << enemy->ID << " with " << hitTimes << "d" << hitAmount << " for " << damage << "\n";
+    std::cout << "Player hit " << enemy->name << " with " << hitTimes << "d" << hitAmount << " for " << damage << "\n";
 
     // TODO: Add AV
     // TODO: Add avoidance
@@ -25,14 +25,14 @@ bool PlayerEntity::attack(const Point &attackPos) {
     if (enemy->getBehaviourByID("ChaseAndAttackBehaviour") != nullptr)
         enemy->getBehaviourByID("ChaseAndAttackBehaviour")->enabled = true;
 
-    auto& ui = dynamic_cast<StatusUIEntity&>(*manager.getByID("StatusUI"));
+    auto& ui = dynamic_cast<StatusUIEntity&>(*manager.getEntityByTag("StatusUI"));
     ui.attackTarget = enemy;
 
     if (enemy->hp <= 0) {
         ui.attackTarget = nullptr;
-        manager.queueForDeletion(enemy->ID);
+        manager.queueForDeletion(enemy->tag);
         attacking = false;
-        std::cout << enemy->ID << " was destroyed!" << "\n";
+        std::cout << enemy->name << " was destroyed!" << "\n";
     }
 
     attacking = true;

@@ -12,7 +12,7 @@ public:
     bool attacking; // whether or not player is attacking something
 
     explicit PlayerEntity(EntityManager& entityManager)
-            : Entity("Player", "$[white]$(dwarf)", entityManager, 10, 10, 0.1, 1, 4), hunger(1), hungerRate(0.01), hungerDamageRate(0.15)
+            : Entity("Player", "Player", "$[white]$(dwarf)", entityManager, 10, 10, 0.1, 1, 4), hunger(1), hungerRate(0.01), hungerDamageRate(0.15)
     {
         renderingLayer = -1;
     }
@@ -24,8 +24,8 @@ public:
 
 class CatEntity : public Entity {
 public:
-    CatEntity(std::string ID, EntityManager& entityManager)
-            : Entity(std::move(ID), "$[yellow]c", entityManager, 10, 10, 0.05)
+    CatEntity(EntityManager& entityManager, std::string tag)
+            : Entity(std::move(tag), "Cat", "$[yellow]c", entityManager, 10, 10, 0.05, 1, 2)
     {
         std::shared_ptr<Behaviour> wanderAttach = std::make_shared<WanderAttachBehaviour>(*this, 0.5, 0.7, 0.05);
         std::shared_ptr<Behaviour> chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this, 0.8, 0.6, 8, 8, 0.9);
@@ -33,6 +33,14 @@ public:
         addBehaviour(wanderAttach);
         addBehaviour(chaseAndAttack);
     }
+};
+
+class CorpseEntity : public Entity {
+public:
+    CorpseEntity(EntityManager& entityManager, std::string tag, double hungerRestoration, const std::string& corpseOf)
+            : Entity(tag, "Corpse of" + corpseOf, "$[grey]x", entityManager, 1, 1, 0, 0, 0), hungerRestoration(hungerRestoration) {}
+
+    double hungerRestoration;
 };
 
 class StatusUIEntity : public Entity {
@@ -47,10 +55,10 @@ public:
     const int X_OFFSET = 10;
 
     explicit StatusUIEntity(EntityManager& entityManager)
-            : StatusUIEntity(entityManager, dynamic_cast<PlayerEntity&>(*entityManager.getByID("Player"))) { }
+            : StatusUIEntity(entityManager, dynamic_cast<PlayerEntity&>(*entityManager.getEntityByTag("Player"))) { }
 
     StatusUIEntity(EntityManager& entityManager, PlayerEntity& player)
-            : Entity("StatusUI", "", entityManager),
+            : Entity("StatusUI", "", "", entityManager),
               player(player), shown(false), forceTickDisplayTimer(0), ticksWaitedDuringAnimation(1) { }
 
     void render(Font &font, int currentWorldX, int currentWorldY) override;
