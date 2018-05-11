@@ -28,7 +28,7 @@ bool PlayerEntity::attack(const Point &attackPos) {
         enemy->getBehaviourByID("ChaseAndAttackBehaviour")->enabled = true;
 
     auto& ui = dynamic_cast<StatusUIEntity&>(*manager.getEntityByID("StatusUI"));
-    ui.attackTarget = enemy;
+    ui.setAttackTarget(enemy);
 
     if (enemy->hp <= 0) {
         ui.attackTarget = nullptr;
@@ -189,7 +189,7 @@ void StatusUIEntity::render(Font &font, int currentWorldX, int currentWorldY) {
     }
 
     if (attackTarget != nullptr) {
-        double enemyhpPercent = static_cast<double>(attackTarget->hp) / attackTarget->maxhp;
+        double enemyhpPercent = attackTarget->hp / attackTarget->maxhp;
         std::string enemyhpString = "${black}";
 
         if (enemyhpPercent == 1)
@@ -203,6 +203,10 @@ void StatusUIEntity::render(Font &font, int currentWorldX, int currentWorldY) {
 
         font.drawText(enemyhpString, SCREEN_WIDTH - X_OFFSET - 2, 4);
     }
+
+    // Drop attack target after 10 turns of inactivity
+    if (attackTargetTimer == 0)
+        attackTarget = nullptr;
 }
 
 void StatusUIEntity::emit(uint32_t signal) {
@@ -215,4 +219,15 @@ void StatusUIEntity::emit(uint32_t signal) {
     }
 
     Entity::emit(signal);
+}
+
+void StatusUIEntity::tick() {
+    if (attackTarget != nullptr &&
+        attackTarget->getBehaviourByID("ChaseAndAttackBehaviour") != nullptr &&
+        !attackTarget->getBehaviourByID("ChaseAndAttackBehaviour")->enabled)
+    {
+        attackTargetTimer--;
+    }
+
+    Entity::tick();
 }

@@ -62,6 +62,7 @@ public:
     bool shown;
     int forceTickDisplayTimer;
     int ticksWaitedDuringAnimation;
+    int attackTargetTimer {0};
 
     std::shared_ptr<Entity> attackTarget { nullptr };
 
@@ -76,6 +77,11 @@ public:
 
     void render(Font &font, int currentWorldX, int currentWorldY) override;
     void emit(Uint32 signal) override;
+    void tick() override;
+    void setAttackTarget(std::shared_ptr<Entity> attackTarget) {
+        this->attackTarget = attackTarget;
+        attackTargetTimer = 10;
+    }
 };
 
 #endif // ENTITIES_H_

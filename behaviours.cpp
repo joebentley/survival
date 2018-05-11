@@ -73,6 +73,9 @@ void AttachmentBehaviour::tick() {
 }
 
 void ChaseAndAttackBehaviour::tick() {
+    auto& ui = dynamic_cast<StatusUIEntity&>(*parent.manager.getEntityByID("StatusUI"));
+    ui.setAttackTarget(std::make_shared<Entity>(parent));
+
     auto& player = *parent.manager.getEntityByID("Player");
     Point posOffset;
 
@@ -118,7 +121,6 @@ void ChaseAndAttackBehaviour::tick() {
     int damage = parent.rollDamage();
     player.hp -= damage;
     std::cout << parent.name << " hit player with " << parent.hitTimes << "d" << parent.hitAmount << " for " << damage << "\n";
-
 }
 
 void HostilityBehaviour::tick() {
