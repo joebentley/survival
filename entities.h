@@ -6,6 +6,7 @@
 #include "dialog.h"
 
 class InventoryScreen;
+class LootingDialog;
 
 class PlayerEntity : public Entity {
 public:
@@ -22,7 +23,7 @@ public:
 
     bool attack(const Point& attackPos);
     void tick() override;
-    void handleInput(SDL_KeyboardEvent& e, bool& quit, InventoryScreen &inventoryScreen);
+    void handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen, LootingDialog &lootingDialog);
 };
 
 class CatEntity : public Entity {

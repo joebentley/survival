@@ -30,4 +30,21 @@ public:
     void render(Font& font);
 };
 
+class LootingDialog {
+public:
+    const int DIALOG_WIDTH = 30;
+
+    bool enabled {false};
+    PlayerEntity &player;
+    std::vector<std::shared_ptr<Entity>> itemsToShow;
+    int chosenIndex {0};
+
+    explicit LootingDialog(PlayerEntity &player) : player(player) {}
+
+    void showItemsToLoot(std::vector<std::shared_ptr<Entity>> items);
+
+    void handleInput(SDL_KeyboardEvent &e);
+    void render(Font& font);
+};
+
 #endif // DIALOG_H_

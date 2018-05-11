@@ -98,3 +98,65 @@ void InventoryScreen::render(Font &font) {
 
     font.drawText("e-eat  d-drop  return-view desc  esc-exit inv", 1, SCREEN_HEIGHT - 2);
 }
+
+void LootingDialog::showItemsToLoot(std::vector<std::shared_ptr<Entity>> items) {
+    itemsToShow = std::move(items);
+    enabled = true;
+}
+
+void LootingDialog::handleInput(SDL_KeyboardEvent &e) {
+    switch (e.keysym.sym) {
+        case SDLK_j:
+            if (!itemsToShow.empty()) {
+                if (chosenIndex < (itemsToShow.size() - 1))
+                    chosenIndex++;
+                else
+                    chosenIndex = 0;
+            }
+            break;
+        case SDLK_k:
+            if (!itemsToShow.empty()) {
+                if (chosenIndex > 0)
+                    chosenIndex--;
+                else
+                    chosenIndex = (int) itemsToShow.size() - 1;
+            }
+            break;
+        case SDLK_ESCAPE:
+            enabled = false;
+            break;
+        case SDLK_g:
+            player.addToInventory(itemsToShow[chosenIndex]);
+            itemsToShow.erase(itemsToShow.begin() + chosenIndex);
+            chosenIndex = 0;
+            break;
+    }
+}
+
+void LootingDialog::render(Font &font) {
+    auto numItems = (int)itemsToShow.size();
+
+    if (numItems == 0) {
+        enabled = false;
+        return;
+    }
+
+    const int x = SCREEN_WIDTH / 2 - (DIALOG_WIDTH + 4) / 2;
+    const int y = 10;
+
+    font.drawText("${black}$(p23)" + repeat(DIALOG_WIDTH + 4, "$(p27)") + "$(p9)", x, y);
+    font.drawText("${black}$(p8)" + std::string(DIALOG_WIDTH + 4, ' ') + "$(p8)", x, y+1);
+
+    for (int i = 0; i < numItems; ++i) {
+        const std::string& string = itemsToShow[i]->graphic + " " + itemsToShow[i]->name;
+        font.drawText("${black}$(p8)  " + string + std::string(DIALOG_WIDTH - getFontStringLength(string), ' ')
+                      + "${black}  $[white]$(p8)", x, y+2+i);
+    }
+
+    font.draw("right", x + 2, y + 2 + chosenIndex);
+
+    font.drawText("${black}$(p8)" + std::string(DIALOG_WIDTH + 4, ' ') + "$(p8)", x, y+numItems+2);
+    const std::string& string = "g-loot  esc-quit";
+    font.drawText("${black}$(p8)  " + string + std::string(DIALOG_WIDTH - string.size() + 2, ' ') + "$(p8)", x, y+numItems+3);
+    font.drawText("${black}$(p22)" + repeat(DIALOG_WIDTH + 4, "$(p27)") + "$(p10)", x, y+numItems+4);
+}

@@ -81,8 +81,10 @@ int main(int argc, char* argv[])
                 banana->canBePickedUp = true;
                 manager.addEntity(banana);
 
-                player->addToInventory(apple);
-                player->addToInventory(banana);
+                apple->setPos(player->pos);
+                banana->setPos(player->pos);
+//                player->addToInventory(apple);
+//                player->addToInventory(banana);
 
                 auto healthUI = std::make_shared<StatusUIEntity>(manager, dynamic_cast<PlayerEntity&>(*player));
                 manager.addEntity(healthUI);
@@ -90,6 +92,7 @@ int main(int argc, char* argv[])
                 manager.initialize();
 
                 InventoryScreen inventoryScreen(*player);
+                LootingDialog lootingDialog(*player);
 
                 bool quit = false;
                 SDL_Event e;
@@ -102,8 +105,10 @@ int main(int argc, char* argv[])
                         else if (e.type == SDL_KEYDOWN) {
                             if (inventoryScreen.enabled)
                                 inventoryScreen.handleInput(e.key);
+                            else if (lootingDialog.enabled)
+                                lootingDialog.handleInput(e.key);
                             else
-                                dynamic_cast<PlayerEntity&>(*player).handleInput(e.key, quit, inventoryScreen);
+                                dynamic_cast<PlayerEntity &>(*player).handleInput(e.key, quit, inventoryScreen, lootingDialog);
                         }
                     }
 
@@ -119,6 +124,9 @@ int main(int argc, char* argv[])
                             return -1;
                         manager.render(font, player->getWorldPos());
                     }
+
+                    if (lootingDialog.enabled)
+                        lootingDialog.render(font);
 
                     if (player->hp <= 0) {
                         showMessageBox(font, "$[red]You died!", 10, 10);

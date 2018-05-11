@@ -55,7 +55,7 @@ void PlayerEntity::tick() {
     Entity::tick();
 }
 
-void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen) {
+void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen, LootingDialog &lootingDialog) {
     auto key = e.keysym.sym;
     auto mod = e.keysym.mod;
 
@@ -77,15 +77,19 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
         }
 
         if (key == SDLK_g) {
-            // TODO: What if there is more than one object?
             auto entitiesAtPos = manager.getEntitiesAtPos(pos);
-            auto it = std::find_if(entitiesAtPos.begin(), entitiesAtPos.end(),
-                                   [](auto &a) { return a->canBePickedUp; });
-            if (it == entitiesAtPos.end())
+            std::vector<std::shared_ptr<Entity>> pickuppableEntities;
+            std::copy_if(entitiesAtPos.begin(), entitiesAtPos.end(),
+                         std::back_inserter(pickuppableEntities), [](auto &a) { return a->canBePickedUp; });
+
+            if (pickuppableEntities.empty())
                 return;
-            else {
-                addToInventory(*it);
+            else if (pickuppableEntities.size() == 1) {
+                addToInventory(*pickuppableEntities.begin());
                 didAction = true;
+                return;
+            } else {
+                lootingDialog.showItemsToLoot(pickuppableEntities);
                 return;
             }
         }
