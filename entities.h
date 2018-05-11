@@ -9,16 +9,15 @@ public:
     double hunger;
     double hungerRate; // hunger per tick
     double hungerDamageRate; // hp loss per tick while starving
+    bool attacking; // whether or not player is attacking something
 
     explicit PlayerEntity(EntityManager& entityManager)
             : Entity("Player", "$[white]$(dwarf)", entityManager, 10, 10, 0.1), hunger(1), hungerRate(0.05), hungerDamageRate(0.15)
-    {
-        std::shared_ptr<Behaviour> behaviour = std::make_shared<PlayerInputBehaviour>(*this);
-        addBehaviour(behaviour);
-    }
+    {}
 
-    void attack(const Point& attackPos);
+    bool attack(const Point& attackPos);
     void tick() override;
+    void emit(Uint32 signal) override;
 };
 
 class CatEntity : public Entity {

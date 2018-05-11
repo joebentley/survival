@@ -55,10 +55,4 @@ public:
     }
 };
 
-class PlayerInputBehaviour : public Behaviour {
-public:
-    explicit PlayerInputBehaviour(Entity& parent) : Behaviour("PlayerInputBehaviour", parent) {}
-    void handle(uint32_t signal) override;
-};
-
 #endif // BEHAVIOURS_H_

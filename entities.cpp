@@ -1,19 +1,19 @@
 #include "entities.h"
 #include "world.h"
 
-void PlayerEntity::attack(const Point &attackPos) {
+bool PlayerEntity::attack(const Point &attackPos) {
     auto entitiesInSquare = manager.getEntitiesAtPos(attackPos);
 
     if (entitiesInSquare.empty()) {
-        return;
+        return false;
     }
 
     auto enemy = entitiesInSquare[0];
     enemy->hp--;
 
     // TODO: Proper stats and attack rolling
-    // TODO: Health regen over time
     // TODO: Make enemy recover their movement after brief period
+    // TODO: Make enemy chase and attack player
     if (enemy->getBehaviourByID("WanderBehaviour") != nullptr)
         enemy->getBehaviourByID("WanderBehaviour")->enabled = false;
     if (enemy->getBehaviourByID("AttachmentBehaviour") != nullptr)
@@ -27,7 +27,11 @@ void PlayerEntity::attack(const Point &attackPos) {
     if (enemy->hp <= 0) {
         ui.attackTarget = nullptr;
         manager.queueForDeletion(enemy->ID);
+        attacking = false;
     }
+
+    attacking = true;
+    return true;
 }
 
 void PlayerEntity::tick() {
@@ -37,6 +41,39 @@ void PlayerEntity::tick() {
         hp -= hungerDamageRate;
 
     Entity::tick();
+}
+
+void PlayerEntity::emit(Uint32 signal) {
+    Entity::emit(signal);
+
+    if (signal & SIGNAL_FORCE_ATTACK || attacking) {
+        Point posOffset;
+        if (signal & SIGNAL_INPUT_UP)
+            posOffset.y = -1;
+        else if (signal & SIGNAL_INPUT_DOWN)
+            posOffset.y = 1;
+        if (signal & SIGNAL_INPUT_LEFT)
+            posOffset.x = -1;
+        else if (signal & SIGNAL_INPUT_RIGHT)
+            posOffset.x = 1;
+
+        bool isThereEnemyInSpace = attack(pos + posOffset);
+
+        if (!(signal & SIGNAL_FORCE_ATTACK) && attacking && !isThereEnemyInSpace) // True if we are attacking and move away from enemy
+            goto move_anyway;
+    } else {
+        move_anyway:
+        if (signal & SIGNAL_INPUT_UP)
+            pos.y--;
+        if (signal & SIGNAL_INPUT_DOWN)
+            pos.y++;
+        if (signal & SIGNAL_INPUT_LEFT)
+            pos.x--;
+        if (signal & SIGNAL_INPUT_RIGHT)
+            pos.x++;
+    }
+
+    manager.tick(); // Only tick on player movement
 }
 
 void StatusUIEntity::render(Font &font, int currentWorldX, int currentWorldY) {

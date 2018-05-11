@@ -71,31 +71,3 @@ void AttachmentBehaviour::tick() {
         return;
     }
 }
-
-void PlayerInputBehaviour::handle(uint32_t signal) {
-    if (signal & SIGNAL_FORCE_ATTACK) {
-        Point posOffset;
-        if (signal & SIGNAL_INPUT_UP)
-            posOffset.y = -1;
-        else if (signal & SIGNAL_INPUT_DOWN)
-            posOffset.y = 1;
-        if (signal & SIGNAL_INPUT_LEFT)
-            posOffset.x = -1;
-        else if (signal & SIGNAL_INPUT_RIGHT)
-            posOffset.x = 1;
-
-        auto& player = dynamic_cast<PlayerEntity&>(parent);
-        player.attack(player.pos + posOffset);
-    } else {
-        if (signal & SIGNAL_INPUT_UP)
-            parent.pos.y--;
-        if (signal & SIGNAL_INPUT_DOWN)
-            parent.pos.y++;
-        if (signal & SIGNAL_INPUT_LEFT)
-            parent.pos.x--;
-        if (signal & SIGNAL_INPUT_RIGHT)
-            parent.pos.x++;
-    }
-
-    parent.manager.tick(); // Only tick on player movement
-}
