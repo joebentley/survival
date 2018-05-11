@@ -26,7 +26,10 @@ public:
             : Entity(std::move(ID), "$[yellow]c", entityManager, 10, 10, 0.05)
     {
         std::shared_ptr<Behaviour> wanderAttach = std::make_shared<WanderAttachBehaviour>(*this, 0.5, 0.7, 0.05);
+        std::shared_ptr<Behaviour> chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this);
+        chaseAndAttack->enabled = false;
         addBehaviour(wanderAttach);
+        addBehaviour(chaseAndAttack);
     }
 };
 

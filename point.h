@@ -28,6 +28,16 @@ struct Point {
         return !(rhs == *this);
     }
 
+    Point& operator+=(const Point& rhs) {
+        *this = *this + rhs;
+        return *this;
+    }
+
+    Point& operator-=(const Point& rhs) {
+        *this = *this - rhs;
+        return *this;
+    }
+
     double distanceTo(const Point& to) {
         return (*this - to).length();
     }

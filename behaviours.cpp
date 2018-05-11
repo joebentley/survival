@@ -71,3 +71,26 @@ void AttachmentBehaviour::tick() {
         return;
     }
 }
+
+void ChaseAndAttackBehaviour::tick() {
+    auto& player = *parent.manager.getByID("Player");
+    Point posOffset;
+
+    if (player.pos.x > parent.pos.x)
+        posOffset.x = 1;
+    else if (player.pos.x < parent.pos.x)
+        posOffset.x = -1;
+    if (player.pos.y > parent.pos.y)
+        posOffset.y = 1;
+    else if (player.pos.y < parent.pos.y)
+        posOffset.y = -1;
+
+    auto entitiesInSquare = parent.manager.getEntitiesAtPos(parent.pos + posOffset);
+
+    if (entitiesInSquare.empty() || entitiesInSquare[0]->ID != "Player") {
+        parent.pos += posOffset;
+        return;
+    }
+
+    player.hp--;
+}

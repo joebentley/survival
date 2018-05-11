@@ -55,4 +55,12 @@ public:
     }
 };
 
+class ChaseAndAttackBehaviour : public Behaviour {
+public:
+
+    explicit ChaseAndAttackBehaviour(Entity& parent) : Behaviour("ChaseAndAttackBehaviour", parent) {}
+
+    void tick() override;
+};
+
 #endif // BEHAVIOURS_H_

@@ -13,13 +13,14 @@ bool PlayerEntity::attack(const Point &attackPos) {
 
     // TODO: Proper stats and attack rolling
     // TODO: Make enemy recover their movement after brief period
-    // TODO: Make enemy chase and attack player
     if (enemy->getBehaviourByID("WanderBehaviour") != nullptr)
         enemy->getBehaviourByID("WanderBehaviour")->enabled = false;
     if (enemy->getBehaviourByID("AttachmentBehaviour") != nullptr)
         enemy->getBehaviourByID("AttachmentBehaviour")->enabled = false;
     if (enemy->getBehaviourByID("WanderAttachBehaviour") != nullptr)
         enemy->getBehaviourByID("WanderAttachBehaviour")->enabled = false;
+    if (enemy->getBehaviourByID("ChaseAndAttackBehaviour") != nullptr)
+        enemy->getBehaviourByID("ChaseAndAttackBehaviour")->enabled = true;
 
     auto& ui = dynamic_cast<StatusUIEntity&>(*manager.getByID("StatusUI"));
     ui.attackTarget = enemy;
