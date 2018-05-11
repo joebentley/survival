@@ -16,6 +16,7 @@ class PlayerEntity;
 class InventoryScreen {
 public:
     static const int X_OFFSET = 4;
+    static const int X_STATUS_OFFSET = 10;
     static const int Y_OFFSET = 4;
     static const int WORD_WRAP_COLUMN = 60;
 

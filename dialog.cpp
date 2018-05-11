@@ -97,6 +97,26 @@ void InventoryScreen::render(Font &font) {
         font.drawText(item->graphic + " " + item->name, X_OFFSET, i + Y_OFFSET);
     }
 
+    std::string colorStr;
+    double hpPercent = player.hp / player.maxhp;
+
+    if (hpPercent > 0.7)
+        colorStr = "$[green]";
+    else if (hpPercent > 0.3)
+        colorStr = "$[yellow]";
+    else
+        colorStr = "$[red]";
+
+    font.drawText("${black}" + colorStr + "hp " + std::to_string((int)ceil(player.hp))
+                  + "/" + std::to_string((int)ceil(player.maxhp)), SCREEN_WIDTH - X_STATUS_OFFSET, 1);
+
+    if (player.hunger > 0.7)
+        font.drawText("${black}$[green]sated", SCREEN_WIDTH - X_STATUS_OFFSET, 2);
+    else if (player.hunger > 0.3)
+        font.drawText("${black}$[yellow]hungry", SCREEN_WIDTH - X_STATUS_OFFSET, 2);
+    else
+        font.drawText("${black}$[red]starving", SCREEN_WIDTH - X_STATUS_OFFSET, 2);
+
     font.drawText("e-eat  d-drop  return-view desc  esc-exit inv", 1, SCREEN_HEIGHT - 2);
 }
 
