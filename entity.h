@@ -52,22 +52,24 @@ class EntityManager;
 
 class Entity {
 public:
-    Entity(std::string ID, std::string type, std::string name, std::string graphic, EntityManager& entityManager,
+    Entity(EntityManager& entityManager, std::string ID, std::string type, std::string name, std::string graphic,
            double hp, double maxhp, double regenPerTick, int hitTimes, int hitAmount)
             : hp(hp), maxhp(maxhp), regenPerTick(regenPerTick), hitTimes(hitTimes), hitAmount(hitAmount), ID(std::move(ID)),
               type(std::move(type)), name(std::move(name)), graphic(std::move(graphic)), pos(0, 0), manager(entityManager) {}
 
-    Entity(std::string ID, std::string type, std::string name, std::string graphic, EntityManager& entityManager, double hp, double maxhp, double regenPerTick)
-            : Entity(std::move(ID), std::move(type), std::move(name), std::move(graphic), entityManager, hp, maxhp, regenPerTick, 1, 2) {}
+    Entity(EntityManager& entityManager, std::string ID, std::string type, std::string name, std::string graphic, double hp, double maxhp, double regenPerTick)
+            : Entity(entityManager, std::move(ID), std::move(type), std::move(name), std::move(graphic), hp, maxhp, regenPerTick, 1, 2) {}
 
-    Entity(std::string ID, std::string type, std::string name, std::string graphic, EntityManager& entityManager)
-            : Entity(std::move(ID), std::move(type), std::move(name), std::move(graphic), entityManager, 0, 0, 0, 1, 2) {}
+    Entity(EntityManager& entityManager, std::string ID, std::string type, std::string name, std::string graphic)
+            : Entity(entityManager, std::move(ID), std::move(type), std::move(name), std::move(graphic), 0, 0, 0, 1, 2) {}
 
     double hp;
     double maxhp;
     double regenPerTick;
     int hitTimes;
     int hitAmount;
+    bool canBePickedUp {false};
+    bool shouldRender {true};
 
     std::string ID; // Should be unique!
     std::string type;
@@ -79,6 +81,7 @@ public:
     Point pos;
     EntityManager& manager;
     std::vector<std::shared_ptr<Behaviour>> behaviours;
+    std::vector<std::shared_ptr<Entity>> inventory;
 
     int renderingLayer {0};
 
@@ -91,7 +94,12 @@ public:
     virtual void render(Font& font, std::tuple<int, int> currentWorldPos) {
         render(font, std::get<0>(currentWorldPos), std::get<1>(currentWorldPos));
     }
+
+    void addToInventory(std::shared_ptr<Entity> &item);
+    void dropItem(int inventoryIndex);
+
     void setPos(int x, int y) { pos = Point(x, y); }
+    void setPos(Point p) { pos = p; }
 
     std::tuple<int, int> getWorldPos() {
         return std::make_tuple(this->pos.x / SCREEN_WIDTH, this->pos.y / SCREEN_HEIGHT);

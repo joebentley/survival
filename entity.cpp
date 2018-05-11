@@ -1,5 +1,7 @@
 #include "entity.h"
 
+#include <stdexcept>
+
 void Entity::addBehaviour(std::shared_ptr<Behaviour>& behaviour) {
     behaviours.push_back(behaviour);
 }
@@ -30,6 +32,9 @@ void Entity::emit(Uint32 signal) {
 }
 
 void Entity::render(Font& font, int currentWorldX, int currentWorldY) {
+    if (!shouldRender)
+        return;
+
     // Only draw if the entity is on the current world screen
     if (
         pos.x >= SCREEN_WIDTH * currentWorldX && pos.x < SCREEN_WIDTH * (currentWorldX + 1) &&
@@ -56,6 +61,25 @@ int Entity::rollDamage() {
         totalDamage += rand() % (hitAmount + 1);
     }
     return totalDamage;
+}
+
+void Entity::addToInventory(std::shared_ptr<Entity> &item) {
+    if (item->canBePickedUp) {
+        inventory.push_back(item);
+        item->shouldRender = false;
+        item->canBePickedUp = false;
+    } else {
+        throw std::invalid_argument("canBePickedUp is false");
+    }
+}
+
+void Entity::dropItem(int inventoryIndex) {
+    auto item = inventory[inventoryIndex];
+
+    inventory.erase(inventory.begin() + inventoryIndex);
+    item->shouldRender = true;
+    item->canBePickedUp = true;
+    item->setPos(pos);
 }
 
 void EntityManager::addEntity(std::shared_ptr<Entity> entity) {

@@ -3,6 +3,7 @@
 
 #include "entity.h"
 #include "behaviours.h"
+#include "dialog.h"
 
 class PlayerEntity : public Entity {
 public:
@@ -12,20 +13,20 @@ public:
     bool attacking {false}; // whether or not player is attacking something
 
     explicit PlayerEntity(EntityManager& entityManager)
-            : Entity("Player", "player", "You, the player", "$[white]$(dwarf)", entityManager, 10, 10, 0.1, 1, 4), hunger(1), hungerRate(0.01), hungerDamageRate(0.15)
+            : Entity(entityManager, "Player", "player", "You, the player", "$[white]$(dwarf)", 10, 10, 0.1, 1, 4), hunger(1), hungerRate(0.01), hungerDamageRate(0.15)
     {
         renderingLayer = -1;
     }
 
     bool attack(const Point& attackPos);
     void tick() override;
-    void handleInput(SDL_KeyboardEvent& e, bool& quit);
+    void handleInput(SDL_KeyboardEvent& e, bool& quit, InventoryScreen &inventoryScreen);
 };
 
 class CatEntity : public Entity {
 public:
     CatEntity(EntityManager& entityManager, std::string ID)
-            : Entity(std::move(ID), "living", "cat", "$[yellow]c", entityManager, 10, 10, 0.05, 1, 2)
+            : Entity(entityManager, std::move(ID), "living", "cat", "$[yellow]c", 10, 10, 0.05, 1, 2)
     {
         std::shared_ptr<Behaviour> wanderAttach = std::make_shared<WanderAttachBehaviour>(*this, 0.5, 0.7, 0.05);
         std::shared_ptr<Behaviour> chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this, 0.8, 0.6, 8, 8, 0.9);
@@ -38,7 +39,9 @@ public:
 class CorpseEntity : public Entity {
 public:
     CorpseEntity(EntityManager& entityManager, std::string ID, double hungerRestoration, const std::string& corpseOf)
-            : Entity(std::move(ID), "corpse", "Corpse of" + corpseOf, "${black}$[red]x", entityManager, 1, 1, 0, 0, 0), hungerRestoration(hungerRestoration) {}
+            : Entity(entityManager, std::move(ID), "corpse", "Corpse of" + corpseOf, "${black}$[red]x", 1, 1, 0, 0, 0),
+              hungerRestoration(hungerRestoration)
+    { canBePickedUp = true; }
 
     double hungerRestoration;
 };
@@ -58,7 +61,7 @@ public:
             : StatusUIEntity(entityManager, dynamic_cast<PlayerEntity&>(*entityManager.getEntityByID("Player"))) { }
 
     StatusUIEntity(EntityManager& entityManager, PlayerEntity& player)
-            : Entity("StatusUI", "UI", "", "", entityManager),
+            : Entity(entityManager, "StatusUI", "UI", "", ""),
               player(player), shown(false), forceTickDisplayTimer(0), ticksWaitedDuringAnimation(1) { }
 
     void render(Font &font, int currentWorldX, int currentWorldY) override;

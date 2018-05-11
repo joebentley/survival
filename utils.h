@@ -1,8 +1,10 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
-#include <cstdlib>
+#include <vector>
+#include <string>
 
 float randFloat();
+std::vector<std::string> wordWrap(const std::string &toBeWrapped, size_t columns);
 
 #endif // UTILS_H_

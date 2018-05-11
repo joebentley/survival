@@ -72,8 +72,10 @@ public:
     }
 
     void setFontColor(Color color);
-    int draw(const std::string &character, int x, int y, Color fColor)
-    {
+    int draw(const std::string &character, int x, int y) {
+        return draw(character, x, y, Color(0xFF, 0xFF, 0xFF, 0xFF), Color(0, 0, 0, 0));
+    }
+    int draw(const std::string &character, int x, int y, Color fColor) {
         return draw(character, x, y, fColor, Color(0, 0, 0, 0));
     }
     int draw(const std::string &character, int x, int y, Color fColor, Color bColor);

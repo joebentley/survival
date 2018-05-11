@@ -53,7 +53,7 @@ void PlayerEntity::tick() {
     Entity::tick();
 }
 
-void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit) {
+void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen) {
     auto key = e.keysym.sym;
     auto mod = e.keysym.mod;
 
@@ -69,6 +69,20 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit) {
             else {
                 manager.queueForDeletion((*it)->ID);
                 hunger += dynamic_cast<CorpseEntity &>(**it).hungerRestoration;
+                didAction = true;
+                return;
+            }
+        }
+
+        if (key == SDLK_g) {
+            // TODO: What if there is more than one object?
+            auto entitiesAtPos = manager.getEntitiesAtPos(pos);
+            auto it = std::find_if(entitiesAtPos.begin(), entitiesAtPos.end(),
+                                   [](auto &a) { return a->canBePickedUp; });
+            if (it == entitiesAtPos.end())
+                return;
+            else {
+                addToInventory(*it);
                 didAction = true;
                 return;
             }
@@ -117,6 +131,11 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit) {
                 pos += posOffset;
 
             didAction = true;
+        }
+
+        if (key == SDLK_i) {
+            inventoryScreen.chosenIndex = 0;
+            inventoryScreen.enabled = true;
         }
 
         if (key == SDLK_PERIOD) {

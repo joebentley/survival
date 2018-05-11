@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
                 Font font(texture, CHAR_WIDTH, CHAR_HEIGHT, NUM_PER_ROW, CHARS, renderer);
                 EntityManager manager;
 
-                std::shared_ptr<Entity> player = std::make_shared<PlayerEntity>(manager);
+                auto player = std::make_shared<PlayerEntity>(manager);
                 // Place player in center of world
                 player->setPos(SCREEN_WIDTH * (SCREEN_WIDTH + 1) / 2, SCREEN_HEIGHT * SCREEN_HEIGHT / 2);
                 manager.addEntity(player);
@@ -69,10 +69,27 @@ int main(int argc, char* argv[])
                 cat->setPos(player->pos.x - 10, player->pos.y - 10);
                 manager.addEntity(cat);
 
+                auto apple = std::make_shared<Entity>(manager, "apple1", "food", "Apple", "$[green]a");
+                apple->shortDesc = "A small, fist-sized fruit that is hopefully crispy and juicy";
+                apple->longDesc = "This is a longer description of the apple";
+                apple->canBePickedUp = true;
+                manager.addEntity(apple);
+
+                auto banana = std::make_shared<Entity>(manager, "banana1", "food", "Banana", "$[yellow]b");
+                banana->shortDesc = "A yellow fruit found in the jungle. The shape looks familiar...";
+                banana->longDesc = "This fruit was discovered in [redacted]. They were brought west by Arab conquerors in 327 B.C.";
+                banana->canBePickedUp = true;
+                manager.addEntity(banana);
+
+                player->addToInventory(apple);
+                player->addToInventory(banana);
+
                 std::shared_ptr<Entity> healthUI = std::make_shared<StatusUIEntity>(manager, dynamic_cast<PlayerEntity&>(*player));
                 manager.addEntity(healthUI);
 
                 manager.initialize();
+
+                InventoryScreen inventoryScreen(*player);
 
                 bool quit = false;
                 SDL_Event e;
@@ -83,7 +100,10 @@ int main(int argc, char* argv[])
                             quit = true;
                         }
                         else if (e.type == SDL_KEYDOWN) {
-                            dynamic_cast<PlayerEntity&>(*player).handleInput(e.key, quit);
+                            if (inventoryScreen.enabled)
+                                inventoryScreen.handleInput(e.key);
+                            else
+                                dynamic_cast<PlayerEntity&>(*player).handleInput(e.key, quit, inventoryScreen);
                         }
                     }
 
@@ -91,12 +111,14 @@ int main(int argc, char* argv[])
 
                     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
                     SDL_RenderClear(renderer);
-                    if (world->render(font, player->getWorldPos()) == -1)
-                        return -1;
-                    manager.render(font, player->getWorldPos());
-                    // showMessageBox(font, "${grey}$[yellow]Hello world!", 4, 4);
-                    // if (font.drawText(renderer, "hello$(dwarf2)WORLD$[yellow]dwarf\\nhello$(block)${yellow}$[grey]Hello", 2, 2) == -1)
-                    //     return -1;
+
+                    if (inventoryScreen.enabled)
+                        inventoryScreen.render(font);
+                    else {
+                        if (world->render(font, player->getWorldPos()) == -1)
+                            return -1;
+                        manager.render(font, player->getWorldPos());
+                    }
 
                     if (player->hp <= 0) {
                         showMessageBox(font, "$[red]You died!", 10, 10);
