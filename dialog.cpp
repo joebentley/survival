@@ -1,7 +1,9 @@
 #include "dialog.h"
 #include "utils.h"
+#include "behaviours.h"
 
 #include <sstream>
+#include <algorithm>
 
 std::string repeat(int n, const std::string &str) {
     std::ostringstream os;
@@ -29,7 +31,7 @@ void InventoryScreen::handleInput(SDL_KeyboardEvent &e) {
                 enabled = false;
             break;
         case SDLK_j:
-            if (!viewingDescription && player.inventory.size() > 0) {
+            if (!viewingDescription && !player.inventory.empty()) {
                 if (chosenIndex < (player.inventory.size() - 1))
                     chosenIndex++;
                 else
@@ -37,7 +39,7 @@ void InventoryScreen::handleInput(SDL_KeyboardEvent &e) {
             }
             break;
         case SDLK_k:
-            if (!viewingDescription && player.inventory.size() > 0) {
+            if (!viewingDescription && !player.inventory.empty()) {
                 if (chosenIndex > 0)
                     chosenIndex--;
                 else
@@ -45,13 +47,24 @@ void InventoryScreen::handleInput(SDL_KeyboardEvent &e) {
             }
             break;
         case SDLK_d:
-            if (!viewingDescription && player.inventory.size() > 0) {
+            if (!viewingDescription && !player.inventory.empty()) {
                 player.dropItem(chosenIndex);
                 chosenIndex = 0;
             }
             break;
+        case SDLK_e:
+            if (!viewingDescription && !player.inventory.empty()) {
+                auto item = player.inventory[chosenIndex];
+                if (item->hasBehaviour("EatableBehaviour")) {
+                    player.hunger = std::min(player.hunger + dynamic_cast<EatableBehaviour&>(*(*item).getBehaviourByID("EatableBehaviour")).hungerRestoration, 1.0);
+                }
+                player.inventory.erase(player.inventory.begin() + chosenIndex);
+                item->destroy();
+                chosenIndex = 0;
+            }
+            break;
         case SDLK_RETURN:
-            if (player.inventory.size() > 0)
+            if (!player.inventory.empty())
                 viewingDescription = true;
             break;
     }

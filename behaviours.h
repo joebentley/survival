@@ -78,12 +78,20 @@ public:
 
 class HostilityBehaviour : public Behaviour {
 public:
-    explicit HostilityBehaviour(Entity& parent, float range, float hostility)
+    HostilityBehaviour(Entity& parent, float range, float hostility)
         : Behaviour("HostilityBehaviour", parent), range(range), hostility(hostility) {}
 
     float range;
     float hostility;
     void tick() override;
+};
+
+class EatableBehaviour : public Behaviour {
+public:
+    EatableBehaviour(Entity& parent, float hungerRestoration)
+            : Behaviour("EatableBehaviour", parent), hungerRestoration(hungerRestoration) {}
+
+    double hungerRestoration;
 };
 
 #endif // BEHAVIOURS_H_

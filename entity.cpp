@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-void Entity::addBehaviour(std::shared_ptr<Behaviour>& behaviour) {
+void Entity::addBehaviour(std::shared_ptr<Behaviour> behaviour) {
     behaviours.push_back(behaviour);
 }
 
@@ -63,7 +63,7 @@ int Entity::rollDamage() {
     return totalDamage;
 }
 
-void Entity::addToInventory(std::shared_ptr<Entity> &item) {
+void Entity::addToInventory(std::shared_ptr<Entity> item) {
     if (item->canBePickedUp) {
         inventory.push_back(item);
         item->shouldRender = false;
@@ -80,6 +80,14 @@ void Entity::dropItem(int inventoryIndex) {
     item->shouldRender = true;
     item->canBePickedUp = true;
     item->setPos(pos);
+}
+
+bool Entity::hasBehaviour(const std::string &ID) const {
+    return getBehaviourByID(ID) != nullptr;
+}
+
+void Entity::destroy() {
+    manager.eraseByID(ID);
 }
 
 void EntityManager::addEntity(std::shared_ptr<Entity> entity) {

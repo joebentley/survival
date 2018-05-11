@@ -5,6 +5,8 @@
 #include "behaviours.h"
 #include "dialog.h"
 
+class InventoryScreen;
+
 class PlayerEntity : public Entity {
 public:
     double hunger;
@@ -28,22 +30,29 @@ public:
     CatEntity(EntityManager& entityManager, std::string ID)
             : Entity(entityManager, std::move(ID), "living", "cat", "$[yellow]c", 10, 10, 0.05, 1, 2)
     {
-        std::shared_ptr<Behaviour> wanderAttach = std::make_shared<WanderAttachBehaviour>(*this, 0.5, 0.7, 0.05);
-        std::shared_ptr<Behaviour> chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this, 0.8, 0.6, 8, 8, 0.9);
+        auto wanderAttach = std::make_shared<WanderAttachBehaviour>(*this, 0.5, 0.7, 0.05);
+        auto chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this, 0.8, 0.6, 8, 8, 0.9);
         chaseAndAttack->enabled = false;
         addBehaviour(wanderAttach);
         addBehaviour(chaseAndAttack);
     }
 };
 
-class CorpseEntity : public Entity {
+class EatableEntity : public Entity {
+public:
+    EatableEntity(EntityManager& entityManager, std::string ID, std::string type, std::string name, std::string graphic, double hungerRestoration)
+            : Entity(entityManager, std::move(ID), std::move(type), std::move(name), std::move(graphic))
+    {
+        canBePickedUp = true;
+        addBehaviour(std::make_shared<EatableBehaviour>(*this, hungerRestoration));
+    }
+};
+
+class CorpseEntity : public EatableEntity {
 public:
     CorpseEntity(EntityManager& entityManager, std::string ID, double hungerRestoration, const std::string& corpseOf)
-            : Entity(entityManager, std::move(ID), "corpse", "Corpse of" + corpseOf, "${black}$[red]x", 1, 1, 0, 0, 0),
-              hungerRestoration(hungerRestoration)
+            : EatableEntity(entityManager, std::move(ID), "corpse", "Corpse of" + corpseOf, "${black}$[red]x", hungerRestoration)
     { canBePickedUp = true; }
-
-    double hungerRestoration;
 };
 
 class StatusUIEntity : public Entity {

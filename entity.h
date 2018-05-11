@@ -61,7 +61,7 @@ public:
             : Entity(entityManager, std::move(ID), std::move(type), std::move(name), std::move(graphic), hp, maxhp, regenPerTick, 1, 2) {}
 
     Entity(EntityManager& entityManager, std::string ID, std::string type, std::string name, std::string graphic)
-            : Entity(entityManager, std::move(ID), std::move(type), std::move(name), std::move(graphic), 0, 0, 0, 1, 2) {}
+            : Entity(entityManager, std::move(ID), std::move(type), std::move(name), std::move(graphic), 1, 1, 0, 1, 2) {}
 
     double hp;
     double maxhp;
@@ -85,17 +85,17 @@ public:
 
     int renderingLayer {0};
 
-    virtual void addBehaviour(std::shared_ptr<Behaviour>& behaviour);
+    virtual void addBehaviour(std::shared_ptr<Behaviour> behaviour);
     virtual void initialize();
     virtual void tick();
-    virtual void destroy() { }
+    virtual void destroy();
     virtual void emit(uint32_t signal);
     virtual void render(Font& font, int currentWorldX, int currentWorldY);
     virtual void render(Font& font, std::tuple<int, int> currentWorldPos) {
         render(font, std::get<0>(currentWorldPos), std::get<1>(currentWorldPos));
     }
 
-    void addToInventory(std::shared_ptr<Entity> &item);
+    void addToInventory(std::shared_ptr<Entity> item);
     void dropItem(int inventoryIndex);
 
     void setPos(int x, int y) { pos = Point(x, y); }
@@ -106,6 +106,7 @@ public:
     }
 
     std::shared_ptr<Behaviour> getBehaviourByID(const std::string& ID) const;
+    bool hasBehaviour(const std::string& ID) const;
 
     int rollDamage();
 };

@@ -1,6 +1,8 @@
 #include "entities.h"
 #include "world.h"
 
+#include <algorithm>
+
 bool PlayerEntity::attack(const Point &attackPos) {
     auto entitiesInSquare = manager.getEntitiesAtPos(attackPos);
 
@@ -63,12 +65,12 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
         if (key == SDLK_e) {
             auto entitiesAtPos = manager.getEntitiesAtPos(pos);
             auto it = std::find_if(entitiesAtPos.begin(), entitiesAtPos.end(),
-                                   [](auto &a) { return a->type == "corpse"; });
+                                   [](auto &a) { return a->canBePickedUp && a->hasBehaviour("EatableBehaviour"); });
             if (it == entitiesAtPos.end())
                 return;
             else {
                 manager.queueForDeletion((*it)->ID);
-                hunger += dynamic_cast<CorpseEntity &>(**it).hungerRestoration;
+                hunger = std::min(hunger + dynamic_cast<EatableBehaviour&>(*((*it)->getBehaviourByID("EatableBehaviour"))).hungerRestoration, 1.0);
                 didAction = true;
                 return;
             }

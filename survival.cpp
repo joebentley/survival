@@ -69,13 +69,13 @@ int main(int argc, char* argv[])
                 cat->setPos(player->pos.x - 10, player->pos.y - 10);
                 manager.addEntity(cat);
 
-                auto apple = std::make_shared<Entity>(manager, "apple1", "food", "Apple", "$[green]a");
+                auto apple = std::make_shared<EatableEntity>(manager, "apple1", "food", "Apple", "$[green]a", 0.5);
                 apple->shortDesc = "A small, fist-sized fruit that is hopefully crispy and juicy";
                 apple->longDesc = "This is a longer description of the apple";
                 apple->canBePickedUp = true;
                 manager.addEntity(apple);
 
-                auto banana = std::make_shared<Entity>(manager, "banana1", "food", "Banana", "$[yellow]b");
+                auto banana = std::make_shared<EatableEntity>(manager, "banana1", "food", "Banana", "$[yellow]b", 0.5);
                 banana->shortDesc = "A yellow fruit found in the jungle. The shape looks familiar...";
                 banana->longDesc = "This fruit was discovered in [redacted]. They were brought west by Arab conquerors in 327 B.C.";
                 banana->canBePickedUp = true;
@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
                 player->addToInventory(apple);
                 player->addToInventory(banana);
 
-                std::shared_ptr<Entity> healthUI = std::make_shared<StatusUIEntity>(manager, dynamic_cast<PlayerEntity&>(*player));
+                auto healthUI = std::make_shared<StatusUIEntity>(manager, dynamic_cast<PlayerEntity&>(*player));
                 manager.addEntity(healthUI);
 
                 manager.initialize();
