@@ -25,14 +25,19 @@ bool PlayerEntity::attack(const Point &attackPos) {
     if (enemy->getBehaviourByID("ChaseAndAttackBehaviour") != nullptr)
         enemy->getBehaviourByID("ChaseAndAttackBehaviour")->enabled = true;
 
-    auto& ui = dynamic_cast<StatusUIEntity&>(*manager.getEntityByTag("StatusUI"));
+    auto& ui = dynamic_cast<StatusUIEntity&>(*manager.getEntityByID("StatusUI"));
     ui.attackTarget = enemy;
 
     if (enemy->hp <= 0) {
         ui.attackTarget = nullptr;
-        manager.queueForDeletion(enemy->tag);
+        manager.queueForDeletion(enemy->ID);
         attacking = false;
         std::cout << enemy->name << " was destroyed!" << "\n";
+
+        std::shared_ptr<Entity> corpse = std::make_shared<CorpseEntity>(manager, enemy->ID + "corpse", 0.4, enemy->name);
+        corpse->pos = enemy->pos;
+        manager.addEntity(corpse);
+        return false;
     }
 
     attacking = true;
@@ -50,6 +55,18 @@ void PlayerEntity::tick() {
 
 void PlayerEntity::emit(Uint32 signal) {
     Entity::emit(signal);
+
+    if (signal & SIGNAL_EAT) {
+        auto entitiesAtPos = manager.getEntitiesAtPos(pos);
+        auto it = std::find_if(entitiesAtPos.begin(), entitiesAtPos.end(), [](auto &a) { return a->type == "corpse"; });
+        if (it == entitiesAtPos.end())
+            return;
+        else {
+            manager.queueForDeletion((*it)->ID);
+            hunger += dynamic_cast<CorpseEntity&>(**it).hungerRestoration;
+            return;
+        }
+    }
 
     if ((signal & SIGNAL_INPUT_UP || signal & SIGNAL_INPUT_DOWN || signal & SIGNAL_INPUT_LEFT || signal & SIGNAL_INPUT_RIGHT)) // Only ever attack if moving
     {

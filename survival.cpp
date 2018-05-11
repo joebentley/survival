@@ -112,6 +112,9 @@ int main(int argc, char* argv[])
                                 case SDLK_n:
                                     signal = SIGNAL_INPUT_DOWN | SIGNAL_INPUT_RIGHT;
                                     break;
+                                case SDLK_e:
+                                    signal = SIGNAL_EAT;
+                                    break;
                                 case SDLK_PERIOD:
                                     signal = SIGNAL_FORCE_WAIT;
                                     manager.tick();

@@ -52,15 +52,16 @@ class EntityManager;
 
 class Entity {
 public:
-    Entity(std::string tag, std::string name, std::string graphic, EntityManager& entityManager, double hp, double maxhp, double regenPerTick, int hitTimes, int hitAmount)
-            : hp(hp), maxhp(maxhp), regenPerTick(regenPerTick), hitTimes(hitTimes), hitAmount(hitAmount), tag(std::move(tag)),
-              name(std::move(name)), graphic(std::move(graphic)), pos(0, 0), manager(entityManager) {}
+    Entity(std::string ID, std::string type, std::string name, std::string graphic, EntityManager& entityManager,
+           double hp, double maxhp, double regenPerTick, int hitTimes, int hitAmount)
+            : hp(hp), maxhp(maxhp), regenPerTick(regenPerTick), hitTimes(hitTimes), hitAmount(hitAmount), ID(std::move(ID)),
+              type(std::move(type)), name(std::move(name)), graphic(std::move(graphic)), pos(0, 0), manager(entityManager) {}
 
-    Entity(std::string tag, std::string name, std::string graphic, EntityManager& entityManager, double hp, double maxhp, double regenPerTick)
-            : Entity(std::move(tag), std::move(name), std::move(graphic), entityManager, hp, maxhp, regenPerTick, 1, 2) {}
+    Entity(std::string ID, std::string type, std::string name, std::string graphic, EntityManager& entityManager, double hp, double maxhp, double regenPerTick)
+            : Entity(std::move(ID), std::move(type), std::move(name), std::move(graphic), entityManager, hp, maxhp, regenPerTick, 1, 2) {}
 
-    Entity(std::string tag, std::string name, std::string graphic, EntityManager& entityManager)
-            : Entity(std::move(tag), std::move(name), std::move(graphic), entityManager, 0, 0, 0, 1, 2) {}
+    Entity(std::string ID, std::string type, std::string name, std::string graphic, EntityManager& entityManager)
+            : Entity(std::move(ID), std::move(type), std::move(name), std::move(graphic), entityManager, 0, 0, 0, 1, 2) {}
 
     double hp;
     double maxhp;
@@ -68,7 +69,8 @@ public:
     int hitTimes;
     int hitAmount;
 
-    std::string tag; // Should be unique!
+    std::string ID; // Should be unique!
+    std::string type;
     std::string name;
     std::string shortDesc;
     std::string longDesc;
@@ -115,9 +117,9 @@ public:
     void render(Font& font, std::tuple<int, int> currentWorldPos) {
         render(font, std::get<0>(currentWorldPos), std::get<1>(currentWorldPos));
     }
-    std::shared_ptr<Entity> getEntityByTag(const std::string &tag) const;
-    void queueForDeletion(const std::string& ID);
-    void eraseByTag(const std::string &tag);
+    std::shared_ptr<Entity> getEntityByID(const std::string &ID) const;
+    void queueForDeletion(const std::string &ID);
+    void eraseByID(const std::string &ID);
     std::vector<std::shared_ptr<Entity>> getEntitiesAtPos(const Point& pos) const;
 };
 
