@@ -19,7 +19,7 @@ public:
 
     bool attack(const Point& attackPos);
     void tick() override;
-    void emit(Uint32 signal) override;
+    void handleInput(SDL_KeyboardEvent& e, bool& quit);
 };
 
 class CatEntity : public Entity {

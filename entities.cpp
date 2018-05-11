@@ -53,10 +53,13 @@ void PlayerEntity::tick() {
     Entity::tick();
 }
 
-void PlayerEntity::emit(Uint32 signal) {
-    Entity::emit(signal);
+void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit) {
+    auto key = e.keysym.sym;
+    auto mod = e.keysym.mod;
 
-    if (signal & SIGNAL_EAT) {
+    bool didAction = false;
+
+    if (key == SDLK_e) {
         auto entitiesAtPos = manager.getEntitiesAtPos(pos);
         auto it = std::find_if(entitiesAtPos.begin(), entitiesAtPos.end(), [](auto &a) { return a->type == "corpse"; });
         if (it == entitiesAtPos.end())
@@ -64,37 +67,65 @@ void PlayerEntity::emit(Uint32 signal) {
         else {
             manager.queueForDeletion((*it)->ID);
             hunger += dynamic_cast<CorpseEntity&>(**it).hungerRestoration;
+            didAction = true;
             return;
         }
     }
 
-    if ((signal & SIGNAL_INPUT_UP || signal & SIGNAL_INPUT_DOWN || signal & SIGNAL_INPUT_LEFT || signal & SIGNAL_INPUT_RIGHT)) // Only ever attack if moving
+    if (key == SDLK_h || key == SDLK_j || key == SDLK_k || key == SDLK_l ||
+        key == SDLK_y || key == SDLK_u || key == SDLK_b || key == SDLK_n) // Only ever attack if moving
     {
         Point posOffset;
-        if (signal & SIGNAL_INPUT_UP)
-            posOffset.y = -1;
-        else if (signal & SIGNAL_INPUT_DOWN)
-            posOffset.y = 1;
-        if (signal & SIGNAL_INPUT_LEFT)
-            posOffset.x = -1;
-        else if (signal & SIGNAL_INPUT_RIGHT)
-            posOffset.x = 1;
+        switch (key) {
+            case SDLK_h:
+                posOffset = Point(-1, 0);
+                break;
+            case SDLK_j:
+                posOffset = Point(0, 1);
+                break;
+            case SDLK_k:
+                posOffset = Point(0, -1);
+                break;
+            case SDLK_l:
+                posOffset = Point(1, 0);
+                break;
+            case SDLK_y:
+                posOffset = Point(-1, -1);
+                break;
+            case SDLK_u:
+                posOffset = Point(1, -1);
+                break;
+            case SDLK_b:
+                posOffset = Point(-1, 1);
+                break;
+            case SDLK_n:
+                posOffset = Point(1, 1);
+                break;
+        }
 
         auto enemiesInSpace = manager.getEntitiesAtPos(pos + posOffset);
         // TODO: what if more than one enemy in space?
         if (!enemiesInSpace.empty()
             && ((enemiesInSpace[0]->getBehaviourByID("HostilityBehaviour") != nullptr
                  && enemiesInSpace[0]->getBehaviourByID("HostilityBehaviour")->enabled)
-                || (signal & SIGNAL_FORCE_ATTACK)
+                || (mod & KMOD_SHIFT)
                 || attacking))
         {
             attack(pos + posOffset);
         } else
             pos += posOffset;
+
+        didAction = true;
     }
 
-    if (!(signal & SIGNAL_FORCE_WAIT))
-        manager.tick(); // Only tick on player movement
+    if (key == SDLK_PERIOD)
+        didAction = true;
+
+    if (hp <= 0 && key == SDLK_RETURN)
+        quit = true;
+
+    if (didAction)
+        manager.tick();
 }
 
 void StatusUIEntity::render(Font &font, int currentWorldX, int currentWorldY) {

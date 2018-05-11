@@ -11,7 +11,6 @@
 #include "entity.h"
 #include "world.h"
 #include "entities.h"
-#include "flags.h"
 
 //Screen dimension constants
 const int WINDOW_WIDTH = CHAR_WIDTH * SCREEN_WIDTH;
@@ -76,7 +75,6 @@ int main(int argc, char* argv[])
                 manager.initialize();
 
                 bool quit = false;
-                bool dead = false;
                 SDL_Event e;
 
                 while (!quit) {
@@ -85,52 +83,7 @@ int main(int argc, char* argv[])
                             quit = true;
                         }
                         else if (e.type == SDL_KEYDOWN) {
-                            uint32_t signal = 0;
-
-                            switch (e.key.keysym.sym) {
-                                case SDLK_h:
-                                    signal = SIGNAL_INPUT_LEFT;
-                                    break;
-                                case SDLK_j:
-                                    signal = SIGNAL_INPUT_DOWN;
-                                    break;
-                                case SDLK_k:
-                                    signal = SIGNAL_INPUT_UP;
-                                    break;
-                                case SDLK_l:
-                                    signal = SIGNAL_INPUT_RIGHT;
-                                    break;
-                                case SDLK_y:
-                                    signal = SIGNAL_INPUT_UP | SIGNAL_INPUT_LEFT;
-                                    break;
-                                case SDLK_u:
-                                    signal = SIGNAL_INPUT_UP | SIGNAL_INPUT_RIGHT;
-                                    break;
-                                case SDLK_b:
-                                    signal = SIGNAL_INPUT_DOWN | SIGNAL_INPUT_LEFT;
-                                    break;
-                                case SDLK_n:
-                                    signal = SIGNAL_INPUT_DOWN | SIGNAL_INPUT_RIGHT;
-                                    break;
-                                case SDLK_e:
-                                    signal = SIGNAL_EAT;
-                                    break;
-                                case SDLK_PERIOD:
-                                    signal = SIGNAL_FORCE_WAIT;
-                                    manager.tick();
-                                    break;
-                                case SDLK_RETURN:
-                                    if (dead)
-                                        quit = true;
-                                    break;
-                            }
-
-
-                            if (e.key.keysym.mod & KMOD_SHIFT)
-                                signal |= SIGNAL_FORCE_ATTACK;
-
-                            if (!dead && signal != 0 && signal != SIGNAL_FORCE_ATTACK) // Don't broadcast on just the modifier key
-                                manager.broadcast(signal);
+                            dynamic_cast<PlayerEntity&>(*player).handleInput(e.key, quit);
                         }
                     }
 
@@ -145,11 +98,7 @@ int main(int argc, char* argv[])
                     // if (font.drawText(renderer, "hello$(dwarf2)WORLD$[yellow]dwarf\\nhello$(block)${yellow}$[grey]Hello", 2, 2) == -1)
                     //     return -1;
 
-
-                    if (player->hp <= 0)
-                        dead = true;
-
-                    if (dead) {
+                    if (player->hp <= 0) {
                         showMessageBox(font, "$[red]You died!", 10, 10);
                         font.drawText("${black}press return to quit!", 20, 20);
                     }
