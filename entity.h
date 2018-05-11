@@ -25,7 +25,7 @@ public:
 
     virtual void initialize() {};
     virtual void tick() {};
-    virtual void handle(uint32_t signal) {};
+    virtual void handle(Uint32 signal) {};
 };
 
 //class ExampleBehaviour : public Behaviour {

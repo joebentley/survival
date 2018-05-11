@@ -12,7 +12,6 @@ bool PlayerEntity::attack(const Point &attackPos) {
     enemy->hp -= rollDamage();
 
     // TODO: Add AV
-    // TODO: Make enemy recover their movement after brief period
     if (enemy->getBehaviourByID("WanderBehaviour") != nullptr)
         enemy->getBehaviourByID("WanderBehaviour")->enabled = false;
     if (enemy->getBehaviourByID("AttachmentBehaviour") != nullptr)
@@ -47,7 +46,9 @@ void PlayerEntity::tick() {
 void PlayerEntity::emit(Uint32 signal) {
     Entity::emit(signal);
 
-    if (signal & SIGNAL_FORCE_ATTACK || attacking) {
+    if ((signal & SIGNAL_INPUT_UP || signal & SIGNAL_INPUT_DOWN || signal & SIGNAL_INPUT_LEFT || signal & SIGNAL_INPUT_RIGHT) // Only ever attack if moving
+        && (signal & SIGNAL_FORCE_ATTACK || attacking))
+    {
         Point posOffset;
         if (signal & SIGNAL_INPUT_UP)
             posOffset.y = -1;
@@ -74,7 +75,8 @@ void PlayerEntity::emit(Uint32 signal) {
             pos.x++;
     }
 
-    manager.tick(); // Only tick on player movement
+    if (!(signal & SIGNAL_FORCE_WAIT))
+        manager.tick(); // Only tick on player movement
 }
 
 void StatusUIEntity::render(Font &font, int currentWorldX, int currentWorldY) {

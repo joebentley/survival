@@ -38,7 +38,7 @@ void WanderBehaviour::tick() {
 }
 
 void AttachmentBehaviour::tick() {
-    float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+    float r = randFloat();
 
     if (!attached) {
         if (r < attachment) {
@@ -88,9 +88,44 @@ void ChaseAndAttackBehaviour::tick() {
     auto entitiesInSquare = parent.manager.getEntitiesAtPos(parent.pos + posOffset);
 
     if (entitiesInSquare.empty() || entitiesInSquare[0]->ID != "Player") {
-        parent.pos += posOffset;
+        if (parent.pos.distanceTo(player.pos) > range) {
+            float r = randFloat();
+            if (r < unattachment) { // Stop attacking if far away
+                enabled = false;
+                if (parent.getBehaviourByID("WanderBehaviour") != nullptr) {
+                    parent.getBehaviourByID("WanderBehaviour")->enabled = true;
+                }
+                if (parent.getBehaviourByID("WanderAttachBehaviour") != nullptr) {
+                    auto& wanderAttach = dynamic_cast<WanderAttachBehaviour&>(*parent.getBehaviourByID("WanderAttachBehaviour"));
+                    wanderAttach.onlyWander = true; // Never attach to player anymore
+                    wanderAttach.enabled = true;
+                }
+                if (parent.getBehaviourByID("HostilityBehaviour") != nullptr) {
+                    parent.getBehaviourByID("HostilityBehaviour")->enabled = true;
+                } else {
+                    std::shared_ptr<Behaviour> hostilityBehaviour =
+                            std::make_shared<HostilityBehaviour>(parent, postHostilityRange, postHostility);
+                    parent.addBehaviour(hostilityBehaviour);
+                }
+            }
+        }
+
+        if (randFloat() < clinginess)
+            parent.pos += posOffset;
         return;
     }
 
     player.hp -= parent.rollDamage();
+}
+
+void HostilityBehaviour::tick() {
+    auto chaseAndAttack = parent.getBehaviourByID("ChaseAndAttackBehaviour");
+    auto player = parent.manager.getByID("Player");
+
+    if (chaseAndAttack != nullptr && !chaseAndAttack->enabled && player != nullptr
+        && parent.pos.distanceTo(player->pos) < range && randFloat() < hostility)
+    {
+        std::cout << "Cat became hostile!" << std::endl;
+        chaseAndAttack->enabled = true;
+    }
 }

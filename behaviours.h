@@ -2,6 +2,7 @@
 #define BEHAVIOURS_H_
 
 #include "entity.h"
+#include "utils.h"
 
 class WanderBehaviour : public Behaviour {
 public:
@@ -31,6 +32,7 @@ class WanderAttachBehaviour : public Behaviour {
 public:
     WanderBehaviour wander;
     AttachmentBehaviour attach;
+    bool onlyWander {false};
 
     WanderAttachBehaviour(Entity& parent, float attachment, float clinginess, float unattachment, float range)
             : Behaviour("WanderAttachBehaviour", parent), wander(parent), attach(parent, attachment, clinginess, unattachment, range) {}
@@ -39,7 +41,12 @@ public:
             : WanderAttachBehaviour(parent, attachment, clinginess, unattachment, 10) {}
 
     void tick() override {
-        float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        if (onlyWander) {
+            wander.tick();
+            return;
+        }
+
+        float r = randFloat();
 
         // If attached, wander OR follow not both at once
         if (attach.attached) {
@@ -57,9 +64,25 @@ public:
 
 class ChaseAndAttackBehaviour : public Behaviour {
 public:
+    explicit ChaseAndAttackBehaviour(Entity& parent, float clinginess, float unattachment, float range, float postHostilityRange, float postHostility)
+            : Behaviour("ChaseAndAttackBehaviour", parent), clinginess(clinginess), unattachment(unattachment),
+              range(range), postHostilityRange(postHostilityRange), postHostility(postHostility) {}
 
-    explicit ChaseAndAttackBehaviour(Entity& parent) : Behaviour("ChaseAndAttackBehaviour", parent) {}
+    float clinginess;
+    float unattachment;
+    float range;
+    float postHostilityRange;
+    float postHostility;
+    void tick() override;
+};
 
+class HostilityBehaviour : public Behaviour {
+public:
+    explicit HostilityBehaviour(Entity& parent, float range, float hostility)
+        : Behaviour("HostilityBehaviour", parent), range(range), hostility(hostility) {}
+
+    float range;
+    float hostility;
     void tick() override;
 };
 

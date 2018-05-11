@@ -12,7 +12,7 @@ public:
     bool attacking; // whether or not player is attacking something
 
     explicit PlayerEntity(EntityManager& entityManager)
-            : Entity("Player", "$[white]$(dwarf)", entityManager, 10, 10, 0.1, 1, 4), hunger(1), hungerRate(0.05), hungerDamageRate(0.15)
+            : Entity("Player", "$[white]$(dwarf)", entityManager, 10, 10, 0.1, 1, 4), hunger(1), hungerRate(0.01), hungerDamageRate(0.15)
     {}
 
     bool attack(const Point& attackPos);
@@ -26,7 +26,7 @@ public:
             : Entity(std::move(ID), "$[yellow]c", entityManager, 10, 10, 0.05)
     {
         std::shared_ptr<Behaviour> wanderAttach = std::make_shared<WanderAttachBehaviour>(*this, 0.5, 0.7, 0.05);
-        std::shared_ptr<Behaviour> chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this);
+        std::shared_ptr<Behaviour> chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this, 0.8, 0.6, 8, 8, 0.9);
         chaseAndAttack->enabled = false;
         addBehaviour(wanderAttach);
         addBehaviour(chaseAndAttack);
@@ -52,7 +52,7 @@ public:
               player(player), shown(false), forceTickDisplayTimer(0), ticksWaitedDuringAnimation(1) { }
 
     void render(Font &font, int currentWorldX, int currentWorldY) override;
-    void emit(uint32_t signal) override;
+    void emit(Uint32 signal) override;
 };
 
 #endif // ENTITIES_H_

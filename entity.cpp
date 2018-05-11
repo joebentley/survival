@@ -14,13 +14,16 @@ void Entity::tick() {
     if (hp < maxhp)
         hp += regenPerTick;
 
+    if (hp > maxhp)
+        hp = maxhp;
+
     for (auto& behaviour : behaviours) {
         if (behaviour->enabled)
             behaviour->tick();
     }
 }
 
-void Entity::emit(uint32_t signal) {
+void Entity::emit(Uint32 signal) {
     for (auto& behaviour : behaviours) {
         behaviour->handle(signal);
     }
@@ -59,7 +62,7 @@ void EntityManager::addEntity(std::shared_ptr<Entity> entity) {
     entities.push_back(entity);
 }
 
-void EntityManager::broadcast(uint32_t signal) {
+void EntityManager::broadcast(Uint32 signal) {
     for (const auto& entity : entities) {
         entity->emit(signal);
     }
