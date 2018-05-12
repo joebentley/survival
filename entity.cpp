@@ -64,12 +64,13 @@ int Entity::rollDamage() {
 }
 
 void Entity::addToInventory(std::shared_ptr<Entity> item) {
-    if (item->canBePickedUp) {
+    auto b = item->getBehaviourByID("PickuppableBehaviour");
+    if (b != nullptr && b->enabled) {
         inventory.push_back(item);
         item->shouldRender = false;
-        item->canBePickedUp = false;
+        b->enabled = false;
     } else {
-        throw std::invalid_argument("canBePickedUp is false");
+        throw std::invalid_argument("item does not have PickuppableBehaviour or the behaviour is disabled");
     }
 }
 
@@ -78,7 +79,13 @@ void Entity::dropItem(int inventoryIndex) {
 
     inventory.erase(inventory.begin() + inventoryIndex);
     item->shouldRender = true;
-    item->canBePickedUp = true;
+
+    auto b = item->getBehaviourByID("PickuppableBehaviour");
+    if (b == nullptr)
+        throw std::invalid_argument("item does not have PickuppableBehaviour");
+    else
+        b->enabled = true;
+
     item->setPos(pos);
 }
 

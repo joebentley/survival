@@ -44,7 +44,6 @@ public:
     EatableEntity(EntityManager& entityManager, std::string ID, std::string type, std::string name, std::string graphic, double hungerRestoration)
             : Entity(entityManager, std::move(ID), std::move(type), std::move(name), std::move(graphic))
     {
-        canBePickedUp = true;
         addBehaviour(std::make_shared<EatableBehaviour>(*this, hungerRestoration));
     }
 };
@@ -53,7 +52,9 @@ class CorpseEntity : public EatableEntity {
 public:
     CorpseEntity(EntityManager& entityManager, std::string ID, double hungerRestoration, const std::string& corpseOf)
             : EatableEntity(entityManager, std::move(ID), "corpse", "Corpse of " + corpseOf, "${black}$[red]x", hungerRestoration)
-    { canBePickedUp = true; }
+    {
+        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 100));
+    }
 };
 
 class StatusUIEntity : public Entity {
@@ -79,7 +80,7 @@ public:
     void emit(Uint32 signal) override;
     void tick() override;
     void setAttackTarget(std::shared_ptr<Entity> attackTarget) {
-        this->attackTarget = attackTarget;
+        this->attackTarget = std::move(attackTarget);
         attackTargetTimer = 10;
     }
 };

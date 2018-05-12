@@ -68,7 +68,7 @@ public:
     double regenPerTick;
     int hitTimes;
     int hitAmount;
-    bool canBePickedUp {false};
+//    bool canBePickedUp {false};
     bool shouldRender {true};
 
     std::string ID; // Should be unique!

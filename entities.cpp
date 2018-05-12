@@ -65,7 +65,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
         if (key == SDLK_e) {
             auto entitiesAtPos = manager.getEntitiesAtPos(pos);
             auto it = std::find_if(entitiesAtPos.begin(), entitiesAtPos.end(),
-                                   [](auto &a) { return a->canBePickedUp && a->hasBehaviour("EatableBehaviour"); });
+                                   [](auto &a) { return a->hasBehaviour("EatableBehaviour"); });
             if (it == entitiesAtPos.end())
                 return;
             else {
@@ -80,7 +80,10 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
             auto entitiesAtPos = manager.getEntitiesAtPos(pos);
             std::vector<std::shared_ptr<Entity>> pickuppableEntities;
             std::copy_if(entitiesAtPos.begin(), entitiesAtPos.end(),
-                         std::back_inserter(pickuppableEntities), [](auto &a) { return a->canBePickedUp; });
+                         std::back_inserter(pickuppableEntities), [](auto &a) {
+                auto b = a->getBehaviourByID("PickuppableBehaviour");
+                return (b != nullptr && b->enabled);
+            });
 
             if (pickuppableEntities.empty())
                 return;

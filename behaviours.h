@@ -94,4 +94,12 @@ public:
     double hungerRestoration;
 };
 
+class PickuppableBehaviour : public Behaviour {
+public:
+    PickuppableBehaviour(Entity& parent, int weight)
+            : Behaviour("PickuppableBehaviour", parent), weight(weight) {}
+
+    int weight;
+};
+
 #endif // BEHAVIOURS_H_

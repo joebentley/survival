@@ -72,19 +72,17 @@ int main(int argc, char* argv[])
                 auto apple = std::make_shared<EatableEntity>(manager, "apple1", "food", "Apple", "$[green]a", 0.5);
                 apple->shortDesc = "A small, fist-sized fruit that is hopefully crispy and juicy";
                 apple->longDesc = "This is a longer description of the apple";
-                apple->canBePickedUp = true;
+                apple->addBehaviour(std::make_shared<PickuppableBehaviour>(*apple, 1));
                 manager.addEntity(apple);
 
                 auto banana = std::make_shared<EatableEntity>(manager, "banana1", "food", "Banana", "$[yellow]b", 0.5);
                 banana->shortDesc = "A yellow fruit found in the jungle. The shape looks familiar...";
                 banana->longDesc = "This fruit was discovered in [redacted]. They were brought west by Arab conquerors in 327 B.C.";
-                banana->canBePickedUp = true;
+                banana->addBehaviour(std::make_shared<PickuppableBehaviour>(*banana, 1));
                 manager.addEntity(banana);
 
-                apple->setPos(player->pos);
-                banana->setPos(player->pos);
-//                player->addToInventory(apple);
-//                player->addToInventory(banana);
+                apple->setPos(player->pos + Point(2, 2));
+                banana->setPos(player->pos + Point(2, 2));
 
                 auto healthUI = std::make_shared<StatusUIEntity>(manager, dynamic_cast<PlayerEntity&>(*player));
                 manager.addEntity(healthUI);
