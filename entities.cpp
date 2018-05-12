@@ -35,10 +35,8 @@ bool PlayerEntity::attack(const Point &attackPos) {
         manager.queueForDeletion(enemy->ID);
         attacking = false;
         std::cout << enemy->name << " was destroyed!" << "\n";
+        enemy->destroy();
 
-        std::shared_ptr<Entity> corpse = std::make_shared<CorpseEntity>(manager, enemy->ID + "corpse", 0.4, enemy->name);
-        corpse->pos = enemy->pos;
-        manager.addEntity(corpse);
         return false;
     }
 
@@ -60,6 +58,12 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
     auto mod = e.keysym.mod;
 
     bool didAction = false;
+
+    if (showingTooMuchWeightMessage) {
+        if (key == SDLK_ESCAPE || key == SDLK_RETURN)
+            showingTooMuchWeightMessage = false;
+        return;
+    }
 
     if (hp > 0) {
         if (key == SDLK_e) {
@@ -88,9 +92,13 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
             if (pickuppableEntities.empty())
                 return;
             else if (pickuppableEntities.size() == 1) {
-                addToInventory(*pickuppableEntities.begin());
-                didAction = true;
-                return;
+                if (addToInventory(*pickuppableEntities.begin())) {
+                    didAction = true;
+                    return;
+                } else {
+                    showingTooMuchWeightMessage = true;
+                    return;
+                }
             } else {
                 lootingDialog.showItemsToLoot(pickuppableEntities);
                 return;
@@ -160,6 +168,15 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
         quit = true;
 }
 
+void PlayerEntity::render(Font &font, int currentWorldX, int currentWorldY) {
+    Entity::render(font, currentWorldX, currentWorldY);
+
+    if (showingTooMuchWeightMessage) {
+        const std::string& displayString = "You cannot carry that much!";
+        showMessageBox(font, displayString, 20, 10);
+    }
+}
+
 void StatusUIEntity::render(Font &font, int currentWorldX, int currentWorldY) {
     std::string colorStr;
     double hpPercent = player.hp / player.maxhp;
@@ -180,6 +197,9 @@ void StatusUIEntity::render(Font &font, int currentWorldX, int currentWorldY) {
         font.drawText("${black}$[yellow]hungry", SCREEN_WIDTH - X_OFFSET, 2);
     else
         font.drawText("${black}$[red]starving", SCREEN_WIDTH - X_OFFSET, 2);
+
+    font.drawText("${black}" + std::to_string(player.getCarryingWeight()) + "/" + std::to_string(player.maxCarryWeight) + "lb",
+                  SCREEN_WIDTH - X_OFFSET, 4);
 
     if (forceTickDisplayTimer-- > 0) {
         font.drawText("Waited " + std::to_string(ticksWaitedDuringAnimation)
@@ -204,7 +224,7 @@ void StatusUIEntity::render(Font &font, int currentWorldX, int currentWorldY) {
         else
             enemyhpString += "$[red]near death";
 
-        font.drawText(enemyhpString, SCREEN_WIDTH - X_OFFSET - 2, 4);
+        font.drawText(enemyhpString, SCREEN_WIDTH - X_OFFSET - 2, 6);
     }
 
     // Drop attack target after 10 turns of inactivity
@@ -233,4 +253,10 @@ void StatusUIEntity::tick() {
     }
 
     Entity::tick();
+}
+
+void CatEntity::destroy() {
+    auto corpse = std::make_shared<CorpseEntity>(manager, ID + "corpse", 0.4, name, 100);
+    corpse->pos = pos;
+    manager.addEntity(corpse);
 }

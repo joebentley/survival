@@ -37,6 +37,7 @@ public:
 
     bool enabled {false};
     bool viewingDescription {false};
+    bool showingTooMuchWeightMessage {false};
     PlayerEntity &player;
     std::vector<std::shared_ptr<Entity>> itemsToShow;
     int chosenIndex {0};

@@ -54,15 +54,15 @@ class EntityManager;
 class Entity {
 public:
     Entity(EntityManager& entityManager, std::string ID, std::string type, std::string name, std::string graphic,
-           double hp, double maxhp, double regenPerTick, int hitTimes, int hitAmount)
-            : hp(hp), maxhp(maxhp), regenPerTick(regenPerTick), hitTimes(hitTimes), hitAmount(hitAmount), ID(std::move(ID)),
+           double hp, double maxhp, double regenPerTick, int hitTimes, int hitAmount, int maxCarryWeight)
+            : hp(hp), maxhp(maxhp), regenPerTick(regenPerTick), hitTimes(hitTimes), hitAmount(hitAmount), maxCarryWeight(maxCarryWeight), ID(std::move(ID)),
               type(std::move(type)), name(std::move(name)), graphic(std::move(graphic)), pos(0, 0), manager(entityManager) {}
 
     Entity(EntityManager& entityManager, std::string ID, std::string type, std::string name, std::string graphic, double hp, double maxhp, double regenPerTick)
-            : Entity(entityManager, std::move(ID), std::move(type), std::move(name), std::move(graphic), hp, maxhp, regenPerTick, 1, 2) {}
+            : Entity(entityManager, std::move(ID), std::move(type), std::move(name), std::move(graphic), hp, maxhp, regenPerTick, 1, 2, 100) {}
 
     Entity(EntityManager& entityManager, std::string ID, std::string type, std::string name, std::string graphic)
-            : Entity(entityManager, std::move(ID), std::move(type), std::move(name), std::move(graphic), 1, 1, 0, 1, 2) {}
+            : Entity(entityManager, std::move(ID), std::move(type), std::move(name), std::move(graphic), 1, 1, 0, 1, 2, 100) {}
 
     double hp;
     double maxhp;
@@ -71,6 +71,7 @@ public:
     int hitAmount;
 //    bool canBePickedUp {false};
     bool shouldRender {true};
+    int maxCarryWeight;
 
     std::string ID; // Should be unique!
     std::string type;
@@ -96,7 +97,7 @@ public:
         render(font, std::get<0>(currentWorldPos), std::get<1>(currentWorldPos));
     }
 
-    void addToInventory(std::shared_ptr<Entity> item);
+    bool addToInventory(std::shared_ptr<Entity> item);
     void dropItem(int inventoryIndex);
 
     void setPos(int x, int y) { pos = Point(x, y); }
@@ -110,6 +111,8 @@ public:
     bool hasBehaviour(const std::string& ID) const;
 
     int rollDamage();
+
+    int getCarryingWeight();
 };
 
 class EntityManager {

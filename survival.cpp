@@ -81,8 +81,13 @@ int main(int argc, char* argv[])
                 banana->addBehaviour(std::make_shared<PickuppableBehaviour>(*banana, 1));
                 manager.addEntity(banana);
 
+                auto pileOfLead = std::make_shared<Entity>(manager, "pileOfLead", "", "Huge Pile Of Lead", "$[grey]L");
+                pileOfLead->addBehaviour(std::make_shared<PickuppableBehaviour>(*pileOfLead, 100));
+                manager.addEntity(pileOfLead);
+
                 apple->setPos(player->pos + Point(2, 2));
                 banana->setPos(player->pos + Point(2, 2));
+                pileOfLead->setPos(player->pos + Point(2, 2));
 
                 auto healthUI = std::make_shared<StatusUIEntity>(manager, dynamic_cast<PlayerEntity&>(*player));
                 manager.addEntity(healthUI);

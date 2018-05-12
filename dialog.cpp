@@ -32,6 +32,14 @@ void drawDescriptionScreen(Font& font, Entity& item) {
         font.drawText(words[i], InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + i);
     }
 
+    auto b = item.getBehaviourByID("PickuppableBehaviour");
+
+    if (b != nullptr) {
+        int weight = dynamic_cast<PickuppableBehaviour &>(*b).weight;
+        font.drawText("It weighs " + std::to_string(weight) + (weight == 1 ? " pound" : " pounds"),
+                      InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + words.size() + 2);
+    }
+
     font.drawText("esc-back", 1, SCREEN_HEIGHT - 2);
 }
 
@@ -117,6 +125,9 @@ void InventoryScreen::render(Font &font) {
     else
         font.drawText("${black}$[red]starving", SCREEN_WIDTH - X_STATUS_OFFSET, 2);
 
+    font.drawText("${black}" + std::to_string(player.getCarryingWeight()) + "/" + std::to_string(player.maxCarryWeight) + "lb",
+                  SCREEN_WIDTH - X_STATUS_OFFSET, 4);
+
     font.drawText("e-eat  d-drop  return-view desc  esc-exit inv", 1, SCREEN_HEIGHT - 2);
 }
 
@@ -130,11 +141,13 @@ void LootingDialog::handleInput(SDL_KeyboardEvent &e) {
         case SDLK_ESCAPE:
             if (viewingDescription)
                 viewingDescription = false;
+            else if (showingTooMuchWeightMessage)
+                showingTooMuchWeightMessage = false;
             else
                 enabled = false;
             break;
         case SDLK_j:
-            if (!itemsToShow.empty()) {
+            if (!showingTooMuchWeightMessage && !itemsToShow.empty()) {
                 if (chosenIndex < (itemsToShow.size() - 1))
                     chosenIndex++;
                 else
@@ -142,7 +155,7 @@ void LootingDialog::handleInput(SDL_KeyboardEvent &e) {
             }
             break;
         case SDLK_k:
-            if (!itemsToShow.empty()) {
+            if (!showingTooMuchWeightMessage && !itemsToShow.empty()) {
                 if (chosenIndex > 0)
                     chosenIndex--;
                 else
@@ -150,12 +163,18 @@ void LootingDialog::handleInput(SDL_KeyboardEvent &e) {
             }
             break;
         case SDLK_g:
-            player.addToInventory(itemsToShow[chosenIndex]);
-            itemsToShow.erase(itemsToShow.begin() + chosenIndex);
-            chosenIndex = 0;
+            if (player.addToInventory(itemsToShow[chosenIndex])) {
+                itemsToShow.erase(itemsToShow.begin() + chosenIndex);
+                chosenIndex = 0;
+            } else {
+                showingTooMuchWeightMessage = true;
+            }
             break;
         case SDLK_RETURN:
-            viewingDescription = true;
+            if (!showingTooMuchWeightMessage)
+                viewingDescription = true;
+            else
+                showingTooMuchWeightMessage = false;
             break;
     }
 }
@@ -180,9 +199,13 @@ void LootingDialog::render(Font &font) {
     font.drawText("${black}$(p8)" + std::string(DIALOG_WIDTH + 4, ' ') + "$(p8)", x, y+1);
 
     for (int i = 0; i < numItems; ++i) {
-        const std::string& string = itemsToShow[i]->graphic + " " + itemsToShow[i]->name;
-        font.drawText("${black}$(p8)  " + string + std::string(DIALOG_WIDTH - getFontStringLength(string), ' ')
-                      + "${black}  $[white]$(p8)", x, y+2+i);
+        auto item = itemsToShow[i];
+        int weight = dynamic_cast<PickuppableBehaviour&>(*item->getBehaviourByID("PickuppableBehaviour")).weight;
+
+        std::string weightString = std::to_string(weight);
+        std::string string = item->graphic + " " + item->name.substr(0, DIALOG_WIDTH - 6);
+        string += std::string(DIALOG_WIDTH - getFontStringLength(string) - 3 - weightString.size() + 1, ' ') + "$[white]" + weightString + " lb";
+        font.drawText("${black}$(p8)  " + string + "${black} $[white]$(p8)", x, y+2+i);
     }
 
     font.draw("right", x + 2, y + 2 + chosenIndex);
@@ -191,4 +214,10 @@ void LootingDialog::render(Font &font) {
     std::string string = "g-loot  esc-quit  return-desc";
     font.drawText("${black}$(p8)  " + string + std::string(DIALOG_WIDTH - string.size() + 2, ' ') + "$(p8)", x, y+numItems+3);
     font.drawText("${black}$(p22)" + repeat(DIALOG_WIDTH + 4, "$(p27)") + "$(p10)", x, y+numItems+4);
+
+
+    if (showingTooMuchWeightMessage) {
+        const std::string& displayString = "You cannot carry that much!";
+        showMessageBox(font, displayString, 20, 20);
+    }
 }

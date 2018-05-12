@@ -14,9 +14,10 @@ public:
     double hungerRate; // hunger per tick
     double hungerDamageRate; // hp loss per tick while starving
     bool attacking {false}; // whether or not player is attacking something
+    bool showingTooMuchWeightMessage {false};
 
     explicit PlayerEntity(EntityManager& entityManager)
-            : Entity(entityManager, "Player", "player", "You, the player", "$[white]$(dwarf)", 10, 10, 0.1, 1, 4), hunger(1), hungerRate(0.01), hungerDamageRate(0.15)
+            : Entity(entityManager, "Player", "player", "You, the player", "$[white]$(dwarf)", 10, 10, 0.1, 1, 4, 100), hunger(1), hungerRate(0.01), hungerDamageRate(0.15)
     {
         renderingLayer = -1;
     }
@@ -24,12 +25,13 @@ public:
     bool attack(const Point& attackPos);
     void tick() override;
     void handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen, LootingDialog &lootingDialog);
+    void render(Font &font, int currentWorldX, int currentWorldY) override;
 };
 
 class CatEntity : public Entity {
 public:
     CatEntity(EntityManager& entityManager, std::string ID)
-            : Entity(entityManager, std::move(ID), "living", "cat", "$[yellow]c", 10, 10, 0.05, 1, 2)
+            : Entity(entityManager, std::move(ID), "living", "cat", "$[yellow]c", 10, 10, 0.05, 1, 2, 100)
     {
         auto wanderAttach = std::make_shared<WanderAttachBehaviour>(*this, 0.5, 0.7, 0.05);
         auto chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this, 0.8, 0.6, 8, 8, 0.9);
@@ -37,6 +39,8 @@ public:
         addBehaviour(wanderAttach);
         addBehaviour(chaseAndAttack);
     }
+
+    void destroy() override;
 };
 
 class EatableEntity : public Entity {
@@ -50,10 +54,10 @@ public:
 
 class CorpseEntity : public EatableEntity {
 public:
-    CorpseEntity(EntityManager& entityManager, std::string ID, double hungerRestoration, const std::string& corpseOf)
+    CorpseEntity(EntityManager& entityManager, std::string ID, double hungerRestoration, const std::string& corpseOf, int weight)
             : EatableEntity(entityManager, std::move(ID), "corpse", "Corpse of " + corpseOf, "${black}$[red]x", hungerRestoration)
     {
-        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 100));
+        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, weight));
     }
 };
 

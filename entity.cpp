@@ -1,4 +1,5 @@
 #include "entity.h"
+#include "behaviours.h"
 
 #include <stdexcept>
 
@@ -62,12 +63,15 @@ int Entity::rollDamage() {
     return totalDamage;
 }
 
-void Entity::addToInventory(std::shared_ptr<Entity> item) {
+bool Entity::addToInventory(std::shared_ptr<Entity> item) {
     auto b = item->getBehaviourByID("PickuppableBehaviour");
     if (b != nullptr && b->enabled) {
+        if (getCarryingWeight() + dynamic_cast<PickuppableBehaviour&>(*b).weight > maxCarryWeight)
+            return false;
         inventory.push_back(item);
         item->shouldRender = false;
         b->enabled = false;
+        return true;
     } else {
         throw std::invalid_argument("item does not have PickuppableBehaviour or the behaviour is disabled");
     }
@@ -94,6 +98,17 @@ bool Entity::hasBehaviour(const std::string &ID) const {
 
 void Entity::destroy() {
     manager.eraseByID(ID);
+}
+
+int Entity::getCarryingWeight() {
+    int totalWeight = 0;
+    for (const auto& item : inventory) {
+        if (item->hasBehaviour("PickuppableBehaviour")) {
+            auto a = dynamic_cast<PickuppableBehaviour&>(*item->getBehaviourByID("PickuppableBehaviour"));
+            totalWeight += a.weight;
+        }
+    }
+    return totalWeight;
 }
 
 void EntityManager::addEntity(std::shared_ptr<Entity> entity) {
