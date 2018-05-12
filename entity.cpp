@@ -3,12 +3,12 @@
 #include <stdexcept>
 
 void Entity::addBehaviour(std::shared_ptr<Behaviour> behaviour) {
-    behaviours.push_back(behaviour);
+    behaviours[behaviour->ID] = behaviour;
 }
 
 void Entity::initialize() {
     for (auto& behaviour : behaviours) {
-        behaviour->initialize();
+        behaviour.second->initialize();
     }
 }
 
@@ -20,14 +20,14 @@ void Entity::tick() {
         hp = maxhp;
 
     for (auto& behaviour : behaviours) {
-        if (behaviour->enabled)
-            behaviour->tick();
+        if (behaviour.second->enabled)
+            behaviour.second->tick();
     }
 }
 
 void Entity::emit(Uint32 signal) {
     for (auto& behaviour : behaviours) {
-        behaviour->handle(signal);
+        behaviour.second->handle(signal);
     }
 }
 
@@ -47,12 +47,11 @@ void Entity::render(Font& font, int currentWorldX, int currentWorldY) {
 }
 
 std::shared_ptr<Behaviour> Entity::getBehaviourByID(const std::string& ID) const {
-    auto behaviour = std::find_if(behaviours.begin(), behaviours.end(), [ID](auto& a) { return a->ID == ID; });
-
-    if (behaviour == behaviours.end())
+    try {
+        return behaviours.at(ID);
+    } catch (const std::out_of_range &e) {
         return nullptr;
-    else
-        return *behaviour;
+    }
 }
 
 int Entity::rollDamage() {
@@ -90,7 +89,7 @@ void Entity::dropItem(int inventoryIndex) {
 }
 
 bool Entity::hasBehaviour(const std::string &ID) const {
-    return getBehaviourByID(ID) != nullptr;
+    return behaviours.find(ID) != behaviours.end();
 }
 
 void Entity::destroy() {
@@ -98,52 +97,52 @@ void Entity::destroy() {
 }
 
 void EntityManager::addEntity(std::shared_ptr<Entity> entity) {
-    entities.push_back(entity);
-
-    // Sort by rendering layer
-    std::sort(entities.begin(), entities.end(), [](auto& a, auto& b) { return a->renderingLayer > b->renderingLayer; });
+    entities[entity->ID] = entity;
 }
 
 void EntityManager::broadcast(Uint32 signal) {
     for (const auto& entity : entities) {
-        entity->emit(signal);
+        entity.second->emit(signal);
     }
 }
 
 void EntityManager::initialize() {
     for (const auto& entity : entities) {
-        entity->initialize();
+        entity.second->initialize();
     }
 }
 
 void EntityManager::tick() {
     cleanup();
     for (const auto& entity : entities) {
-        entity->tick();
+        entity.second->tick();
     }
 }
 
 void EntityManager::render(Font& font, int currentWorldX, int currentWorldY) {
-    for (const auto& entity : entities) {
-        entity->render(font, currentWorldX, currentWorldY);
+    // TODO: Is this slow?
+    std::vector<std::pair<std::string, std::shared_ptr<Entity>>> toRender(entities.begin(), entities.end());
+    std::sort(toRender.begin(), toRender.end(), [](auto &a, auto &b) { return a.second->renderingLayer > b.second->renderingLayer; });
+
+    for (const auto& entity : toRender) {
+        entity.second->render(font, currentWorldX, currentWorldY);
     }
 }
 
 std::shared_ptr<Entity> EntityManager::getEntityByID(const std::string &ID) const {
-    auto it = std::find_if(entities.begin(), entities.end(), [ID](auto& a) { return a->ID == ID; });
-
-    if (it != entities.end())
-        return *it;
-    else
+    try {
+        return entities.at(ID);
+    } catch (const std::out_of_range &e) {
         return nullptr;
+    }
 }
 
 std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesAtPos(const Point &pos) const {
     std::vector<std::shared_ptr<Entity>> entitiesAtPos;
 
     for (const auto& entity : entities) {
-        if (entity->pos == pos)
-            entitiesAtPos.push_back(entity);
+        if (entity.second->pos == pos)
+            entitiesAtPos.push_back(entity.second);
     }
 
     return entitiesAtPos;
@@ -161,8 +160,5 @@ void EntityManager::queueForDeletion(const std::string &ID) {
 }
 
 void EntityManager::eraseByID(const std::string &ID) {
-    auto it = std::find_if(entities.begin(), entities.end(), [ID](auto& a) { return a->ID == ID; });
-
-    if (it != entities.end())
-        entities.erase(it);
+    entities.erase(ID);
 }

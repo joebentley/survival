@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <iostream>
 #include <memory>
+#include <unordered_map>
 #include "font.h"
 #include "world.h"
 #include "point.h"
@@ -80,7 +81,7 @@ public:
     std::string graphic;
     Point pos;
     EntityManager& manager;
-    std::vector<std::shared_ptr<Behaviour>> behaviours;
+    std::unordered_map<std::string, std::shared_ptr<Behaviour>> behaviours;
     std::vector<std::shared_ptr<Entity>> inventory;
 
     int renderingLayer {0};
@@ -113,7 +114,7 @@ public:
 
 class EntityManager {
 public:
-    std::vector<std::shared_ptr<Entity>> entities;
+    std::unordered_map<std::string, std::shared_ptr<Entity>> entities;
     std::queue<std::string> toBeDeleted;
 
     void addEntity(std::shared_ptr<Entity> entity);
