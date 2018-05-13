@@ -3,6 +3,8 @@
 
 #include <stdexcept>
 
+int gNumInitialisedEntities = 0;
+
 void Entity::addBehaviour(std::shared_ptr<Behaviour> behaviour) {
     behaviours[behaviour->ID] = behaviour;
 }
@@ -65,16 +67,15 @@ int Entity::rollDamage() {
 
 bool Entity::addToInventory(std::shared_ptr<Entity> item) {
     auto b = item->getBehaviourByID("PickuppableBehaviour");
-    if (b != nullptr && b->enabled) {
+    if (b != nullptr) {
         if (getCarryingWeight() + dynamic_cast<PickuppableBehaviour&>(*b).weight > maxCarryWeight)
             return false;
         item->setPos(pos);
         inventory.push_back(item);
         item->shouldRender = false;
-        b->enabled = false;
         return true;
     } else {
-        throw std::invalid_argument("item does not have PickuppableBehaviour or the behaviour is disabled");
+        throw std::invalid_argument("item does not have PickuppableBehaviour");
     }
 }
 
@@ -83,13 +84,6 @@ void Entity::dropItem(int inventoryIndex) {
 
     inventory.erase(inventory.begin() + inventoryIndex);
     item->shouldRender = true;
-
-    auto b = item->getBehaviourByID("PickuppableBehaviour");
-    if (b == nullptr)
-        throw std::invalid_argument("item does not have PickuppableBehaviour");
-    else
-        b->enabled = true;
-
     item->setPos(pos);
 }
 
@@ -126,6 +120,9 @@ void EntityManager::broadcast(Uint32 signal) {
 }
 
 void EntityManager::initialize() {
+    if (gNumInitialisedEntities != entities.size())
+        std::cerr << "Warning! The number of initialised entities is not equal to the number of entities in the entity manager!" << std::endl;
+
     for (const auto& entity : entities) {
         entity.second->initialize();
     }

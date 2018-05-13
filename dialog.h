@@ -47,10 +47,12 @@ public:
     PlayerEntity &player;
     std::vector<std::shared_ptr<Entity>> itemsToShow;
     int chosenIndex {0};
+    std::shared_ptr<Entity> entityToTransferFrom;
 
     explicit LootingDialog(PlayerEntity &player) : player(player) {}
 
     void showItemsToLoot(std::vector<std::shared_ptr<Entity>> items);
+    void showItemsToLoot(std::vector<std::shared_ptr<Entity>> items, std::shared_ptr<Entity> entityToTransferFrom);
 
     void handleInput(SDL_KeyboardEvent &e);
     void render(Font& font);

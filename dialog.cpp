@@ -157,6 +157,14 @@ void LootingDialog::showItemsToLoot(std::vector<std::shared_ptr<Entity>> items) 
     enabled = true;
 }
 
+
+void LootingDialog::showItemsToLoot(std::vector<std::shared_ptr<Entity>> items, std::shared_ptr<Entity> entityToTransferFrom)
+{
+    itemsToShow = std::move(items);
+    this->entityToTransferFrom = entityToTransferFrom;
+    enabled = true;
+}
+
 void LootingDialog::handleInput(SDL_KeyboardEvent &e) {
     switch (e.keysym.sym) {
         case SDLK_ESCAPE:
@@ -164,8 +172,10 @@ void LootingDialog::handleInput(SDL_KeyboardEvent &e) {
                 viewingDescription = false;
             else if (showingTooMuchWeightMessage)
                 showingTooMuchWeightMessage = false;
-            else
+            else {
                 enabled = false;
+                entityToTransferFrom = nullptr;
+            }
             break;
         case SDLK_j:
             if (!showingTooMuchWeightMessage && !itemsToShow.empty()) {
@@ -185,6 +195,10 @@ void LootingDialog::handleInput(SDL_KeyboardEvent &e) {
             break;
         case SDLK_g:
             if (player.addToInventory(itemsToShow[chosenIndex])) {
+                if (entityToTransferFrom != nullptr) {
+                    entityToTransferFrom->inventory.erase(entityToTransferFrom->inventory.begin() + chosenIndex);
+                }
+
                 itemsToShow.erase(itemsToShow.begin() + chosenIndex);
                 chosenIndex = 0;
             } else {
@@ -210,6 +224,7 @@ void LootingDialog::render(Font &font) {
 
     if (numItems == 0) {
         enabled = false;
+        entityToTransferFrom = nullptr;
         return;
     }
 

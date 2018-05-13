@@ -102,6 +102,8 @@ public:
     {
         shortDesc = SHORT_DESC;
         longDesc = LONG_DESC;
+
+        // TODO: allow player to place items in chest
     }
 };
 

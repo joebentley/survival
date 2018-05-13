@@ -15,6 +15,8 @@
 #include "point.h"
 #include "flags.h"
 
+extern int gNumInitialisedEntities;
+
 class Entity;
 
 class Behaviour {
@@ -57,7 +59,10 @@ public:
     Entity(EntityManager& entityManager, std::string ID, std::string type, std::string name, std::string graphic,
            double hp, double maxhp, double regenPerTick, int hitTimes, int hitAmount, int maxCarryWeight)
             : hp(hp), maxhp(maxhp), regenPerTick(regenPerTick), hitTimes(hitTimes), hitAmount(hitAmount), maxCarryWeight(maxCarryWeight), ID(std::move(ID)),
-              type(std::move(type)), name(std::move(name)), graphic(std::move(graphic)), pos(0, 0), manager(entityManager) {}
+              type(std::move(type)), name(std::move(name)), graphic(std::move(graphic)), pos(0, 0), manager(entityManager)
+    {
+        gNumInitialisedEntities++;
+    }
 
     Entity(EntityManager& entityManager, std::string ID, std::string type, std::string name, std::string graphic, double hp, double maxhp, double regenPerTick)
             : Entity(entityManager, std::move(ID), std::move(type), std::move(name), std::move(graphic), hp, maxhp, regenPerTick, 1, 2, 100) {}

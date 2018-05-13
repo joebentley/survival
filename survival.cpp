@@ -86,6 +86,10 @@ int main(int argc, char* argv[])
                 chest->setPos(player->pos + Point(-2, 2));
                 manager.addEntity(chest);
 
+                auto apple2 = std::make_shared<AppleEntity>(manager, "apple2");
+                chest->addToInventory(apple2);
+                manager.addEntity(apple2);
+
                 auto healthUI = std::make_shared<StatusUIEntity>(manager, dynamic_cast<PlayerEntity&>(*player));
                 manager.addEntity(healthUI);
 

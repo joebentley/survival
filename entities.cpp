@@ -81,11 +81,25 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
 
         if (key == SDLK_g) {
             auto entitiesAtPos = manager.getEntitiesAtPos(pos);
+
+            std::vector<std::shared_ptr<Entity>> entitiesWithInventories;
+            std::copy_if(entitiesAtPos.begin(), entitiesAtPos.end(), std::back_inserter(entitiesWithInventories),
+                         [](auto &a) {
+                return a->ID != "Player" && !a->inventory.empty();
+            });
+
+            if (!entitiesWithInventories.empty()) {
+                // TODO: what if multiple chests are present?
+                lootingDialog.showItemsToLoot(entitiesWithInventories[0]->inventory, entitiesWithInventories[0]);
+                return;
+            }
+
             std::vector<std::shared_ptr<Entity>> pickuppableEntities;
-            std::copy_if(entitiesAtPos.begin(), entitiesAtPos.end(),
-                         std::back_inserter(pickuppableEntities), [](auto &a) {
+            std::copy_if(entitiesAtPos.begin(), entitiesAtPos.end(), std::back_inserter(pickuppableEntities),
+                         [this](auto &a) {
                 auto b = a->getBehaviourByID("PickuppableBehaviour");
-                return (b != nullptr && b->enabled);
+                // Don't pick up if it isn't pickuppable, or if it is already in the player's inventory
+                return (b != nullptr && std::find(this->inventory.cbegin(), this->inventory.cend(), a) == this->inventory.cend());
             });
 
             if (pickuppableEntities.empty())
