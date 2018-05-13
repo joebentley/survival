@@ -19,7 +19,7 @@ public:
     int render(Font& font, Point worldPos) {
         return render(font, worldPos.x, worldPos.y);
     }
-    void randomizeFloor();
+    void randomizeWorld();
 };
 
 #endif // WORLD_H_

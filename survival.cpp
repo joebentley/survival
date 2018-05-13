@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 
     Texture texture;
     auto world = std::make_unique<World>();
-    world->randomizeFloor();
+    world->randomizeWorld();
     
     printf("video mode: %d x %d\n", SCREEN_WIDTH, SCREEN_HEIGHT);
 
@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
                 SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
                 Font font(texture, CHAR_WIDTH, CHAR_HEIGHT, NUM_PER_ROW, CHARS, renderer);
-                EntityManager &manager = EntityManager::getInstance();
+                auto &manager = EntityManager::getInstance();
 
                 auto player = std::make_shared<PlayerEntity>();
                 // Place player in center of world
@@ -89,10 +89,6 @@ int main(int argc, char* argv[])
                 auto apple2 = std::make_shared<AppleEntity>("apple2");
                 chest->addToInventory(apple2);
                 manager.addEntity(apple2);
-
-                auto bush = std::make_shared<BushEntity>("bush1");
-                bush->setPos(player->pos + Point(-2, -2));
-                manager.addEntity(bush);
 
                 auto healthUI = std::make_shared<StatusUIEntity>(dynamic_cast<PlayerEntity&>(*player));
                 manager.addEntity(healthUI);

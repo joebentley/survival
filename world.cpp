@@ -1,4 +1,6 @@
 #include "world.h"
+#include "entities.h"
+#include "utils.h"
 #include <cstdlib>
 #include <cstdio>
 
@@ -12,12 +14,16 @@ int World::render(Font& font, int worldX, int worldY)
     return 0;
 }
 
-void World::randomizeFloor()
+void World::randomizeWorld()
 {
+    auto &manager = EntityManager::getInstance();
+    int numBushes = 0;
+
     for (int worldY = 0; worldY < SCREEN_HEIGHT; ++worldY)
     for (int worldX = 0; worldX < SCREEN_WIDTH; ++worldX)
     for (int y = 0; y < SCREEN_HEIGHT; ++y)
     for (int x = 0; x < SCREEN_WIDTH; ++x) {
+        // Generate background tile
         switch (rand() % 4) {
             case 0:
                 this->floor[worldY][worldX][y][x] = "`";
@@ -32,9 +38,18 @@ void World::randomizeFloor()
                 this->floor[worldY][worldX][y][x] = ",";
                 break;
         }
+
+        Point p(worldX * SCREEN_WIDTH + x, worldY * SCREEN_HEIGHT + y);
+
+        // Random chance of creating a bush
+        if (randFloat() < 0.002) {
+            auto bush = std::make_shared<BushEntity>("bush" + std::to_string(++numBushes));
+            bush->setPos(p);
+            manager.addEntity(bush);
+        }
     }
 }
 
 Point worldToScreen(Point worldSpacePoint) {
-    return Point(worldSpacePoint.x % SCREEN_WIDTH, worldSpacePoint.y % SCREEN_HEIGHT);
+    return { worldSpacePoint.x % SCREEN_WIDTH, worldSpacePoint.y % SCREEN_HEIGHT };
 }
