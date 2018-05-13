@@ -124,7 +124,7 @@ public:
         return instance;
     }
 
-    EntityManager() {}
+    EntityManager() = default;
     EntityManager(const EntityManager&) = delete;
     void operator=(const EntityManager&) = delete;
 

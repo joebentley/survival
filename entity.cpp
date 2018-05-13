@@ -122,9 +122,11 @@ void EntityManager::broadcast(Uint32 signal) {
     }
 }
 
+#define UNMANAGED_ENTITIES_ERROR_MESSAGE "Warning! The number of initialised entities is not equal to the number of entities in the entity manager!"
+
 void EntityManager::initialize() {
     if (gNumInitialisedEntities != entities.size())
-        std::cerr << "Warning! The number of initialised entities is not equal to the number of entities in the entity manager!" << std::endl;
+        std::cerr << UNMANAGED_ENTITIES_ERROR_MESSAGE << std::endl;
 
     for (const auto& entity : entities) {
         entity.second->initialize();
@@ -133,6 +135,10 @@ void EntityManager::initialize() {
 
 void EntityManager::tick() {
     cleanup();
+
+    if (gNumInitialisedEntities != entities.size())
+        std::cerr << UNMANAGED_ENTITIES_ERROR_MESSAGE << std::endl;
+
     for (const auto& entity : entities) {
         entity.second->tick();
     }

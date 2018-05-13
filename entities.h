@@ -72,41 +72,18 @@ public:
 
 class BerryEntity;
 class BushEntity : public Entity {
-    static const int RESTOCK_RATE = 100; // ticks
-
-    class KeepStockedBehaviour : public Behaviour {
-        int ticksUntilRestock {RESTOCK_RATE};
-        int numTimesRestocked {0};
-
-    public:
-        explicit KeepStockedBehaviour(Entity& parent) : Behaviour("KeepStockedBehaviour", parent) {}
-
-        void initialize() override {
-            auto item = std::make_shared<BerryEntity>(parent.ID + "berry" + std::to_string(++numTimesRestocked));
-            parent.addToInventory(std::dynamic_pointer_cast<Entity>(item));
-        }
-
-        void tick() override {
-            if (ticksUntilRestock == 0 && parent.inventory.empty()) {
-                auto item = std::make_shared<BerryEntity>(parent.ID + "berry" + std::to_string(++numTimesRestocked));
-                parent.addToInventory(std::dynamic_pointer_cast<Entity>(item));
-                ticksUntilRestock = RESTOCK_RATE;
-            }
-            if (ticksUntilRestock > 0)
-                --ticksUntilRestock;
-        }
-    };
-
 public:
+    const int RESTOCK_RATE = 100; // ticks
+
     const std::string SHORT_DESC = "It's a bush!";
     const std::string LONG_DESC = "";
 
-    BushEntity(std::string ID)
+    explicit BushEntity(std::string ID)
     : Entity(std::move(ID), "container", "Bush", "${black}$[purple]$(div)")
     {
         shortDesc = SHORT_DESC;
         longDesc = LONG_DESC;
-        addBehaviour(std::make_shared<KeepStockedBehaviour>(*this));
+        addBehaviour(std::make_shared<KeepStockedBehaviour<BerryEntity>>(*this, RESTOCK_RATE));
     }
 
     void render(Font& font, Point currentWorldPos) override;
@@ -128,7 +105,7 @@ public:
     const std::string SHORT_DESC = "A small, fist-sized fruit that is hopefully crispy and juicy";
     const std::string LONG_DESC = "This is a longer description of the apple";
 
-    AppleEntity(std::string ID)
+    explicit AppleEntity(std::string ID)
             : EatableEntity(std::move(ID), "food", "Apple", "$[green]a", 0.5)
     {
         shortDesc = SHORT_DESC;
@@ -142,7 +119,7 @@ public:
     const std::string SHORT_DESC = "A yellow fruit found in the jungle. The shape looks familiar...";
     const std::string LONG_DESC = "This fruit was discovered in [redacted]. They were brought west by Arab conquerors in 327 B.C.";
 
-    BananaEntity(std::string ID)
+    explicit BananaEntity(std::string ID)
             : EatableEntity(std::move(ID), "food", "Banana", "$[yellow]b", 0.5)
     {
         shortDesc = SHORT_DESC;
@@ -156,7 +133,7 @@ public:
     const std::string SHORT_DESC = "A purple berry";
     const std::string LONG_DESC = "";
 
-    BerryEntity(std::string ID)
+    explicit BerryEntity(std::string ID)
     : EatableEntity(std::move(ID), "food", "Berry", "$[purple]$(male)", 0.5)
     {
         shortDesc = SHORT_DESC;
@@ -179,10 +156,10 @@ public:
 
     const int X_OFFSET = 10;
 
-    explicit StatusUIEntity()
+    StatusUIEntity()
             : StatusUIEntity(dynamic_cast<PlayerEntity&>(*EntityManager::getInstance().getEntityByID("Player"))) { }
 
-    StatusUIEntity(PlayerEntity& player)
+    explicit StatusUIEntity(PlayerEntity& player)
             : Entity("StatusUI", "UI", "", ""),
               player(player), shown(false), forceTickDisplayTimer(0), ticksWaitedDuringAnimation(1) { }
 
