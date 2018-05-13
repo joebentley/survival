@@ -28,7 +28,7 @@ public:
     bool attack(const Point& attackPos);
     void tick() override;
     void handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen, LootingDialog &lootingDialog, InspectionDialog &inspectionDialog);
-    void render(Font &font, int currentWorldX, int currentWorldY) override;
+    void render(Font &font, Point currentWorldPos) override;
 };
 
 class CatEntity : public Entity {
@@ -54,6 +54,65 @@ public:
         addBehaviour(std::make_shared<EatableBehaviour>(*this, hungerRestoration));
     }
 };
+
+class ChestEntity : public Entity {
+public:
+    const std::string SHORT_DESC = "A heavy wooden chest";
+    const std::string LONG_DESC = "This chest is super heavy";
+
+    ChestEntity(std::string ID)
+            : Entity(std::move(ID), "container", "Chest", "${black}$[brown]$(accentAE)")
+    {
+        shortDesc = SHORT_DESC;
+        longDesc = LONG_DESC;
+
+        // TODO: allow player to place items in chest
+    }
+};
+
+class BerryEntity;
+class BushEntity : public Entity {
+    static const int RESTOCK_RATE = 100; // ticks
+
+    class KeepStockedBehaviour : public Behaviour {
+        int ticksUntilRestock {RESTOCK_RATE};
+        int numTimesRestocked {0};
+
+    public:
+        explicit KeepStockedBehaviour(Entity& parent) : Behaviour("KeepStockedBehaviour", parent) {}
+
+        void initialize() override {
+            auto item = std::make_shared<BerryEntity>(parent.ID + "berry" + std::to_string(++numTimesRestocked));
+            parent.addToInventory(std::dynamic_pointer_cast<Entity>(item));
+        }
+
+        void tick() override {
+            if (ticksUntilRestock == 0 && parent.inventory.empty()) {
+                auto item = std::make_shared<BerryEntity>(parent.ID + "berry" + std::to_string(++numTimesRestocked));
+                parent.addToInventory(std::dynamic_pointer_cast<Entity>(item));
+                ticksUntilRestock = RESTOCK_RATE;
+            }
+            if (ticksUntilRestock > 0)
+                --ticksUntilRestock;
+        }
+    };
+
+public:
+    const std::string SHORT_DESC = "It's a bush!";
+    const std::string LONG_DESC = "";
+
+    BushEntity(std::string ID)
+    : Entity(std::move(ID), "container", "Bush", "${black}$[purple]$(div)")
+    {
+        shortDesc = SHORT_DESC;
+        longDesc = LONG_DESC;
+        addBehaviour(std::make_shared<KeepStockedBehaviour>(*this));
+    }
+
+    void render(Font& font, Point currentWorldPos) override;
+};
+
+// Food
 
 class CorpseEntity : public EatableEntity {
 public:
@@ -92,18 +151,17 @@ public:
     }
 };
 
-class ChestEntity : public Entity {
+class BerryEntity : public EatableEntity {
 public:
-    const std::string SHORT_DESC = "A heavy wooden chest";
-    const std::string LONG_DESC = "This chest is super heavy";
+    const std::string SHORT_DESC = "A purple berry";
+    const std::string LONG_DESC = "";
 
-    ChestEntity(std::string ID)
-            : Entity(std::move(ID), "container", "Chest", "${black}$[brown]$(accentAE)")
+    BerryEntity(std::string ID)
+    : EatableEntity(std::move(ID), "food", "Berry", "$[purple]$(male)", 0.5)
     {
         shortDesc = SHORT_DESC;
         longDesc = LONG_DESC;
-
-        // TODO: allow player to place items in chest
+        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
     }
 };
 
@@ -128,7 +186,7 @@ public:
             : Entity("StatusUI", "UI", "", ""),
               player(player), shown(false), forceTickDisplayTimer(0), ticksWaitedDuringAnimation(1) { }
 
-    void render(Font &font, int currentWorldX, int currentWorldY) override;
+    void render(Font &font, Point currentWorldPos) override;
     void emit(Uint32 signal) override;
     void tick() override;
     void setAttackTarget(std::shared_ptr<Entity> attackTarget) {

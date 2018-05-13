@@ -185,8 +185,8 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
         quit = true;
 }
 
-void PlayerEntity::render(Font &font, int currentWorldX, int currentWorldY) {
-    Entity::render(font, currentWorldX, currentWorldY);
+void PlayerEntity::render(Font &font, Point currentWorldPos) {
+    Entity::render(font, currentWorldPos);
 
     if (showingTooMuchWeightMessage) {
         const std::string& displayString = "You cannot carry that much!";
@@ -194,7 +194,7 @@ void PlayerEntity::render(Font &font, int currentWorldX, int currentWorldY) {
     }
 }
 
-void StatusUIEntity::render(Font &font, int currentWorldX, int currentWorldY) {
+void StatusUIEntity::render(Font &font, Point currentWorldPos) {
     std::string colorStr;
     double hpPercent = player.hp / player.maxhp;
 
@@ -276,4 +276,14 @@ void CatEntity::destroy() {
     auto corpse = std::make_shared<CorpseEntity>(ID + "corpse", 0.4, name, 100);
     corpse->pos = pos;
     EntityManager::getInstance().addEntity(corpse);
+}
+
+void BushEntity::render(Font &font, Point currentWorldPos) {
+    if (!inventory.empty()) {
+        graphic = "${black}$[purple]$(div)";
+    } else {
+        graphic = "${black}$[green]$(div)";
+    }
+
+    Entity::render(font, currentWorldPos);
 }

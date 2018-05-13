@@ -34,9 +34,12 @@ void Entity::emit(Uint32 signal) {
     }
 }
 
-void Entity::render(Font& font, int currentWorldX, int currentWorldY) {
+void Entity::render(Font& font, Point currentWorldPos) {
     if (!shouldRender)
         return;
+
+    int currentWorldX = currentWorldPos.x;
+    int currentWorldY = currentWorldPos.y;
 
     // Only draw if the entity is on the current world screen
     if (
@@ -135,13 +138,13 @@ void EntityManager::tick() {
     }
 }
 
-void EntityManager::render(Font& font, int currentWorldX, int currentWorldY) {
+void EntityManager::render(Font& font, Point currentWorldPos) {
     // TODO: Is this slow?
     std::vector<std::pair<std::string, std::shared_ptr<Entity>>> toRender(entities.begin(), entities.end());
     std::sort(toRender.begin(), toRender.end(), [](auto &a, auto &b) { return a.second->renderingLayer > b.second->renderingLayer; });
 
     for (const auto& entity : toRender) {
-        entity.second->render(font, currentWorldX, currentWorldY);
+        entity.second->render(font, currentWorldPos);
     }
 }
 

@@ -90,6 +90,10 @@ int main(int argc, char* argv[])
                 chest->addToInventory(apple2);
                 manager.addEntity(apple2);
 
+                auto bush = std::make_shared<BushEntity>("bush1");
+                bush->setPos(player->pos + Point(-2, -2));
+                manager.addEntity(bush);
+
                 auto healthUI = std::make_shared<StatusUIEntity>(dynamic_cast<PlayerEntity&>(*player));
                 manager.addEntity(healthUI);
 

@@ -96,10 +96,7 @@ public:
     virtual void tick();
     virtual void destroy();
     virtual void emit(uint32_t signal);
-    virtual void render(Font& font, int currentWorldX, int currentWorldY);
-    virtual void render(Font& font, Point currentWorldPos) {
-        render(font, currentWorldPos.x, currentWorldPos.y);
-    }
+    virtual void render(Font& font, Point currentWorldPos);
 
     bool addToInventory(std::shared_ptr<Entity> item);
     void dropItem(int inventoryIndex);
@@ -140,10 +137,7 @@ public:
     void tick();
     void cleanup(); // Cleanup entities to be deleted
     virtual void destroy() { }
-    void render(Font& font, int currentWorldX, int currentWorldY);
-    void render(Font& font, Point currentWorldPos) {
-        render(font, currentWorldPos.x, currentWorldPos.y);
-    }
+    void render(Font& font, Point currentWorldPos);
     std::shared_ptr<Entity> getEntityByID(const std::string &ID) const;
     void queueForDeletion(const std::string &ID);
     void eraseByID(const std::string &ID);
