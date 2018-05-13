@@ -3,13 +3,14 @@
 #include <stdexcept>
 
 std::unordered_map<std::string, Color> colorMap = {
-    {"white", Color(0xFF, 0xFF, 0xFF, 0xFF)},
-    {"yellow", Color(0xFF, 0xFF, 0, 0xFF)},
-    {"red", Color(0xFF, 0, 0, 0xFF)},
-    {"green", Color(0, 0xFF, 0, 0xFF)},
-    {"blue", Color(0, 0, 0xFF, 0xFF)},
-    {"grey", Color(0x88, 0x88, 0x88, 0xFF)},
-    {"black", Color(0, 0, 0, 0xFF)},
+    {"white", Color(0xFF, 0xFF, 0xFF)},
+    {"yellow", Color(0xFF, 0xFF, 0)},
+    {"red", Color(0xFF, 0, 0)},
+    {"green", Color(0, 0xFF, 0)},
+    {"blue", Color(0, 0, 0xFF)},
+    {"grey", Color(0x88, 0x88, 0x88)},
+    {"black", Color(0, 0, 0)},
+    {"brown", Color(150, 75, 0)},
     {"transparent", Color(0, 0, 0, 0)}
 };
 

@@ -68,6 +68,7 @@ bool Entity::addToInventory(std::shared_ptr<Entity> item) {
     if (b != nullptr && b->enabled) {
         if (getCarryingWeight() + dynamic_cast<PickuppableBehaviour&>(*b).weight > maxCarryWeight)
             return false;
+        item->setPos(pos);
         inventory.push_back(item);
         item->shouldRender = false;
         b->enabled = false;
@@ -112,6 +113,9 @@ int Entity::getCarryingWeight() {
 }
 
 void EntityManager::addEntity(std::shared_ptr<Entity> entity) {
+    if (getEntityByID(entity->ID) != nullptr)
+        throw std::invalid_argument("Entity with ID " + entity->ID + " already present!");
+
     entities[entity->ID] = entity;
 }
 

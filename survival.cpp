@@ -69,16 +69,9 @@ int main(int argc, char* argv[])
                 cat->setPos(player->pos.x - 10, player->pos.y - 10);
                 manager.addEntity(cat);
 
-                auto apple = std::make_shared<EatableEntity>(manager, "apple1", "food", "Apple", "$[green]a", 0.5);
-                apple->shortDesc = "A small, fist-sized fruit that is hopefully crispy and juicy";
-                apple->longDesc = "This is a longer description of the apple";
-                apple->addBehaviour(std::make_shared<PickuppableBehaviour>(*apple, 1));
+                auto apple = std::make_shared<AppleEntity>(manager, "apple");
+                auto banana = std::make_shared<BananaEntity>(manager, "banana");
                 manager.addEntity(apple);
-
-                auto banana = std::make_shared<EatableEntity>(manager, "banana1", "food", "Banana", "$[yellow]b", 0.5);
-                banana->shortDesc = "A yellow fruit found in the jungle. The shape looks familiar...";
-                banana->longDesc = "This fruit was discovered in [redacted]. They were brought west by Arab conquerors in 327 B.C.";
-                banana->addBehaviour(std::make_shared<PickuppableBehaviour>(*banana, 1));
                 manager.addEntity(banana);
 
                 auto pileOfLead = std::make_shared<Entity>(manager, "pileOfLead", "", "Huge Pile Of Lead", "$[grey]L");
@@ -88,6 +81,10 @@ int main(int argc, char* argv[])
                 apple->setPos(player->pos + Point(2, 2));
                 banana->setPos(player->pos + Point(3, 2));
                 pileOfLead->setPos(player->pos + Point(2, 2));
+
+                auto chest = std::make_shared<ChestEntity>(manager, "chest");
+                chest->setPos(player->pos + Point(-2, 2));
+                manager.addEntity(chest);
 
                 auto healthUI = std::make_shared<StatusUIEntity>(manager, dynamic_cast<PlayerEntity&>(*player));
                 manager.addEntity(healthUI);

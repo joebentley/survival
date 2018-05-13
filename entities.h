@@ -64,6 +64,49 @@ public:
     }
 };
 
+class AppleEntity : public EatableEntity {
+public:
+    const std::string SHORT_DESC = "A small, fist-sized fruit that is hopefully crispy and juicy";
+    const std::string LONG_DESC = "This is a longer description of the apple";
+
+    AppleEntity(EntityManager& entityManager, std::string ID)
+            : EatableEntity(entityManager, std::move(ID), "food", "Apple", "$[green]a", 0.5)
+    {
+        shortDesc = SHORT_DESC;
+        longDesc = LONG_DESC;
+        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
+    }
+};
+
+class BananaEntity : public EatableEntity {
+public:
+    const std::string SHORT_DESC = "A yellow fruit found in the jungle. The shape looks familiar...";
+    const std::string LONG_DESC = "This fruit was discovered in [redacted]. They were brought west by Arab conquerors in 327 B.C.";
+
+    BananaEntity(EntityManager& entityManager, std::string ID)
+            : EatableEntity(entityManager, std::move(ID), "food", "Banana", "$[yellow]b", 0.5)
+    {
+        shortDesc = SHORT_DESC;
+        longDesc = LONG_DESC;
+        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
+    }
+};
+
+class ChestEntity : public Entity {
+public:
+    const std::string SHORT_DESC = "A heavy wooden chest";
+    const std::string LONG_DESC = "This chest is super heavy";
+
+    ChestEntity(EntityManager& entityManager, std::string ID)
+            : Entity(entityManager, std::move(ID), "container", "Chest", "${black}$[brown]$(accentAE)")
+    {
+        shortDesc = SHORT_DESC;
+        longDesc = LONG_DESC;
+    }
+};
+
+// UI entities
+
 class StatusUIEntity : public Entity {
 public:
     PlayerEntity& player;

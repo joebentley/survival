@@ -9,6 +9,7 @@
 #include <iostream>
 #include <memory>
 #include <unordered_map>
+#include <stdexcept>
 #include "font.h"
 #include "world.h"
 #include "point.h"
@@ -69,11 +70,10 @@ public:
     double regenPerTick;
     int hitTimes;
     int hitAmount;
-//    bool canBePickedUp {false};
     bool shouldRender {true};
     int maxCarryWeight;
 
-    std::string ID; // Should be unique!
+    std::string ID; // Must be unique!
     std::string type;
     std::string name;
     std::string shortDesc;

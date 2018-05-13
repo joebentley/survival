@@ -35,6 +35,7 @@ const std::string CHARS =
 
 struct Color {
     Color() {}
+    Color(Uint8 r, Uint8 g, Uint8 b) : Color(r, g, b, 0xFF) {}
     Color(Uint8 r, Uint8 g, Uint8 b, Uint8 a) : r(r), g(g), b(b), a(a) {}
 
     Uint8 r;
