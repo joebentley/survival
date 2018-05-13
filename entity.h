@@ -93,8 +93,8 @@ public:
     virtual void destroy();
     virtual void emit(uint32_t signal);
     virtual void render(Font& font, int currentWorldX, int currentWorldY);
-    virtual void render(Font& font, std::tuple<int, int> currentWorldPos) {
-        render(font, std::get<0>(currentWorldPos), std::get<1>(currentWorldPos));
+    virtual void render(Font& font, Point currentWorldPos) {
+        render(font, currentWorldPos.x, currentWorldPos.y);
     }
 
     bool addToInventory(std::shared_ptr<Entity> item);
@@ -103,8 +103,8 @@ public:
     void setPos(int x, int y) { pos = Point(x, y); }
     void setPos(Point p) { pos = p; }
 
-    std::tuple<int, int> getWorldPos() {
-        return std::make_tuple(this->pos.x / SCREEN_WIDTH, this->pos.y / SCREEN_HEIGHT);
+    Point getWorldPos() {
+        return { this->pos.x / SCREEN_WIDTH, this->pos.y / SCREEN_HEIGHT };
     }
 
     std::shared_ptr<Behaviour> getBehaviourByID(const std::string& ID) const;
@@ -127,8 +127,8 @@ public:
     void cleanup(); // Cleanup entities to be deleted
     virtual void destroy() { }
     void render(Font& font, int currentWorldX, int currentWorldY);
-    void render(Font& font, std::tuple<int, int> currentWorldPos) {
-        render(font, std::get<0>(currentWorldPos), std::get<1>(currentWorldPos));
+    void render(Font& font, Point currentWorldPos) {
+        render(font, currentWorldPos.x, currentWorldPos.y);
     }
     std::shared_ptr<Entity> getEntityByID(const std::string &ID) const;
     void queueForDeletion(const std::string &ID);

@@ -13,14 +13,35 @@ std::string repeat(int n, const std::string &str) {
     return os.str();
 }
 
-void showMessageBox(Font& font, const std::string& message, int x, int y) {
-    int numChars = getFontStringLength(message);
+void showMessageBox(Font &font, const std::vector<std::string> &contents, int padding, int x, int y) {
+    int maxNumChars = 0;
 
-    font.drawText("${black}$(p23)" + repeat(numChars + 4, "$(p27)") + "$(p9)", x, y);
-    font.drawText("${black}$(p8)" + std::string(numChars + 4, ' ') + "$(p8)", x, y+1);
-    font.drawText("${black}$(p8)  " + message + "${black}  $[white]$(p8)", x, y+2);
-    font.drawText("${black}$(p8)" + std::string(numChars + 4, ' ') + "$(p8)", x, y+3);
-    font.drawText("${black}$(p22)" + repeat(numChars + 4, "$(p27)") + "$(p10)", x, y+4);
+    for (const auto &string : contents) {
+        int length = getFontStringLength(string);
+        if (length > maxNumChars)
+            maxNumChars = length;
+    }
+
+    int innerBoxWidth = maxNumChars + 2 * padding;
+
+    font.drawText("${black}$(p23)" + repeat(innerBoxWidth, "$(p27)") + "$(p9)", x, y);
+
+    for (int i = 0; i < padding; ++i) {
+        font.drawText("${black}$(p8)" + std::string((unsigned long)innerBoxWidth, ' ') + "$(p8)", x, ++y);
+    }
+
+    for (const auto &line : contents) {
+        int paddingLength = maxNumChars - getFontStringLength(line);
+        font.drawText("${black}$(p8)" + std::string((unsigned long)padding, ' ') + line +
+                      std::string((unsigned long)paddingLength, ' ') +
+                      "${black}$[white]" + std::string((unsigned long)padding, ' ') + "$(p8)", x, ++y);
+    }
+
+    for (int i = 0; i < padding; ++i) {
+        font.drawText("${black}$(p8)" + std::string((unsigned long)innerBoxWidth, ' ') + "$(p8)", x, ++y);
+    }
+
+    font.drawText("${black}$(p22)" + repeat(innerBoxWidth, "$(p27)") + "$(p10)", x, y+1);
 }
 
 void drawDescriptionScreen(Font& font, Entity& item) {
@@ -220,4 +241,146 @@ void LootingDialog::render(Font &font) {
         const std::string& displayString = "You cannot carry that much!";
         showMessageBox(font, displayString, 20, 20);
     }
+}
+
+inline bool InspectionDialog::isOnScreen(const Point& p) const {
+    auto point = p - Point(SCREEN_WIDTH, SCREEN_HEIGHT) * player.getWorldPos();
+    return !(point.x < 0 || point.y < 0 || point.x >= SCREEN_WIDTH || point.y >= SCREEN_HEIGHT);
+}
+
+void InspectionDialog::handleInput(SDL_KeyboardEvent &e) {
+    Point posOffset;
+
+    switch (e.keysym.sym) {
+        case SDLK_h:
+            if (!viewingDescription)
+                posOffset = Point(-1, 0);
+            break;
+        case SDLK_j:
+            if (!viewingDescription)
+                posOffset = Point(0, 1);
+            break;
+        case SDLK_k:
+            if (!viewingDescription)
+                posOffset = Point(0, -1);
+            break;
+        case SDLK_l:
+            if (!viewingDescription)
+                posOffset = Point(1, 0);
+            break;
+        case SDLK_y:
+            if (!viewingDescription)
+                posOffset = Point(-1, -1);
+            break;
+        case SDLK_u:
+            if (!viewingDescription)
+                posOffset = Point(1, -1);
+            break;
+        case SDLK_b:
+            if (!viewingDescription)
+                posOffset = Point(-1, 1);
+            break;
+        case SDLK_n:
+            if (!viewingDescription)
+                posOffset = Point(1, 1);
+            break;
+        case SDLK_EQUALS:
+            if (selectingFromMultipleOptions && !viewingDescription) {
+                const auto &currentEntities = player.manager.getEntitiesAtPos(chosenPoint);
+                if (chosenIndex == currentEntities.size() - 1)
+                    chosenIndex = 0;
+                else
+                    chosenIndex++;
+            }
+            break;
+        case SDLK_MINUS:
+            if (selectingFromMultipleOptions && !viewingDescription) {
+                const auto &currentEntities = player.manager.getEntitiesAtPos(chosenPoint);
+                if (chosenIndex == 0)
+                    chosenIndex = (int)(currentEntities.size() - 1);
+                else
+                    chosenIndex--;
+            }
+            break;
+        case SDLK_RETURN:
+            if (thereIsAnEntity)
+                viewingDescription = true;
+            break;
+        case SDLK_ESCAPE:
+            if (viewingDescription)
+                viewingDescription = false;
+            else
+                enabled = false;
+            return;
+        default:
+            return;
+    }
+
+    if (isOnScreen(chosenPoint + posOffset))
+        chosenPoint += posOffset;
+}
+
+void InspectionDialog::render(Font &font) {
+    const auto &entitiesAtPoint = player.manager.getEntitiesAtPos(chosenPoint);
+
+    if (viewingDescription) {
+        drawDescriptionScreen(font, *entitiesAtPoint[chosenIndex]);
+        return;
+    }
+
+    const auto &chosenPointScreen = worldToScreen(chosenPoint);
+    font.drawText("${black}$[yellow]X", chosenPointScreen);
+
+    int xPosWindow = chosenPointScreen.x < SCREEN_WIDTH ? 1 : SCREEN_WIDTH / 2 + 1;
+
+    if (entitiesAtPoint.size() > 1) {
+        selectingFromMultipleOptions = true;
+        std::vector<std::string> lines;
+
+        lines.emplace_back("  You see");
+        std::transform(entitiesAtPoint.cbegin(), entitiesAtPoint.cend(), std::back_inserter(lines),
+                       [] (auto &a) -> std::string { return "  " + a->graphic + " " + a->name; });
+
+        lines.emplace_back("");
+        lines.emplace_back("  (-)-$(up) (=)-$(down) return-desc");
+        showMessageBox(font, lines, xPosWindow, 2);
+        font.draw("right", xPosWindow + 2, 2 + 3 + chosenIndex);
+        thereIsAnEntity = true;
+    } else {
+        selectingFromMultipleOptions = false;
+        chosenIndex = 0;
+    }
+
+    if (entitiesAtPoint.size() == 1) {
+        const auto &entity = *entitiesAtPoint[0];
+
+        std::vector<std::string> lines;
+        lines.emplace_back(entity.graphic + " " + entity.name);
+
+        if (!entity.shortDesc.empty()) {
+            lines.emplace_back("");
+            auto descLines = wordWrap(entity.shortDesc, SCREEN_WIDTH / 2 - 5);
+            std::copy(descLines.begin(), descLines.end(), std::back_inserter(lines));
+        }
+
+        if (!entity.longDesc.empty()) {
+            lines.emplace_back("");
+            auto descLines = wordWrap(entity.longDesc, SCREEN_WIDTH / 2 - 5);
+            std::copy(descLines.begin(), descLines.end(), std::back_inserter(lines));
+        }
+
+        const int cappedNumLines = SCREEN_HEIGHT - 20;
+        std::vector<std::string> linesCapped = lines;
+        if (lines.size() > cappedNumLines) {
+            linesCapped = std::vector<std::string>(lines.begin(), lines.begin() + cappedNumLines);
+            *(linesCapped.end() - 1) += "...";
+        }
+
+        showMessageBox(font, lines, xPosWindow, 2);
+
+        thereIsAnEntity = true;
+    }
+
+    if (entitiesAtPoint.empty())
+        thereIsAnEntity = false;
 }

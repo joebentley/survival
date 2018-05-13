@@ -7,6 +7,7 @@
 
 class InventoryScreen;
 class LootingDialog;
+class InspectionDialog;
 
 class PlayerEntity : public Entity {
 public:
@@ -15,16 +16,18 @@ public:
     double hungerDamageRate; // hp loss per tick while starving
     bool attacking {false}; // whether or not player is attacking something
     bool showingTooMuchWeightMessage {false};
+    bool showingInspectionDialog {false};
 
     explicit PlayerEntity(EntityManager& entityManager)
-            : Entity(entityManager, "Player", "player", "You, the player", "$[white]$(dwarf)", 10, 10, 0.1, 1, 4, 100), hunger(1), hungerRate(0.01), hungerDamageRate(0.15)
+            : Entity(entityManager, "Player", "player", "You, the player", "$[white]$(dwarf)", 10, 10, 0.1, 1, 4, 100),
+              hunger(1), hungerRate(0.01), hungerDamageRate(0.15)
     {
         renderingLayer = -1;
     }
 
     bool attack(const Point& attackPos);
     void tick() override;
-    void handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen, LootingDialog &lootingDialog);
+    void handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen, LootingDialog &lootingDialog, InspectionDialog &inspectionDialog);
     void render(Font &font, int currentWorldX, int currentWorldY) override;
 };
 

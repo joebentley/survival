@@ -7,7 +7,13 @@
 #include "font.h"
 #include "entities.h"
 
-void showMessageBox(Font& font, const std::string &message, int x, int y);
+void showMessageBox(Font& font, const std::vector<std::string> &contents, int padding, int x, int y);
+inline void showMessageBox(Font& font, const std::vector<std::string> &contents, int x, int y) {
+    showMessageBox(font, contents, 1, x, y);
+}
+inline void showMessageBox(Font& font, const std::string &message, int x, int y) {
+    showMessageBox(font, std::vector<std::string>{message}, 1, x, y);
+}
 
 //void inventoryScreen(Font& font, Entity &player, SDL_KeyboardEvent &e, bool &inventoryScreen);
 
@@ -45,6 +51,23 @@ public:
     explicit LootingDialog(PlayerEntity &player) : player(player) {}
 
     void showItemsToLoot(std::vector<std::shared_ptr<Entity>> items);
+
+    void handleInput(SDL_KeyboardEvent &e);
+    void render(Font& font);
+};
+
+class InspectionDialog {
+    inline bool isOnScreen(const Point& p) const;
+public:
+    bool enabled {false};
+    PlayerEntity &player;
+    Point chosenPoint;
+    bool selectingFromMultipleOptions {false};
+    int chosenIndex {0};
+    bool viewingDescription {false};
+    bool thereIsAnEntity {false};
+
+    explicit InspectionDialog(PlayerEntity &player) : player(player) {}
 
     void handleInput(SDL_KeyboardEvent &e);
     void render(Font& font);

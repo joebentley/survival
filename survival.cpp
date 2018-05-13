@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
                 manager.addEntity(pileOfLead);
 
                 apple->setPos(player->pos + Point(2, 2));
-                banana->setPos(player->pos + Point(2, 2));
+                banana->setPos(player->pos + Point(3, 2));
                 pileOfLead->setPos(player->pos + Point(2, 2));
 
                 auto healthUI = std::make_shared<StatusUIEntity>(manager, dynamic_cast<PlayerEntity&>(*player));
@@ -96,6 +96,7 @@ int main(int argc, char* argv[])
 
                 InventoryScreen inventoryScreen(*player);
                 LootingDialog lootingDialog(*player);
+                InspectionDialog inspectionDialog(*player);
 
                 bool quit = false;
                 SDL_Event e;
@@ -110,8 +111,10 @@ int main(int argc, char* argv[])
                                 inventoryScreen.handleInput(e.key);
                             else if (lootingDialog.enabled)
                                 lootingDialog.handleInput(e.key);
+                            else if (inspectionDialog.enabled)
+                                inspectionDialog.handleInput(e.key);
                             else
-                                dynamic_cast<PlayerEntity &>(*player).handleInput(e.key, quit, inventoryScreen, lootingDialog);
+                                dynamic_cast<PlayerEntity &>(*player).handleInput(e.key, quit, inventoryScreen, lootingDialog, inspectionDialog);
                         }
                     }
 
@@ -122,7 +125,7 @@ int main(int argc, char* argv[])
 
                     if (inventoryScreen.enabled)
                         inventoryScreen.render(font);
-                    else if (!lootingDialog.viewingDescription) {
+                    else if (!lootingDialog.viewingDescription && !inspectionDialog.viewingDescription) {
                         if (world->render(font, player->getWorldPos()) == -1)
                             return -1;
                         manager.render(font, player->getWorldPos());
@@ -130,6 +133,9 @@ int main(int argc, char* argv[])
 
                     if (lootingDialog.enabled)
                         lootingDialog.render(font);
+
+                    if (inspectionDialog.enabled)
+                        inspectionDialog.render(font);
 
                     if (player->hp <= 0) {
                         showMessageBox(font, "$[red]You died!", 10, 10);

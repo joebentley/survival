@@ -53,7 +53,7 @@ void PlayerEntity::tick() {
     Entity::tick();
 }
 
-void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen, LootingDialog &lootingDialog) {
+void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen, LootingDialog &lootingDialog, InspectionDialog &inspectionDialog) {
     auto key = e.keysym.sym;
     auto mod = e.keysym.mod;
 
@@ -76,7 +76,6 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
                 manager.queueForDeletion((*it)->ID);
                 hunger = std::min(hunger + dynamic_cast<EatableBehaviour&>(*((*it)->getBehaviourByID("EatableBehaviour"))).hungerRestoration, 1.0);
                 didAction = true;
-                return;
             }
         }
 
@@ -94,7 +93,6 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
             else if (pickuppableEntities.size() == 1) {
                 if (addToInventory(*pickuppableEntities.begin())) {
                     didAction = true;
-                    return;
                 } else {
                     showingTooMuchWeightMessage = true;
                     return;
@@ -158,6 +156,11 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
         if (key == SDLK_PERIOD) {
             manager.broadcast(SIGNAL_FORCE_WAIT);
             didAction = true;
+        }
+
+        if (key == SDLK_SEMICOLON) {
+            inspectionDialog.enabled = true;
+            inspectionDialog.chosenPoint = pos;
         }
 
         if (didAction)

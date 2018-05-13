@@ -3,6 +3,7 @@
 #define FONT_H_
 
 #include "texture.h"
+#include "point.h"
 #include <SDL2/SDL.h>
 #include <string>
 #include <sstream>
@@ -75,12 +76,27 @@ public:
     int draw(const std::string &character, int x, int y) {
         return draw(character, x, y, Color(0xFF, 0xFF, 0xFF, 0xFF), Color(0, 0, 0, 0));
     }
+    int draw(const std::string &character, Point p) {
+        return draw(character, p.x, p.y);
+    }
     int draw(const std::string &character, int x, int y, Color fColor) {
         return draw(character, x, y, fColor, Color(0, 0, 0, 0));
     }
+    int draw(const std::string &character, Point p, Color fColor) {
+        return draw(character, p.x, p.y, fColor);
+    }
     int draw(const std::string &character, int x, int y, Color fColor, Color bColor);
+    int draw(const std::string &character, Point p, Color fColor, Color bColor) {
+        return draw(character, p.x, p.y, fColor, bColor);
+    }
     int drawText(const std::string &text, int x, int y);
+    int drawText(const std::string &text, Point p) {
+        return drawText(text, p.x, p.y);
+    }
     int drawText(const std::string &text, int x, int y, Color fColor, Color bColor);
+    int drawText(const std::string &text, Point p, Color fColor, Color bColor) {
+        return drawText(text, p.x, p.y, fColor, bColor);
+    }
 };
 
 int getFontStringLength(const std::string& string);

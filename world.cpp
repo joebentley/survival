@@ -34,3 +34,7 @@ void World::randomizeFloor()
         }
     }
 }
+
+Point worldToScreen(Point worldSpacePoint) {
+    return Point(worldSpacePoint.x % SCREEN_WIDTH, worldSpacePoint.y % SCREEN_HEIGHT);
+}

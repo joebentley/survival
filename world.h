@@ -3,18 +3,21 @@
 #define WORLD_H_
 
 #include "font.h"
+#include "point.h"
 #include <string>
 
 #define SCREEN_WIDTH 70
 #define SCREEN_HEIGHT 35
+
+Point worldToScreen(Point worldSpacePoint);
 
 class World {
 public:
     std::string floor[SCREEN_HEIGHT][SCREEN_WIDTH][SCREEN_HEIGHT][SCREEN_WIDTH];
 
     int render(Font& font, int worldX, int worldY);
-    int render(Font& font, std::tuple<int, int> worldPos) {
-        return render(font, std::get<0>(worldPos), std::get<1>(worldPos));
+    int render(Font& font, Point worldPos) {
+        return render(font, worldPos.x, worldPos.y);
     }
     void randomizeFloor();
 };
