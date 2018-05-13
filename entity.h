@@ -56,19 +56,19 @@ class EntityManager;
 
 class Entity {
 public:
-    Entity(EntityManager& entityManager, std::string ID, std::string type, std::string name, std::string graphic,
+    Entity(std::string ID, std::string type, std::string name, std::string graphic,
            double hp, double maxhp, double regenPerTick, int hitTimes, int hitAmount, int maxCarryWeight)
             : hp(hp), maxhp(maxhp), regenPerTick(regenPerTick), hitTimes(hitTimes), hitAmount(hitAmount), maxCarryWeight(maxCarryWeight), ID(std::move(ID)),
-              type(std::move(type)), name(std::move(name)), graphic(std::move(graphic)), pos(0, 0), manager(entityManager)
+              type(std::move(type)), name(std::move(name)), graphic(std::move(graphic)), pos(0, 0)
     {
         gNumInitialisedEntities++;
     }
 
-    Entity(EntityManager& entityManager, std::string ID, std::string type, std::string name, std::string graphic, double hp, double maxhp, double regenPerTick)
-            : Entity(entityManager, std::move(ID), std::move(type), std::move(name), std::move(graphic), hp, maxhp, regenPerTick, 1, 2, 100) {}
+    Entity(std::string ID, std::string type, std::string name, std::string graphic, double hp, double maxhp, double regenPerTick)
+            : Entity(std::move(ID), std::move(type), std::move(name), std::move(graphic), hp, maxhp, regenPerTick, 1, 2, 100) {}
 
-    Entity(EntityManager& entityManager, std::string ID, std::string type, std::string name, std::string graphic)
-            : Entity(entityManager, std::move(ID), std::move(type), std::move(name), std::move(graphic), 1, 1, 0, 1, 2, 100) {}
+    Entity(std::string ID, std::string type, std::string name, std::string graphic)
+            : Entity(std::move(ID), std::move(type), std::move(name), std::move(graphic), 1, 1, 0, 1, 2, 100) {}
 
     double hp;
     double maxhp;
@@ -86,7 +86,6 @@ public:
 
     std::string graphic;
     Point pos;
-    EntityManager& manager;
     std::unordered_map<std::string, std::shared_ptr<Behaviour>> behaviours;
     std::vector<std::shared_ptr<Entity>> inventory;
 
@@ -120,8 +119,18 @@ public:
     int getCarryingWeight();
 };
 
+// Singleton class that manages all entities
 class EntityManager {
 public:
+    static EntityManager& getInstance() {
+        static EntityManager instance;
+        return instance;
+    }
+
+    EntityManager() {}
+    EntityManager(const EntityManager&) = delete;
+    void operator=(const EntityManager&) = delete;
+
     std::unordered_map<std::string, std::shared_ptr<Entity>> entities;
     std::queue<std::string> toBeDeleted;
 

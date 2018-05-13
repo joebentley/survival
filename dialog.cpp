@@ -301,7 +301,7 @@ void InspectionDialog::handleInput(SDL_KeyboardEvent &e) {
             break;
         case SDLK_EQUALS:
             if (selectingFromMultipleOptions && !viewingDescription) {
-                const auto &currentEntities = player.manager.getEntitiesAtPos(chosenPoint);
+                const auto &currentEntities = EntityManager::getInstance().getEntitiesAtPos(chosenPoint);
                 if (chosenIndex == currentEntities.size() - 1)
                     chosenIndex = 0;
                 else
@@ -310,7 +310,7 @@ void InspectionDialog::handleInput(SDL_KeyboardEvent &e) {
             break;
         case SDLK_MINUS:
             if (selectingFromMultipleOptions && !viewingDescription) {
-                const auto &currentEntities = player.manager.getEntitiesAtPos(chosenPoint);
+                const auto &currentEntities = EntityManager::getInstance().getEntitiesAtPos(chosenPoint);
                 if (chosenIndex == 0)
                     chosenIndex = (int)(currentEntities.size() - 1);
                 else
@@ -336,7 +336,7 @@ void InspectionDialog::handleInput(SDL_KeyboardEvent &e) {
 }
 
 void InspectionDialog::render(Font &font) {
-    const auto &entitiesAtPoint = player.manager.getEntitiesAtPos(chosenPoint);
+    const auto &entitiesAtPoint = EntityManager::getInstance().getEntitiesAtPos(chosenPoint);
 
     if (viewingDescription) {
         drawDescriptionScreen(font, *entitiesAtPoint[chosenIndex]);

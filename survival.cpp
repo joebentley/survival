@@ -58,23 +58,23 @@ int main(int argc, char* argv[])
                 SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
                 Font font(texture, CHAR_WIDTH, CHAR_HEIGHT, NUM_PER_ROW, CHARS, renderer);
-                EntityManager manager;
+                EntityManager &manager = EntityManager::getInstance();
 
-                auto player = std::make_shared<PlayerEntity>(manager);
+                auto player = std::make_shared<PlayerEntity>();
                 // Place player in center of world
                 player->setPos(SCREEN_WIDTH * (SCREEN_WIDTH + 1) / 2, SCREEN_HEIGHT * SCREEN_HEIGHT / 2);
                 manager.addEntity(player);
 
-                auto cat = std::make_shared<CatEntity>(manager, "cat1");
+                auto cat = std::make_shared<CatEntity>("cat1");
                 cat->setPos(player->pos.x - 10, player->pos.y - 10);
                 manager.addEntity(cat);
 
-                auto apple = std::make_shared<AppleEntity>(manager, "apple");
-                auto banana = std::make_shared<BananaEntity>(manager, "banana");
+                auto apple = std::make_shared<AppleEntity>("apple");
+                auto banana = std::make_shared<BananaEntity>("banana");
                 manager.addEntity(apple);
                 manager.addEntity(banana);
 
-                auto pileOfLead = std::make_shared<Entity>(manager, "pileOfLead", "", "Huge Pile Of Lead", "$[grey]L");
+                auto pileOfLead = std::make_shared<Entity>("pileOfLead", "", "Huge Pile Of Lead", "$[grey]L");
                 pileOfLead->addBehaviour(std::make_shared<PickuppableBehaviour>(*pileOfLead, 100));
                 manager.addEntity(pileOfLead);
 
@@ -82,15 +82,15 @@ int main(int argc, char* argv[])
                 banana->setPos(player->pos + Point(3, 2));
                 pileOfLead->setPos(player->pos + Point(2, 2));
 
-                auto chest = std::make_shared<ChestEntity>(manager, "chest");
+                auto chest = std::make_shared<ChestEntity>("chest");
                 chest->setPos(player->pos + Point(-2, 2));
                 manager.addEntity(chest);
 
-                auto apple2 = std::make_shared<AppleEntity>(manager, "apple2");
+                auto apple2 = std::make_shared<AppleEntity>("apple2");
                 chest->addToInventory(apple2);
                 manager.addEntity(apple2);
 
-                auto healthUI = std::make_shared<StatusUIEntity>(manager, dynamic_cast<PlayerEntity&>(*player));
+                auto healthUI = std::make_shared<StatusUIEntity>(dynamic_cast<PlayerEntity&>(*player));
                 manager.addEntity(healthUI);
 
                 manager.initialize();

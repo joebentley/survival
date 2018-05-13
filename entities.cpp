@@ -4,7 +4,7 @@
 #include <algorithm>
 
 bool PlayerEntity::attack(const Point &attackPos) {
-    auto entitiesInSquare = manager.getEntitiesAtPos(attackPos);
+    auto entitiesInSquare = EntityManager::getInstance().getEntitiesAtPos(attackPos);
 
     if (entitiesInSquare.empty()) {
         return false;
@@ -27,12 +27,12 @@ bool PlayerEntity::attack(const Point &attackPos) {
     if (enemy->getBehaviourByID("ChaseAndAttackBehaviour") != nullptr)
         enemy->getBehaviourByID("ChaseAndAttackBehaviour")->enabled = true;
 
-    auto& ui = dynamic_cast<StatusUIEntity&>(*manager.getEntityByID("StatusUI"));
+    auto& ui = dynamic_cast<StatusUIEntity&>(*EntityManager::getInstance().getEntityByID("StatusUI"));
     ui.setAttackTarget(enemy);
 
     if (enemy->hp <= 0) {
         ui.attackTarget = nullptr;
-        manager.queueForDeletion(enemy->ID);
+        EntityManager::getInstance().queueForDeletion(enemy->ID);
         attacking = false;
         std::cout << enemy->name << " was destroyed!" << "\n";
         enemy->destroy();
@@ -67,20 +67,20 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
 
     if (hp > 0) {
         if (key == SDLK_e) {
-            auto entitiesAtPos = manager.getEntitiesAtPos(pos);
+            auto entitiesAtPos = EntityManager::getInstance().getEntitiesAtPos(pos);
             auto it = std::find_if(entitiesAtPos.begin(), entitiesAtPos.end(),
                                    [](auto &a) { return a->hasBehaviour("EatableBehaviour"); });
             if (it == entitiesAtPos.end())
                 return;
             else {
-                manager.queueForDeletion((*it)->ID);
+                EntityManager::getInstance().queueForDeletion((*it)->ID);
                 hunger = std::min(hunger + dynamic_cast<EatableBehaviour&>(*((*it)->getBehaviourByID("EatableBehaviour"))).hungerRestoration, 1.0);
                 didAction = true;
             }
         }
 
         if (key == SDLK_g) {
-            auto entitiesAtPos = manager.getEntitiesAtPos(pos);
+            auto entitiesAtPos = EntityManager::getInstance().getEntitiesAtPos(pos);
 
             std::vector<std::shared_ptr<Entity>> entitiesWithInventories;
             std::copy_if(entitiesAtPos.begin(), entitiesAtPos.end(), std::back_inserter(entitiesWithInventories),
@@ -148,7 +148,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
                     break;
             }
 
-            auto enemiesInSpace = manager.getEntitiesAtPos(pos + posOffset);
+            auto enemiesInSpace = EntityManager::getInstance().getEntitiesAtPos(pos + posOffset);
             // TODO: what if more than one enemy in space?
             if (!enemiesInSpace.empty()
                 && ((enemiesInSpace[0]->getBehaviourByID("HostilityBehaviour") != nullptr
@@ -168,7 +168,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
         }
 
         if (key == SDLK_PERIOD) {
-            manager.broadcast(SIGNAL_FORCE_WAIT);
+            EntityManager::getInstance().broadcast(SIGNAL_FORCE_WAIT);
             didAction = true;
         }
 
@@ -178,7 +178,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
         }
 
         if (didAction)
-            manager.tick();
+            EntityManager::getInstance().tick();
     }
 
     if (hp <= 0 && key == SDLK_RETURN)
@@ -273,7 +273,7 @@ void StatusUIEntity::tick() {
 }
 
 void CatEntity::destroy() {
-    auto corpse = std::make_shared<CorpseEntity>(manager, ID + "corpse", 0.4, name, 100);
+    auto corpse = std::make_shared<CorpseEntity>(ID + "corpse", 0.4, name, 100);
     corpse->pos = pos;
-    manager.addEntity(corpse);
+    EntityManager::getInstance().addEntity(corpse);
 }

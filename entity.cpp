@@ -92,7 +92,7 @@ bool Entity::hasBehaviour(const std::string &ID) const {
 }
 
 void Entity::destroy() {
-    manager.eraseByID(ID);
+    EntityManager::getInstance().eraseByID(ID);
 }
 
 int Entity::getCarryingWeight() {

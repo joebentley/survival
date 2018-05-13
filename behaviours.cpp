@@ -42,7 +42,7 @@ void AttachmentBehaviour::tick() {
 
     if (!attached) {
         if (r < attachment) {
-            PlayerEntity& p = dynamic_cast<PlayerEntity&>(*parent.manager.getEntityByID("Player"));
+            PlayerEntity& p = dynamic_cast<PlayerEntity&>(*EntityManager::getInstance().getEntityByID("Player"));
             if (parent.pos.distanceTo(p.pos) < 10) {
                 std::cout << parent.name << " has attached itself to player!" << std::endl;
                 attached = true;
@@ -51,7 +51,7 @@ void AttachmentBehaviour::tick() {
         return;
     }
 
-    PlayerEntity& p = dynamic_cast<PlayerEntity&>(*parent.manager.getEntityByID("Player"));
+    PlayerEntity& p = dynamic_cast<PlayerEntity&>(*EntityManager::getInstance().getEntityByID("Player"));
 
     // Don't follow too closely
     if (parent.pos.distanceTo(p.pos) > 2 && r < clinginess) {
@@ -73,10 +73,10 @@ void AttachmentBehaviour::tick() {
 }
 
 void ChaseAndAttackBehaviour::tick() {
-    auto& ui = dynamic_cast<StatusUIEntity&>(*parent.manager.getEntityByID("StatusUI"));
+    auto& ui = dynamic_cast<StatusUIEntity&>(*EntityManager::getInstance().getEntityByID("StatusUI"));
     ui.setAttackTarget(std::make_shared<Entity>(parent));
 
-    auto& player = *parent.manager.getEntityByID("Player");
+    auto& player = *EntityManager::getInstance().getEntityByID("Player");
     Point posOffset;
 
     if (player.pos.x > parent.pos.x)
@@ -88,7 +88,7 @@ void ChaseAndAttackBehaviour::tick() {
     else if (player.pos.y < parent.pos.y)
         posOffset.y = -1;
 
-    auto entitiesInSquare = parent.manager.getEntitiesAtPos(parent.pos + posOffset);
+    auto entitiesInSquare = EntityManager::getInstance().getEntitiesAtPos(parent.pos + posOffset);
 
     if (entitiesInSquare.empty() || entitiesInSquare[0]->ID != "Player") {
         if (parent.pos.distanceTo(player.pos) > range) {
@@ -125,7 +125,7 @@ void ChaseAndAttackBehaviour::tick() {
 
 void HostilityBehaviour::tick() {
     auto chaseAndAttack = parent.getBehaviourByID("ChaseAndAttackBehaviour");
-    auto player = parent.manager.getEntityByID("Player");
+    auto player = EntityManager::getInstance().getEntityByID("Player");
 
     if (chaseAndAttack != nullptr && !chaseAndAttack->enabled && player != nullptr
         && parent.pos.distanceTo(player->pos) < range && randFloat() < hostility)
