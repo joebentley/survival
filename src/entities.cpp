@@ -35,7 +35,6 @@ bool PlayerEntity::attack(const Point &attackPos) {
         EntityManager::getInstance().queueForDeletion(enemy->ID);
         attacking = false;
         std::cout << enemy->name << " was destroyed!" << "\n";
-        enemy->destroy();
 
         return false;
     }
