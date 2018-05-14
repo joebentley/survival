@@ -51,10 +51,12 @@ int Font::draw(const std::string &character, int x, int y, Color fColor, Color b
     return 0;
 }
 
-int Font::drawText(const std::string &text, int x0, int y)
+int Font::drawText(const std::string &text, int x0, int y) {
+    return drawText(text, x0, y, -1);
+}
+
+int Font::drawText(const std::string &text, int x0, int y, Color fColor, Color bColor)
 {
-    Color fColor = Color(0xFF, 0xFF, 0xFF, 0xFF );
-    Color bColor = Color(0, 0, 0, 0 );
     int x = x0;
 
     for (int i = 0; i < text.size(); ++i) {
@@ -63,42 +65,10 @@ int Font::drawText(const std::string &text, int x0, int y)
             ++i;
             int begin = i + 1;
             while (text[++i] != ')');
-            
+
             if (this->draw(text.substr(begin, i - begin), x, y, fColor, bColor) == -1)
                 return -1;
             x++;
-            continue;
-        }
-
-        // parse foreground color
-        if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '[') {
-            ++i;
-            int begin = i + 1;
-            while (text[++i] != ']');
-
-            std::string fontStr = text.substr(begin, i - begin);
-            if (colorMap.find(fontStr) == colorMap.end()) {
-                std::cerr << "Invalid foreground font color: " << fontStr << std::endl;
-                return -1;
-            }
-            fColor = colorMap[fontStr];
-
-            continue;
-        }
-
-        // parse background color
-        if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '{') {
-            ++i;
-            int begin = i + 1;
-            while (text[++i] != '}');
-
-            std::string fontStr = text.substr(begin, i - begin);
-            if (colorMap.find(fontStr) == colorMap.end()) {
-                std::cerr << "Invalid background font color: " << fontStr << std::endl;
-                return -1;
-            }
-            bColor = colorMap[fontStr];
-            
             continue;
         }
 
@@ -117,14 +87,16 @@ int Font::drawText(const std::string &text, int x0, int y)
             if (this->draw(std::string(1, text[i]), x, y, fColor, bColor) == -1)
                 return -1;
         }
-        x++;        
+        x++;
     }
 
     return 0;
 }
 
-int Font::drawText(const std::string &text, int x0, int y, Color fColor, Color bColor)
-{
+// Same as Font::drawText(const std::string &text, int x, int y) but use `alpha` as alpha channel on fColor
+int Font::drawText(const std::string &text, int x0, int y, int alpha) {
+    Color fColor = Color(0xFF, 0xFF, 0xFF, alpha == -1 ? 0xFF : static_cast<Uint8>(alpha));
+    Color bColor = Color(0, 0, 0, 0);
     int x = x0;
 
     for (int i = 0; i < text.size(); ++i) {
@@ -137,6 +109,40 @@ int Font::drawText(const std::string &text, int x0, int y, Color fColor, Color b
             if (this->draw(text.substr(begin, i - begin), x, y, fColor, bColor) == -1)
                 return -1;
             x++;
+            continue;
+        }
+
+        // parse foreground color
+        if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '[') {
+            ++i;
+            int begin = i + 1;
+            while (text[++i] != ']');
+
+            std::string fontStr = text.substr(begin, i - begin);
+            if (colorMap.find(fontStr) == colorMap.end()) {
+                std::cerr << "Invalid foreground font color: " << fontStr << std::endl;
+                return -1;
+            }
+            fColor = colorMap[fontStr];
+            if (alpha != -1)
+                fColor.a = (Uint8)alpha;
+
+            continue;
+        }
+
+        // parse background color
+        if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '{') {
+            ++i;
+            int begin = i + 1;
+            while (text[++i] != '}');
+
+            std::string fontStr = text.substr(begin, i - begin);
+            if (colorMap.find(fontStr) == colorMap.end()) {
+                std::cerr << "Invalid background font color: " << fontStr << std::endl;
+                return -1;
+            }
+            bColor = colorMap[fontStr];
+
             continue;
         }
 

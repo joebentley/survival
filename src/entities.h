@@ -29,6 +29,7 @@ public:
     void tick() override;
     void handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen, LootingDialog &lootingDialog, InspectionDialog &inspectionDialog);
     void render(Font &font, Point currentWorldPos) override;
+    bool addToInventory(std::shared_ptr<Entity> item) override;
 };
 
 class CatEntity : public Entity {
@@ -162,23 +163,24 @@ public:
 // UI entities
 
 class StatusUIEntity : public Entity {
-public:
     PlayerEntity& player;
-    bool shown;
-    int forceTickDisplayTimer;
-    int ticksWaitedDuringAnimation;
+
+    int forceTickDisplayTimer {0};
+    int ticksWaitedDuringAnimation {1};
     int attackTargetTimer {0};
 
-    std::shared_ptr<Entity> attackTarget { nullptr };
+    std::string showLootedItemString;
+    int showLootedItemDisplayTimer {0};
 
+    std::shared_ptr<Entity> attackTarget { nullptr };
     const int X_OFFSET = 10;
 
+public:
     StatusUIEntity()
             : StatusUIEntity(dynamic_cast<PlayerEntity&>(*EntityManager::getInstance().getEntityByID("Player"))) { }
 
     explicit StatusUIEntity(PlayerEntity& player)
-            : Entity("StatusUI", "UI", "", ""),
-              player(player), shown(false), forceTickDisplayTimer(0), ticksWaitedDuringAnimation(1) { }
+            : Entity("StatusUI", "UI", "", ""), player(player) { }
 
     void render(Font &font, Point currentWorldPos) override;
     void emit(Uint32 signal) override;
@@ -187,6 +189,10 @@ public:
         this->attackTarget = std::move(attackTarget);
         attackTargetTimer = 10;
     }
+    void clearAttackTarget() {
+        this->attackTarget = nullptr;
+    }
+    void showLootedItemNotification(std::string itemString);
 };
 
 #endif // ENTITIES_H_

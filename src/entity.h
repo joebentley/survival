@@ -100,7 +100,7 @@ public:
     virtual void emit(uint32_t signal);
     virtual void render(Font& font, Point currentWorldPos);
 
-    bool addToInventory(std::shared_ptr<Entity> item);
+    virtual bool addToInventory(std::shared_ptr<Entity> item);
     void dropItem(int inventoryIndex);
 
     void setPos(int x, int y) { pos = Point(x, y); }

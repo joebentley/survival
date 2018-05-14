@@ -31,7 +31,7 @@ bool PlayerEntity::attack(const Point &attackPos) {
     ui.setAttackTarget(enemy);
 
     if (enemy->hp <= 0) {
-        ui.attackTarget = nullptr;
+        ui.clearAttackTarget();
         EntityManager::getInstance().queueForDeletion(enemy->ID);
         attacking = false;
         std::cout << enemy->name << " was destroyed!" << "\n";
@@ -208,6 +208,15 @@ void PlayerEntity::render(Font &font, Point currentWorldPos) {
     }
 }
 
+bool PlayerEntity::addToInventory(std::shared_ptr<Entity> item) {
+    if (Entity::addToInventory(item)) {
+        auto &ui = dynamic_cast<StatusUIEntity&>(*EntityManager::getInstance().getEntityByID("StatusUI"));
+        ui.showLootedItemNotification(item->graphic + " " + item->name);
+        return true;
+    }
+    return false;
+}
+
 void StatusUIEntity::render(Font &font, Point currentWorldPos) {
     std::string colorStr;
     double hpPercent = player.hp / player.maxhp;
@@ -240,6 +249,11 @@ void StatusUIEntity::render(Font &font, Point currentWorldPos) {
     } else {
         forceTickDisplayTimer = 0;
         ticksWaitedDuringAnimation = 1;
+    }
+
+    if (showLootedItemDisplayTimer-- > 0) {
+        auto alpha = static_cast<int>(static_cast<double>(showLootedItemDisplayTimer) / 100 * 0xFF);
+        font.drawText("Looted " + showLootedItemString, 3, SCREEN_HEIGHT - 2, alpha);
     }
 
     if (attackTarget != nullptr) {
@@ -284,6 +298,11 @@ void StatusUIEntity::tick() {
     }
 
     Entity::tick();
+}
+
+void StatusUIEntity::showLootedItemNotification(std::string itemString) {
+    showLootedItemString = std::move(itemString);
+    showLootedItemDisplayTimer = 100;
 }
 
 void CatEntity::destroy() {

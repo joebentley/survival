@@ -98,6 +98,8 @@ public:
     int drawText(const std::string &text, Point p, Color fColor, Color bColor) {
         return drawText(text, p.x, p.y, fColor, bColor);
     }
+    // if alpha = -1, don't use it
+    int drawText(const std::string &text, int x, int y, int alpha);
 };
 
 int getFontStringLength(const std::string& string);
