@@ -19,3 +19,14 @@ std::vector<std::string> wordWrap(const std::string &toBeWrapped, size_t columns
 
     return lines;
 }
+
+clock_t startTime;
+
+void beginTime() {
+    startTime = clock();
+}
+
+float endTime() {
+    return (float)(clock() - startTime) / CLOCKS_PER_SEC;
+}
+

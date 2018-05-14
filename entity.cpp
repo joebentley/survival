@@ -131,6 +131,8 @@ void EntityManager::initialize() {
     for (const auto& entity : entities) {
         entity.second->initialize();
     }
+
+    reorderEntities(); // Order the entities by rendering layer
 }
 
 void EntityManager::tick() {
@@ -145,10 +147,6 @@ void EntityManager::tick() {
 }
 
 void EntityManager::render(Font& font, Point currentWorldPos) {
-    // TODO: Is this slow?
-    std::vector<std::pair<std::string, std::shared_ptr<Entity>>> toRender(entities.begin(), entities.end());
-    std::sort(toRender.begin(), toRender.end(), [](auto &a, auto &b) { return a.second->renderingLayer > b.second->renderingLayer; });
-
     for (const auto& entity : toRender) {
         entity.second->render(font, currentWorldPos);
     }
@@ -186,4 +184,11 @@ void EntityManager::queueForDeletion(const std::string &ID) {
 
 void EntityManager::eraseByID(const std::string &ID) {
     entities.erase(ID);
+    --gNumInitialisedEntities;
+    reorderEntities(); // Order the entities by rendering layer
+}
+
+void EntityManager::reorderEntities() {
+    toRender = std::vector<std::pair<std::string, std::shared_ptr<Entity>>>(entities.begin(), entities.end());
+    std::sort(toRender.begin(), toRender.end(), [](auto &a, auto &b) { return a.second->renderingLayer > b.second->renderingLayer; });
 }

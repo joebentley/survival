@@ -118,6 +118,9 @@ public:
 
 // Singleton class that manages all entities
 class EntityManager {
+    std::vector<std::pair<std::string, std::shared_ptr<Entity>>> toRender;
+
+    void reorderEntities();
 public:
     static EntityManager& getInstance() {
         static EntityManager instance;

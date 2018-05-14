@@ -18,6 +18,7 @@ void World::randomizeWorld()
 {
     auto &manager = EntityManager::getInstance();
     int numBushes = 0;
+    int numTwigs = 0;
 
     for (int worldY = 0; worldY < SCREEN_HEIGHT; ++worldY)
     for (int worldX = 0; worldX < SCREEN_WIDTH; ++worldX)
@@ -46,6 +47,13 @@ void World::randomizeWorld()
             auto bush = std::make_shared<BushEntity>("bush" + std::to_string(++numBushes));
             bush->setPos(p);
             manager.addEntity(bush);
+        }
+
+        // Random chance of creating a twig
+        if (randFloat() < 0.002) {
+            auto twig = std::make_shared<TwigEntity>("twig" + std::to_string(++numTwigs));
+            twig->setPos(p);
+            manager.addEntity(twig);
         }
     }
 }

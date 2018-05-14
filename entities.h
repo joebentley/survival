@@ -142,6 +142,22 @@ public:
     }
 };
 
+// Materials
+
+class TwigEntity : public Entity {
+public:
+    const std::string SHORT_DESC = "A thin, brittle twig";
+    const std::string LONG_DESC = "It looks very useful! Who knows where it came from...";
+
+    explicit TwigEntity(std::string ID)
+    : Entity(std::move(ID), "material", "Twig", "${black}$[brown]/")
+    {
+        shortDesc = SHORT_DESC;
+        longDesc = LONG_DESC;
+        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
+    }
+};
+
 // UI entities
 
 class StatusUIEntity : public Entity {
