@@ -78,7 +78,7 @@ public:
     bool shouldRender {true};
     int maxCarryWeight;
 
-    bool skipInventoryScreen {false}; // automatically pick up first item in inventory when looting
+    bool skipLootingDialog {false}; // automatically pick up first item in inventory when looting
 
     std::string ID; // Must be unique!
     std::string type;

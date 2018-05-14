@@ -93,7 +93,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
             if (!entitiesWithInventories.empty()) {
                 // TODO: what if multiple chests are present?
                 auto entity = entitiesWithInventories[0];
-                if (entity->skipInventoryScreen) {
+                if (entity->skipLootingDialog) {
                     // Loot just the first item
                     if (addToInventory(*entity->inventory.begin())) {
                         entity->inventory.erase(entity->inventory.begin());
