@@ -366,20 +366,20 @@ void InspectionDialog::render(Font &font) {
     const auto &chosenPointScreen = worldToScreen(chosenPoint);
     font.drawText("${black}$[yellow]X", chosenPointScreen);
 
-    int xPosWindow = chosenPointScreen.x < SCREEN_WIDTH ? 1 : SCREEN_WIDTH / 2 + 1;
+    int xPosWindow = chosenPointScreen.x < SCREEN_WIDTH ? 2 : SCREEN_WIDTH / 2 + 1;
 
     if (entitiesAtPoint.size() > 1) {
         selectingFromMultipleOptions = true;
         std::vector<std::string> lines;
 
-        lines.emplace_back("  You see");
+        lines.emplace_back(" You see");
         std::transform(entitiesAtPoint.cbegin(), entitiesAtPoint.cend(), std::back_inserter(lines),
-                       [] (auto &a) -> std::string { return "  " + a->graphic + " " + a->name; });
+                       [] (auto &a) -> std::string { return " " + a->graphic + " " + a->name; });
 
         lines.emplace_back("");
-        lines.emplace_back("  (-)-$(up) (=)-$(down) return-desc");
-        showMessageBox(font, lines, xPosWindow, 2);
-        font.draw("right", xPosWindow + 2, 2 + 3 + chosenIndex);
+        lines.emplace_back(" (-)-$(up) (=)-$(down) return-desc");
+        showMessageBox(font, lines, xPosWindow - 1, 2);
+        font.draw("right", xPosWindow + 2 - 1, 2 + 3 + chosenIndex);
         thereIsAnEntity = true;
     } else {
         selectingFromMultipleOptions = false;
