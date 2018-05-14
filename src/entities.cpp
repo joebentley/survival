@@ -252,7 +252,7 @@ void StatusUIEntity::render(Font &font, Point currentWorldPos) {
 
     if (showLootedItemDisplayTimer-- > 0) {
         auto alpha = static_cast<int>(static_cast<double>(showLootedItemDisplayTimer) / 100 * 0xFF);
-        font.drawText("Looted " + showLootedItemString, 3, SCREEN_HEIGHT - 2, alpha);
+        font.drawText("You got a " + showLootedItemString, 3, SCREEN_HEIGHT - 2, alpha);
     }
 
     if (attackTarget != nullptr) {
@@ -301,7 +301,7 @@ void StatusUIEntity::tick() {
 
 void StatusUIEntity::showLootedItemNotification(std::string itemString) {
     showLootedItemString = std::move(itemString);
-    showLootedItemDisplayTimer = 100;
+    showLootedItemDisplayTimer = 200;
 }
 
 void CatEntity::destroy() {
@@ -325,6 +325,16 @@ void FireEntity::render(Font &font, Point currentWorldPos) {
         graphic = "${black}$[red]%";
     else
         graphic = "${black}$[orange]%";
+
+    Entity::render(font, currentWorldPos);
+}
+
+void GrassEntity::render(Font &font, Point currentWorldPos) {
+    if (!inventory.empty()) {
+        graphic = "${black}$[grasshay]$(tau)";
+    } else {
+        graphic = "${black}$[grasshay].";
+    }
 
     Entity::render(font, currentWorldPos);
 }

@@ -7,6 +7,7 @@ std::unordered_map<std::string, Color> colorMap = {
     {"yellow", Color(0xFF, 0xFF, 0)},
     {"red", Color(0xFF, 0, 0)},
     {"green", Color(0, 0xFF, 0)},
+    {"grasshay", Color(218, 197, 134)},
     {"blue", Color(0, 0, 0xFF)},
     {"grey", Color(0x88, 0x88, 0x88)},
     {"black", Color(0, 0, 0)},

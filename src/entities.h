@@ -86,13 +86,41 @@ public:
     const std::string SHORT_DESC = "It's a bush!";
     const std::string LONG_DESC = "";
 
-    explicit BushEntity(std::string ID)
-    : Entity(std::move(ID), "container", "Bush", "${black}$[purple]$(div)")
+    explicit BushEntity(std::string ID) : Entity(std::move(ID), "container", "Bush", "${black}$[purple]$(div)")
     {
         shortDesc = SHORT_DESC;
         longDesc = LONG_DESC;
         skipLootingDialog = true;
         addBehaviour(std::make_shared<KeepStockedBehaviour<BerryEntity>>(*this, RESTOCK_RATE));
+    }
+
+    void render(Font& font, Point currentWorldPos) override;
+};
+
+class GrassTuftEntity : public Entity {
+public:
+    const std::string SHORT_DESC = "A tuft of dry grass";
+    const std::string LONG_DESC = "A tuft of dry grass, very useful";
+
+    explicit GrassTuftEntity(std::string ID) : Entity(std::move(ID), "material", "Tuft of grass", "$[grasshay]$(approx)")
+    {
+        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
+    }
+};
+
+class GrassEntity : public Entity {
+public:
+    const int RESTOCK_RATE = 200; // ticks
+
+    const std::string SHORT_DESC = "It is dry grass";
+    const std::string LONG_DESC = "You can harvest it";
+
+    explicit GrassEntity(std::string ID) : Entity(std::move(ID), "container", "Grass", "${black}$[grasshay]$(tau)")
+    {
+        shortDesc = SHORT_DESC;
+        longDesc = LONG_DESC;
+        skipLootingDialog = true;
+        addBehaviour(std::make_shared<KeepStockedBehaviour<GrassTuftEntity>>(*this, RESTOCK_RATE));
     }
 
     void render(Font& font, Point currentWorldPos) override;
