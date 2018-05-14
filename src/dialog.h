@@ -17,10 +17,9 @@ inline void showMessageBox(Font& font, const std::string &message, int x, int y)
 
 //void inventoryScreen(Font& font, Entity &player, SDL_KeyboardEvent &e, bool &inventoryScreen);
 
-class PlayerEntity;
+struct PlayerEntity;
 
-class InventoryScreen {
-public:
+struct InventoryScreen {
     static const int X_OFFSET = 4;
     static const int X_STATUS_OFFSET = 10;
     static const int Y_OFFSET = 4;
@@ -37,8 +36,7 @@ public:
     void render(Font& font);
 };
 
-class LootingDialog {
-public:
+struct LootingDialog {
     const int DIALOG_WIDTH = 30;
 
     bool enabled {false};

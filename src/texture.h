@@ -4,8 +4,7 @@
 #ifndef TEXTURE_H_
 #define TEXTURE_H_
 
-class Texture {
-public:
+struct Texture {
     SDL_Texture *texture;
 
     Uint32 format;

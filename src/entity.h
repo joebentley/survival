@@ -17,10 +17,9 @@
 
 extern int gNumInitialisedEntities;
 
-class Entity;
+struct Entity;
 
-class Behaviour {
-public:
+struct Behaviour {
     Behaviour(std::string ID, Entity& parent) : ID(std::move(ID)), parent(parent) {}
 
     bool enabled {true};
@@ -54,8 +53,7 @@ public:
 
 class EntityManager;
 
-class Entity {
-public:
+struct Entity {
     Entity(std::string ID, std::string type, std::string name, std::string graphic,
            double hp, double maxhp, double regenPerTick, int hitTimes, int hitAmount, int maxCarryWeight)
             : hp(hp), maxhp(maxhp), regenPerTick(regenPerTick), hitTimes(hitTimes), hitAmount(hitAmount), maxCarryWeight(maxCarryWeight), ID(std::move(ID)),
@@ -82,7 +80,7 @@ public:
     bool skipLootingDialog {false}; // automatically pick up first item in inventory when looting
 
     std::string ID; // Must be unique!
-    std::string type;
+    std::string type; // Used in crafting recipes
     std::string name;
     std::string shortDesc;
     std::string longDesc;

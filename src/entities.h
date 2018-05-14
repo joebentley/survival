@@ -5,12 +5,11 @@
 #include "behaviours.h"
 #include "dialog.h"
 
-class InventoryScreen;
-class LootingDialog;
+struct InventoryScreen;
+struct LootingDialog;
 class InspectionDialog;
 
-class PlayerEntity : public Entity {
-public:
+struct PlayerEntity : public Entity {
     double hunger;
     double hungerRate; // hunger per tick
     double hungerDamageRate; // hp loss per tick while starving
@@ -32,8 +31,7 @@ public:
     bool addToInventory(std::shared_ptr<Entity> item) override;
 };
 
-class CatEntity : public Entity {
-public:
+struct CatEntity : public Entity {
     CatEntity(std::string ID)
             : Entity(std::move(ID), "living", "cat", "$[yellow]c", 10, 10, 0.05, 1, 2, 100)
     {
@@ -47,8 +45,7 @@ public:
     void destroy() override;
 };
 
-class EatableEntity : public Entity {
-public:
+struct EatableEntity : public Entity {
     EatableEntity(std::string ID, std::string type, std::string name, std::string graphic, double hungerRestoration)
             : Entity(std::move(ID), std::move(type), std::move(name), std::move(graphic))
     {
@@ -56,15 +53,13 @@ public:
     }
 };
 
-class FireEntity : public Entity {
-public:
+struct FireEntity : public Entity {
     FireEntity(std::string ID) : Entity(std::move(ID), "fire", "Fire", "") {}
 
     void render(Font &font, Point currentWorldPos) override;
 };
 
-class ChestEntity : public Entity {
-public:
+struct ChestEntity : public Entity {
     const std::string SHORT_DESC = "A heavy wooden chest";
     const std::string LONG_DESC = "This chest is super heavy";
 
@@ -78,9 +73,8 @@ public:
     }
 };
 
-class BerryEntity;
-class BushEntity : public Entity {
-public:
+struct BerryEntity;
+struct BushEntity : public Entity {
     const int RESTOCK_RATE = 100; // ticks
 
     const std::string SHORT_DESC = "It's a bush!";
@@ -97,19 +91,17 @@ public:
     void render(Font& font, Point currentWorldPos) override;
 };
 
-class GrassTuftEntity : public Entity {
-public:
+struct GrassTuftEntity : public Entity {
     const std::string SHORT_DESC = "A tuft of dry grass";
     const std::string LONG_DESC = "A tuft of dry grass, very useful";
 
-    explicit GrassTuftEntity(std::string ID) : Entity(std::move(ID), "material", "Tuft of grass", "$[grasshay]$(approx)")
+    explicit GrassTuftEntity(std::string ID) : Entity(std::move(ID), "grass", "Tuft of grass", "$[grasshay]$(approx)")
     {
         addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
     }
 };
 
-class GrassEntity : public Entity {
-public:
+struct GrassEntity : public Entity {
     const int RESTOCK_RATE = 200; // ticks
 
     const std::string SHORT_DESC = "It is dry grass";
@@ -128,8 +120,7 @@ public:
 
 // Food
 
-class CorpseEntity : public EatableEntity {
-public:
+struct CorpseEntity : public EatableEntity {
     CorpseEntity(std::string ID, double hungerRestoration, const std::string& corpseOf, int weight)
             : EatableEntity(std::move(ID), "corpse", "Corpse of " + corpseOf, "${black}$[red]x", hungerRestoration)
     {
@@ -137,8 +128,7 @@ public:
     }
 };
 
-class AppleEntity : public EatableEntity {
-public:
+struct AppleEntity : public EatableEntity {
     const std::string SHORT_DESC = "A small, fist-sized fruit that is hopefully crispy and juicy";
     const std::string LONG_DESC = "This is a longer description of the apple";
 
@@ -151,8 +141,7 @@ public:
     }
 };
 
-class BananaEntity : public EatableEntity {
-public:
+struct BananaEntity : public EatableEntity {
     const std::string SHORT_DESC = "A yellow fruit found in the jungle. The shape looks familiar...";
     const std::string LONG_DESC = "This fruit was discovered in [redacted]. They were brought west by Arab conquerors in 327 B.C.";
 
@@ -165,13 +154,12 @@ public:
     }
 };
 
-class BerryEntity : public EatableEntity {
-public:
+struct BerryEntity : public EatableEntity {
     const std::string SHORT_DESC = "A purple berry";
     const std::string LONG_DESC = "";
 
     explicit BerryEntity(std::string ID)
-    : EatableEntity(std::move(ID), "food", "Berry", "$[purple]$(male)", 0.5)
+    : EatableEntity(std::move(ID), "berry", "Berry", "$[purple]$(male)", 0.5)
     {
         shortDesc = SHORT_DESC;
         longDesc = LONG_DESC;
@@ -181,13 +169,12 @@ public:
 
 // Materials
 
-class TwigEntity : public Entity {
-public:
+struct TwigEntity : public Entity {
     const std::string SHORT_DESC = "A thin, brittle twig";
     const std::string LONG_DESC = "It looks very useful! Who knows where it came from...";
 
     explicit TwigEntity(std::string ID)
-    : Entity(std::move(ID), "material", "Twig", "${black}$[brown]/")
+    : Entity(std::move(ID), "wood", "Twig", "${black}$[brown]/")
     {
         shortDesc = SHORT_DESC;
         longDesc = LONG_DESC;

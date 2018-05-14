@@ -11,8 +11,7 @@
 
 Point worldToScreen(Point worldSpacePoint);
 
-class World {
-public:
+struct World {
     std::string floor[SCREEN_HEIGHT][SCREEN_WIDTH][SCREEN_HEIGHT][SCREEN_WIDTH];
 
     int render(Font& font, int worldX, int worldY);
