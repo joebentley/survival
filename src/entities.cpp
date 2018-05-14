@@ -66,6 +66,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
     }
 
     if (hp > 0) {
+        // Handle eating from ground
         if (key == SDLK_e) {
             auto entitiesAtPos = EntityManager::getInstance().getEntitiesAtPos(pos);
             auto it = std::find_if(entitiesAtPos.begin(), entitiesAtPos.end(),
@@ -79,6 +80,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
             }
         }
 
+        // Handle looting
         if (key == SDLK_g) {
             auto entitiesAtPos = EntityManager::getInstance().getEntitiesAtPos(pos);
 
@@ -90,8 +92,20 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
 
             if (!entitiesWithInventories.empty()) {
                 // TODO: what if multiple chests are present?
-                lootingDialog.showItemsToLoot(entitiesWithInventories[0]->inventory, entitiesWithInventories[0]);
-                return;
+                auto entity = entitiesWithInventories[0];
+                if (entity->skipInventoryScreen) {
+                    // Loot just the first item
+                    if (addToInventory(*entity->inventory.begin())) {
+                        entity->inventory.erase(entity->inventory.begin());
+                        didAction = true;
+                    } else {
+                        showingTooMuchWeightMessage = true;
+                        return;
+                    }
+                } else {
+                    lootingDialog.showItemsToLoot(entity->inventory, entity);
+                    return;
+                }
             }
 
             std::vector<std::shared_ptr<Entity>> pickuppableEntities;

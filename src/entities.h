@@ -83,6 +83,7 @@ public:
     {
         shortDesc = SHORT_DESC;
         longDesc = LONG_DESC;
+        skipInventoryScreen = true;
         addBehaviour(std::make_shared<KeepStockedBehaviour<BerryEntity>>(*this, RESTOCK_RATE));
     }
 
