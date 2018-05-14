@@ -77,6 +77,7 @@ public:
     int hitAmount;
     bool shouldRender {true};
     int maxCarryWeight;
+    bool isInAnInventory {false};
 
     bool skipLootingDialog {false}; // automatically pick up first item in inventory when looting
 

@@ -76,6 +76,7 @@ bool Entity::addToInventory(std::shared_ptr<Entity> item) {
         item->setPos(pos);
         inventory.push_back(item);
         item->shouldRender = false;
+        item->isInAnInventory = true;
         return true;
     } else {
         throw std::invalid_argument("item does not have PickuppableBehaviour");
@@ -87,6 +88,7 @@ void Entity::dropItem(int inventoryIndex) {
 
     inventory.erase(inventory.begin() + inventoryIndex);
     item->shouldRender = true;
+    item->isInAnInventory = false;
     item->setPos(pos);
 }
 

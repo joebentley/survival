@@ -200,7 +200,7 @@ void LootingDialog::handleInput(SDL_KeyboardEvent &e) {
         case SDLK_g:
             if (player.addToInventory(itemsToShow[chosenIndex])) {
                 if (entityToTransferFrom != nullptr) {
-                    entityToTransferFrom->inventory.erase(entityToTransferFrom->inventory.begin() + chosenIndex);
+                    entityToTransferFrom->dropItem(chosenIndex);
                 }
 
                 itemsToShow.erase(itemsToShow.begin() + chosenIndex);
@@ -352,7 +352,11 @@ void InspectionDialog::handleInput(SDL_KeyboardEvent &e) {
 }
 
 void InspectionDialog::render(Font &font) {
-    const auto &entitiesAtPoint = EntityManager::getInstance().getEntitiesAtPos(chosenPoint);
+    const auto &entitiesAtPointBefore = EntityManager::getInstance().getEntitiesAtPos(chosenPoint);
+    std::vector<std::shared_ptr<Entity>> entitiesAtPoint;
+
+    std::copy_if(entitiesAtPointBefore.cbegin(), entitiesAtPointBefore.cend(), std::back_inserter(entitiesAtPoint),
+    [] (auto &a) { return !a->isInAnInventory; });
 
     if (viewingDescription) {
         drawDescriptionScreen(font, *entitiesAtPoint[chosenIndex]);
