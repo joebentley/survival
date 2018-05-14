@@ -9,22 +9,22 @@ include_directories(.)
 file(COPY resources DESTINATION .)
 
 add_executable(survival
-        behaviours.cpp
-        behaviours.h
-        dialog.cpp
-        dialog.h
-        entities.cpp
-        entities.h
-        entity.cpp
-        entity.h
-        font.cpp
-        font.h
-        point.h
-        survival.cpp
-        texture.cpp
-        texture.h
-        world.cpp
-        world.h flags.h utils.h utils.cpp)
+        src/behaviours.cpp
+        src/behaviours.h
+        src/dialog.cpp
+        src/dialog.h
+        src/entities.cpp
+        src/entities.h
+        src/entity.cpp
+        src/entity.h
+        src/font.cpp
+        src/font.h
+        src/point.h
+        src/survival.cpp
+        src/texture.cpp
+        src/texture.h
+        src/world.cpp
+        src/world.h src/flags.h src/utils.h src/utils.cpp)
 
 
 INCLUDE(FindPkgConfig)
