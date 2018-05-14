@@ -114,6 +114,10 @@ void EntityManager::addEntity(std::shared_ptr<Entity> entity) {
         throw std::invalid_argument("Entity with ID " + entity->ID + " already present!");
 
     entities[entity->ID] = entity;
+
+    // Make sure new entities trigger a refresh of the render order list
+    if (!toRender.empty())
+        reorderEntities();
 }
 
 void EntityManager::broadcast(Uint32 signal) {
