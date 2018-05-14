@@ -91,7 +91,9 @@ void InventoryScreen::handleInput(SDL_KeyboardEvent &e) {
         case SDLK_d:
             if (!viewingDescription && !player.inventory.empty()) {
                 player.dropItem(chosenIndex);
-                chosenIndex = 0;
+
+                if (player.inventory.size() - 1 < chosenIndex)
+                    chosenIndex--;
             }
             break;
         case SDLK_e:
