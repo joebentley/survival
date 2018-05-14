@@ -59,7 +59,7 @@ public:
 };
 
 class InspectionDialog {
-    inline bool isOnScreen(const Point& p) const;
+    inline Point clipToScreenEdge(const Point &p) const;
 public:
     bool enabled {false};
     PlayerEntity &player;

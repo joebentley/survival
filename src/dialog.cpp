@@ -262,9 +262,19 @@ void LootingDialog::render(Font &font) {
     }
 }
 
-inline bool InspectionDialog::isOnScreen(const Point& p) const {
-    auto point = p - Point(SCREEN_WIDTH, SCREEN_HEIGHT) * player.getWorldPos();
-    return !(point.x < 0 || point.y < 0 || point.x >= SCREEN_WIDTH || point.y >= SCREEN_HEIGHT);
+inline Point InspectionDialog::clipToScreenEdge(const Point &p) const {
+    auto worldPos = player.getWorldPos();
+    auto point = p - Point(SCREEN_WIDTH, SCREEN_HEIGHT) * worldPos;
+    Point returnPoint(p);
+    if (point.x < 0)
+        returnPoint.x = worldPos.x * SCREEN_WIDTH;
+    else if (point.x > SCREEN_WIDTH - 1)
+        returnPoint.x = (worldPos.x + 1) * SCREEN_WIDTH - 1;
+    if (point.y < 0)
+        returnPoint.y = worldPos.y * SCREEN_HEIGHT;
+    else if (point.y > SCREEN_HEIGHT - 1)
+        returnPoint.y = (worldPos.y + 1) * SCREEN_HEIGHT - 1;
+    return returnPoint;
 }
 
 void InspectionDialog::handleInput(SDL_KeyboardEvent &e) {
@@ -335,8 +345,10 @@ void InspectionDialog::handleInput(SDL_KeyboardEvent &e) {
             return;
     }
 
-    if (isOnScreen(chosenPoint + posOffset))
-        chosenPoint += posOffset;
+    if (e.keysym.mod & KMOD_SHIFT)
+        posOffset *= 5;
+
+    chosenPoint = clipToScreenEdge(chosenPoint + posOffset);
 }
 
 void InspectionDialog::render(Font &font) {
