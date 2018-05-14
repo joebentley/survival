@@ -244,14 +244,15 @@ void StatusUIEntity::render(Font &font, Point currentWorldPos) {
         font.drawText("Waited " + std::to_string(ticksWaitedDuringAnimation)
                       + " tick" + (ticksWaitedDuringAnimation > 1 ? "s" : "") + "...",
                       SCREEN_WIDTH - X_OFFSET - 8, SCREEN_HEIGHT - 2,
-                      Color(0xFF, 0xFF, 0xFF, static_cast<Uint8>(static_cast<double>(forceTickDisplayTimer) / 100 * 0xFF)), getColor("transparent"));
+                      Color(0xFF, 0xFF, 0xFF, static_cast<Uint8>(static_cast<double>(forceTickDisplayTimer) / FORCE_TICK_DISPLAY_LENGTH * 0xFF)),
+                      getColor("transparent"));
     } else {
         forceTickDisplayTimer = 0;
         ticksWaitedDuringAnimation = 1;
     }
 
     if (showLootedItemDisplayTimer-- > 0) {
-        auto alpha = static_cast<int>(static_cast<double>(showLootedItemDisplayTimer) / 100 * 0xFF);
+        auto alpha = static_cast<int>(static_cast<double>(showLootedItemDisplayTimer) / SHOW_LOOTED_DISPLAY_LENGTH * 0xFF);
         font.drawText("You got a " + showLootedItemString, 3, SCREEN_HEIGHT - 2, alpha);
     }
 
@@ -281,8 +282,7 @@ void StatusUIEntity::emit(uint32_t signal) {
         if (forceTickDisplayTimer > 0) {
             ticksWaitedDuringAnimation++;
         }
-
-        forceTickDisplayTimer = 100;
+        forceTickDisplayTimer = FORCE_TICK_DISPLAY_LENGTH;
     }
 
     Entity::emit(signal);
@@ -301,7 +301,7 @@ void StatusUIEntity::tick() {
 
 void StatusUIEntity::showLootedItemNotification(std::string itemString) {
     showLootedItemString = std::move(itemString);
-    showLootedItemDisplayTimer = 200;
+    showLootedItemDisplayTimer = SHOW_LOOTED_DISPLAY_LENGTH;
 }
 
 void CatEntity::destroy() {
