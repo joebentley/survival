@@ -100,11 +100,13 @@ void InventoryScreen::handleInput(SDL_KeyboardEvent &e) {
             if (!viewingDescription && !player.inventory.empty()) {
                 auto item = player.inventory[chosenIndex];
                 if (item->hasBehaviour("EatableBehaviour")) {
-                    player.hunger = std::min(player.hunger + dynamic_cast<EatableBehaviour&>(*(*item).getBehaviourByID("EatableBehaviour")).hungerRestoration, 1.0);
+                    player.hunger = std::min(player.hunger + dynamic_cast<EatableBehaviour &>(*(*item).getBehaviourByID(
+                            "EatableBehaviour")).hungerRestoration, 1.0);
+                    player.inventory.erase(player.inventory.begin() + chosenIndex);
+                    item->destroy();
+                    if (player.inventory.size() - 1 < chosenIndex)
+                        chosenIndex--;
                 }
-                player.inventory.erase(player.inventory.begin() + chosenIndex);
-                item->destroy();
-                chosenIndex = 0;
             }
             break;
         case SDLK_RETURN:
