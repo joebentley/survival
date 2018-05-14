@@ -93,6 +93,10 @@ int main(int argc, char* argv[])
                 auto healthUI = std::make_shared<StatusUIEntity>(dynamic_cast<PlayerEntity&>(*player));
                 manager.addEntity(healthUI);
 
+                auto fire = std::make_shared<FireEntity>("fire1");
+                fire->setPos(player->pos + Point(0, -2));
+                manager.addEntity(fire);
+
                 manager.initialize();
 
                 InventoryScreen inventoryScreen(*player);

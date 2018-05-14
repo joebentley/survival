@@ -12,6 +12,7 @@ std::unordered_map<std::string, Color> colorMap = {
     {"black", Color(0, 0, 0)},
     {"brown", Color(150, 75, 0)},
     {"purple", Color(180, 0, 180)},
+    {"orange", Color(255, 128, 0)},
     {"transparent", Color(0, 0, 0, 0)}
 };
 

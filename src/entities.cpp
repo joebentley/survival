@@ -319,3 +319,12 @@ void BushEntity::render(Font &font, Point currentWorldPos) {
 
     Entity::render(font, currentWorldPos);
 }
+
+void FireEntity::render(Font &font, Point currentWorldPos) {
+    if (rand() % 2 == 0)
+        graphic = "${black}$[red]%";
+    else
+        graphic = "${black}$[orange]%";
+
+    Entity::render(font, currentWorldPos);
+}

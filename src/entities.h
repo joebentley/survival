@@ -56,6 +56,13 @@ public:
     }
 };
 
+class FireEntity : public Entity {
+public:
+    FireEntity(std::string ID) : Entity(std::move(ID), "fire", "Fire", "") {}
+
+    void render(Font &font, Point currentWorldPos) override;
+};
+
 class ChestEntity : public Entity {
 public:
     const std::string SHORT_DESC = "A heavy wooden chest";
