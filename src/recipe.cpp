@@ -20,5 +20,4 @@ void BandageRecipe::produce() {
     auto player = em.getEntityByID("Player");
     auto bandage = std::make_shared<BandageEntity>("bandage" + std::to_string(++numProduced));
     player->addToInventory(bandage);
-    em.addEntity(bandage);
 }
