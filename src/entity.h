@@ -77,6 +77,7 @@ struct Entity {
     bool shouldRender {true};
     int maxCarryWeight;
     bool isInAnInventory {false};
+    bool isSolid {false}; // If true, cannot be walked on
 
     bool skipLootingDialog {false}; // automatically pick up first item in inventory when looting
 

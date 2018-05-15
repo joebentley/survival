@@ -95,6 +95,9 @@ struct CraftingScreen {
     std::string createdMessage;
     int createdMessageTimer {0};
 
+    bool choosingPositionInWorld {false};
+    bool haveChosenPositionInWorld {false};
+
     explicit CraftingScreen(PlayerEntity &player) : player(player) {}
 
     void handleInput(SDL_KeyboardEvent &e);
@@ -105,6 +108,8 @@ private:
     std::vector<std::string> currentlyChosenMaterials;
     std::vector<std::shared_ptr<Entity>> filterInventoryForChosenMaterials();
     bool currentRecipeSatisfied();
+    void tryToBuildAtPosition(Point posOffset);
+    void buildItem(Point pos);
 };
 
 #endif // DIALOG_H_

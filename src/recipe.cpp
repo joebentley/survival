@@ -10,7 +10,7 @@ void FireRecipe::produce() {
     auto &em = EntityManager::getInstance();
     auto player = em.getEntityByID("Player");
     auto fire = std::make_shared<FireEntity>("fire" + std::to_string(++numProduced));
-    fire->setPos(player->pos);
+    fire->setPos(pointIfNotGoingIntoInventory);
     em.addEntity(fire);
 }
 

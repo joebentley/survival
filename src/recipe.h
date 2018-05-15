@@ -28,6 +28,8 @@ struct Recipe {
 
     std::vector<Ingredient> ingredients;
     std::string nameOfProduct; // Name to show in crafting menu
+    bool goesIntoInventory {true}; // If true, item will go into inventory, if not it will be built in the world
+    Point pointIfNotGoingIntoInventory;
 
     Recipe() : Recipe("") {}
     explicit Recipe(std::string nameOfProduct) : nameOfProduct(std::move(nameOfProduct)) {}
@@ -42,6 +44,7 @@ struct FireRecipe : Recipe {
     FireRecipe() : Recipe("Fire") {
         ingredients.emplace_back(Ingredient { 2, "wood" });
         ingredients.emplace_back(Ingredient { 2, "grass" });
+        goesIntoInventory = false;
     }
 
     void produce() override;

@@ -441,6 +441,11 @@ void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
             enabled = false;
             break;
         case SDLK_j:
+            if (choosingPositionInWorld) {
+                tryToBuildAtPosition(Point {0, 1});
+                break;
+            }
+
             if (layer == CraftingLayer::RECIPE) {
                 if (chosenRecipe == rm.recipes.size() - 1)
                     chosenRecipe = 0;
@@ -463,6 +468,11 @@ void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
             }
             break;
         case SDLK_k:
+            if (choosingPositionInWorld) {
+                tryToBuildAtPosition(Point {0, -1});
+                break;
+            }
+
             if (layer == CraftingLayer::RECIPE) {
                 if (chosenRecipe == 0)
                     chosenRecipe = (int) rm.recipes.size() - 1;
@@ -484,8 +494,12 @@ void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
                     chosenMaterial--;
             }
             break;
-        case SDLK_RETURN:
         case SDLK_l:
+            if (choosingPositionInWorld) {
+                tryToBuildAtPosition(Point {1, 0});
+                break;
+            }
+        case SDLK_RETURN:
             if (layer == CraftingLayer::RECIPE) {
                 chosenIngredient = 0;
                 chosenMaterial = 0;
@@ -495,14 +509,14 @@ void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
             } else if (layer == CraftingLayer::INGREDIENT) {
                 if (chosenIngredient == currentRecipe->ingredients.size()) {
                     if (currentRecipeSatisfied()) {
-                        rm.recipes[chosenRecipe]->produce();
-                        for (const auto &ID : currentlyChosenMaterials) {
-                            player.removeFromInventoryByID(ID);
-                            EntityManager::getInstance().eraseByID(ID);
+                        if (rm.recipes[chosenRecipe]->goesIntoInventory || haveChosenPositionInWorld) {
+                            buildItem(Point {0, 0});
+                            this->reset();
+                        } else {
+                            // Get player to build object into the world
+                            choosingPositionInWorld = true;
+                            break;
                         }
-                        createdMessage = currentRecipe->nameOfProduct;
-                        createdMessageTimer = SHOW_CREATED_DISPLAY_LENGTH;
-                        this->reset();
                     }
                 } else if (currentRecipe->ingredients[chosenIngredient].quantity > 0)
                     layer = CraftingLayer::MATERIAL;
@@ -517,8 +531,12 @@ void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
                     layer = CraftingLayer::INGREDIENT;
             }
             break;
-        case SDLK_BACKSPACE:
         case SDLK_h:
+            if (choosingPositionInWorld) {
+                tryToBuildAtPosition(Point {-1, 0});
+                break;
+            }
+        case SDLK_BACKSPACE:
             if (layer == CraftingLayer::INGREDIENT) {
                 chosenMaterial = 0;
                 layer = CraftingLayer::RECIPE;
@@ -528,10 +546,40 @@ void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
                 layer = CraftingLayer::INGREDIENT;
             }
             break;
+        case SDLK_y:
+            if (choosingPositionInWorld)
+                tryToBuildAtPosition(Point {-1, -1});
+            break;
+        case SDLK_u:
+            if (choosingPositionInWorld)
+                tryToBuildAtPosition(Point {1, -1});
+            break;
+        case SDLK_b:
+            if (choosingPositionInWorld)
+                tryToBuildAtPosition(Point {-1, 1});
+            break;
+        case SDLK_n:
+            if (choosingPositionInWorld)
+                tryToBuildAtPosition(Point {1, 1});
+            break;
+
+    }
+}
+
+void CraftingScreen::tryToBuildAtPosition(Point posOffset) {
+    auto p = posOffset + player.pos;
+    if (EntityManager::getInstance().getEntitiesAtPos(p).empty()) {
+        haveChosenPositionInWorld = true;
+        buildItem(p);
     }
 }
 
 void CraftingScreen::render(Font &font) {
+    if (choosingPositionInWorld) {
+        font.drawText("Choose direction to place object", 1, 0, getColor("white"), getColor("black"));
+        return;
+    }
+
     auto &rm = RecipeManager::getInstance();
     const int xOffset = 3;
     const int yOffset = 3;
@@ -622,4 +670,24 @@ void CraftingScreen::reset() {
     chosenIngredient = 0;
     chosenMaterial = 0;
     layer = CraftingLayer::RECIPE;
+    choosingPositionInWorld = false;
+    haveChosenPositionInWorld = false;
+}
+
+void CraftingScreen::buildItem(Point pos) {
+    auto recipe = RecipeManager::getInstance().recipes[chosenRecipe];
+
+    if (!recipe->goesIntoInventory) {
+        recipe->pointIfNotGoingIntoInventory = pos;
+        enabled = false;
+    }
+
+    recipe->produce();
+
+    for (const auto &ID : currentlyChosenMaterials) {
+        player.removeFromInventoryByID(ID);
+        EntityManager::getInstance().eraseByID(ID);
+    }
+    createdMessage = currentRecipe->nameOfProduct;
+    createdMessageTimer = SHOW_CREATED_DISPLAY_LENGTH;
 }
