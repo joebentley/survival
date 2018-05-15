@@ -4,6 +4,8 @@
 #include "entity.h"
 #include "utils.h"
 
+// AI behaviours
+
 struct WanderBehaviour : Behaviour {
     explicit WanderBehaviour(Entity& parent) : Behaviour("WanderBehaviour", parent) {}
     void tick() override;
@@ -80,6 +82,8 @@ struct HostilityBehaviour : Behaviour {
     float hostility;
     void tick() override;
 };
+
+// Behaviours for items
 
 struct EatableBehaviour : Behaviour {
     EatableBehaviour(Entity& parent, float hungerRestoration)
