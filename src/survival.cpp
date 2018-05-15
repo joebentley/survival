@@ -86,14 +86,14 @@ int main(int argc, char* argv[])
                 chest->setPos(player->pos + Point(-2, 2));
                 manager.addEntity(chest);
 
-                auto apple2 = std::make_shared<AppleEntity>("apple2");
+                auto apple2 = std::make_shared<AppleEntity>();
                 chest->addToInventory(apple2);
                 manager.addEntity(apple2);
 
                 auto healthUI = std::make_shared<StatusUIEntity>(dynamic_cast<PlayerEntity&>(*player));
                 manager.addEntity(healthUI);
 
-                auto fire = std::make_shared<FireEntity>("fire1");
+                auto fire = std::make_shared<FireEntity>();
                 fire->setPos(player->pos + Point(0, -2));
                 manager.addEntity(fire);
 

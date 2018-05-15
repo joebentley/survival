@@ -59,6 +59,8 @@ struct Entity {
             : hp(hp), maxhp(maxhp), regenPerTick(regenPerTick), hitTimes(hitTimes), hitAmount(hitAmount), maxCarryWeight(maxCarryWeight), ID(std::move(ID)),
               type(std::move(type)), name(std::move(name)), graphic(std::move(graphic)), pos(0, 0)
     {
+        if (this->ID.empty()) // use next available ID
+            this->ID = std::to_string(gNumInitialisedEntities);
         gNumInitialisedEntities++;
     }
 
@@ -80,7 +82,11 @@ struct Entity {
     bool skipLootingDialog {false}; // automatically pick up first item in inventory when looting
 
     std::string ID; // Must be unique!
+
+    // TODO: move these to a CraftingMaterialBehaviour
     std::string type; // Used in crafting recipes
+    float quality {1}; // Quality as a construction material
+
     std::string name;
     std::string shortDesc;
     std::string longDesc;

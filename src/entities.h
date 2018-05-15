@@ -9,7 +9,7 @@ struct InventoryScreen;
 struct LootingDialog;
 class InspectionDialog;
 
-struct PlayerEntity : public Entity {
+struct PlayerEntity : Entity {
     double hunger;
     double hungerRate; // hunger per tick
     double hungerDamageRate; // hp loss per tick while starving
@@ -31,8 +31,8 @@ struct PlayerEntity : public Entity {
     bool addToInventory(std::shared_ptr<Entity> item) override;
 };
 
-struct CatEntity : public Entity {
-    CatEntity(std::string ID)
+struct CatEntity : Entity {
+    explicit CatEntity(std::string ID = "")
             : Entity(std::move(ID), "living", "cat", "$[yellow]c", 10, 10, 0.05, 1, 2, 100)
     {
         auto wanderAttach = std::make_shared<WanderAttachBehaviour>(*this, 0.5, 0.7, 0.05);
@@ -45,7 +45,7 @@ struct CatEntity : public Entity {
     void destroy() override;
 };
 
-struct EatableEntity : public Entity {
+struct EatableEntity : Entity {
     EatableEntity(std::string ID, std::string type, std::string name, std::string graphic, double hungerRestoration)
             : Entity(std::move(ID), std::move(type), std::move(name), std::move(graphic))
     {
@@ -53,17 +53,17 @@ struct EatableEntity : public Entity {
     }
 };
 
-struct FireEntity : public Entity {
-    FireEntity(std::string ID) : Entity(std::move(ID), "fire", "Fire", "") {}
+struct FireEntity : Entity {
+    FireEntity(std::string ID = "") : Entity(std::move(ID), "fire", "Fire", "") {}
 
     void render(Font &font, Point currentWorldPos) override;
 };
 
-struct ChestEntity : public Entity {
+struct ChestEntity : Entity {
     const std::string SHORT_DESC = "A heavy wooden chest";
     const std::string LONG_DESC = "This chest is super heavy";
 
-    ChestEntity(std::string ID)
+    ChestEntity(std::string ID = "")
             : Entity(std::move(ID), "container", "Chest", "${black}$[brown]$(accentAE)")
     {
         shortDesc = SHORT_DESC;
@@ -74,13 +74,13 @@ struct ChestEntity : public Entity {
 };
 
 struct BerryEntity;
-struct BushEntity : public Entity {
+struct BushEntity : Entity {
     const int RESTOCK_RATE = 100; // ticks
 
     const std::string SHORT_DESC = "It's a bush!";
     const std::string LONG_DESC = "";
 
-    explicit BushEntity(std::string ID) : Entity(std::move(ID), "container", "Bush", "${black}$[purple]$(div)")
+    explicit BushEntity(std::string ID = "") : Entity(std::move(ID), "container", "Bush", "${black}$[purple]$(div)")
     {
         shortDesc = SHORT_DESC;
         longDesc = LONG_DESC;
@@ -91,23 +91,23 @@ struct BushEntity : public Entity {
     void render(Font& font, Point currentWorldPos) override;
 };
 
-struct GrassTuftEntity : public Entity {
+struct GrassTuftEntity : Entity {
     const std::string SHORT_DESC = "A tuft of dry grass";
     const std::string LONG_DESC = "A tuft of dry grass, very useful";
 
-    explicit GrassTuftEntity(std::string ID) : Entity(std::move(ID), "grass", "Tuft of grass", "$[grasshay]$(approx)")
+    explicit GrassTuftEntity(std::string ID = "") : Entity(std::move(ID), "grass", "Tuft of grass", "$[grasshay]$(approx)")
     {
         addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
     }
 };
 
-struct GrassEntity : public Entity {
+struct GrassEntity : Entity {
     const int RESTOCK_RATE = 200; // ticks
 
     const std::string SHORT_DESC = "It is dry grass";
     const std::string LONG_DESC = "You can harvest it";
 
-    explicit GrassEntity(std::string ID) : Entity(std::move(ID), "container", "Grass", "${black}$[grasshay]$(tau)")
+    explicit GrassEntity(std::string ID = "") : Entity(std::move(ID), "container", "Grass", "${black}$[grasshay]$(tau)")
     {
         shortDesc = SHORT_DESC;
         longDesc = LONG_DESC;
@@ -120,7 +120,7 @@ struct GrassEntity : public Entity {
 
 // Food
 
-struct CorpseEntity : public EatableEntity {
+struct CorpseEntity : EatableEntity {
     CorpseEntity(std::string ID, double hungerRestoration, const std::string& corpseOf, int weight)
             : EatableEntity(std::move(ID), "corpse", "Corpse of " + corpseOf, "${black}$[red]x", hungerRestoration)
     {
@@ -128,11 +128,11 @@ struct CorpseEntity : public EatableEntity {
     }
 };
 
-struct AppleEntity : public EatableEntity {
+struct AppleEntity : EatableEntity {
     const std::string SHORT_DESC = "A small, fist-sized fruit that is hopefully crispy and juicy";
     const std::string LONG_DESC = "This is a longer description of the apple";
 
-    explicit AppleEntity(std::string ID)
+    explicit AppleEntity(std::string ID = "")
             : EatableEntity(std::move(ID), "food", "Apple", "$[green]a", 0.5)
     {
         shortDesc = SHORT_DESC;
@@ -141,11 +141,11 @@ struct AppleEntity : public EatableEntity {
     }
 };
 
-struct BananaEntity : public EatableEntity {
+struct BananaEntity : EatableEntity {
     const std::string SHORT_DESC = "A yellow fruit found in the jungle. The shape looks familiar...";
     const std::string LONG_DESC = "This fruit was discovered in [redacted]. They were brought west by Arab conquerors in 327 B.C.";
 
-    explicit BananaEntity(std::string ID)
+    explicit BananaEntity(std::string ID = "")
             : EatableEntity(std::move(ID), "food", "Banana", "$[yellow]b", 0.5)
     {
         shortDesc = SHORT_DESC;
@@ -154,11 +154,11 @@ struct BananaEntity : public EatableEntity {
     }
 };
 
-struct BerryEntity : public EatableEntity {
+struct BerryEntity : EatableEntity {
     const std::string SHORT_DESC = "A purple berry";
     const std::string LONG_DESC = "";
 
-    explicit BerryEntity(std::string ID)
+    explicit BerryEntity(std::string ID = "")
     : EatableEntity(std::move(ID), "berry", "Berry", "$[purple]$(male)", 0.5)
     {
         shortDesc = SHORT_DESC;
@@ -169,11 +169,11 @@ struct BerryEntity : public EatableEntity {
 
 // Materials
 
-struct TwigEntity : public Entity {
+struct TwigEntity : Entity {
     const std::string SHORT_DESC = "A thin, brittle twig";
     const std::string LONG_DESC = "It looks very useful! Who knows where it came from...";
 
-    explicit TwigEntity(std::string ID)
+    explicit TwigEntity(std::string ID = "")
     : Entity(std::move(ID), "wood", "Twig", "${black}$[brown]/")
     {
         shortDesc = SHORT_DESC;
