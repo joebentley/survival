@@ -419,3 +419,193 @@ void InspectionDialog::render(Font &font) {
     if (entitiesAtPoint.empty())
         thereIsAnEntity = false;
 }
+
+void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
+    auto &rm = RecipeManager::getInstance();
+    switch (e.keysym.sym) {
+        case SDLK_ESCAPE:
+            enabled = false;
+            break;
+        case SDLK_j:
+            if (layer == CraftingLayer::RECIPE) {
+                if (chosenRecipe == rm.recipes.size() - 1)
+                    chosenRecipe = 0;
+                else
+                    chosenRecipe++;
+                chosenIngredient = 0;
+                chosenMaterial = 0;
+            } else if (layer == CraftingLayer::INGREDIENT) {
+                if (chosenIngredient == rm.recipes[chosenRecipe]->ingredients.size())
+                    chosenIngredient = 0;
+                else
+                    chosenIngredient++;
+                chosenMaterial = 0;
+            } else if (layer == CraftingLayer::MATERIAL) {
+                std::vector<std::shared_ptr<Entity>> inventoryMaterials = filterInventoryForChosenMaterials();
+                if (chosenMaterial == inventoryMaterials.size() - 1)
+                    chosenMaterial = 0;
+                else
+                    chosenMaterial++;
+            }
+            break;
+        case SDLK_k:
+            if (layer == CraftingLayer::RECIPE) {
+                if (chosenRecipe == 0)
+                    chosenRecipe = (int) rm.recipes.size() - 1;
+                else
+                    chosenRecipe--;
+                chosenIngredient = 0;
+                chosenMaterial = 0;
+            } else if (layer == CraftingLayer::INGREDIENT) {
+                if (chosenIngredient == 0)
+                    chosenIngredient = (int)rm.recipes[chosenRecipe]->ingredients.size();
+                else
+                    chosenIngredient--;
+                chosenMaterial = 0;
+            } else if (layer == CraftingLayer::MATERIAL) {
+                std::vector<std::shared_ptr<Entity>> inventoryMaterials = filterInventoryForChosenMaterials();
+                if (chosenMaterial == 0)
+                    chosenMaterial = (int)inventoryMaterials.size() - 1;
+                else
+                    chosenMaterial--;
+            }
+            break;
+        case SDLK_RETURN:
+        case SDLK_l:
+            if (layer == CraftingLayer::RECIPE) {
+                chosenIngredient = 0;
+                chosenMaterial = 0;
+                layer = CraftingLayer::INGREDIENT;
+
+                currentRecipe = std::make_unique<Recipe>(Recipe(*rm.recipes[chosenRecipe]));
+            } else if (layer == CraftingLayer::INGREDIENT) {
+                if (chosenIngredient == currentRecipe->ingredients.size()) {
+                    if (currentRecipeSatisfied()) {
+                        rm.recipes[chosenRecipe]->produce();
+                        for (auto ID : currentlyChosenMaterials) {
+                            player.inventory.erase(
+                                    std::remove_if(player.inventory.begin(), player.inventory.end(), [ID] (auto &a) {
+                                        return a->ID == ID;
+                                    }),
+                                    player.inventory.end());
+                            EntityManager::getInstance().eraseByID(ID);
+                        }
+                        createdMessage = currentRecipe->nameOfProduct;
+                        createdMessageTimer = SHOW_CREATED_DISPLAY_LENGTH;
+                        this->reset();
+                    }
+                } else if (currentRecipe->ingredients[chosenIngredient].quantity > 0)
+                    layer = CraftingLayer::MATERIAL;
+            } else if (layer == CraftingLayer::MATERIAL) {
+                auto inventoryMaterials = filterInventoryForChosenMaterials();
+
+                if (currentRecipe->ingredients[chosenIngredient].quantity > 0) {
+                    currentlyChosenMaterials.emplace_back(inventoryMaterials[chosenMaterial]->ID);
+                    currentRecipe->ingredients[chosenIngredient].quantity--;
+                }
+                if (currentRecipe->ingredients[chosenIngredient].quantity == 0)
+                    layer = CraftingLayer::INGREDIENT;
+            }
+            break;
+        case SDLK_BACKSPACE:
+        case SDLK_h:
+            if (layer == CraftingLayer::INGREDIENT) {
+                chosenMaterial = 0;
+                layer = CraftingLayer::RECIPE;
+                currentRecipe.release();
+            } else if (layer == CraftingLayer::MATERIAL) {
+                chosenMaterial = 0;
+                layer = CraftingLayer::INGREDIENT;
+            }
+            break;
+    }
+}
+
+void CraftingScreen::render(Font &font) {
+    auto &rm = RecipeManager::getInstance();
+    const int xOffset = 3;
+    const int yOffset = 3;
+
+    for (int i = 0; i < rm.recipes.size(); ++i) {
+        auto recipe = *rm.recipes.at(i);
+        Color bColor = getColor("black");
+
+        if (i == chosenRecipe)
+            bColor = getColor("blue");
+
+        font.drawText(recipe.nameOfProduct, xOffset, yOffset + i, getColor("white"), bColor);
+    }
+
+    auto &ingredients = rm.recipes[chosenRecipe]->ingredients;
+    for (int i = 0; i < ingredients.size() + 1; ++i) {
+        Color bColor = getColor("black");
+
+        if ((layer == CraftingLayer::INGREDIENT || layer == CraftingLayer::MATERIAL) && i == chosenIngredient)
+            bColor = getColor("blue");
+
+        if (i != ingredients.size()) {
+            auto ingredient = ingredients.at(i);
+            if (currentRecipe != nullptr)
+                ingredient = currentRecipe->ingredients[i];
+
+            font.drawText(std::to_string(ingredient.quantity) + "x " + ingredient.entityType, xOffset + 14, yOffset + i,
+                          getColor("white"), bColor);
+        } else {
+            Color fColor = getColor("grey");
+
+            if (currentRecipeSatisfied())
+                fColor = getColor("white");
+
+            font.drawText("Construct", xOffset + 14, yOffset + i, fColor, bColor);
+        }
+    }
+
+    if (layer == CraftingLayer::INGREDIENT || layer == CraftingLayer::MATERIAL) {
+        std::vector<std::shared_ptr<Entity>> inventoryMaterials = filterInventoryForChosenMaterials();
+
+        for (int i = 0; i < inventoryMaterials.size(); ++i) {
+            Color bColor;
+            auto &material = inventoryMaterials.at(i);
+
+            if (layer == CraftingLayer::MATERIAL && i == chosenMaterial) {
+                bColor = getColor("blue");
+                font.drawText(material->graphic + " " + material->name, xOffset + 24, yOffset + i, bColor);
+            } else
+                font.drawText(material->graphic + " " + material->name, xOffset + 24, yOffset + i);
+        }
+    }
+
+    if (createdMessageTimer-- > 0) {
+        auto alpha = static_cast<int>(static_cast<double>(createdMessageTimer) / SHOW_CREATED_DISPLAY_LENGTH * 0xFF);
+        font.drawText("You created a " + createdMessage, 3, SCREEN_HEIGHT - 2, alpha);
+    }
+}
+
+std::vector<std::shared_ptr<Entity>> CraftingScreen::filterInventoryForChosenMaterials() {
+    auto &rm = RecipeManager::getInstance();
+
+    std::vector<std::shared_ptr<Entity>> inventoryMaterials;
+    std::copy_if(player.inventory.begin(), player.inventory.end(), std::back_inserter(inventoryMaterials),
+    [this, &rm] (auto &a) {
+        if (std::find(currentlyChosenMaterials.begin(), currentlyChosenMaterials.end(), a->ID) != currentlyChosenMaterials.end())
+            return false;
+        return rm.recipes[chosenRecipe]->ingredients[chosenIngredient].entityType == a->type;
+    });
+
+    return inventoryMaterials;
+}
+
+bool CraftingScreen::currentRecipeSatisfied() {
+    return (currentRecipe != nullptr &&
+            std::all_of(currentRecipe->ingredients.begin(), currentRecipe->ingredients.end(),
+                    [] (auto &a) { return a.quantity == 0; }));
+}
+
+void CraftingScreen::reset() {
+    currentlyChosenMaterials.clear();
+    currentRecipe = nullptr;
+    chosenRecipe = 0;
+    chosenIngredient = 0;
+    chosenMaterial = 0;
+    layer = CraftingLayer::RECIPE;
+}

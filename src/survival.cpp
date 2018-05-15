@@ -86,9 +86,7 @@ int main(int argc, char* argv[])
                 chest->setPos(player->pos + Point(-2, 2));
                 manager.addEntity(chest);
 
-                auto apple2 = std::make_shared<AppleEntity>();
-                chest->addToInventory(apple2);
-                manager.addEntity(apple2);
+                chest->addToInventory(std::make_shared<AppleEntity>());
 
                 auto healthUI = std::make_shared<StatusUIEntity>(dynamic_cast<PlayerEntity&>(*player));
                 manager.addEntity(healthUI);
@@ -97,11 +95,19 @@ int main(int argc, char* argv[])
                 fire->setPos(player->pos + Point(0, -2));
                 manager.addEntity(fire);
 
+                player->Entity::addToInventory(std::make_shared<TwigEntity>());
+                player->Entity::addToInventory(std::make_shared<TwigEntity>());
+                player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
+                player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
+                player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
+                player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
+
                 manager.initialize();
 
                 InventoryScreen inventoryScreen(*player);
                 LootingDialog lootingDialog(*player);
                 InspectionDialog inspectionDialog(*player);
+                CraftingScreen craftingScreen(*player);
 
                 bool quit = false;
                 SDL_Event e;
@@ -118,8 +124,12 @@ int main(int argc, char* argv[])
                                 lootingDialog.handleInput(e.key);
                             else if (inspectionDialog.enabled)
                                 inspectionDialog.handleInput(e.key);
+                            else if (craftingScreen.enabled)
+                                craftingScreen.handleInput(e.key);
                             else
-                                dynamic_cast<PlayerEntity &>(*player).handleInput(e.key, quit, inventoryScreen, lootingDialog, inspectionDialog);
+                                dynamic_cast<PlayerEntity &>(*player).handleInput(e.key, quit, inventoryScreen,
+                                                                                  lootingDialog, inspectionDialog,
+                                                                                  craftingScreen);
                         }
                     }
 
@@ -130,6 +140,8 @@ int main(int argc, char* argv[])
 
                     if (inventoryScreen.enabled)
                         inventoryScreen.render(font);
+                    else if (craftingScreen.enabled)
+                        craftingScreen.render(font);
                     else if (!lootingDialog.viewingDescription && !inspectionDialog.viewingDescription) {
                         if (world->render(font, player->getWorldPos()) == -1)
                             return -1;

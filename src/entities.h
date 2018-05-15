@@ -8,6 +8,7 @@
 struct InventoryScreen;
 struct LootingDialog;
 class InspectionDialog;
+struct CraftingScreen;
 
 struct PlayerEntity : Entity {
     double hunger;
@@ -15,7 +16,7 @@ struct PlayerEntity : Entity {
     double hungerDamageRate; // hp loss per tick while starving
     bool attacking {false}; // whether or not player is attacking something
     bool showingTooMuchWeightMessage {false};
-    bool showingInspectionDialog {false};
+//    bool showingInspectionDialog {false};
 
     explicit PlayerEntity()
             : Entity("Player", "player", "You, the player", "$[white]$(dwarf)", 10, 10, 0.1, 1, 4, 100),
@@ -26,7 +27,9 @@ struct PlayerEntity : Entity {
 
     bool attack(const Point& attackPos);
     void tick() override;
-    void handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen, LootingDialog &lootingDialog, InspectionDialog &inspectionDialog);
+    void handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen,
+                         LootingDialog &lootingDialog, InspectionDialog &inspectionDialog,
+                         CraftingScreen &craftingScreen);
     void render(Font &font, Point currentWorldPos) override;
     bool addToInventory(std::shared_ptr<Entity> item) override;
 };
@@ -54,7 +57,7 @@ struct EatableEntity : Entity {
 };
 
 struct FireEntity : Entity {
-    FireEntity(std::string ID = "") : Entity(std::move(ID), "fire", "Fire", "") {}
+    explicit FireEntity(std::string ID = "") : Entity(std::move(ID), "fire", "Fire", "") {}
 
     void render(Font &font, Point currentWorldPos) override;
 };
@@ -63,13 +66,23 @@ struct ChestEntity : Entity {
     const std::string SHORT_DESC = "A heavy wooden chest";
     const std::string LONG_DESC = "This chest is super heavy";
 
-    ChestEntity(std::string ID = "")
+    explicit ChestEntity(std::string ID = "")
             : Entity(std::move(ID), "container", "Chest", "${black}$[brown]$(accentAE)")
     {
         shortDesc = SHORT_DESC;
         longDesc = LONG_DESC;
 
         // TODO: allow player to place items in chest
+    }
+};
+
+struct BandageEntity : Entity {
+    const std::string SHORT_DESC = "A rudimentary bandage made of grass";
+
+    explicit BandageEntity(std::string ID = "")
+            : Entity(std::move(ID), "healing", "Bandage", "$[white]~")
+    {
+        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
     }
 };
 
@@ -97,6 +110,8 @@ struct GrassTuftEntity : Entity {
 
     explicit GrassTuftEntity(std::string ID = "") : Entity(std::move(ID), "grass", "Tuft of grass", "$[grasshay]$(approx)")
     {
+        shortDesc = SHORT_DESC;
+        longDesc = LONG_DESC;
         addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
     }
 };

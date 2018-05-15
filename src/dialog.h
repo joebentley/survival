@@ -6,6 +6,7 @@
 #include <string>
 #include "font.h"
 #include "entities.h"
+#include "recipe.h"
 
 void showMessageBox(Font& font, const std::vector<std::string> &contents, int padding, int x, int y);
 inline void showMessageBox(Font& font, const std::vector<std::string> &contents, int x, int y) {
@@ -71,6 +72,39 @@ public:
 
     void handleInput(SDL_KeyboardEvent &e);
     void render(Font& font);
+};
+
+struct Recipe;
+struct CraftingScreen {
+    enum class CraftingLayer {
+        RECIPE,
+        INGREDIENT,
+        MATERIAL
+    };
+
+    const int SHOW_CREATED_DISPLAY_LENGTH = 2000;
+
+    bool enabled {false};
+    int chosenRecipe {0};
+    int chosenIngredient {0};
+    int chosenMaterial {0};
+    PlayerEntity &player;
+    CraftingLayer layer {CraftingLayer::RECIPE};
+    std::unique_ptr<Recipe> currentRecipe {nullptr};
+
+    std::string createdMessage;
+    int createdMessageTimer {0};
+
+    explicit CraftingScreen(PlayerEntity &player) : player(player) {}
+
+    void handleInput(SDL_KeyboardEvent &e);
+    void render(Font& font);
+    void reset();
+
+private:
+    std::vector<std::string> currentlyChosenMaterials;
+    std::vector<std::shared_ptr<Entity>> filterInventoryForChosenMaterials();
+    bool currentRecipeSatisfied();
 };
 
 #endif // DIALOG_H_

@@ -8,7 +8,7 @@
 
 struct Recipe;
 struct RecipeManager {
-    std::vector<Recipe> recipes;
+    std::vector<std::shared_ptr<Recipe>> recipes;
 
     static RecipeManager& getInstance() {
         static RecipeManager instance;
@@ -31,6 +31,7 @@ struct Recipe {
 
     Recipe() : Recipe("") {}
     explicit Recipe(std::string nameOfProduct) : nameOfProduct(std::move(nameOfProduct)) {}
+    Recipe(const Recipe &other) = default;
 
     virtual void produce() {};
 };
@@ -41,6 +42,16 @@ struct FireRecipe : Recipe {
     FireRecipe() : Recipe("Fire") {
         ingredients.emplace_back(Ingredient { 2, "wood" });
         ingredients.emplace_back(Ingredient { 2, "grass" });
+    }
+
+    void produce() override;
+};
+
+struct BandageRecipe : Recipe {
+    static int numProduced;
+
+    BandageRecipe() : Recipe("Bandage") {
+        ingredients.emplace_back(Ingredient { 1, "grass" });
     }
 
     void produce() override;

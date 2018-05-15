@@ -115,14 +115,14 @@ public:
 
     void initialize() override {
         auto item = std::make_shared<T>(parent.ID + "berry" + std::to_string(++numTimesRestocked));
-        EntityManager::getInstance().addEntity(item);
+//        EntityManager::getInstance().addEntity(item);
         parent.addToInventory(std::dynamic_pointer_cast<Entity>(item));
     }
 
     void tick() override {
         if (ticksUntilRestock == 0 && parent.inventory.empty()) {
             auto item = std::make_shared<T>(parent.ID + "berry" + std::to_string(++numTimesRestocked));
-            EntityManager::getInstance().addEntity(item);
+//            EntityManager::getInstance().addEntity(item);
             parent.addToInventory(std::dynamic_pointer_cast<Entity>(item));
             ticksUntilRestock = restockRate;
         }

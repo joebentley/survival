@@ -6,7 +6,7 @@
 int gNumInitialisedEntities = 0;
 
 void Entity::addBehaviour(std::shared_ptr<Behaviour> behaviour) {
-    behaviours[behaviour->ID] = behaviour;
+    behaviours[behaviour->ID] = std::move(behaviour);
 }
 
 void Entity::initialize() {
@@ -71,6 +71,9 @@ int Entity::rollDamage() {
 bool Entity::addToInventory(std::shared_ptr<Entity> item) {
     auto b = item->getBehaviourByID("PickuppableBehaviour");
     if (b != nullptr) {
+        if (EntityManager::getInstance().entities.find(item->ID) == EntityManager::getInstance().entities.end())
+            EntityManager::getInstance().addEntity(item);
+
         if (getCarryingWeight() + dynamic_cast<PickuppableBehaviour&>(*b).weight > maxCarryWeight)
             return false;
         item->setPos(pos);

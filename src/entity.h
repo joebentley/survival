@@ -85,10 +85,12 @@ struct Entity {
 
     // TODO: move these to a CraftingMaterialBehaviour
     std::string type; // Used in crafting recipes
-    float quality {1}; // Quality as a construction material
+    float usefulQuality {1}; // Quality as a construction material
+
+    float quality {1}; // Quality as a product
 
     std::string name;
-    std::string shortDesc;
+    std::string shortDesc; // TODO: Getter for this, change based on quality
     std::string longDesc;
 
     std::string graphic;

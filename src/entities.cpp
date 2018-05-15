@@ -52,7 +52,9 @@ void PlayerEntity::tick() {
     Entity::tick();
 }
 
-void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen, LootingDialog &lootingDialog, InspectionDialog &inspectionDialog) {
+void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen,
+                               LootingDialog &lootingDialog, InspectionDialog &inspectionDialog,
+                               CraftingScreen &craftingScreen) {
     auto key = e.keysym.sym;
     auto mod = e.keysym.mod;
 
@@ -188,6 +190,11 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
         if (key == SDLK_SEMICOLON) {
             inspectionDialog.enabled = true;
             inspectionDialog.chosenPoint = pos;
+        }
+
+        if (key == SDLK_c) {
+            craftingScreen.enabled = true;
+            craftingScreen.reset();
         }
 
         if (didAction)
