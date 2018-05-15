@@ -19,7 +19,7 @@ struct PlayerEntity : Entity {
 //    bool showingInspectionDialog {false};
 
     explicit PlayerEntity()
-            : Entity("Player", "player", "You, the player", "$[white]$(dwarf)", 10, 10, 0.1, 1, 4, 100),
+            : Entity("Player", "You, the player", "$[white]$(dwarf)", 10, 10, 0.1, 1, 4, 100),
               hunger(1), hungerRate(0.01), hungerDamageRate(0.15)
     {
         renderingLayer = -1;
@@ -36,7 +36,7 @@ struct PlayerEntity : Entity {
 
 struct CatEntity : Entity {
     explicit CatEntity(std::string ID = "")
-            : Entity(std::move(ID), "living", "cat", "$[yellow]c", 10, 10, 0.05, 1, 2, 100)
+            : Entity(std::move(ID), "cat", "$[yellow]c", 10, 10, 0.05, 1, 2, 100)
     {
         auto wanderAttach = std::make_shared<WanderAttachBehaviour>(*this, 0.5, 0.7, 0.05);
         auto chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this, 0.8, 0.6, 8, 8, 0.9);
@@ -49,15 +49,15 @@ struct CatEntity : Entity {
 };
 
 struct EatableEntity : Entity {
-    EatableEntity(std::string ID, std::string type, std::string name, std::string graphic, double hungerRestoration)
-            : Entity(std::move(ID), std::move(type), std::move(name), std::move(graphic))
+    EatableEntity(std::string ID, std::string name, std::string graphic, double hungerRestoration)
+            : Entity(std::move(ID), std::move(name), std::move(graphic))
     {
         addBehaviour(std::make_shared<EatableBehaviour>(*this, hungerRestoration));
     }
 };
 
 struct FireEntity : Entity {
-    explicit FireEntity(std::string ID = "") : Entity(std::move(ID), "fire", "Fire", "") {}
+    explicit FireEntity(std::string ID = "") : Entity(std::move(ID), "Fire", "") {}
 
     void render(Font &font, Point currentWorldPos) override;
 };
@@ -67,7 +67,7 @@ struct ChestEntity : Entity {
     const std::string LONG_DESC = "This chest is super heavy";
 
     explicit ChestEntity(std::string ID = "")
-            : Entity(std::move(ID), "container", "Chest", "${black}$[brown]$(accentAE)")
+            : Entity(std::move(ID), "Chest", "${black}$[brown]$(accentAE)")
     {
         shortDesc = SHORT_DESC;
         longDesc = LONG_DESC;
@@ -80,7 +80,7 @@ struct BandageEntity : Entity {
     const std::string SHORT_DESC = "A rudimentary bandage made of grass";
 
     explicit BandageEntity(std::string ID = "")
-            : Entity(std::move(ID), "healing", "Bandage", "$[white]~")
+            : Entity(std::move(ID), "Bandage", "$[white]~")
     {
         addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
     }
@@ -93,7 +93,7 @@ struct BushEntity : Entity {
     const std::string SHORT_DESC = "It's a bush!";
     const std::string LONG_DESC = "";
 
-    explicit BushEntity(std::string ID = "") : Entity(std::move(ID), "container", "Bush", "${black}$[purple]$(div)")
+    explicit BushEntity(std::string ID = "") : Entity(std::move(ID), "Bush", "${black}$[purple]$(div)")
     {
         shortDesc = SHORT_DESC;
         longDesc = LONG_DESC;
@@ -108,11 +108,12 @@ struct GrassTuftEntity : Entity {
     const std::string SHORT_DESC = "A tuft of dry grass";
     const std::string LONG_DESC = "A tuft of dry grass, very useful";
 
-    explicit GrassTuftEntity(std::string ID = "") : Entity(std::move(ID), "grass", "Tuft of grass", "$[grasshay]$(approx)")
+    explicit GrassTuftEntity(std::string ID = "") : Entity(std::move(ID), "Tuft of grass", "$[grasshay]$(approx)")
     {
         shortDesc = SHORT_DESC;
         longDesc = LONG_DESC;
         addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
+        addBehaviour(std::make_shared<CraftingMaterialBehaviour>(*this, "grass", 1));
     }
 };
 
@@ -122,7 +123,7 @@ struct GrassEntity : Entity {
     const std::string SHORT_DESC = "It is dry grass";
     const std::string LONG_DESC = "You can harvest it";
 
-    explicit GrassEntity(std::string ID = "") : Entity(std::move(ID), "container", "Grass", "${black}$[grasshay]$(tau)")
+    explicit GrassEntity(std::string ID = "") : Entity(std::move(ID), "Grass", "${black}$[grasshay]$(tau)")
     {
         shortDesc = SHORT_DESC;
         longDesc = LONG_DESC;
@@ -137,7 +138,7 @@ struct GrassEntity : Entity {
 
 struct CorpseEntity : EatableEntity {
     CorpseEntity(std::string ID, double hungerRestoration, const std::string& corpseOf, int weight)
-            : EatableEntity(std::move(ID), "corpse", "Corpse of " + corpseOf, "${black}$[red]x", hungerRestoration)
+            : EatableEntity(std::move(ID), "Corpse of " + corpseOf, "${black}$[red]x", hungerRestoration)
     {
         addBehaviour(std::make_shared<PickuppableBehaviour>(*this, weight));
     }
@@ -148,7 +149,7 @@ struct AppleEntity : EatableEntity {
     const std::string LONG_DESC = "This is a longer description of the apple";
 
     explicit AppleEntity(std::string ID = "")
-            : EatableEntity(std::move(ID), "food", "Apple", "$[green]a", 0.5)
+            : EatableEntity(std::move(ID), "Apple", "$[green]a", 0.5)
     {
         shortDesc = SHORT_DESC;
         longDesc = LONG_DESC;
@@ -161,7 +162,7 @@ struct BananaEntity : EatableEntity {
     const std::string LONG_DESC = "This fruit was discovered in [redacted]. They were brought west by Arab conquerors in 327 B.C.";
 
     explicit BananaEntity(std::string ID = "")
-            : EatableEntity(std::move(ID), "food", "Banana", "$[yellow]b", 0.5)
+            : EatableEntity(std::move(ID), "Banana", "$[yellow]b", 0.5)
     {
         shortDesc = SHORT_DESC;
         longDesc = LONG_DESC;
@@ -174,7 +175,7 @@ struct BerryEntity : EatableEntity {
     const std::string LONG_DESC = "";
 
     explicit BerryEntity(std::string ID = "")
-    : EatableEntity(std::move(ID), "berry", "Berry", "$[purple]$(male)", 0.5)
+    : EatableEntity(std::move(ID), "Berry", "$[purple]$(male)", 0.5)
     {
         shortDesc = SHORT_DESC;
         longDesc = LONG_DESC;
@@ -189,11 +190,12 @@ struct TwigEntity : Entity {
     const std::string LONG_DESC = "It looks very useful! Who knows where it came from...";
 
     explicit TwigEntity(std::string ID = "")
-    : Entity(std::move(ID), "wood", "Twig", "${black}$[brown]/")
+    : Entity(std::move(ID), "Twig", "${black}$[brown]/")
     {
         shortDesc = SHORT_DESC;
         longDesc = LONG_DESC;
         addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
+        addBehaviour(std::make_shared<CraftingMaterialBehaviour>(*this, "wood", 1));
     }
 };
 
@@ -220,7 +222,7 @@ public:
             : StatusUIEntity(dynamic_cast<PlayerEntity&>(*EntityManager::getInstance().getEntityByID("Player"))) { }
 
     explicit StatusUIEntity(PlayerEntity& player)
-            : Entity("StatusUI", "UI", "", ""), player(player) { }
+            : Entity("StatusUI", "", ""), player(player) { }
 
     void render(Font &font, Point currentWorldPos) override;
     void emit(Uint32 signal) override;

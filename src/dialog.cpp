@@ -587,9 +587,13 @@ std::vector<std::shared_ptr<Entity>> CraftingScreen::filterInventoryForChosenMat
     std::vector<std::shared_ptr<Entity>> inventoryMaterials;
     std::copy_if(player.inventory.begin(), player.inventory.end(), std::back_inserter(inventoryMaterials),
     [this, &rm] (auto &a) {
+        if (!a->hasBehaviour("CraftingMaterialBehaviour"))
+            return false;
         if (std::find(currentlyChosenMaterials.begin(), currentlyChosenMaterials.end(), a->ID) != currentlyChosenMaterials.end())
             return false;
-        return rm.recipes[chosenRecipe]->ingredients[chosenIngredient].entityType == a->type;
+
+        auto &b = dynamic_cast<CraftingMaterialBehaviour&>(*a->getBehaviourByID("CraftingMaterialBehaviour"));
+        return rm.recipes[chosenRecipe]->ingredients[chosenIngredient].entityType == b.type;
     });
 
     return inventoryMaterials;

@@ -4,14 +4,12 @@
 #include "entity.h"
 #include "utils.h"
 
-class WanderBehaviour : public Behaviour {
-public:
+struct WanderBehaviour : Behaviour {
     explicit WanderBehaviour(Entity& parent) : Behaviour("WanderBehaviour", parent) {}
     void tick() override;
 };
 
-class AttachmentBehaviour : public Behaviour {
-public:
+struct AttachmentBehaviour : Behaviour {
     float attachment; // probability of attaching to player
     float clinginess; // probability of moving to player
     float unattachment; // probability of unattaching from player
@@ -28,8 +26,7 @@ public:
     void tick() override;
 };
 
-class WanderAttachBehaviour : public Behaviour {
-public:
+struct WanderAttachBehaviour : Behaviour {
     WanderBehaviour wander;
     AttachmentBehaviour attach;
     bool onlyWander {false};
@@ -62,8 +59,7 @@ public:
     }
 };
 
-class ChaseAndAttackBehaviour : public Behaviour {
-public:
+struct ChaseAndAttackBehaviour : Behaviour {
     explicit ChaseAndAttackBehaviour(Entity& parent, float clinginess, float unattachment, float range, float postHostilityRange, float postHostility)
             : Behaviour("ChaseAndAttackBehaviour", parent), clinginess(clinginess), unattachment(unattachment),
               range(range), postHostilityRange(postHostilityRange), postHostility(postHostility) {}
@@ -76,8 +72,7 @@ public:
     void tick() override;
 };
 
-class HostilityBehaviour : public Behaviour {
-public:
+struct HostilityBehaviour : Behaviour {
     HostilityBehaviour(Entity& parent, float range, float hostility)
         : Behaviour("HostilityBehaviour", parent), range(range), hostility(hostility) {}
 
@@ -86,20 +81,26 @@ public:
     void tick() override;
 };
 
-class EatableBehaviour : public Behaviour {
-public:
+struct EatableBehaviour : Behaviour {
     EatableBehaviour(Entity& parent, float hungerRestoration)
             : Behaviour("EatableBehaviour", parent), hungerRestoration(hungerRestoration) {}
 
     double hungerRestoration;
 };
 
-class PickuppableBehaviour : public Behaviour {
-public:
+struct PickuppableBehaviour : Behaviour {
     PickuppableBehaviour(Entity& parent, int weight)
             : Behaviour("PickuppableBehaviour", parent), weight(weight) {}
 
     int weight;
+};
+
+struct CraftingMaterialBehaviour : Behaviour {
+    CraftingMaterialBehaviour(Entity& parent, std::string materialType, float materialQuality)
+            : Behaviour("CraftingMaterialBehaviour", parent), type(std::move(materialType)), quality(materialQuality) {}
+
+    std::string type;
+    float quality;
 };
 
 // T must be an Entity that takes one constructor parameter, being the entity ID
@@ -115,14 +116,14 @@ public:
 
     void initialize() override {
         auto item = std::make_shared<T>(parent.ID + "berry" + std::to_string(++numTimesRestocked));
-//        EntityManager::getInstance().addEntity(item);
+        EntityManager::getInstance().addEntity(item);
         parent.addToInventory(std::dynamic_pointer_cast<Entity>(item));
     }
 
     void tick() override {
         if (ticksUntilRestock == 0 && parent.inventory.empty()) {
             auto item = std::make_shared<T>(parent.ID + "berry" + std::to_string(++numTimesRestocked));
-//            EntityManager::getInstance().addEntity(item);
+            EntityManager::getInstance().addEntity(item);
             parent.addToInventory(std::dynamic_pointer_cast<Entity>(item));
             ticksUntilRestock = restockRate;
         }

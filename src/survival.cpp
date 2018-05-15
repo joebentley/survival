@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
                 manager.addEntity(apple);
                 manager.addEntity(banana);
 
-                auto pileOfLead = std::make_shared<Entity>("pileOfLead", "", "Huge Pile Of Lead", "$[grey]L");
+                auto pileOfLead = std::make_shared<Entity>("pileOfLead", "Huge Pile Of Lead", "$[grey]L");
                 pileOfLead->addBehaviour(std::make_shared<PickuppableBehaviour>(*pileOfLead, 100));
                 manager.addEntity(pileOfLead);
 

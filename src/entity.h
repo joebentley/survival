@@ -54,21 +54,21 @@ struct Behaviour {
 class EntityManager;
 
 struct Entity {
-    Entity(std::string ID, std::string type, std::string name, std::string graphic,
+    Entity(std::string ID, std::string name, std::string graphic,
            double hp, double maxhp, double regenPerTick, int hitTimes, int hitAmount, int maxCarryWeight)
             : hp(hp), maxhp(maxhp), regenPerTick(regenPerTick), hitTimes(hitTimes), hitAmount(hitAmount), maxCarryWeight(maxCarryWeight), ID(std::move(ID)),
-              type(std::move(type)), name(std::move(name)), graphic(std::move(graphic)), pos(0, 0)
+              name(std::move(name)), graphic(std::move(graphic)), pos(0, 0)
     {
         if (this->ID.empty()) // use next available ID
             this->ID = std::to_string(gNumInitialisedEntities);
         gNumInitialisedEntities++;
     }
 
-    Entity(std::string ID, std::string type, std::string name, std::string graphic, double hp, double maxhp, double regenPerTick)
-            : Entity(std::move(ID), std::move(type), std::move(name), std::move(graphic), hp, maxhp, regenPerTick, 1, 2, 100) {}
+    Entity(std::string ID, std::string name, std::string graphic, double hp, double maxhp, double regenPerTick)
+            : Entity(std::move(ID), std::move(name), std::move(graphic), hp, maxhp, regenPerTick, 1, 2, 100) {}
 
-    Entity(std::string ID, std::string type, std::string name, std::string graphic)
-            : Entity(std::move(ID), std::move(type), std::move(name), std::move(graphic), 1, 1, 0, 1, 2, 100) {}
+    Entity(std::string ID, std::string name, std::string graphic)
+            : Entity(std::move(ID), std::move(name), std::move(graphic), 1, 1, 0, 1, 2, 100) {}
 
     double hp;
     double maxhp;
@@ -83,14 +83,10 @@ struct Entity {
 
     std::string ID; // Must be unique!
 
-    // TODO: move these to a CraftingMaterialBehaviour
-    std::string type; // Used in crafting recipes
-    float usefulQuality {1}; // Quality as a construction material
-
     float quality {1}; // Quality as a product
 
     std::string name;
-    std::string shortDesc; // TODO: Getter for this, change based on quality
+    std::string shortDesc; // TODO: Getter for this, change based on quality?
     std::string longDesc;
 
     std::string graphic;
