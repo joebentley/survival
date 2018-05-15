@@ -76,7 +76,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
                 return;
             else {
                 EntityManager::getInstance().queueForDeletion((*it)->ID);
-                hunger = std::min(hunger + dynamic_cast<EatableBehaviour&>(*((*it)->getBehaviourByID("EatableBehaviour"))).hungerRestoration, 1.0);
+                addHunger(dynamic_cast<EatableBehaviour&>(*((*it)->getBehaviourByID("EatableBehaviour"))).hungerRestoration);
                 didAction = true;
             }
         }
@@ -228,9 +228,13 @@ bool PlayerEntity::addToInventory(std::shared_ptr<Entity> item) {
     return false;
 }
 
+void PlayerEntity::addHunger(float hungerRestoration) {
+    hunger = std::min(hunger + hungerRestoration, 1.0f);
+}
+
 void StatusUIEntity::render(Font &font, Point currentWorldPos) {
     std::string colorStr;
-    double hpPercent = player.hp / player.maxhp;
+    float hpPercent = player.hp / player.maxhp;
 
     if (hpPercent > 0.7)
         colorStr = "$[green]";
@@ -256,7 +260,7 @@ void StatusUIEntity::render(Font &font, Point currentWorldPos) {
         font.drawText("Waited " + std::to_string(ticksWaitedDuringAnimation)
                       + " tick" + (ticksWaitedDuringAnimation > 1 ? "s" : "") + "...",
                       SCREEN_WIDTH - X_OFFSET - 8, SCREEN_HEIGHT - 2,
-                      Color(0xFF, 0xFF, 0xFF, static_cast<Uint8>(static_cast<double>(forceTickDisplayTimer) / FORCE_TICK_DISPLAY_LENGTH * 0xFF)),
+                      Color(0xFF, 0xFF, 0xFF, static_cast<Uint8>(static_cast<float>(forceTickDisplayTimer) / FORCE_TICK_DISPLAY_LENGTH * 0xFF)),
                       getColor("transparent"));
     } else {
         forceTickDisplayTimer = 0;
@@ -264,12 +268,12 @@ void StatusUIEntity::render(Font &font, Point currentWorldPos) {
     }
 
     if (showLootedItemDisplayTimer-- > 0) {
-        auto alpha = static_cast<int>(static_cast<double>(showLootedItemDisplayTimer) / SHOW_LOOTED_DISPLAY_LENGTH * 0xFF);
+        auto alpha = static_cast<int>(static_cast<float>(showLootedItemDisplayTimer) / SHOW_LOOTED_DISPLAY_LENGTH * 0xFF);
         font.drawText("You got a " + showLootedItemString, 3, SCREEN_HEIGHT - 2, alpha);
     }
 
     if (attackTarget != nullptr) {
-        double enemyhpPercent = attackTarget->hp / attackTarget->maxhp;
+        float enemyhpPercent = attackTarget->hp / attackTarget->maxhp;
         std::string enemyhpString = "${black}";
 
         if (enemyhpPercent == 1)

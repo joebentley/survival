@@ -108,6 +108,15 @@ int Entity::getCarryingWeight() {
     return totalWeight;
 }
 
+void Entity::removeFromInventoryByID(const std::string &ID) {
+    inventory.erase(std::remove_if(inventory.begin(), inventory.end(), [ID] (auto &a) { return a->ID == ID; }),
+                    inventory.end());
+}
+
+void Entity::addHealth(float health) {
+    this->hp = std::min(this->hp + health, maxhp);
+}
+
 void EntityManager::addEntity(std::shared_ptr<Entity> entity) {
     if (getEntityByID(entity->ID) != nullptr)
         throw std::invalid_argument("Entity with ID " + entity->ID + " already present!");

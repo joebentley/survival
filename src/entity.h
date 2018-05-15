@@ -54,7 +54,7 @@ class EntityManager;
 
 struct Entity {
     Entity(std::string ID, std::string name, std::string graphic,
-           double hp, double maxhp, double regenPerTick, int hitTimes, int hitAmount, int maxCarryWeight)
+           float hp, float maxhp, float regenPerTick, int hitTimes, int hitAmount, int maxCarryWeight)
             : hp(hp), maxhp(maxhp), regenPerTick(regenPerTick), hitTimes(hitTimes), hitAmount(hitAmount), maxCarryWeight(maxCarryWeight), ID(std::move(ID)),
               name(std::move(name)), graphic(std::move(graphic)), pos(0, 0)
     {
@@ -63,15 +63,15 @@ struct Entity {
         gNumInitialisedEntities++;
     }
 
-    Entity(std::string ID, std::string name, std::string graphic, double hp, double maxhp, double regenPerTick)
+    Entity(std::string ID, std::string name, std::string graphic, float hp, float maxhp, float regenPerTick)
             : Entity(std::move(ID), std::move(name), std::move(graphic), hp, maxhp, regenPerTick, 1, 2, 100) {}
 
     Entity(std::string ID, std::string name, std::string graphic)
             : Entity(std::move(ID), std::move(name), std::move(graphic), 1, 1, 0, 1, 2, 100) {}
 
-    double hp;
-    double maxhp;
-    double regenPerTick;
+    float hp;
+    float maxhp;
+    float regenPerTick;
     int hitTimes;
     int hitAmount;
     bool shouldRender {true};
@@ -103,6 +103,7 @@ struct Entity {
 
     virtual bool addToInventory(std::shared_ptr<Entity> item);
     void dropItem(int inventoryIndex);
+    void removeFromInventoryByID(const std::string &ID);
 
     void setPos(int x, int y) { pos = Point(x, y); }
     void setPos(Point p) { pos = p; }
@@ -117,6 +118,8 @@ struct Entity {
     int rollDamage();
 
     int getCarryingWeight();
+
+    void addHealth(float health);
 };
 
 // Singleton class that manages all entities

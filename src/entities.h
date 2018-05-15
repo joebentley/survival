@@ -11,9 +11,9 @@ class InspectionDialog;
 struct CraftingScreen;
 
 struct PlayerEntity : Entity {
-    double hunger;
-    double hungerRate; // hunger per tick
-    double hungerDamageRate; // hp loss per tick while starving
+    float hunger;
+    float hungerRate; // hunger per tick
+    float hungerDamageRate; // hp loss per tick while starving
     bool attacking {false}; // whether or not player is attacking something
     bool showingTooMuchWeightMessage {false};
 //    bool showingInspectionDialog {false};
@@ -32,6 +32,8 @@ struct PlayerEntity : Entity {
                          CraftingScreen &craftingScreen);
     void render(Font &font, Point currentWorldPos) override;
     bool addToInventory(std::shared_ptr<Entity> item) override;
+
+    void addHunger(float hunger);
 };
 
 struct CatEntity : Entity {
@@ -49,7 +51,7 @@ struct CatEntity : Entity {
 };
 
 struct EatableEntity : Entity {
-    EatableEntity(std::string ID, std::string name, std::string graphic, double hungerRestoration)
+    EatableEntity(std::string ID, std::string name, std::string graphic, float hungerRestoration)
             : Entity(std::move(ID), std::move(name), std::move(graphic))
     {
         addBehaviour(std::make_shared<EatableBehaviour>(*this, hungerRestoration));
@@ -84,6 +86,7 @@ struct BandageEntity : Entity {
     {
         shortDesc = SHORT_DESC;
         addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
+        addBehaviour(std::make_shared<HealingItemBehaviour>(*this, 5));
     }
 };
 
@@ -140,7 +143,7 @@ struct GrassEntity : Entity {
 // Food
 
 struct CorpseEntity : EatableEntity {
-    CorpseEntity(std::string ID, double hungerRestoration, const std::string& corpseOf, int weight)
+    CorpseEntity(std::string ID, float hungerRestoration, const std::string& corpseOf, int weight)
             : EatableEntity(std::move(ID), "Corpse of " + corpseOf, "${black}$[red]x", hungerRestoration)
     {
         addBehaviour(std::make_shared<PickuppableBehaviour>(*this, weight));

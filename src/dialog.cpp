@@ -100,10 +100,19 @@ void InventoryScreen::handleInput(SDL_KeyboardEvent &e) {
             if (!viewingDescription && !player.inventory.empty()) {
                 auto item = player.inventory[chosenIndex];
                 if (item->hasBehaviour("EatableBehaviour")) {
-                    player.hunger = std::min(player.hunger + dynamic_cast<EatableBehaviour &>(*(*item).getBehaviourByID(
-                            "EatableBehaviour")).hungerRestoration, 1.0);
+                    player.addHunger(dynamic_cast<EatableBehaviour &>(*(*item).getBehaviourByID("EatableBehaviour")).hungerRestoration);
                     player.inventory.erase(player.inventory.begin() + chosenIndex);
                     item->destroy();
+                    if (player.inventory.size() - 1 < chosenIndex)
+                        chosenIndex--;
+                }
+            }
+            break;
+        case SDLK_a:
+            if (!viewingDescription && !player.inventory.empty()) {
+                auto item = player.inventory[chosenIndex];
+                if (item->hasBehaviour("ApplyableBehaviour")) {
+                    dynamic_cast<ApplyableBehaviour&>(*(*item).getBehaviourByID("ApplyableBehaviour")).apply();
                     if (player.inventory.size() - 1 < chosenIndex)
                         chosenIndex--;
                 }
@@ -131,7 +140,7 @@ void InventoryScreen::render(Font &font) {
     }
 
     std::string colorStr;
-    double hpPercent = player.hp / player.maxhp;
+    float hpPercent = player.hp / player.maxhp;
 
     if (hpPercent > 0.7)
         colorStr = "$[green]";
@@ -153,7 +162,12 @@ void InventoryScreen::render(Font &font) {
     font.drawText("${black}" + std::to_string(player.getCarryingWeight()) + "/" + std::to_string(player.maxCarryWeight) + "lb",
                   SCREEN_WIDTH - X_STATUS_OFFSET, 4);
 
-    font.drawText("e-eat  d-drop  return-view desc  esc-exit inv", 1, SCREEN_HEIGHT - 2);
+    std::string helpString;
+    if (player.inventory[chosenIndex]->hasBehaviour("EatableBehaviour"))
+        helpString += "e-eat  ";
+    if (player.inventory[chosenIndex]->hasBehaviour("ApplyableBehaviour"))
+        helpString += "a-apply  ";
+    font.drawText(helpString + "d-drop  return-view desc  esc-exit inv", 1, SCREEN_HEIGHT - 2);
 }
 
 void LootingDialog::showItemsToLoot(std::vector<std::shared_ptr<Entity>> items) {
@@ -165,7 +179,7 @@ void LootingDialog::showItemsToLoot(std::vector<std::shared_ptr<Entity>> items) 
 void LootingDialog::showItemsToLoot(std::vector<std::shared_ptr<Entity>> items, std::shared_ptr<Entity> entityToTransferFrom)
 {
     itemsToShow = std::move(items);
-    this->entityToTransferFrom = entityToTransferFrom;
+    this->entityToTransferFrom = std::move(entityToTransferFrom);
     enabled = true;
 }
 
@@ -576,7 +590,7 @@ void CraftingScreen::render(Font &font) {
     }
 
     if (createdMessageTimer-- > 0) {
-        auto alpha = static_cast<int>(static_cast<double>(createdMessageTimer) / SHOW_CREATED_DISPLAY_LENGTH * 0xFF);
+        auto alpha = static_cast<int>(static_cast<float>(createdMessageTimer) / SHOW_CREATED_DISPLAY_LENGTH * 0xFF);
         font.drawText("You created a " + createdMessage, 3, SCREEN_HEIGHT - 2, alpha);
     }
 }

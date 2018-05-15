@@ -85,7 +85,28 @@ struct EatableBehaviour : Behaviour {
     EatableBehaviour(Entity& parent, float hungerRestoration)
             : Behaviour("EatableBehaviour", parent), hungerRestoration(hungerRestoration) {}
 
-    double hungerRestoration;
+    float hungerRestoration;
+};
+
+struct ApplyableBehaviour : Behaviour {
+    ApplyableBehaviour(Entity& parent)
+            : Behaviour("ApplyableBehaviour", parent) {}
+
+    virtual void apply() {};
+};
+
+struct HealingItemBehaviour : ApplyableBehaviour {
+    HealingItemBehaviour(Entity& parent, float healingAmount)
+            : ApplyableBehaviour(parent), healingAmount(healingAmount) {}
+
+    float healingAmount;
+
+    void apply() override {
+        auto player = EntityManager::getInstance().getEntityByID("Player");
+        player->addHealth(healingAmount);
+        player->removeFromInventoryByID(parent.ID);
+        parent.destroy();
+    }
 };
 
 struct PickuppableBehaviour : Behaviour {
