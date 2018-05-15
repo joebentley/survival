@@ -100,6 +100,7 @@ struct BushEntity : Entity {
         longDesc = LONG_DESC;
         skipLootingDialog = true;
         addBehaviour(std::make_shared<KeepStockedBehaviour<BerryEntity>>(*this, RESTOCK_RATE));
+        addToInventory(std::dynamic_pointer_cast<Entity>(std::make_shared<BerryEntity>()));
     }
 
     void render(Font& font, Point currentWorldPos) override;
@@ -119,7 +120,7 @@ struct GrassTuftEntity : Entity {
 };
 
 struct GrassEntity : Entity {
-    const int RESTOCK_RATE = 1; // ticks
+    const int RESTOCK_RATE = 100; // ticks
 
     const std::string SHORT_DESC = "It is dry grass";
     const std::string LONG_DESC = "You can harvest it";
@@ -130,6 +131,7 @@ struct GrassEntity : Entity {
         longDesc = LONG_DESC;
         skipLootingDialog = true;
         addBehaviour(std::make_shared<KeepStockedBehaviour<GrassTuftEntity>>(*this, RESTOCK_RATE));
+        addToInventory(std::dynamic_pointer_cast<Entity>(std::make_shared<GrassTuftEntity>()));
     }
 
     void render(Font& font, Point currentWorldPos) override;

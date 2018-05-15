@@ -103,7 +103,9 @@ struct CraftingMaterialBehaviour : Behaviour {
     float quality;
 };
 
-// T must be an Entity that has a constructor with no arguments
+// WARNING: you have to add the initial item in your Entities' constructor, or otherwise you could get a huge number
+// of entities being added by tick() in a single game tick
+// Also, T must be an Entity that has a constructor with no arguments
 template<typename T>
 class KeepStockedBehaviour : public Behaviour {
     const int restockRate;
@@ -113,16 +115,9 @@ public:
     explicit KeepStockedBehaviour(Entity& parent, int restockRate)
             : Behaviour("KeepStockedBehaviour", parent), restockRate(restockRate), ticksUntilRestock(restockRate) {}
 
-    void initialize() override {
-        auto item = std::make_shared<T>();
-        EntityManager::getInstance().addEntity(item);
-        parent.addToInventory(item);
-    }
-
     void tick() override {
         if (ticksUntilRestock == 0 && parent.inventory.empty()) {
             auto item = std::make_shared<T>();
-            EntityManager::getInstance().addEntity(item);
             parent.addToInventory(item);
             ticksUntilRestock = restockRate;
         }

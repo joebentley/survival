@@ -26,7 +26,6 @@ struct Behaviour {
     std::string ID;
     Entity& parent;
 
-    virtual void initialize() {};
     virtual void tick() {};
     virtual void handle(Uint32 signal) {};
 };
@@ -97,7 +96,6 @@ struct Entity {
     int renderingLayer {0};
 
     virtual void addBehaviour(std::shared_ptr<Behaviour> behaviour);
-    virtual void initialize();
     virtual void tick();
     virtual void destroy();
     virtual void emit(uint32_t signal);

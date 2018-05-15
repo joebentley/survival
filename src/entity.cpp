@@ -9,12 +9,6 @@ void Entity::addBehaviour(std::shared_ptr<Behaviour> behaviour) {
     behaviours[behaviour->ID] = std::move(behaviour);
 }
 
-void Entity::initialize() {
-    for (auto& behaviour : behaviours) {
-        behaviour.second->initialize();
-    }
-}
-
 void Entity::tick() {
     if (hp < maxhp)
         hp += regenPerTick;
@@ -136,10 +130,6 @@ void EntityManager::broadcast(Uint32 signal) {
 void EntityManager::initialize() {
     if (gNumInitialisedEntities != entities.size())
         std::cerr << UNMANAGED_ENTITIES_ERROR_MESSAGE << std::endl;
-
-    for (const auto& entity : entities) {
-        entity.second->initialize();
-    }
 
     reorderEntities(); // Order the entities by rendering layer
 }

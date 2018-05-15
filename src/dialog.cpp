@@ -366,7 +366,7 @@ void InspectionDialog::render(Font &font) {
     const auto &chosenPointScreen = worldToScreen(chosenPoint);
     font.drawText("${black}$[yellow]X", chosenPointScreen);
 
-    int xPosWindow = chosenPointScreen.x < SCREEN_WIDTH ? 2 : SCREEN_WIDTH / 2 + 1;
+    int xPosWindow = chosenPointScreen.x >= SCREEN_WIDTH / 2 ? 2 : SCREEN_WIDTH / 2 + 1;
 
     if (entitiesAtPoint.size() > 1) {
         selectingFromMultipleOptions = true;
