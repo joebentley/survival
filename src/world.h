@@ -6,13 +6,15 @@
 #include "point.h"
 #include <string>
 
+#define WORLD_HEIGHT 10
+#define WORLD_WIDTH 20
 #define SCREEN_WIDTH 70
 #define SCREEN_HEIGHT 35
 
 Point worldToScreen(Point worldSpacePoint);
 
 struct World {
-    std::string floor[SCREEN_HEIGHT][SCREEN_WIDTH][SCREEN_HEIGHT][SCREEN_WIDTH];
+    std::string floor[WORLD_HEIGHT][WORLD_WIDTH][SCREEN_HEIGHT][SCREEN_WIDTH];
 
     int render(Font& font, int worldX, int worldY);
     int render(Font& font, Point worldPos) {

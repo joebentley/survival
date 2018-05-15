@@ -21,8 +21,8 @@ void World::randomizeWorld()
     int numTwigs = 0;
     int numGrass = 0;
 
-    for (int worldY = 0; worldY < SCREEN_HEIGHT; ++worldY)
-    for (int worldX = 0; worldX < SCREEN_WIDTH; ++worldX)
+    for (int worldY = 0; worldY < WORLD_HEIGHT; ++worldY)
+    for (int worldX = 0; worldX < WORLD_WIDTH; ++worldX)
     for (int y = 0; y < SCREEN_HEIGHT; ++y)
     for (int x = 0; x < SCREEN_WIDTH; ++x) {
         // Generate background tile

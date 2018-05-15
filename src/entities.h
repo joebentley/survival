@@ -89,7 +89,7 @@ struct BandageEntity : Entity {
 
 struct BerryEntity;
 struct BushEntity : Entity {
-    const int RESTOCK_RATE = 100; // ticks
+    const int RESTOCK_RATE = 200; // ticks
 
     const std::string SHORT_DESC = "It's a bush!";
     const std::string LONG_DESC = "";
@@ -119,7 +119,7 @@ struct GrassTuftEntity : Entity {
 };
 
 struct GrassEntity : Entity {
-    const int RESTOCK_RATE = 200; // ticks
+    const int RESTOCK_RATE = 1; // ticks
 
     const std::string SHORT_DESC = "It is dry grass";
     const std::string LONG_DESC = "You can harvest it";

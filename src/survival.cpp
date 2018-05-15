@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 
                 auto player = std::make_shared<PlayerEntity>();
                 // Place player in center of world
-                player->setPos(SCREEN_WIDTH * (SCREEN_WIDTH + 1) / 2, SCREEN_HEIGHT * SCREEN_HEIGHT / 2);
+                player->setPos(SCREEN_WIDTH * (WORLD_WIDTH + 1) / 2, SCREEN_HEIGHT * (WORLD_HEIGHT + 1) / 2);
                 manager.addEntity(player);
 
                 auto cat = std::make_shared<CatEntity>("cat1");
