@@ -82,6 +82,7 @@ struct BandageEntity : Entity {
     explicit BandageEntity(std::string ID = "")
             : Entity(std::move(ID), "Bandage", "$[white]~")
     {
+        shortDesc = SHORT_DESC;
         addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
     }
 };
@@ -222,7 +223,10 @@ public:
             : StatusUIEntity(dynamic_cast<PlayerEntity&>(*EntityManager::getInstance().getEntityByID("Player"))) { }
 
     explicit StatusUIEntity(PlayerEntity& player)
-            : Entity("StatusUI", "", ""), player(player) { }
+            : Entity("StatusUI", "", ""), player(player)
+    {
+        renderingLayer = 1; // Keep on background
+    }
 
     void render(Font &font, Point currentWorldPos) override;
     void emit(Uint32 signal) override;
