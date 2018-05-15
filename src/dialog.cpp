@@ -496,12 +496,8 @@ void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
                 if (chosenIngredient == currentRecipe->ingredients.size()) {
                     if (currentRecipeSatisfied()) {
                         rm.recipes[chosenRecipe]->produce();
-                        for (auto ID : currentlyChosenMaterials) {
-                            player.inventory.erase(
-                                    std::remove_if(player.inventory.begin(), player.inventory.end(), [ID] (auto &a) {
-                                        return a->ID == ID;
-                                    }),
-                                    player.inventory.end());
+                        for (const auto &ID : currentlyChosenMaterials) {
+                            player.removeFromInventoryByID(ID);
                             EntityManager::getInstance().eraseByID(ID);
                         }
                         createdMessage = currentRecipe->nameOfProduct;
