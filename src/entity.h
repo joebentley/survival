@@ -90,7 +90,6 @@ struct Entity {
     std::string longDesc;
 
     std::string graphic;
-    Point pos;
     std::unordered_map<std::string, std::shared_ptr<Behaviour>> behaviours;
 
     int renderingLayer {0};
@@ -112,11 +111,17 @@ struct Entity {
     bool isInInventory(std::string ID) const;
     int getCarryingWeight();
 
-    inline void setPos(int x, int y) { pos = Point(x, y); }
-    inline void setPos(Point p) { pos = p; }
-    inline Point getWorldPos() {
+    void setPos(int x, int y) { pos = Point(x, y); }
+    void setPos(Point p) { pos = p; }
+    Point getPos() const;
+    Point getWorldPos() const {
         return { this->pos.x / SCREEN_WIDTH, this->pos.y / SCREEN_HEIGHT };
     }
+
+    /// Attempt to move to Point P. Will not move to the point if there is a solid entity in the way
+    /// \param p Point to move to
+    /// \return Whether or not the movement was performed
+    bool moveTo(Point p);
 
     std::shared_ptr<Behaviour> getBehaviourByID(const std::string& ID) const;
     bool hasBehaviour(const std::string& ID) const;
@@ -127,6 +132,7 @@ struct Entity {
 
 protected:
     std::vector<std::string> inventory;
+    Point pos;
 };
 
 // Singleton class that manages all entities

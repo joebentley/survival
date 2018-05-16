@@ -5,36 +5,39 @@
 #include <iostream>
 
 void WanderBehaviour::tick() {
+    Point p = parent.getPos();
     switch (rand() % 20) {
         case 0:
-            parent.pos.x++;
+            p.x++;
             break;
         case 1:
-            parent.pos.x--;
+            p.x--;
             break;
         case 2:
-            parent.pos.y++;
+            p.y++;
             break;
         case 3:
-            parent.pos.y--;
+            p.y--;
             break;
         case 4:
-            parent.pos.x++;
-            parent.pos.y++;
+            p.x++;
+            p.y++;
             break;
         case 5:
-            parent.pos.x--;
-            parent.pos.y++;
+            p.x--;
+            p.y++;
             break;
         case 6:
-            parent.pos.x++;
-            parent.pos.y--;
+            p.x++;
+            p.y--;
             break;
         case 7:
-            parent.pos.x--;
-            parent.pos.y--;
+            p.x--;
+            p.y--;
             break;
     }
+
+    parent.moveTo(p);
 }
 
 void AttachmentBehaviour::tick() {
@@ -43,7 +46,7 @@ void AttachmentBehaviour::tick() {
     if (!attached) {
         if (r < attachment) {
             PlayerEntity& p = dynamic_cast<PlayerEntity&>(*EntityManager::getInstance().getEntityByID("Player"));
-            if (parent.pos.distanceTo(p.pos) < 10) {
+            if (parent.getPos().distanceTo(p.getPos()) < 10) {
                 std::cout << parent.name << " has attached itself to player!" << std::endl;
                 attached = true;
             }
@@ -54,16 +57,19 @@ void AttachmentBehaviour::tick() {
     PlayerEntity& p = dynamic_cast<PlayerEntity&>(*EntityManager::getInstance().getEntityByID("Player"));
 
     // Don't follow too closely
-    if (parent.pos.distanceTo(p.pos) > 2 && r < clinginess) {
-        if (parent.pos.x < p.pos.x)
-            parent.pos.x++;
-        else if (parent.pos.x > p.pos.x)
-            parent.pos.x--;
-        if (parent.pos.y < p.pos.y)
-            parent.pos.y++;
-        else if (parent.pos.y > p.pos.y)
-            parent.pos.y--;
+    auto pos = parent.getPos();
+    if (pos.distanceTo(p.getPos()) > 2 && r < clinginess) {
+        if (pos.x < p.getPos().x)
+            pos.x++;
+        else if (pos.x > p.getPos().x)
+            pos.x--;
+        if (pos.y < p.getPos().y)
+            pos.y++;
+        else if (pos.y > p.getPos().y)
+            pos.y--;
     }
+
+    parent.moveTo(pos);
 
     if (r < unattachment) {
         std::cout << parent.name << " has detached itself from player!" << std::endl;
@@ -79,19 +85,19 @@ void ChaseAndAttackBehaviour::tick() {
     auto& player = *EntityManager::getInstance().getEntityByID("Player");
     Point posOffset;
 
-    if (player.pos.x > parent.pos.x)
+    if (player.getPos().x > parent.getPos().x)
         posOffset.x = 1;
-    else if (player.pos.x < parent.pos.x)
+    else if (player.getPos().x < parent.getPos().x)
         posOffset.x = -1;
-    if (player.pos.y > parent.pos.y)
+    if (player.getPos().y > parent.getPos().y)
         posOffset.y = 1;
-    else if (player.pos.y < parent.pos.y)
+    else if (player.getPos().y < parent.getPos().y)
         posOffset.y = -1;
 
-    auto entitiesInSquare = EntityManager::getInstance().getEntitiesAtPos(parent.pos + posOffset);
+    auto entitiesInSquare = EntityManager::getInstance().getEntitiesAtPos(parent.getPos() + posOffset);
 
     if (entitiesInSquare.empty() || entitiesInSquare[0]->ID != "Player") {
-        if (parent.pos.distanceTo(player.pos) > range) {
+        if (parent.getPos().distanceTo(player.getPos()) > range) {
             float r = randFloat();
             if (r < unattachment) { // Stop attacking if far away
                 enabled = false;
@@ -114,7 +120,7 @@ void ChaseAndAttackBehaviour::tick() {
         }
 
         if (randFloat() < clinginess)
-            parent.pos += posOffset;
+            parent.moveTo(parent.getPos() + posOffset);
         return;
     }
 
@@ -128,7 +134,7 @@ void HostilityBehaviour::tick() {
     auto player = EntityManager::getInstance().getEntityByID("Player");
 
     if (chaseAndAttack != nullptr && !chaseAndAttack->enabled && player != nullptr
-        && parent.pos.distanceTo(player->pos) < range && randFloat() < hostility)
+        && parent.getPos().distanceTo(player->getPos()) < range && randFloat() < hostility)
     {
         std::cout << parent.name << " became hostile!\n";
         chaseAndAttack->enabled = true;

@@ -149,6 +149,21 @@ bool Entity::isInInventory(std::string ID) const {
     return std::find(inventory.cbegin(), inventory.cend(), ID) == inventory.cend();
 }
 
+Point Entity::getPos() const {
+    return pos;
+}
+
+bool Entity::moveTo(Point p) {
+    auto entities = EntityManager::getInstance().getEntitiesAtPos(p);
+
+    // Check if there is a solid object in space
+    if (std::find_if(entities.cbegin(), entities.cend(), [] (auto &a) { return a->isSolid; }) == entities.cend()) {
+        setPos(p);
+        return true;
+    }
+    return false;
+}
+
 void EntityManager::addEntity(std::shared_ptr<Entity> entity) {
     if (getEntityByID(entity->ID) != nullptr)
         throw std::invalid_argument("Entity with ID " + entity->ID + " already present!");
@@ -210,7 +225,7 @@ std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesAtPos(const Point
     std::vector<std::shared_ptr<Entity>> entitiesAtPos;
 
     for (const auto& entity : entities) {
-        if (entity.second->pos == pos)
+        if (entity.second->getPos() == pos)
             entitiesAtPos.push_back(entity.second);
     }
 

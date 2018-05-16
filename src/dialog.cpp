@@ -568,7 +568,7 @@ void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
 }
 
 void CraftingScreen::tryToBuildAtPosition(Point posOffset) {
-    auto p = posOffset + player.pos;
+    auto p = posOffset + player.getPos();
     if (EntityManager::getInstance().getEntitiesAtPos(p).empty()) {
         haveChosenPositionInWorld = true;
         buildItem(p);
@@ -582,7 +582,7 @@ void CraftingScreen::render(Font &font, World &world) {
         auto player = EntityManager::getInstance().getEntityByID("Player");
 
         int y = 0;
-        if (worldToScreen(player->pos).y < SCREEN_HEIGHT / 2)
+        if (worldToScreen(player->getPos()).y < SCREEN_HEIGHT / 2)
             y = SCREEN_HEIGHT - 1;
 
         std::string message = "Choose direction to place object";

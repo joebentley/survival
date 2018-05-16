@@ -164,7 +164,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
             }
 
             // Don't allow moving off edge of world
-            auto newPos = pos + posOffset;
+            auto newPos = getPos() + posOffset;
             if (newPos.x < 0 || newPos.y < 0 || newPos.x >= SCREEN_WIDTH * WORLD_WIDTH || newPos.y >= SCREEN_HEIGHT * WORLD_HEIGHT)
                 return;
 
@@ -175,9 +175,10 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
                      && enemiesInSpace[0]->getBehaviourByID("HostilityBehaviour")->enabled)
                     || (mod & KMOD_SHIFT)
                     || attacking)) {
-                attack(pos + posOffset);
+                attack(newPos);
             } else
-                pos += posOffset;
+                if (!moveTo(newPos))
+                    return; // Don't tick if didn't move
 
             didAction = true;
         }
@@ -320,7 +321,7 @@ void StatusUIEntity::showLootedItemNotification(std::string itemString) {
 
 void CatEntity::destroy() {
     auto corpse = std::make_shared<CorpseEntity>(ID + "corpse", 0.4, name, 100);
-    corpse->pos = pos;
+    corpse->setPos(getPos());
     EntityManager::getInstance().addEntity(corpse);
 }
 

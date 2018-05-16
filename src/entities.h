@@ -197,7 +197,9 @@ struct GrassTuftEntity : Entity {
 // Misc entities
 
 struct FireEntity : Entity {
-    explicit FireEntity(std::string ID = "") : Entity(std::move(ID), "Fire", "") {}
+    explicit FireEntity(std::string ID = "") : Entity(std::move(ID), "Fire", "") {
+        isSolid = true;
+    }
 
     void render(Font &font, Point currentWorldPos) override;
 };

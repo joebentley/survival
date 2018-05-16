@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
                 manager.addEntity(player);
 
                 auto cat = std::make_shared<CatEntity>("cat1");
-                cat->setPos(player->pos.x - 10, player->pos.y - 10);
+                cat->setPos(player->getPos().x - 10, player->getPos().y - 10);
                 manager.addEntity(cat);
 
                 auto apple = std::make_shared<AppleEntity>("apple");
@@ -78,12 +78,12 @@ int main(int argc, char* argv[])
                 pileOfLead->addBehaviour(std::make_shared<PickuppableBehaviour>(*pileOfLead, 100));
                 manager.addEntity(pileOfLead);
 
-                apple->setPos(player->pos + Point(2, 2));
-                banana->setPos(player->pos + Point(3, 2));
-                pileOfLead->setPos(player->pos + Point(2, 2));
+                apple->setPos(player->getPos() + Point(2, 2));
+                banana->setPos(player->getPos() + Point(3, 2));
+                pileOfLead->setPos(player->getPos() + Point(2, 2));
 
                 auto chest = std::make_shared<ChestEntity>("chest");
-                chest->setPos(player->pos + Point(-2, 2));
+                chest->setPos(player->getPos() + Point(-2, 2));
                 manager.addEntity(chest);
 
                 chest->addToInventory(std::make_shared<AppleEntity>());
@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
                 manager.addEntity(healthUI);
 
                 auto fire = std::make_shared<FireEntity>();
-                fire->setPos(player->pos + Point(0, -2));
+                fire->setPos(player->getPos() + Point(0, -2));
                 manager.addEntity(fire);
 
                 player->Entity::addToInventory(std::make_shared<TwigEntity>());
