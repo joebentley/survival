@@ -528,8 +528,10 @@ void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
                     currentlyChosenMaterials.emplace_back(inventoryMaterials[chosenMaterial]->ID);
                     currentRecipe->ingredients[chosenIngredient].quantity--;
                 }
-                if (currentRecipe->ingredients[chosenIngredient].quantity == 0)
+                if (currentRecipe->ingredients[chosenIngredient].quantity == 0) {
                     layer = CraftingLayer::INGREDIENT;
+                    chosenIngredient++; // Automatically go to next ingredient for faster crafting
+                }
             }
             break;
         case SDLK_h:
