@@ -62,7 +62,7 @@ int Entity::rollDamage() {
     return totalDamage;
 }
 
-bool Entity::addToInventory(std::shared_ptr<Entity> item) {
+bool Entity::addToInventory(const std::shared_ptr<Entity> &item) {
     auto b = item->getBehaviourByID("PickuppableBehaviour");
     if (b != nullptr) {
         if (EntityManager::getInstance().entities.find(item->ID) == EntityManager::getInstance().entities.end())
@@ -71,7 +71,7 @@ bool Entity::addToInventory(std::shared_ptr<Entity> item) {
         if (getCarryingWeight() + dynamic_cast<PickuppableBehaviour&>(*b).weight > maxCarryWeight)
             return false;
         item->setPos(pos);
-        inventory.push_back(item);
+        inventory.push_back(item->ID);
         item->shouldRender = false;
         item->isInAnInventory = true;
         return true;
@@ -80,13 +80,34 @@ bool Entity::addToInventory(std::shared_ptr<Entity> item) {
     }
 }
 
+void Entity::removeFromInventory(const std::string &ID) {
+    inventory.erase(std::remove(inventory.begin(), inventory.end(), ID), inventory.end());
+}
+
+void Entity::removeFromInventory(int inventoryIndex) {
+    inventory.erase(inventory.begin() + inventoryIndex);
+}
+
 void Entity::dropItem(int inventoryIndex) {
-    auto item = inventory[inventoryIndex];
+    auto item = EntityManager::getInstance().getEntityByID(inventory[inventoryIndex]);
 
     inventory.erase(inventory.begin() + inventoryIndex);
     item->shouldRender = true;
     item->isInAnInventory = false;
     item->setPos(pos);
+}
+
+std::shared_ptr<Entity> Entity::getInventoryItem(int inventoryIndex) const {
+    return EntityManager::getInstance().getEntityByID(inventory[inventoryIndex]);
+}
+
+
+size_t Entity::getInventorySize() const {
+    return inventory.size();
+}
+
+bool Entity::isInventoryEmpty() const {
+    return inventory.empty();
 }
 
 bool Entity::hasBehaviour(const std::string &ID) const {
@@ -99,7 +120,8 @@ void Entity::destroy() {
 
 int Entity::getCarryingWeight() {
     int totalWeight = 0;
-    for (const auto& item : inventory) {
+    for (const auto& ID : inventory) {
+        auto item = EntityManager::getInstance().getEntityByID(ID);
         if (item->hasBehaviour("PickuppableBehaviour")) {
             auto a = dynamic_cast<PickuppableBehaviour&>(*item->getBehaviourByID("PickuppableBehaviour"));
             totalWeight += a.weight;
@@ -108,13 +130,23 @@ int Entity::getCarryingWeight() {
     return totalWeight;
 }
 
-void Entity::removeFromInventoryByID(const std::string &ID) {
-    inventory.erase(std::remove_if(inventory.begin(), inventory.end(), [ID] (auto &a) { return a->ID == ID; }),
-                    inventory.end());
-}
-
 void Entity::addHealth(float health) {
     this->hp = std::min(this->hp + health, maxhp);
+}
+
+std::vector<std::shared_ptr<Entity>> Entity::getInventory() const {
+    std::vector<std::shared_ptr<Entity>> output;
+
+    std::transform(inventory.cbegin(), inventory.cend(), std::back_inserter(output),
+    [] (auto &a) -> std::shared_ptr<Entity> {
+        return EntityManager::getInstance().getEntityByID(a);
+    });
+
+    return output;
+}
+
+bool Entity::isInInventory(std::string ID) const {
+    return std::find(inventory.cbegin(), inventory.cend(), ID) == inventory.cend();
 }
 
 void EntityManager::addEntity(std::shared_ptr<Entity> entity) {

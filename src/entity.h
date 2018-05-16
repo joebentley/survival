@@ -92,7 +92,6 @@ struct Entity {
     std::string graphic;
     Point pos;
     std::unordered_map<std::string, std::shared_ptr<Behaviour>> behaviours;
-    std::vector<std::shared_ptr<Entity>> inventory;
 
     int renderingLayer {0};
 
@@ -102,14 +101,20 @@ struct Entity {
     virtual void emit(uint32_t signal);
     virtual void render(Font& font, Point currentWorldPos);
 
-    virtual bool addToInventory(std::shared_ptr<Entity> item);
+    virtual bool addToInventory(const std::shared_ptr<Entity> &item);
+    void removeFromInventory(const std::string &ID);
+    void removeFromInventory(int inventoryIndex);
     void dropItem(int inventoryIndex);
-    void removeFromInventoryByID(const std::string &ID);
+    std::shared_ptr<Entity> getInventoryItem(int inventoryIndex) const;
+    size_t getInventorySize() const;
+    bool isInventoryEmpty() const;
+    std::vector<std::shared_ptr<Entity>> getInventory() const;
+    bool isInInventory(std::string ID) const;
 
     void setPos(int x, int y) { pos = Point(x, y); }
     void setPos(Point p) { pos = p; }
 
-    Point getWorldPos() {
+    inline Point getWorldPos() {
         return { this->pos.x / SCREEN_WIDTH, this->pos.y / SCREEN_HEIGHT };
     }
 
@@ -121,6 +126,9 @@ struct Entity {
     int getCarryingWeight();
 
     void addHealth(float health);
+
+protected:
+    std::vector<std::string> inventory;
 };
 
 // Singleton class that manages all entities

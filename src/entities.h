@@ -31,7 +31,7 @@ struct PlayerEntity : Entity {
                          LootingDialog &lootingDialog, InspectionDialog &inspectionDialog,
                          CraftingScreen &craftingScreen);
     void render(Font &font, Point currentWorldPos) override;
-    bool addToInventory(std::shared_ptr<Entity> item) override;
+    bool addToInventory(const std::shared_ptr<Entity> &item) override;
 
     void addHunger(float hunger);
 };

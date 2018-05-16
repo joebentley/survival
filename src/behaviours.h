@@ -108,7 +108,7 @@ struct HealingItemBehaviour : ApplyableBehaviour {
     void apply() override {
         auto player = EntityManager::getInstance().getEntityByID("Player");
         player->addHealth(healingAmount);
-        player->removeFromInventoryByID(parent.ID);
+        player->removeFromInventory(parent.ID);
         parent.destroy();
     }
 };
@@ -141,7 +141,7 @@ public:
             : Behaviour("KeepStockedBehaviour", parent), restockRate(restockRate), ticksUntilRestock(restockRate) {}
 
     void tick() override {
-        if (ticksUntilRestock == 0 && parent.inventory.empty()) {
+        if (ticksUntilRestock == 0 && parent.isInventoryEmpty()) {
             auto item = std::make_shared<T>();
             parent.addToInventory(item);
             ticksUntilRestock = restockRate;

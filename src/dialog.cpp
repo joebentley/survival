@@ -73,53 +73,53 @@ void InventoryScreen::handleInput(SDL_KeyboardEvent &e) {
                 enabled = false;
             break;
         case SDLK_j:
-            if (!viewingDescription && !player.inventory.empty()) {
-                if (chosenIndex < (player.inventory.size() - 1))
+            if (!viewingDescription && !player.isInventoryEmpty()) {
+                if (chosenIndex < (player.getInventorySize() - 1))
                     chosenIndex++;
                 else
                     chosenIndex = 0;
             }
             break;
         case SDLK_k:
-            if (!viewingDescription && !player.inventory.empty()) {
+            if (!viewingDescription && !player.isInventoryEmpty()) {
                 if (chosenIndex > 0)
                     chosenIndex--;
                 else
-                    chosenIndex = (int) player.inventory.size() - 1;
+                    chosenIndex = (int) player.getInventorySize() - 1;
             }
             break;
         case SDLK_d:
-            if (!viewingDescription && !player.inventory.empty()) {
+            if (!viewingDescription && !player.isInventoryEmpty()) {
                 player.dropItem(chosenIndex);
 
-                if (player.inventory.size() - 1 < chosenIndex)
+                if (player.getInventorySize() - 1 < chosenIndex)
                     chosenIndex--;
             }
             break;
         case SDLK_e:
-            if (!viewingDescription && !player.inventory.empty()) {
-                auto item = player.inventory[chosenIndex];
+            if (!viewingDescription && !player.isInventoryEmpty()) {
+                auto item = player.getInventoryItem(chosenIndex);
                 if (item->hasBehaviour("EatableBehaviour")) {
                     player.addHunger(dynamic_cast<EatableBehaviour &>(*(*item).getBehaviourByID("EatableBehaviour")).hungerRestoration);
-                    player.inventory.erase(player.inventory.begin() + chosenIndex);
+                    player.removeFromInventory(chosenIndex);
                     item->destroy();
-                    if (player.inventory.size() - 1 < chosenIndex)
+                    if (player.getInventorySize() - 1 < chosenIndex)
                         chosenIndex--;
                 }
             }
             break;
         case SDLK_a:
-            if (!viewingDescription && !player.inventory.empty()) {
-                auto item = player.inventory[chosenIndex];
+            if (!viewingDescription && !player.isInventoryEmpty()) {
+                auto item = player.getInventoryItem(chosenIndex);
                 if (item->hasBehaviour("ApplyableBehaviour")) {
                     dynamic_cast<ApplyableBehaviour&>(*(*item).getBehaviourByID("ApplyableBehaviour")).apply();
-                    if (player.inventory.size() - 1 < chosenIndex)
+                    if (player.getInventorySize() - 1 < chosenIndex)
                         chosenIndex--;
                 }
             }
             break;
         case SDLK_RETURN:
-            if (!player.inventory.empty())
+            if (!player.isInventoryEmpty())
                 viewingDescription = true;
             break;
     }
@@ -127,14 +127,14 @@ void InventoryScreen::handleInput(SDL_KeyboardEvent &e) {
 
 void InventoryScreen::render(Font &font) {
     if (viewingDescription) {
-        drawDescriptionScreen(font, *player.inventory[chosenIndex]);
+        drawDescriptionScreen(font, *player.getInventoryItem(chosenIndex));
         return;
     }
 
     font.draw("right", X_OFFSET - 1, chosenIndex + Y_OFFSET);
 
-    for (int i = 0; i < player.inventory.size(); ++i) {
-        auto item = player.inventory[i];
+    for (int i = 0; i < player.getInventorySize(); ++i) {
+        auto item = player.getInventoryItem(i);
 
         font.drawText(item->graphic + " " + item->name, X_OFFSET, i + Y_OFFSET);
     }
@@ -163,9 +163,10 @@ void InventoryScreen::render(Font &font) {
                   SCREEN_WIDTH - X_STATUS_OFFSET, 4);
 
     std::string helpString;
-    if (player.inventory[chosenIndex]->hasBehaviour("EatableBehaviour"))
+    auto item = player.getInventoryItem(chosenIndex);
+    if (item->hasBehaviour("EatableBehaviour"))
         helpString += "e-eat  ";
-    if (player.inventory[chosenIndex]->hasBehaviour("ApplyableBehaviour"))
+    if (item->hasBehaviour("ApplyableBehaviour"))
         helpString += "a-apply  ";
     font.drawText(helpString + "d-drop  return-view desc  esc-exit inv", 1, SCREEN_HEIGHT - 2);
 }
@@ -657,7 +658,8 @@ std::vector<std::shared_ptr<Entity>> CraftingScreen::filterInventoryForChosenMat
     auto &rm = RecipeManager::getInstance();
 
     std::vector<std::shared_ptr<Entity>> inventoryMaterials;
-    std::copy_if(player.inventory.begin(), player.inventory.end(), std::back_inserter(inventoryMaterials),
+    auto inventory = player.getInventory();
+    std::copy_if(inventory.cbegin(), inventory.cend(), std::back_inserter(inventoryMaterials),
     [this, &rm] (auto &a) {
         if (!a->hasBehaviour("CraftingMaterialBehaviour"))
             return false;
@@ -700,7 +702,7 @@ void CraftingScreen::buildItem(Point pos) {
     recipe->produce();
 
     for (const auto &ID : currentlyChosenMaterials) {
-        player.removeFromInventoryByID(ID);
+        player.removeFromInventory(ID);
         EntityManager::getInstance().eraseByID(ID);
     }
     createdMessage = currentRecipe->nameOfProduct;

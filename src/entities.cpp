@@ -88,7 +88,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
             std::vector<std::shared_ptr<Entity>> entitiesWithInventories;
             std::copy_if(entitiesAtPos.begin(), entitiesAtPos.end(), std::back_inserter(entitiesWithInventories),
                          [](auto &a) {
-                return a->ID != "Player" && !a->inventory.empty();
+                return a->ID != "Player" && !a->isInventoryEmpty();
             });
 
             if (!entitiesWithInventories.empty()) {
@@ -96,15 +96,15 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
                 auto entity = entitiesWithInventories[0];
                 if (entity->skipLootingDialog) {
                     // Loot just the first item
-                    if (addToInventory(*entity->inventory.begin())) {
-                        entity->inventory.erase(entity->inventory.begin());
+                    if (addToInventory(entity->getInventoryItem(0))) {
+                        entity->removeFromInventory(0);
                         didAction = true;
                     } else {
                         showingTooMuchWeightMessage = true;
                         return;
                     }
                 } else {
-                    lootingDialog.showItemsToLoot(entity->inventory, entity);
+                    lootingDialog.showItemsToLoot(entity->getInventory(), entity);
                     return;
                 }
             }
@@ -114,7 +114,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
                          [this](auto &a) {
                 auto b = a->getBehaviourByID("PickuppableBehaviour");
                 // Don't pick up if it isn't pickuppable, or if it is already in the player's inventory
-                return (b != nullptr && std::find(this->inventory.cbegin(), this->inventory.cend(), a) == this->inventory.cend());
+                return (b != nullptr && isInInventory(a->ID));
             });
 
             if (pickuppableEntities.empty())
@@ -217,7 +217,7 @@ void PlayerEntity::render(Font &font, Point currentWorldPos) {
     }
 }
 
-bool PlayerEntity::addToInventory(std::shared_ptr<Entity> item) {
+bool PlayerEntity::addToInventory(const std::shared_ptr<Entity> &item) {
     if (Entity::addToInventory(item)) {
         auto &ui = dynamic_cast<StatusUIEntity&>(*EntityManager::getInstance().getEntityByID("StatusUI"));
         ui.showLootedItemNotification(item->graphic + " " + item->name);
@@ -325,7 +325,7 @@ void CatEntity::destroy() {
 }
 
 void BushEntity::render(Font &font, Point currentWorldPos) {
-    if (!inventory.empty()) {
+    if (!isInventoryEmpty()) {
         graphic = "${black}$[purple]$(div)";
     } else {
         graphic = "${black}$[green]$(div)";
@@ -344,7 +344,7 @@ void FireEntity::render(Font &font, Point currentWorldPos) {
 }
 
 void GrassEntity::render(Font &font, Point currentWorldPos) {
-    if (!inventory.empty()) {
+    if (!isInventoryEmpty()) {
         graphic = "${black}$[grasshay]$(tau)";
     } else {
         graphic = "${black}$[grasshay].";
