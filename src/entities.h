@@ -222,7 +222,7 @@ struct ChestEntity : Entity {
 
 class StatusUIEntity : public Entity {
     const int FORCE_TICK_DISPLAY_LENGTH {100};
-    const int SHOW_LOOTED_DISPLAY_LENGTH {200};
+    const int SHOW_LOOTED_DISPLAY_LENGTH {300};
 
     PlayerEntity& player;
 
