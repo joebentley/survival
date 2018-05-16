@@ -194,6 +194,8 @@ void EntityManager::initialize() {
 void EntityManager::tick() {
     cleanup();
 
+    timeOfDay += timePerTick;
+
     if (gNumInitialisedEntities != entities.size())
         std::cerr << UNMANAGED_ENTITIES_ERROR_MESSAGE << std::endl;
 
@@ -208,11 +210,9 @@ void EntityManager::render(Font& font, Point currentWorldPos) {
     }
 }
 
-
 void EntityManager::render(Font &font) {
     render(font, getEntityByID("Player")->getWorldPos());
 }
-
 
 std::shared_ptr<Entity> EntityManager::getEntityByID(const std::string &ID) const {
     try {
@@ -267,5 +267,23 @@ void EntityManager::recomputeCurrentEntitiesOnScreen(Point currentWorldPos) {
         if (a.second->getWorldPos() == currentWorldPos)
             currentlyOnScreen.emplace_back(a.second->ID);
     }
+    // Always add status UI
+    currentlyOnScreen.emplace_back("StatusUI");
     reorderEntities();
+}
+
+const Time &EntityManager::getTimeOfDay() const {
+    return timeOfDay;
+}
+
+void EntityManager::setTimeOfDay(const Time &timeOfDay) {
+    EntityManager::timeOfDay = timeOfDay;
+}
+
+const Time &EntityManager::getTimePerTick() const {
+    return timePerTick;
+}
+
+void EntityManager::setTimePerTick(const Time &timePerTick) {
+    EntityManager::timePerTick = timePerTick;
 }

@@ -298,6 +298,8 @@ void StatusUIEntity::render(Font &font, Point currentWorldPos) {
     // Drop attack target after 10 turns of inactivity
     if (attackTargetTimer == 0)
         attackTarget = nullptr;
+
+    font.drawText(EntityManager::getInstance().getTimeOfDay().toWordString(), SCREEN_WIDTH - X_OFFSET, 8);
 }
 
 void StatusUIEntity::emit(uint32_t signal) {

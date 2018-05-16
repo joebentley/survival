@@ -24,7 +24,7 @@ add_executable(survival
         src/texture.cpp
         src/texture.h
         src/world.cpp
-        src/world.h src/flags.h src/utils.h src/utils.cpp src/recipe.cpp src/recipe.h)
+        src/world.h src/flags.h src/utils.h src/utils.cpp src/recipe.cpp src/recipe.h src/time.h)
 
 
 INCLUDE(FindPkgConfig)

@@ -151,4 +151,10 @@ public:
     }
 };
 
+// Misc behaviours
+
+struct LightEmittingBehaviour : Behaviour {
+
+};
+
 #endif // BEHAVIOURS_H_

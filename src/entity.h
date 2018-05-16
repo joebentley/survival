@@ -14,6 +14,7 @@
 #include "world.h"
 #include "point.h"
 #include "flags.h"
+#include "time.h"
 
 extern int gNumInitialisedEntities;
 
@@ -135,12 +136,15 @@ protected:
     Point pos;
 };
 
-// Singleton class that manages all entities
+/// Singleton class that manages all entities
 class EntityManager {
     std::unordered_map<std::string, std::shared_ptr<Entity>> entities;
     std::queue<std::string> toBeDeleted;
     std::vector<std::string> currentlyOnScreen;
     std::vector<std::pair<std::string, int>> toRender;
+
+    Time timeOfDay;
+    Time timePerTick { 0, 10 };
 
     void reorderEntities();
 public:
@@ -171,6 +175,19 @@ public:
     /// Should be called every time the player changes screen
     /// \param currentWorldPos current position in world space
     void recomputeCurrentEntitiesOnScreen(Point currentWorldPos);
+
+    /// Get current time of day
+    /// \return time of day
+    const Time &getTimeOfDay() const;
+    /// Set time of day
+    /// \param timeOfDay current time of day
+    void setTimeOfDay(const Time &timeOfDay);
+    /// Get time increment per EntityManager tick
+    /// \return increment per tick
+    const Time &getTimePerTick() const;
+    /// Set time increment per EntityManager tick
+    /// \param timePerTick increment per tick
+    void setTimePerTick(const Time &timePerTick);
 };
 
 #endif // ENTITY_H_
