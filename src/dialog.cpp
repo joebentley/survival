@@ -571,12 +571,26 @@ void CraftingScreen::tryToBuildAtPosition(Point posOffset) {
     if (EntityManager::getInstance().getEntitiesAtPos(p).empty()) {
         haveChosenPositionInWorld = true;
         buildItem(p);
+    } else {
+        couldNotBuildAtPosition = true;
     }
 }
 
-void CraftingScreen::render(Font &font) {
+void CraftingScreen::render(Font &font, World &world) {
     if (choosingPositionInWorld) {
-        font.drawText("Choose direction to place object", 1, 0, getColor("white"), getColor("black"));
+        auto player = EntityManager::getInstance().getEntityByID("Player");
+
+        int y = 0;
+        if (worldToScreen(player->pos).y < SCREEN_HEIGHT / 2)
+            y = SCREEN_HEIGHT - 1;
+
+        std::string message = "Choose direction to place object";
+        if (couldNotBuildAtPosition)
+            message = "Please choose a square that does not already have an entity on";
+
+        font.drawText(message, 1, y, getColor("white"), getColor("black"));
+        world.render(font, player->getWorldPos());
+        EntityManager::getInstance().render(font);
         return;
     }
 
@@ -672,6 +686,7 @@ void CraftingScreen::reset() {
     layer = CraftingLayer::RECIPE;
     choosingPositionInWorld = false;
     haveChosenPositionInWorld = false;
+    couldNotBuildAtPosition = false;
 }
 
 void CraftingScreen::buildItem(Point pos) {
@@ -690,4 +705,9 @@ void CraftingScreen::buildItem(Point pos) {
     }
     createdMessage = currentRecipe->nameOfProduct;
     createdMessageTimer = SHOW_CREATED_DISPLAY_LENGTH;
+}
+
+void CraftingScreen::enable() {
+    enabled = true;
+    reset();
 }

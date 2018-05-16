@@ -160,6 +160,12 @@ void EntityManager::render(Font& font, Point currentWorldPos) {
     }
 }
 
+
+void EntityManager::render(Font &font) {
+    render(font, getEntityByID("Player")->getWorldPos());
+}
+
+
 std::shared_ptr<Entity> EntityManager::getEntityByID(const std::string &ID) const {
     try {
         return entities.at(ID);

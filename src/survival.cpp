@@ -140,16 +140,13 @@ int main(int argc, char* argv[])
 
                     if (inventoryScreen.enabled)
                         inventoryScreen.render(font);
-                    else if (craftingScreen.enabled && !craftingScreen.choosingPositionInWorld)
-                        craftingScreen.render(font);
+                    else if (craftingScreen.enabled)
+                        craftingScreen.render(font, *world);
                     else if (!lootingDialog.viewingDescription && !inspectionDialog.viewingDescription) {
                         if (world->render(font, player->getWorldPos()) == -1)
                             return -1;
                         manager.render(font, player->getWorldPos());
                     }
-
-                    if (craftingScreen.enabled && craftingScreen.choosingPositionInWorld)
-                        craftingScreen.render(font);
 
                     if (lootingDialog.enabled)
                         lootingDialog.render(font);

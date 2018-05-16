@@ -197,10 +197,8 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
             inspectionDialog.chosenPoint = pos;
         }
 
-        if (key == SDLK_c) {
-            craftingScreen.enabled = true;
-            craftingScreen.reset();
-        }
+        if (key == SDLK_c)
+            craftingScreen.enable();
 
         if (didAction)
             EntityManager::getInstance().tick();

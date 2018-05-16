@@ -148,6 +148,7 @@ public:
     void cleanup(); // Cleanup entities to be deleted
     virtual void destroy() { }
     void render(Font& font, Point currentWorldPos);
+    void render(Font& font);
     std::shared_ptr<Entity> getEntityByID(const std::string &ID) const;
     void queueForDeletion(const std::string &ID);
     void eraseByID(const std::string &ID);

@@ -76,6 +76,16 @@ public:
 
 struct Recipe;
 struct CraftingScreen {
+    explicit CraftingScreen(PlayerEntity &player) : player(player) {}
+
+    bool enabled {false};
+
+    void handleInput(SDL_KeyboardEvent &e);
+    void render(Font& font, World& world);
+    void reset();
+
+    void enable();
+private:
     enum class CraftingLayer {
         RECIPE,
         INGREDIENT,
@@ -84,7 +94,6 @@ struct CraftingScreen {
 
     const int SHOW_CREATED_DISPLAY_LENGTH = 2000;
 
-    bool enabled {false};
     int chosenRecipe {0};
     int chosenIngredient {0};
     int chosenMaterial {0};
@@ -97,14 +106,8 @@ struct CraftingScreen {
 
     bool choosingPositionInWorld {false};
     bool haveChosenPositionInWorld {false};
+    bool couldNotBuildAtPosition {false};
 
-    explicit CraftingScreen(PlayerEntity &player) : player(player) {}
-
-    void handleInput(SDL_KeyboardEvent &e);
-    void render(Font& font);
-    void reset();
-
-private:
     std::vector<std::string> currentlyChosenMaterials;
     std::vector<std::shared_ptr<Entity>> filterInventoryForChosenMaterials();
     bool currentRecipeSatisfied();

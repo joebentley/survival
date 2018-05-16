@@ -17,7 +17,7 @@ struct World {
     std::string floor[WORLD_HEIGHT][WORLD_WIDTH][SCREEN_HEIGHT][SCREEN_WIDTH];
 
     int render(Font& font, int worldX, int worldY);
-    int render(Font& font, Point worldPos) {
+    inline int render(Font& font, Point worldPos) {
         return render(font, worldPos.x, worldPos.y);
     }
     void randomizeWorld();
