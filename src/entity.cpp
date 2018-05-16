@@ -65,7 +65,7 @@ int Entity::rollDamage() {
 bool Entity::addToInventory(const std::shared_ptr<Entity> &item) {
     auto b = item->getBehaviourByID("PickuppableBehaviour");
     if (b != nullptr) {
-        if (EntityManager::getInstance().entities.find(item->ID) == EntityManager::getInstance().entities.end())
+        if (!EntityManager::getInstance().isEntityInManager(item->ID))
             EntityManager::getInstance().addEntity(item);
 
         if (getCarryingWeight() + dynamic_cast<PickuppableBehaviour&>(*b).weight > maxCarryWeight)
@@ -237,4 +237,8 @@ void EntityManager::eraseByID(const std::string &ID) {
 void EntityManager::reorderEntities() {
     toRender = std::vector<std::pair<std::string, std::shared_ptr<Entity>>>(entities.begin(), entities.end());
     std::sort(toRender.begin(), toRender.end(), [](auto &a, auto &b) { return a.second->renderingLayer > b.second->renderingLayer; });
+}
+
+bool EntityManager::isEntityInManager(const std::string &ID) {
+    return entities.find(ID) != entities.end();
 }

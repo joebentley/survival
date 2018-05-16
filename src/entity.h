@@ -110,10 +110,10 @@ struct Entity {
     bool isInventoryEmpty() const;
     std::vector<std::shared_ptr<Entity>> getInventory() const;
     bool isInInventory(std::string ID) const;
+    int getCarryingWeight();
 
-    void setPos(int x, int y) { pos = Point(x, y); }
-    void setPos(Point p) { pos = p; }
-
+    inline void setPos(int x, int y) { pos = Point(x, y); }
+    inline void setPos(Point p) { pos = p; }
     inline Point getWorldPos() {
         return { this->pos.x / SCREEN_WIDTH, this->pos.y / SCREEN_HEIGHT };
     }
@@ -122,8 +122,6 @@ struct Entity {
     bool hasBehaviour(const std::string& ID) const;
 
     int rollDamage();
-
-    int getCarryingWeight();
 
     void addHealth(float health);
 
@@ -134,6 +132,8 @@ protected:
 // Singleton class that manages all entities
 class EntityManager {
     std::vector<std::pair<std::string, std::shared_ptr<Entity>>> toRender;
+    std::unordered_map<std::string, std::shared_ptr<Entity>> entities;
+    std::queue<std::string> toBeDeleted;
 
     void reorderEntities();
 public:
@@ -146,21 +146,20 @@ public:
     EntityManager(const EntityManager&) = delete;
     void operator=(const EntityManager&) = delete;
 
-    std::unordered_map<std::string, std::shared_ptr<Entity>> entities;
-    std::queue<std::string> toBeDeleted;
-
     void addEntity(std::shared_ptr<Entity> entity);
     void broadcast(uint32_t signal);
     void initialize();
     void tick();
     void cleanup(); // Cleanup entities to be deleted
-    virtual void destroy() { }
+
     void render(Font& font, Point currentWorldPos);
     void render(Font& font);
+
     std::shared_ptr<Entity> getEntityByID(const std::string &ID) const;
     void queueForDeletion(const std::string &ID);
     void eraseByID(const std::string &ID);
     std::vector<std::shared_ptr<Entity>> getEntitiesAtPos(const Point& pos) const;
+    bool isEntityInManager(const std::string &ID);
 };
 
 #endif // ENTITY_H_
