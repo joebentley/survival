@@ -176,9 +176,17 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
                     || (mod & KMOD_SHIFT)
                     || attacking)) {
                 attack(newPos);
-            } else
-                if (!moveTo(newPos))
+            } else {
+                auto oldWorldPos = getWorldPos();
+                auto moved = moveTo(newPos);
+                if (!moved)
                     return; // Don't tick if didn't move
+                else {
+                    // Check if we moved to a new world coordinate, if so update current entities on world
+                    if (oldWorldPos != getWorldPos())
+                        EntityManager::getInstance().recomputeCurrentEntitiesOnScreen(getWorldPos());
+                }
+            }
 
             didAction = true;
         }

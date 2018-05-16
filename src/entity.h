@@ -137,9 +137,10 @@ protected:
 
 // Singleton class that manages all entities
 class EntityManager {
-    std::vector<std::pair<std::string, std::shared_ptr<Entity>>> toRender;
     std::unordered_map<std::string, std::shared_ptr<Entity>> entities;
     std::queue<std::string> toBeDeleted;
+    std::vector<std::string> currentlyOnScreen;
+    std::vector<std::pair<std::string, int>> toRender;
 
     void reorderEntities();
 public:
@@ -166,6 +167,10 @@ public:
     void eraseByID(const std::string &ID);
     std::vector<std::shared_ptr<Entity>> getEntitiesAtPos(const Point& pos) const;
     bool isEntityInManager(const std::string &ID);
+
+    /// Should be called every time the player changes screen
+    /// \param currentWorldPos current position in world space
+    void recomputeCurrentEntitiesOnScreen(Point currentWorldPos);
 };
 
 #endif // ENTITY_H_

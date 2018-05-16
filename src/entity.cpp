@@ -187,6 +187,7 @@ void EntityManager::initialize() {
     if (gNumInitialisedEntities != entities.size())
         std::cerr << UNMANAGED_ENTITIES_ERROR_MESSAGE << std::endl;
 
+    recomputeCurrentEntitiesOnScreen(getEntityByID("Player")->getWorldPos());
     reorderEntities(); // Order the entities by rendering layer
 }
 
@@ -202,8 +203,8 @@ void EntityManager::tick() {
 }
 
 void EntityManager::render(Font& font, Point currentWorldPos) {
-    for (const auto& entity : toRender) {
-        entity.second->render(font, currentWorldPos);
+    for (const auto& a : toRender) {
+        getEntityByID(a.first)->render(font, currentWorldPos);
     }
 }
 
@@ -250,10 +251,21 @@ void EntityManager::eraseByID(const std::string &ID) {
 }
 
 void EntityManager::reorderEntities() {
-    toRender = std::vector<std::pair<std::string, std::shared_ptr<Entity>>>(entities.begin(), entities.end());
-    std::sort(toRender.begin(), toRender.end(), [](auto &a, auto &b) { return a.second->renderingLayer > b.second->renderingLayer; });
+    toRender.clear();
+    std::transform(currentlyOnScreen.cbegin(), currentlyOnScreen.cend(), std::back_inserter(toRender),
+            [this] (auto &a) -> auto { return std::make_pair(a, getEntityByID(a)->renderingLayer); });
+    std::sort(toRender.begin(), toRender.end(), [](auto &a, auto &b) { return a.second > b.second; });
 }
 
 bool EntityManager::isEntityInManager(const std::string &ID) {
     return entities.find(ID) != entities.end();
+}
+
+void EntityManager::recomputeCurrentEntitiesOnScreen(Point currentWorldPos) {
+    currentlyOnScreen.clear();
+    for (const auto &a : entities) {
+        if (a.second->getWorldPos() == currentWorldPos)
+            currentlyOnScreen.emplace_back(a.second->ID);
+    }
+    reorderEntities();
 }
