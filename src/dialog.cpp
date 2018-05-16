@@ -582,6 +582,8 @@ void CraftingScreen::tryToBuildAtPosition(Point posOffset) {
 void CraftingScreen::render(Font &font, World &world) {
     if (choosingPositionInWorld) {
         auto player = EntityManager::getInstance().getEntityByID("Player");
+        world.render(font, player->getWorldPos());
+        EntityManager::getInstance().render(font);
 
         int y = 0;
         if (worldToScreen(player->getPos()).y < SCREEN_HEIGHT / 2)
@@ -592,8 +594,6 @@ void CraftingScreen::render(Font &font, World &world) {
             message = "Please choose a square that does not already have an entity on";
 
         font.drawText(message, 1, y, getColor("white"), getColor("black"));
-        world.render(font, player->getWorldPos());
-        EntityManager::getInstance().render(font);
         return;
     }
 
