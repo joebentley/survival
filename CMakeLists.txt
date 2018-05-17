@@ -1,14 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(survival)
 
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic")
-
-include_directories(.)
-
 file(COPY resources DESTINATION .)
 
-add_executable(survival
+add_executable(${PROJECT_NAME}
         src/behaviours.cpp
         src/behaviours.h
         src/dialog.cpp
@@ -26,14 +21,13 @@ add_executable(survival
         src/world.cpp
         src/world.h src/flags.h src/utils.h src/utils.cpp src/recipe.cpp src/recipe.h src/time.h)
 
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_lambdas cxx_nullptr cxx_range_for cxx_strong_enums cxx_std_14)
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -pedantic)
 
-INCLUDE(FindPkgConfig)
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/sdl2-cmake-scripts")
 
-PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
-PKG_SEARCH_MODULE(SDL2IMAGE REQUIRED SDL2_image>=2.0.0)
+find_package(SDL2 REQUIRED)
+find_package(SDL2_image REQUIRED)
 
-INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS} ${SDL2IMAGE_INCLUDE_DIRS})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2IMAGE_LIBRARIES})
-
-message(STATUS ${SDL2_LIBRARIES})
-message(STATUS ${SDL2IMAGE_LIBRARIES})
+target_include_directories(${PROJECT_NAME} PRIVATE SDL2 SDL2_image)
+target_link_libraries(${PROJECT_NAME} SDL2 SDL2_image)
