@@ -215,7 +215,7 @@ class EntityManager {
     std::vector<std::pair<std::string, int>> toRender;
 
     Time timeOfDay;
-    Time timePerTick { 0, 10 };
+    Time timePerTick { 0, 2 };
 
     void reorderEntities();
 public:

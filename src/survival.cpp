@@ -82,13 +82,14 @@ int main(int argc, char* argv[])
                 manager.addEntity(apple);
                 manager.addEntity(banana);
 
-                auto pileOfLead = std::make_shared<Entity>("pileOfLead", "Huge Pile Of Lead", "$[grey]L");
-                pileOfLead->addBehaviour(std::make_shared<PickuppableBehaviour>(*pileOfLead, 100));
-                manager.addEntity(pileOfLead);
+//                auto pileOfLead = std::make_shared<Entity>("pileOfLead", "Huge Pile Of Lead", "$[grey]L");
+//                pileOfLead->addBehaviour(std::make_shared<PickuppableBehaviour>(*pileOfLead, 100));
+//                manager.addEntity(pileOfLead);
+//                pileOfLead->setPos(player->getPos() + Point(2, 2));
+
 
                 apple->setPos(player->getPos() + Point(2, 2));
                 banana->setPos(player->getPos() + Point(3, 2));
-                pileOfLead->setPos(player->getPos() + Point(2, 2));
 
                 auto chest = std::make_shared<ChestEntity>("chest");
                 chest->setPos(player->getPos() + Point(-2, 2));
@@ -99,18 +100,12 @@ int main(int argc, char* argv[])
                 auto statusUI = std::make_shared<StatusUIEntity>(dynamic_cast<PlayerEntity&>(*player));
                 manager.addEntity(statusUI);
 
-                auto fire = std::make_shared<FireEntity>();
-                fire->setPos(player->getPos() + Point(0, -2));
-                manager.addEntity(fire);
-
                 player->Entity::addToInventory(std::make_shared<TwigEntity>());
                 player->Entity::addToInventory(std::make_shared<TwigEntity>());
                 player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
                 player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
                 player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
                 player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
-
-                player->equip(EquipmentSlot::RIGHT_HAND, std::make_shared<TorchEntity>());
 
                 manager.initialize();
                 manager.setTimeOfDay(Time(4, 0));
