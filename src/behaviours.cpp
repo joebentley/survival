@@ -94,23 +94,21 @@ void ChaseAndAttackBehaviour::tick() {
     else if (player.getPos().y < parent.getPos().y)
         posOffset.y = -1;
 
-    auto entitiesInSquare = EntityManager::getInstance().getEntitiesAtPos(parent.getPos() + posOffset);
-
-    if (entitiesInSquare.empty() || entitiesInSquare[0]->ID != "Player") {
+    if (parent.getPos() + posOffset != player.getPos()) {
         if (parent.getPos().distanceTo(player.getPos()) > range) {
             float r = randFloat();
             if (r < unattachment) { // Stop attacking if far away
                 enabled = false;
                 if (parent.getBehaviourByID("WanderBehaviour") != nullptr) {
-                    parent.getBehaviourByID("WanderBehaviour")->enabled = true;
+                    parent.getBehaviourByID("WanderBehaviour")->enable();
                 }
                 if (parent.getBehaviourByID("WanderAttachBehaviour") != nullptr) {
                     auto& wanderAttach = dynamic_cast<WanderAttachBehaviour&>(*parent.getBehaviourByID("WanderAttachBehaviour"));
                     wanderAttach.onlyWander = true; // Never attach to player anymore
-                    wanderAttach.enabled = true;
+                    wanderAttach.enable();
                 }
                 if (parent.getBehaviourByID("HostilityBehaviour") != nullptr) {
-                    parent.getBehaviourByID("HostilityBehaviour")->enabled = true;
+                    parent.getBehaviourByID("HostilityBehaviour")->enable();
                 } else if (postHostility != 0) { // Don't bother adding hostility if it won't ever be triggered
                     std::shared_ptr<Behaviour> hostilityBehaviour =
                             std::make_shared<HostilityBehaviour>(parent, postHostilityRange, postHostility);
@@ -133,10 +131,10 @@ void HostilityBehaviour::tick() {
     auto chaseAndAttack = parent.getBehaviourByID("ChaseAndAttackBehaviour");
     auto player = EntityManager::getInstance().getEntityByID("Player");
 
-    if (chaseAndAttack != nullptr && !chaseAndAttack->enabled && player != nullptr
+    if (chaseAndAttack != nullptr && !chaseAndAttack->isEnabled() && player != nullptr
         && parent.getPos().distanceTo(player->getPos()) < range && randFloat() < hostility)
     {
         std::cout << parent.name << " became hostile!\n";
-        chaseAndAttack->enabled = true;
+        chaseAndAttack->enable();
     }
 }

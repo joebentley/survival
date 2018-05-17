@@ -18,7 +18,7 @@ void Entity::tick() {
         hp = maxhp;
 
     for (auto& behaviour : behaviours) {
-        if (behaviour.second->enabled)
+        if (behaviour.second->isEnabled())
             behaviour.second->tick();
     }
 }

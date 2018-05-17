@@ -45,7 +45,7 @@ struct CatEntity : Entity {
     {
         auto wanderAttach = std::make_shared<WanderAttachBehaviour>(*this, 0.5, 0.7, 0.05);
         auto chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this, 0.8, 0.6, 8, 8, 0.9);
-        chaseAndAttack->enabled = false;
+        chaseAndAttack->disable();
         addBehaviour(wanderAttach);
         addBehaviour(chaseAndAttack);
     }

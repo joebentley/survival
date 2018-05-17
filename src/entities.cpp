@@ -19,13 +19,13 @@ bool PlayerEntity::attack(const Point &attackPos) {
     // TODO: Add AV
     // TODO: Add avoidance
     if (enemy->getBehaviourByID("WanderBehaviour") != nullptr)
-        enemy->getBehaviourByID("WanderBehaviour")->enabled = false;
+        enemy->getBehaviourByID("WanderBehaviour")->disable();
     if (enemy->getBehaviourByID("AttachmentBehaviour") != nullptr)
-        enemy->getBehaviourByID("AttachmentBehaviour")->enabled = false;
+        enemy->getBehaviourByID("AttachmentBehaviour")->disable();
     if (enemy->getBehaviourByID("WanderAttachBehaviour") != nullptr)
-        enemy->getBehaviourByID("WanderAttachBehaviour")->enabled = false;
+        enemy->getBehaviourByID("WanderAttachBehaviour")->disable();
     if (enemy->getBehaviourByID("ChaseAndAttackBehaviour") != nullptr)
-        enemy->getBehaviourByID("ChaseAndAttackBehaviour")->enabled = true;
+        enemy->getBehaviourByID("ChaseAndAttackBehaviour")->enable();
 
     auto& ui = dynamic_cast<StatusUIEntity&>(*EntityManager::getInstance().getEntityByID("StatusUI"));
     ui.setAttackTarget(enemy);
@@ -172,7 +172,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
             // TODO: what if more than one enemy in space?
             if (!enemiesInSpace.empty()
                 && ((enemiesInSpace[0]->getBehaviourByID("HostilityBehaviour") != nullptr
-                     && enemiesInSpace[0]->getBehaviourByID("HostilityBehaviour")->enabled)
+                     && enemiesInSpace[0]->getBehaviourByID("HostilityBehaviour")->isEnabled())
                     || (mod & KMOD_SHIFT)
                     || attacking)) {
                 attack(newPos);
@@ -319,7 +319,7 @@ void StatusUIEntity::emit(uint32_t signal) {
 void StatusUIEntity::tick() {
     if (attackTarget != nullptr &&
         attackTarget->getBehaviourByID("ChaseAndAttackBehaviour") != nullptr &&
-        !attackTarget->getBehaviourByID("ChaseAndAttackBehaviour")->enabled)
+        !attackTarget->getBehaviourByID("ChaseAndAttackBehaviour")->isEnabled())
     {
         attackTargetTimer--;
     }

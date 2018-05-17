@@ -24,7 +24,6 @@ struct Entity;
 struct Behaviour {
     Behaviour(std::string ID, Entity& parent) : ID(std::move(ID)), parent(parent) {}
 
-    bool enabled {true};
     std::string ID;
     Entity& parent;
 
@@ -34,6 +33,16 @@ struct Behaviour {
     virtual bool isEnabled() const {
         return enabled;
     }
+
+    void enable() {
+        enabled = true;
+    }
+
+    void disable() {
+        enabled = false;
+    }
+protected:
+    bool enabled {true};
 };
 
 //class ExampleBehaviour : public Behaviour {

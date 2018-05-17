@@ -167,10 +167,7 @@ struct LightEmittingBehaviour : Behaviour {
 
     bool isEnabled() const override {
         // Don't be enabled if just sitting in someone's inventory
-        if (parent.isInAnInventory && !parent.isEquipped)
-            return false;
-        else
-            return true;
+        return !parent.isInAnInventory || parent.isEquipped;
     }
 
 private:
