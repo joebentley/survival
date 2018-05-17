@@ -38,6 +38,12 @@ struct Point {
         return *this;
     }
 
+    Point& operator/=(int rhs) {
+        this->x /= rhs;
+        this->y /= rhs;
+        return *this;
+    }
+
     // element-wise multiplication
     Point& operator*=(const Point& rhs) {
         this->x *= rhs.x;
@@ -73,6 +79,11 @@ inline Point operator*(Point lhs, int rhs) {
 
 inline Point operator*(Point lhs, const Point& rhs) {
     lhs *= rhs;
+    return lhs;
+}
+
+inline Point operator/(Point lhs, int rhs) {
+    lhs /= rhs;
     return lhs;
 }
 

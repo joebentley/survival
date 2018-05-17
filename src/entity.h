@@ -194,8 +194,9 @@ public:
 
     /// Get light sources on screen in screen-space coords.
     /// Assumes that recomputeCurrentEntitiesOnScreen has been called to generate the vector of entities on screen
+    /// \param fontSize Point representing the width and height of each font cell
     /// \return vector of light sources on screen
-    std::vector<LightMapPoint> getLightSources() const;
+    std::vector<LightMapPoint> getLightSources(Point fontSize) const;
 };
 
 #endif // ENTITY_H_

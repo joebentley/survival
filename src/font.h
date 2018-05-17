@@ -102,6 +102,10 @@ public:
     int drawText(const std::string &text, int x, int y, Color bColor);
     // if alpha = -1, don't use it
     int drawText(const std::string &text, int x, int y, int alpha);
+
+    int getCellWidth() const;
+    int getCellHeight() const;
+    Point getCellSize() const;
 };
 
 int getFontStringLength(const std::string& string);

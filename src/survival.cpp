@@ -63,7 +63,6 @@ int main(int argc, char* argv[])
 
                 lightMapTexture.init();
 
-                // SDL_RenderSetScale(renderer, 1.5, 1.5);
                 SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
                 Font font(texture, CHAR_WIDTH, CHAR_HEIGHT, NUM_PER_ROW, CHARS, renderer);
@@ -112,7 +111,7 @@ int main(int argc, char* argv[])
                 player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
 
                 manager.initialize();
-                manager.setTimeOfDay(Time(5, 0));
+                manager.setTimeOfDay(Time(4, 0));
 
                 InventoryScreen inventoryScreen(*player);
                 LootingDialog lootingDialog(*player);

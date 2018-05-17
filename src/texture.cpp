@@ -43,7 +43,7 @@ int LightMapTexture::load() {
 }
 
 void LightMapTexture::init() {
-    nightFadeTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
+    nightFadeTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, CHAR_WIDTH * SCREEN_WIDTH, CHAR_HEIGHT * SCREEN_HEIGHT);
     SDL_SetTextureBlendMode(nightFadeTexture, SDL_BLENDMODE_MOD);
     SDL_SetTextureBlendMode(lightTexture.texture, SDL_BLENDMODE_ADD);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);

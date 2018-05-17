@@ -229,6 +229,18 @@ int Font::drawText(const std::string &text, int x0, int y, Color bColor) {
     return 0;
 }
 
+int Font::getCellWidth() const {
+    return cellWidth;
+}
+
+int Font::getCellHeight() const {
+    return cellHeight;
+}
+
+Point Font::getCellSize() const {
+    return Point(cellWidth, cellHeight);
+}
+
 int getFontStringLength(const std::string& text)
 {
     int characters = 0;

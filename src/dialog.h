@@ -81,6 +81,11 @@ struct CraftingScreen {
     bool enabled {false};
 
     void handleInput(SDL_KeyboardEvent &e);
+
+    /// Render crafting screen
+    /// \param font Font object to render using
+    /// \param world World object used for rendering
+    /// \param lightMapTexture Light map texture used for rendering
     void render(Font &font, World &world, LightMapTexture &lightMapTexture);
     void reset();
 

@@ -218,7 +218,7 @@ void EntityManager::render(Font &font, Point currentWorldPos, LightMapTexture &l
     else if (a > 1)
         a = 1;
     auto alpha = static_cast<Uint8>(a * 0xFF);
-    lightMapTexture.render(EntityManager::getInstance().getLightSources(), alpha);
+    lightMapTexture.render(getLightSources(font.getCellSize()), alpha);
 }
 
 void EntityManager::render(Font &font, LightMapTexture &lightMapTexture) {
@@ -297,15 +297,15 @@ void EntityManager::setTimePerTick(const Time &timePerTick) {
     EntityManager::timePerTick = timePerTick;
 }
 
-std::vector<LightMapPoint> EntityManager::getLightSources() const {
+std::vector<LightMapPoint> EntityManager::getLightSources(Point fontSize) const {
     std::vector<LightMapPoint> points;
 
     for (const auto &a : currentlyOnScreen) {
         const auto &entity = getEntityByID(a);
         if (entity->hasBehaviour("LightEmittingBehaviour")) {
             const auto &b = dynamic_cast<LightEmittingBehaviour&>(*entity->getBehaviourByID("LightEmittingBehaviour"));
-            auto radius = b.getRadius();
-            auto point = worldToScreen(entity->getPos());
+            auto radius = fontSize.y * b.getRadius();
+            auto point = fontSize * worldToScreen(entity->getPos()) + fontSize / 2;
             points.emplace_back(LightMapPoint(point, radius));
         }
     }
