@@ -750,7 +750,7 @@ void EquipmentScreen::handleInput(SDL_KeyboardEvent &e) {
                     choosingNewEquipmentIndex = 0;
                 else
                     ++choosingNewEquipmentIndex;
-            } else
+            } else if (!choosingEquipmentAction)
                 ++chosenSlot;
             break;
         case SDLK_k:
@@ -760,7 +760,7 @@ void EquipmentScreen::handleInput(SDL_KeyboardEvent &e) {
                     choosingNewEquipmentIndex = static_cast<int>(equippableIDs.size()) - 1;
                 else
                     --choosingNewEquipmentIndex;
-            } else
+            } else if (!choosingEquipmentAction)
                 --chosenSlot;
             break;
         case SDLK_RETURN:
@@ -771,12 +771,12 @@ void EquipmentScreen::handleInput(SDL_KeyboardEvent &e) {
             } else if (choosingEquipmentAction) {
                 if (player.hasEquippedInSlot(chosenSlot)) {
                     player.unequip(chosenSlot);
-                } else {
+                } else if (!player.getInventoryItemsEquippableInSlot(chosenSlot).empty()) {
                     choosingNewEquipment = true;
                 }
                 choosingEquipmentAction = false;
                 choosingEquipmentActionIndex = 0;
-            } else if (!player.hasEquippedInSlot(chosenSlot))
+            } else if (!player.hasEquippedInSlot(chosenSlot) && !player.getInventoryItemsEquippableInSlot(chosenSlot).empty())
                 choosingNewEquipment = true;
             else
                 choosingEquipmentAction = true;
