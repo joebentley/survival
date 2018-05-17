@@ -135,6 +135,8 @@ struct Entity {
 protected:
     std::vector<std::string> inventory;
     Point pos;
+
+    // TODO: add equipment
 };
 
 /// Singleton class that manages all entities
