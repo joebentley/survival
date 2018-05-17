@@ -6,8 +6,8 @@
 #include "point.h"
 #include <string>
 
-#define WORLD_WIDTH 70
-#define WORLD_HEIGHT 35
+#define WORLD_WIDTH 30
+#define WORLD_HEIGHT 21
 #define SCREEN_WIDTH 70
 #define SCREEN_HEIGHT 35
 
