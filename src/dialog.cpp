@@ -795,8 +795,10 @@ void EquipmentScreen::render(Font &font) {
         std::string currentlyEquipped = player.getEquipmentID(slot);
         if (!currentlyEquipped.empty()) {
             auto e = EntityManager::getInstance().getEntityByID(currentlyEquipped);
-            font.drawText(e->graphic + " " + e->name + " $[red]$(heart)$[white]" +
-                          std::to_string(player.hitTimes) + "d" + std::to_string(player.computeMaxDamage())
+            font.drawText(e->graphic + " " + e->name +
+                          (slot == EquipmentSlot::RIGHT_HAND ?
+                           " $[red]$(heart)$[white]" + std::to_string(player.hitTimes)
+                           + "d" + std::to_string(player.computeMaxDamage()) : "")
                     , 20, y);
         }
 
@@ -823,10 +825,13 @@ void EquipmentScreen::render(Font &font) {
 
             lines.emplace_back((i == choosingNewEquipmentIndex ? "$(right)" : " ") + entity->graphic + " " + entity->name);
 
-            auto b = entity->getBehaviourByID("MeleeWeaponBehaviour");
-            if (b != nullptr) {
-                lines[i] += " $[red]$(heart)$[white]" + std::to_string(player.hitTimes)
-                        + "d" + std::to_string(player.hitAmount + dynamic_cast<MeleeWeaponBehaviour&>(*b).extraDamage);
+            if (chosenSlot == EquipmentSlot::RIGHT_HAND) {
+                auto b = entity->getBehaviourByID("MeleeWeaponBehaviour");
+                if (b != nullptr) {
+                    lines[i] += " $[red]$(heart)$[white]" + std::to_string(player.hitTimes)
+                                + "d" +
+                                std::to_string(player.hitAmount + dynamic_cast<MeleeWeaponBehaviour &>(*b).extraDamage);
+                }
             }
         }
 
