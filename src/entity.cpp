@@ -213,7 +213,12 @@ void EntityManager::render(Font &font, Point currentWorldPos, LightMapTexture &l
     // Draw time-of-day fog
     auto frac = EntityManager::getInstance().getTimeOfDay().getFractionOfDay();
     // TODO: Add different curve for the time of day
-    auto alpha = static_cast<Uint8>(0.5 * (std::sin(2 * M_PI * frac - M_PI / 2) + 1) * 0xFF);
+    auto a = 0.5 + std::sin(2 * M_PI * frac - M_PI / 2);
+    if (a < 0)
+        a = 0;
+    else if (a > 1)
+        a = 1;
+    auto alpha = static_cast<Uint8>(a * 0xFF);
     lightMapTexture.render(EntityManager::getInstance().getLightSources(), alpha);
 }
 

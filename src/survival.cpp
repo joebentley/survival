@@ -125,6 +125,7 @@ int main(int argc, char* argv[])
                 std::deque<float> frameTimes;
 
                 while (!quit) {
+                    // TODO: Fix random slow input frames
                     while (SDL_PollEvent(&e) != 0) {
                         if (e.type == SDL_QUIT) {
                             quit = true;
