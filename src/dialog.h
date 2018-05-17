@@ -120,4 +120,27 @@ private:
     void buildItem(Point pos);
 };
 
+struct EquipmentScreen {
+    explicit EquipmentScreen(PlayerEntity &player) : player(player) {}
+
+    bool enabled {false};
+
+    void handleInput(SDL_KeyboardEvent &e);
+
+    /// Render equipment screen
+    /// \param font Font object to render using
+    void render(Font &font);
+
+    void reset();
+    void enable();
+
+private:
+    PlayerEntity &player;
+    EquipmentSlot chosenSlot {EquipmentSlot::HEAD};
+    bool choosingEquipmentAction {false};
+    int choosingEquipmentActionIndex {0};
+    bool choosingNewEquipment {false};
+    int choosingNewEquipmentIndex {0};
+};
+
 #endif // DIALOG_H_

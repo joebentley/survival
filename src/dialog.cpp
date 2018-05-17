@@ -90,6 +90,10 @@ void InventoryScreen::handleInput(SDL_KeyboardEvent &e) {
             break;
         case SDLK_d:
             if (!viewingDescription && !player.isInventoryEmpty()) {
+                auto itemID = player.getInventoryItemID(chosenIndex);
+                if (player.hasEquipped(itemID))
+                    player.unequip(itemID);
+
                 player.dropItem(chosenIndex);
 
                 if (player.getInventorySize() - 1 < chosenIndex)
@@ -135,8 +139,12 @@ void InventoryScreen::render(Font &font) {
 
     for (int i = 0; i < player.getInventorySize(); ++i) {
         auto item = player.getInventoryItem(i);
+        std::string displayString = item->graphic + " " + item->name;
 
-        font.drawText(item->graphic + " " + item->name, X_OFFSET, i + Y_OFFSET);
+        font.drawText(displayString, X_OFFSET, i + Y_OFFSET);
+        if (player.hasEquipped(item->ID))
+            font.drawText("(" + slotToString(player.getEquipmentSlotByID(item->ID)) + ")",
+                    X_OFFSET + getFontStringLength(displayString) + 2, i + Y_OFFSET);
     }
 
     std::string colorStr;
@@ -715,3 +723,112 @@ void CraftingScreen::enable() {
     enabled = true;
     reset();
 }
+
+void EquipmentScreen::handleInput(SDL_KeyboardEvent &e) {
+    switch (e.keysym.sym) {
+        case SDLK_ESCAPE:
+            if (choosingEquipmentAction)
+                choosingEquipmentAction = false;
+            else if (choosingNewEquipment)
+                choosingNewEquipment = false;
+            else
+                enabled = false;
+            break;
+        case SDLK_j:
+            if (choosingNewEquipment) {
+                auto equippableIDs = player.getInventoryItemsEquippableInSlot(chosenSlot);
+                if (choosingNewEquipmentIndex == equippableIDs.size() - 1)
+                    choosingNewEquipmentIndex = 0;
+                else
+                    ++choosingNewEquipmentIndex;
+            } else
+                ++chosenSlot;
+            break;
+        case SDLK_k:
+            if (choosingNewEquipment) {
+                auto equippableIDs = player.getInventoryItemsEquippableInSlot(chosenSlot);
+                if (choosingNewEquipmentIndex == 0)
+                    choosingNewEquipmentIndex = static_cast<int>(equippableIDs.size()) - 1;
+                else
+                    --choosingNewEquipmentIndex;
+            } else
+                --chosenSlot;
+            break;
+        case SDLK_RETURN:
+            if (choosingNewEquipment) {
+                auto equippableIDs = player.getInventoryItemsEquippableInSlot(chosenSlot);
+                player.equip(chosenSlot, equippableIDs[choosingNewEquipmentIndex]);
+                reset();
+            } else if (choosingEquipmentAction) {
+                if (player.hasEquippedInSlot(chosenSlot)) {
+                    player.unequip(chosenSlot);
+                } else {
+                    choosingNewEquipment = true;
+                }
+                choosingEquipmentAction = false;
+                choosingEquipmentActionIndex = 0;
+            } else if (!player.hasEquippedInSlot(chosenSlot))
+                choosingNewEquipment = true;
+            else
+                choosingEquipmentAction = true;
+            break;
+    }
+}
+
+void EquipmentScreen::render(Font &font) {
+    int y = 3;
+
+    for (auto slot : EQUIPMENT_SLOTS) {
+        Color bColor = getColor("black");
+        if (chosenSlot == slot)
+            bColor = getColor("blue");
+
+        std::string currentlyEquipped = player.getEquipmentID(slot);
+        if (!currentlyEquipped.empty()) {
+            auto e = EntityManager::getInstance().getEntityByID(currentlyEquipped);
+            font.drawText(e->graphic + " " + e->name, 20, y);
+        }
+
+        font.drawText(slotToString(slot), 6, y++, bColor);
+    }
+
+    if (choosingEquipmentAction) {
+        std::vector<std::string> lines;
+        if (player.hasEquippedInSlot(chosenSlot))
+            lines.emplace_back("$(right)Unequip");
+        else
+            lines.emplace_back("$(right)Equip");
+
+        showMessageBox(font, lines, 1, SCREEN_WIDTH / 2 - 10, SCREEN_HEIGHT / 2 - 10);
+    }
+
+    if (choosingNewEquipment) {
+        auto equippableIDs = player.getInventoryItemsEquippableInSlot(chosenSlot);
+        std::vector<std::string> lines;
+
+        for (int i = 0; i < equippableIDs.size(); ++i) {
+            auto ID = equippableIDs[i];
+            auto entity = EntityManager::getInstance().getEntityByID(ID);
+
+            lines.emplace_back((i == choosingNewEquipmentIndex ? "$(right)" : " ") + entity->graphic + " " + entity->name);
+        }
+
+        showMessageBox(font, lines, 1, SCREEN_WIDTH / 2 - 10, SCREEN_HEIGHT / 2 - 10);
+    }
+}
+
+void EquipmentScreen::enable() {
+    enabled = true;
+    choosingEquipmentAction = false;
+    choosingEquipmentActionIndex = 0;
+    choosingNewEquipment = false;
+    choosingNewEquipmentIndex = 0;
+}
+
+void EquipmentScreen::reset() {
+    choosingNewEquipment = false;
+    choosingEquipmentAction = false;
+    choosingNewEquipmentIndex = 0;
+    choosingEquipmentActionIndex = 0;
+}
+

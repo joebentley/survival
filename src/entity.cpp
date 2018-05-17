@@ -147,7 +147,7 @@ std::vector<std::shared_ptr<Entity>> Entity::getInventory() const {
 }
 
 bool Entity::isInInventory(std::string ID) const {
-    return std::find(inventory.cbegin(), inventory.cend(), ID) == inventory.cend();
+    return std::find(inventory.cbegin(), inventory.cend(), ID) != inventory.cend();
 }
 
 Point Entity::getPos() const {
@@ -170,9 +170,13 @@ const std::unordered_map<EquipmentSlot, std::string> &Entity::getEquipment() con
 }
 
 bool Entity::equip(EquipmentSlot slot, std::shared_ptr<Entity> entity) {
-    if (entity->hasBehaviour("EquippableBehaviour")) {
+    if (entity->hasBehaviour("EquippableBehaviour") && entity->hasBehaviour("PickuppableBehaviour")) {
         auto &b = dynamic_cast<EquippableBehaviour&>(*entity->getBehaviourByID("EquippableBehaviour"));
         if (b.isEquippableInSlot(slot)) {
+            // Make sure it is in the player inventory (and in turn the entity manager)
+            if (!isInInventory(entity->ID))
+                Entity::addToInventory(entity);
+
             equipment[slot] = entity->ID;
             return true;
         }
@@ -211,6 +215,47 @@ std::shared_ptr<Entity> Entity::getEquipmentEntity(EquipmentSlot slot) const {
     if (equipment.find(slot) == equipment.cend())
         return nullptr;
     return EntityManager::getInstance().getEntityByID(equipment.at(slot));
+}
+
+std::vector<std::string> Entity::getInventoryItemsEquippableInSlot(EquipmentSlot slot) const {
+    std::vector<std::string> IDs;
+
+    std::copy_if(inventory.cbegin(), inventory.cend(), std::back_inserter(IDs), [slot] (auto &ID)
+    {
+        auto e = EntityManager::getInstance().getEntityByID(ID);
+        if (e->hasBehaviour("EquippableBehaviour")) {
+            auto &b = dynamic_cast<EquippableBehaviour&>(*e->getBehaviourByID("EquippableBehaviour"));
+            return b.isEquippableInSlot(slot);
+        }
+        return false;
+    });
+
+    return IDs;
+}
+
+std::string Entity::getEquipmentID(EquipmentSlot slot) const {
+    return equipment.at(slot);
+}
+
+bool Entity::hasEquippedInSlot(EquipmentSlot slot) const {
+    return !equipment.at(slot).empty();
+}
+
+bool Entity::hasEquipped(std::string ID) const {
+    return std::find_if(equipment.cbegin(), equipment.cend(), [ID] (auto &a) { return a.second == ID; }) != equipment.cend();
+}
+
+EquipmentSlot Entity::getEquipmentSlotByID(std::string ID) const {
+    auto a = std::find_if(equipment.cbegin(), equipment.cend(), [ID] (auto &a) { return a.second == ID; });
+
+    if (a == equipment.cend())
+        throw std::out_of_range("Nothing equipped with ID: " + ID);
+
+    return a->first;
+}
+
+std::string Entity::getInventoryItemID(int inventoryIndex) const {
+    return inventory[inventoryIndex];
 }
 
 void EntityManager::addEntity(std::shared_ptr<Entity> entity) {
@@ -361,4 +406,25 @@ std::vector<LightMapPoint> EntityManager::getLightSources(Point fontSize) const 
     }
 
     return points;
+}
+
+
+EquipmentSlot &operator++(EquipmentSlot &slot) {
+    if (slot == EquipmentSlot::FEET) {
+        slot = EquipmentSlot::HEAD;
+        return slot;
+    }
+
+    slot = static_cast<EquipmentSlot>(static_cast<int>(slot) + 1);
+    return slot;
+}
+
+EquipmentSlot &operator--(EquipmentSlot &slot) {
+    if (slot == EquipmentSlot::HEAD) {
+        slot = EquipmentSlot::FEET;
+        return slot;
+    }
+
+    slot = static_cast<EquipmentSlot>(static_cast<int>(slot) - 1);
+    return slot;
 }

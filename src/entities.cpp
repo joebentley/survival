@@ -54,7 +54,7 @@ void PlayerEntity::tick() {
 
 void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen,
                                LootingDialog &lootingDialog, InspectionDialog &inspectionDialog,
-                               CraftingScreen &craftingScreen) {
+                               CraftingScreen &craftingScreen, EquipmentScreen &equipmentScreen) {
     auto key = e.keysym.sym;
     auto mod = e.keysym.mod;
 
@@ -68,18 +68,18 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
 
     if (hp > 0) {
         // Handle eating from ground
-        if (key == SDLK_e) {
-            auto entitiesAtPos = EntityManager::getInstance().getEntitiesAtPos(pos);
-            auto it = std::find_if(entitiesAtPos.begin(), entitiesAtPos.end(),
-                                   [](auto &a) { return a->hasBehaviour("EatableBehaviour"); });
-            if (it == entitiesAtPos.end())
-                return;
-            else {
-                EntityManager::getInstance().queueForDeletion((*it)->ID);
-                addHunger(dynamic_cast<EatableBehaviour&>(*((*it)->getBehaviourByID("EatableBehaviour"))).hungerRestoration);
-                didAction = true;
-            }
-        }
+//        if (key == SDLK_e) {
+//            auto entitiesAtPos = EntityManager::getInstance().getEntitiesAtPos(pos);
+//            auto it = std::find_if(entitiesAtPos.begin(), entitiesAtPos.end(),
+//                                   [](auto &a) { return a->hasBehaviour("EatableBehaviour"); });
+//            if (it == entitiesAtPos.end())
+//                return;
+//            else {
+//                EntityManager::getInstance().queueForDeletion((*it)->ID);
+//                addHunger(dynamic_cast<EatableBehaviour&>(*((*it)->getBehaviourByID("EatableBehaviour"))).hungerRestoration);
+//                didAction = true;
+//            }
+//        }
 
         // Handle looting
         if (key == SDLK_g) {
@@ -114,7 +114,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
                          [this](auto &a) {
                 auto b = a->getBehaviourByID("PickuppableBehaviour");
                 // Don't pick up if it isn't pickuppable, or if it is already in the player's inventory
-                return (b != nullptr && isInInventory(a->ID));
+                return (b != nullptr && !isInInventory(a->ID));
             });
 
             if (pickuppableEntities.empty())
@@ -208,6 +208,9 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
 
         if (key == SDLK_c)
             craftingScreen.enable();
+
+        if (key == SDLK_e)
+            equipmentScreen.enable();
 
         if (didAction)
             EntityManager::getInstance().tick();

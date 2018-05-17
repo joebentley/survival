@@ -110,13 +110,17 @@ int main(int argc, char* argv[])
                 player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
                 player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
 
+                player->equip(EquipmentSlot::RIGHT_HAND, std::make_shared<TorchEntity>());
+
                 manager.initialize();
                 manager.setTimeOfDay(Time(4, 0));
 
+                // TODO: Tidy up all the screens somehow?
                 InventoryScreen inventoryScreen(*player);
                 LootingDialog lootingDialog(*player);
                 InspectionDialog inspectionDialog(*player);
                 CraftingScreen craftingScreen(*player);
+                EquipmentScreen equipmentScreen(*player);
 
                 bool quit = false;
                 SDL_Event e;
@@ -139,10 +143,12 @@ int main(int argc, char* argv[])
                                 inspectionDialog.handleInput(e.key);
                             else if (craftingScreen.enabled)
                                 craftingScreen.handleInput(e.key);
+                            else if (equipmentScreen.enabled)
+                                equipmentScreen.handleInput(e.key);
                             else
                                 dynamic_cast<PlayerEntity &>(*player).handleInput(e.key, quit, inventoryScreen,
                                                                                   lootingDialog, inspectionDialog,
-                                                                                  craftingScreen);
+                                                                                  craftingScreen, equipmentScreen);
                         }
                     }
 
@@ -157,6 +163,8 @@ int main(int argc, char* argv[])
                         inventoryScreen.render(font);
                     else if (craftingScreen.enabled)
                         craftingScreen.render(font, *world, lightMapTexture);
+                    else if (equipmentScreen.enabled)
+                        equipmentScreen.render(font);
                     else if (!lootingDialog.viewingDescription && !inspectionDialog.viewingDescription) {
                         if (world->render(font, player->getWorldPos()) == -1)
                             return -1;

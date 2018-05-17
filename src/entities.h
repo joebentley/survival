@@ -9,6 +9,7 @@ struct InventoryScreen;
 struct LootingDialog;
 class InspectionDialog;
 struct CraftingScreen;
+struct EquipmentScreen;
 
 struct PlayerEntity : Entity {
     float hunger;
@@ -29,7 +30,7 @@ struct PlayerEntity : Entity {
     void tick() override;
     void handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen,
                          LootingDialog &lootingDialog, InspectionDialog &inspectionDialog,
-                         CraftingScreen &craftingScreen);
+                         CraftingScreen &craftingScreen, EquipmentScreen &equipmentScreen);
     void render(Font &font, Point currentWorldPos) override;
     bool addToInventory(const std::shared_ptr<Entity> &item) override;
 
@@ -178,6 +179,8 @@ struct TwigEntity : Entity {
         longDesc = LONG_DESC;
         addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
         addBehaviour(std::make_shared<CraftingMaterialBehaviour>(*this, "wood", 1));
+        addBehaviour(std::make_shared<EquippableBehaviour>(*this,
+                std::vector<EquipmentSlot> {EquipmentSlot::LEFT_HAND, EquipmentSlot::RIGHT_HAND }));
     }
 };
 

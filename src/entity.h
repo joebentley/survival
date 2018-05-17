@@ -61,6 +61,31 @@ enum class EquipmentSlot {
     FEET
 };
 
+EquipmentSlot &operator++(EquipmentSlot &slot);
+
+EquipmentSlot &operator--(EquipmentSlot &slot);
+
+const std::vector<EquipmentSlot> EQUIPMENT_SLOTS {
+    EquipmentSlot::HEAD, EquipmentSlot::TORSO, EquipmentSlot::LEGS,
+    EquipmentSlot::RIGHT_HAND, EquipmentSlot::LEFT_HAND, EquipmentSlot::FEET
+};
+
+inline std::string slotToString(EquipmentSlot slot) {
+    if (slot == EquipmentSlot::HEAD)
+        return "Head";
+    if (slot == EquipmentSlot::TORSO)
+        return "Torso";
+    if (slot == EquipmentSlot::LEGS)
+        return "Legs";
+    if (slot == EquipmentSlot::RIGHT_HAND)
+        return "Right hand";
+    if (slot == EquipmentSlot::LEFT_HAND)
+        return "Left hand";
+    if (slot == EquipmentSlot::FEET)
+        return "Feet";
+    return "";
+}
+
 class EntityManager;
 struct Entity {
     Entity(std::string ID, std::string name, std::string graphic,
@@ -123,6 +148,7 @@ struct Entity {
     void removeFromInventory(int inventoryIndex);
     void dropItem(int inventoryIndex);
     std::shared_ptr<Entity> getInventoryItem(int inventoryIndex) const;
+    std::string getInventoryItemID(int inventoryIndex) const;
     size_t getInventorySize() const;
     bool isInventoryEmpty() const;
     std::vector<std::shared_ptr<Entity>> getInventory() const;
@@ -149,12 +175,17 @@ struct Entity {
     void addHealth(float health);
 
     const std::unordered_map<EquipmentSlot, std::string> &getEquipment() const;
+    std::string getEquipmentID(EquipmentSlot slot) const;
     std::shared_ptr<Entity> getEquipmentEntity(EquipmentSlot slot) const;
     bool equip(EquipmentSlot slot, std::shared_ptr<Entity> entity);
     bool equip(EquipmentSlot slot, std::string ID);
     bool unequip(std::shared_ptr<Entity> entity);
     bool unequip(std::string ID);
     bool unequip(EquipmentSlot slot);
+    std::vector<std::string> getInventoryItemsEquippableInSlot(EquipmentSlot slot) const;
+    bool hasEquippedInSlot(EquipmentSlot slot) const;
+    bool hasEquipped(std::string ID) const;
+    EquipmentSlot getEquipmentSlotByID(std::string ID) const;
 
 protected:
     std::vector<std::string> inventory;
