@@ -5,6 +5,7 @@
 #include <ctime>
 #include <cstdlib>
 #include <cstdio>
+#include <deque>
 
 #include "texture.h"
 #include "font.h"
@@ -120,6 +121,9 @@ int main(int argc, char* argv[])
                 bool quit = false;
                 SDL_Event e;
 
+                float totalTime = 0;
+                std::deque<float> frameTimes;
+
                 while (!quit) {
                     while (SDL_PollEvent(&e) != 0) {
                         if (e.type == SDL_QUIT) {
@@ -140,6 +144,8 @@ int main(int argc, char* argv[])
                                                                                   craftingScreen);
                         }
                     }
+
+                    beginTime();
 
                     manager.cleanup();
 
@@ -169,6 +175,19 @@ int main(int argc, char* argv[])
                         showMessageBox(font, "$[red]You died!", 10, 10);
                         font.drawText("${black}press return to quit!", 20, 20);
                     }
+
+                    totalTime += endTime();
+                    frameTimes.push_back(endTime());
+
+                    if (frameTimes.size() > 60) {
+                        totalTime -= frameTimes.front();
+                        frameTimes.pop_front();
+                    }
+
+                    float fps = frameTimes.size() / totalTime;
+
+
+                    font.drawText(std::to_string(fps), SCREEN_WIDTH - 5, SCREEN_HEIGHT - 1);
 
                     SDL_RenderPresent(renderer);
                 }
