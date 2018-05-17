@@ -160,6 +160,11 @@ bool Entity::moveTo(Point p) {
     // Check if there is a solid object in space
     if (std::find_if(entities.cbegin(), entities.cend(), [] (auto &a) { return a->isSolid; }) == entities.cend()) {
         setPos(p);
+
+        // Move all items held by entity
+        for (const auto &ID : inventory)
+            EntityManager::getInstance().getEntityByID(ID)->setPos(p);
+
         return true;
     }
     return false;
@@ -177,6 +182,7 @@ bool Entity::equip(EquipmentSlot slot, std::shared_ptr<Entity> entity) {
             if (!isInInventory(entity->ID))
                 Entity::addToInventory(entity);
 
+            entity->isEquipped = true;
             equipment[slot] = entity->ID;
             return true;
         }
@@ -198,6 +204,7 @@ bool Entity::unequip(std::string ID) {
     if (a == equipment.cend())
         return false;
     else {
+        EntityManager::getInstance().getEntityByID(a->second)->isEquipped = false;
         equipment[a->first] = "";
         return true;
     }
@@ -207,6 +214,7 @@ bool Entity::unequip(EquipmentSlot slot) {
     if (equipment[slot].empty())
         return false;
 
+    EntityManager::getInstance().getEntityByID(getEquipmentID(slot))->isEquipped = false;
     equipment[slot] = "";
     return true;
 }
@@ -397,7 +405,7 @@ std::vector<LightMapPoint> EntityManager::getLightSources(Point fontSize) const 
         const auto &entity = getEntityByID(a);
         if (entity->hasBehaviour("LightEmittingBehaviour")) {
             const auto &b = dynamic_cast<LightEmittingBehaviour&>(*entity->getBehaviourByID("LightEmittingBehaviour"));
-            if (b.enabled) {
+            if (b.isEnabled()) {
                 auto radius = fontSize.y * b.getRadius();
                 auto point = fontSize * worldToScreen(entity->getPos()) + fontSize / 2;
                 points.emplace_back(LightMapPoint(point, radius));

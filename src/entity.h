@@ -30,6 +30,10 @@ struct Behaviour {
 
     virtual void tick() {};
     virtual void handle(Uint32 signal) {};
+
+    virtual bool isEnabled() const {
+        return enabled;
+    }
 };
 
 //class ExampleBehaviour : public Behaviour {
@@ -120,6 +124,7 @@ struct Entity {
     bool shouldRender {true};
     int maxCarryWeight;
     bool isInAnInventory {false};
+    bool isEquipped {false};
     bool isSolid {false}; // If true, cannot be walked on
 
     bool skipLootingDialog {false}; // automatically pick up first item in inventory when looting
