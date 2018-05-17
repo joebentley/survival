@@ -263,6 +263,9 @@ void StatusUIEntity::render(Font &font, Point currentWorldPos) {
     else
         font.drawText("${black}$[red]starving", SCREEN_WIDTH - X_OFFSET, 2);
 
+    font.drawText("$[red]$(heart)$[white]" + std::to_string(player.hitTimes) + "d" + std::to_string(player.computeMaxDamage())
+            , SCREEN_WIDTH - X_OFFSET, 3);
+
     font.drawText("${black}" + std::to_string(player.getCarryingWeight()) + "/" + std::to_string(player.maxCarryWeight) + "lb",
                   SCREEN_WIDTH - X_OFFSET, 4);
 
