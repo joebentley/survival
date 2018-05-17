@@ -212,8 +212,7 @@ void EntityManager::render(Font &font, Point currentWorldPos, LightMapTexture &l
 
     // Draw time-of-day fog
     auto frac = EntityManager::getInstance().getTimeOfDay().getFractionOfDay();
-    // TODO: Add different curve for the time of day
-    auto a = 0.5 + std::sin(2 * M_PI * frac - M_PI / 2);
+    auto a = 0.6 + 0.8 * std::sin(2 * M_PI * frac - M_PI / 2);
     if (a < 0)
         a = 0;
     else if (a > 1)
