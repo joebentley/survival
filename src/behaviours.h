@@ -93,15 +93,15 @@ struct EatableBehaviour : Behaviour {
 };
 
 struct ApplyableBehaviour : Behaviour {
-    explicit ApplyableBehaviour(Entity& parent)
-            : Behaviour("ApplyableBehaviour", parent) {}
+    ApplyableBehaviour(std::string ID, Entity& parent)
+            : Behaviour(std::move(ID), parent) {}
 
-    virtual void apply() {};
+    virtual void apply() = 0;
 };
 
 struct HealingItemBehaviour : ApplyableBehaviour {
     HealingItemBehaviour(Entity& parent, float healingAmount)
-            : ApplyableBehaviour(parent), healingAmount(healingAmount) {}
+            : ApplyableBehaviour("HealingItemBehaviour", parent), healingAmount(healingAmount) {}
 
     float healingAmount;
 

@@ -91,6 +91,13 @@ void drawDescriptionScreen(Font& font, Entity& item) {
                 InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + words.size() + y++);
     }
 
+    b = item.getBehaviourByID("HealingItemBehaviour");
+    if (b != nullptr) {
+        float healing = dynamic_cast<HealingItemBehaviour &>(*b).healingAmount;
+        font.drawText("${white}$[red]+${black}$[white] Can be used to heal for " + std::to_string(healing),
+                InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + words.size() + y++);
+    }
+
     font.drawText("esc-back", 1, SCREEN_HEIGHT - 2);
 }
 
