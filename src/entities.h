@@ -181,6 +181,7 @@ struct TwigEntity : Entity {
         addBehaviour(std::make_shared<CraftingMaterialBehaviour>(*this, "wood", 1));
         addBehaviour(std::make_shared<EquippableBehaviour>(*this,
                 std::vector<EquipmentSlot> {EquipmentSlot::LEFT_HAND, EquipmentSlot::RIGHT_HAND }));
+        addBehaviour(std::make_shared<MeleeWeaponBehaviour>(*this, 1));
     }
 };
 

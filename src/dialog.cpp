@@ -61,6 +61,14 @@ void drawDescriptionScreen(Font& font, Entity& item) {
                       InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + words.size() + 2);
     }
 
+    b = item.getBehaviourByID("MeleeWeaponBehaviour");
+
+    if (b != nullptr) {
+        int damage = dynamic_cast<MeleeWeaponBehaviour &>(*b).extraDamage;
+        font.drawText("It adds $[red]" + std::to_string(damage) + "$[white] to your damage roll",
+                InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + words.size() + 4);
+    }
+
     font.drawText("esc-back", 1, SCREEN_HEIGHT - 2);
 }
 
@@ -268,6 +276,7 @@ void LootingDialog::render(Font &font) {
         std::string weightString = std::to_string(weight);
         std::string string = item->graphic + " " + item->name.substr(0, DIALOG_WIDTH - 6);
         string += std::string(DIALOG_WIDTH - getFontStringLength(string) - 3 - weightString.size() + 1, ' ') + "$[white]" + weightString + " lb";
+
         font.drawText("${black}$(p8)  " + string + "${black} $[white]$(p8)", x, y+2+i);
     }
 
@@ -786,7 +795,9 @@ void EquipmentScreen::render(Font &font) {
         std::string currentlyEquipped = player.getEquipmentID(slot);
         if (!currentlyEquipped.empty()) {
             auto e = EntityManager::getInstance().getEntityByID(currentlyEquipped);
-            font.drawText(e->graphic + " " + e->name, 20, y);
+            font.drawText(e->graphic + " " + e->name + " $[red]$(heart)$[white]" +
+                          std::to_string(player.hitTimes) + "d" + std::to_string(player.computeMaxDamage())
+                    , 20, y);
         }
 
         font.drawText(slotToString(slot), 6, y++, bColor);
@@ -811,6 +822,12 @@ void EquipmentScreen::render(Font &font) {
             auto entity = EntityManager::getInstance().getEntityByID(ID);
 
             lines.emplace_back((i == choosingNewEquipmentIndex ? "$(right)" : " ") + entity->graphic + " " + entity->name);
+
+            auto b = entity->getBehaviourByID("MeleeWeaponBehaviour");
+            if (b != nullptr) {
+                lines[i] += " $[red]$(heart)$[white]" + std::to_string(player.hitTimes)
+                        + "d" + std::to_string(player.hitAmount + dynamic_cast<MeleeWeaponBehaviour&>(*b).extraDamage);
+            }
         }
 
         showMessageBox(font, lines, 1, SCREEN_WIDTH / 2 - 10, SCREEN_HEIGHT / 2 - 10);

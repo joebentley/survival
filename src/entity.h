@@ -184,6 +184,7 @@ struct Entity {
     std::shared_ptr<Behaviour> getBehaviourByID(const std::string& ID) const;
     bool hasBehaviour(const std::string& ID) const;
 
+    int computeMaxDamage() const;
     int rollDamage();
 
     void addHealth(float health);

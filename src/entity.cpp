@@ -55,10 +55,24 @@ std::shared_ptr<Behaviour> Entity::getBehaviourByID(const std::string& ID) const
     }
 }
 
+
+int Entity::computeMaxDamage() const {
+    if (hasEquippedInSlot(EquipmentSlot::RIGHT_HAND)) {
+        auto a = EntityManager::getInstance().getEntityByID(getEquipmentID(EquipmentSlot::RIGHT_HAND));
+
+        if (a->hasBehaviour("MeleeWeaponBehaviour")) {
+            auto &b = dynamic_cast<MeleeWeaponBehaviour&>(*a->getBehaviourByID("MeleeWeaponBehaviour"));
+            return hitAmount + b.extraDamage;
+        }
+    }
+
+    return hitAmount;
+}
+
 int Entity::rollDamage() {
     int totalDamage = 0;
     for (int i = 0; i < hitTimes; ++i) {
-        totalDamage += rand() % (hitAmount + 1);
+        totalDamage += rand() % (computeMaxDamage() + 1);
     }
     return totalDamage;
 }
