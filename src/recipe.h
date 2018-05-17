@@ -71,4 +71,12 @@ struct TorchRecipe : Recipe {
     void produce() override;
 };
 
+struct BagRecipe : Recipe {
+    BagRecipe() : Recipe("Bag") {
+        ingredients.emplace_back(Ingredient { 5, "grass" });
+    }
+
+    void produce() override;
+};
+
 #endif //RECIPE_H_

@@ -234,6 +234,17 @@ struct ChestEntity : Entity {
     }
 };
 
+struct BagEntity : Entity {
+    explicit BagEntity(std::string ID = "")
+            : Entity(std::move(ID), "Grass Bag", "$[green]$(Phi)")
+    {
+        shortDesc = "This crude grass bag allows you to carry a few more items";
+        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
+        addBehaviour(std::make_shared<EquippableBehaviour>(*this, EquipmentSlot::BACK));
+        addBehaviour(std::make_shared<AdditionalCarryWeightBehaviour>(*this, 20));
+    }
+};
+
 // UI entities
 
 class StatusUIEntity : public Entity {

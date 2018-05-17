@@ -4,6 +4,7 @@ RecipeManager::RecipeManager() {
     recipes.emplace_back(std::make_shared<FireRecipe>());
     recipes.emplace_back(std::make_shared<BandageRecipe>());
     recipes.emplace_back(std::make_shared<TorchRecipe>());
+    recipes.emplace_back(std::make_shared<BagRecipe>());
 }
 
 int FireRecipe::numProduced = 0;
@@ -29,5 +30,11 @@ void TorchRecipe::produce() {
     auto player = em.getEntityByID("Player");
     auto torch = std::make_shared<TorchEntity>("torch" + std::to_string(++numProduced));
     player->addToInventory(torch);
-    Recipe::produce();
+}
+
+void BagRecipe::produce() {
+    auto &em = EntityManager::getInstance();
+    auto player = em.getEntityByID("Player");
+    auto torch = std::make_shared<BagEntity>();
+    player->addToInventory(torch);
 }

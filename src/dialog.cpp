@@ -175,7 +175,7 @@ void InventoryScreen::render(Font &font) {
     else
         font.drawText("${black}$[red]starving", SCREEN_WIDTH - X_STATUS_OFFSET, 2);
 
-    font.drawText("${black}" + std::to_string(player.getCarryingWeight()) + "/" + std::to_string(player.maxCarryWeight) + "lb",
+    font.drawText("${black}" + std::to_string(player.getCarryingWeight()) + "/" + std::to_string(player.getMaxCarryWeight()) + "lb",
                   SCREEN_WIDTH - X_STATUS_OFFSET, 4);
 
     std::string helpString;

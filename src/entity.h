@@ -71,7 +71,8 @@ enum class EquipmentSlot {
     LEGS,
     RIGHT_HAND,
     LEFT_HAND,
-    FEET
+    FEET,
+    BACK
 };
 
 EquipmentSlot &operator++(EquipmentSlot &slot);
@@ -80,7 +81,8 @@ EquipmentSlot &operator--(EquipmentSlot &slot);
 
 const std::vector<EquipmentSlot> EQUIPMENT_SLOTS {
     EquipmentSlot::HEAD, EquipmentSlot::TORSO, EquipmentSlot::LEGS,
-    EquipmentSlot::RIGHT_HAND, EquipmentSlot::LEFT_HAND, EquipmentSlot::FEET
+    EquipmentSlot::RIGHT_HAND, EquipmentSlot::LEFT_HAND, EquipmentSlot::FEET,
+    EquipmentSlot::BACK
 };
 
 inline std::string slotToString(EquipmentSlot slot) {
@@ -96,6 +98,8 @@ inline std::string slotToString(EquipmentSlot slot) {
         return "Left hand";
     if (slot == EquipmentSlot::FEET)
         return "Feet";
+    if (slot == EquipmentSlot::BACK)
+        return "Back";
     return "";
 }
 
@@ -103,8 +107,8 @@ class EntityManager;
 struct Entity {
     Entity(std::string ID, std::string name, std::string graphic,
            float hp, float maxhp, float regenPerTick, int hitTimes, int hitAmount, int maxCarryWeight)
-            : hp(hp), maxhp(maxhp), regenPerTick(regenPerTick), hitTimes(hitTimes), hitAmount(hitAmount), maxCarryWeight(maxCarryWeight), ID(std::move(ID)),
-              name(std::move(name)), graphic(std::move(graphic)), pos(0, 0)
+            : hp(hp), maxhp(maxhp), regenPerTick(regenPerTick), hitTimes(hitTimes), hitAmount(hitAmount), ID(std::move(ID)),
+              name(std::move(name)), graphic(std::move(graphic)), pos(0, 0), maxCarryWeight(maxCarryWeight)
     {
         if (this->ID.empty()) // use next available ID
             this->ID = std::to_string(gNumInitialisedEntities);
@@ -117,6 +121,7 @@ struct Entity {
         equipment[EquipmentSlot::RIGHT_HAND] = "";
         equipment[EquipmentSlot::LEFT_HAND] = "";
         equipment[EquipmentSlot::FEET] = "";
+        equipment[EquipmentSlot::BACK] = "";
     }
 
     Entity(std::string ID, std::string name, std::string graphic, float hp, float maxhp, float regenPerTick)
@@ -131,7 +136,6 @@ struct Entity {
     int hitTimes;
     int hitAmount;
     bool shouldRender {true};
-    int maxCarryWeight;
     bool isInAnInventory {false};
     bool isEquipped {false};
     bool isSolid {false}; // If true, cannot be walked on
@@ -176,6 +180,8 @@ struct Entity {
         return { this->pos.x / SCREEN_WIDTH, this->pos.y / SCREEN_HEIGHT };
     }
 
+    int getMaxCarryWeight() const;
+
     /// Attempt to move to Point P. Will not move to the point if there is a solid entity in the way
     /// \param p Point to move to
     /// \return Whether or not the movement was performed
@@ -191,6 +197,9 @@ struct Entity {
 
     const std::unordered_map<EquipmentSlot, std::string> &getEquipment() const;
     std::string getEquipmentID(EquipmentSlot slot) const;
+    /// Return shared pointer to entity in slot, returning nullptr if no entity in slot
+    /// \param slot EquipmentSlot to look in
+    /// \return shared_ptr to entity in slot
     std::shared_ptr<Entity> getEquipmentEntity(EquipmentSlot slot) const;
     bool equip(EquipmentSlot slot, std::shared_ptr<Entity> entity);
     bool equip(EquipmentSlot slot, std::string ID);
@@ -206,6 +215,7 @@ protected:
     std::vector<std::string> inventory;
     Point pos;
     std::unordered_map<EquipmentSlot, std::string> equipment;
+    int maxCarryWeight;
 };
 
 /// Singleton class that manages all entities

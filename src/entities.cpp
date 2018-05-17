@@ -266,7 +266,7 @@ void StatusUIEntity::render(Font &font, Point currentWorldPos) {
     font.drawText("$[red]$(heart)$[white]" + std::to_string(player.hitTimes) + "d" + std::to_string(player.computeMaxDamage())
             , SCREEN_WIDTH - X_OFFSET, 3);
 
-    font.drawText("${black}" + std::to_string(player.getCarryingWeight()) + "/" + std::to_string(player.maxCarryWeight) + "lb",
+    font.drawText("${black}" + std::to_string(player.getCarryingWeight()) + "/" + std::to_string(player.getMaxCarryWeight()) + "lb",
                   SCREEN_WIDTH - X_OFFSET, 4);
 
     if (forceTickDisplayTimer-- > 0) {

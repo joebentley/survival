@@ -135,6 +135,13 @@ struct MeleeWeaponBehaviour : Behaviour {
     int extraDamage;
 };
 
+struct AdditionalCarryWeightBehaviour : Behaviour {
+    AdditionalCarryWeightBehaviour(Entity &parent, int additionalCarryWeight)
+            : Behaviour("AdditionalCarryWeightBehaviour", parent), additionalCarryWeight(additionalCarryWeight) {}
+
+    int additionalCarryWeight;
+};
+
 // WARNING: you have to add the initial item in your Entities' constructor, or otherwise you could get a huge number
 // of entities being added by tick() in a single game tick
 // Also, T must be an Entity that has a constructor with no arguments

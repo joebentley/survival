@@ -83,7 +83,7 @@ bool Entity::addToInventory(const std::shared_ptr<Entity> &item) {
         if (!EntityManager::getInstance().isEntityInManager(item->ID))
             EntityManager::getInstance().addEntity(item);
 
-        if (getCarryingWeight() + dynamic_cast<PickuppableBehaviour&>(*b).weight > maxCarryWeight)
+        if (getCarryingWeight() + dynamic_cast<PickuppableBehaviour&>(*b).weight > getMaxCarryWeight())
             return false;
         item->setPos(pos);
         inventory.push_back(item->ID);
@@ -280,6 +280,19 @@ std::string Entity::getInventoryItemID(int inventoryIndex) const {
     return inventory[inventoryIndex];
 }
 
+int Entity::getMaxCarryWeight() const {
+    auto a = getEquipmentEntity(EquipmentSlot::BACK);
+
+    if (a != nullptr) {
+        auto b = a->getBehaviourByID("AdditionalCarryWeightBehaviour");
+        if (b != nullptr) {
+            return maxCarryWeight + dynamic_cast<AdditionalCarryWeightBehaviour&>(*b).additionalCarryWeight;
+        }
+    }
+
+    return maxCarryWeight;
+}
+
 void EntityManager::addEntity(std::shared_ptr<Entity> entity) {
     if (getEntityByID(entity->ID) != nullptr)
         throw std::invalid_argument("Entity with ID " + entity->ID + " already present!");
@@ -432,7 +445,7 @@ std::vector<LightMapPoint> EntityManager::getLightSources(Point fontSize) const 
 
 
 EquipmentSlot &operator++(EquipmentSlot &slot) {
-    if (slot == EquipmentSlot::FEET) {
+    if (slot == EquipmentSlot::BACK) {
         slot = EquipmentSlot::HEAD;
         return slot;
     }
@@ -443,7 +456,7 @@ EquipmentSlot &operator++(EquipmentSlot &slot) {
 
 EquipmentSlot &operator--(EquipmentSlot &slot) {
     if (slot == EquipmentSlot::HEAD) {
-        slot = EquipmentSlot::FEET;
+        slot = EquipmentSlot::BACK;
         return slot;
     }
 
