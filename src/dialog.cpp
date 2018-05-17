@@ -558,7 +558,7 @@ void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
                             break;
                         }
                     }
-                } else if (currentRecipe->ingredients[chosenIngredient].quantity > 0)
+                } else if (currentRecipe->ingredients[chosenIngredient].quantity > 0 && !filterInventoryForChosenMaterials().empty())
                     layer = CraftingLayer::MATERIAL;
             } else if (layer == CraftingLayer::MATERIAL) {
                 auto inventoryMaterials = filterInventoryForChosenMaterials();
@@ -567,9 +567,14 @@ void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
                     currentlyChosenMaterials.emplace_back(inventoryMaterials[chosenMaterial]->ID);
                     currentRecipe->ingredients[chosenIngredient].quantity--;
                 }
+                // Have finished this material requirement
                 if (currentRecipe->ingredients[chosenIngredient].quantity == 0) {
                     layer = CraftingLayer::INGREDIENT;
                     chosenIngredient++; // Automatically go to next ingredient for faster crafting
+                }
+                // This means we have now ran out of the desired material and should ensure that we leave the current crafting layer
+                else if (inventoryMaterials.size() == 1) {
+                    layer = CraftingLayer::INGREDIENT;
                 }
             }
             break;
@@ -583,6 +588,7 @@ void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
                 chosenMaterial = 0;
                 layer = CraftingLayer::RECIPE;
                 currentRecipe.release();
+                currentlyChosenMaterials.clear();
             } else if (layer == CraftingLayer::MATERIAL) {
                 chosenMaterial = 0;
                 layer = CraftingLayer::INGREDIENT;

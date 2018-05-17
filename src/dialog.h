@@ -114,6 +114,8 @@ private:
     bool couldNotBuildAtPosition {false};
 
     std::vector<std::string> currentlyChosenMaterials;
+    /// Filter inventory items for items that are of the currently chosen material type and are not in currentlyChosenMaterials
+    /// \return vector of shared pointers to the inventory items as described above
     std::vector<std::shared_ptr<Entity>> filterInventoryForChosenMaterials();
     bool currentRecipeSatisfied();
     void tryToBuildAtPosition(Point posOffset);
