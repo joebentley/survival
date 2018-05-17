@@ -15,6 +15,7 @@
 #include "point.h"
 #include "flags.h"
 #include "time.h"
+#include "texture.h"
 
 extern int gNumInitialisedEntities;
 
@@ -163,8 +164,8 @@ public:
     void tick();
     void cleanup(); // Cleanup entities to be deleted
 
-    void render(Font& font, Point currentWorldPos);
-    void render(Font& font);
+    void render(Font &font, Point currentWorldPos, LightMapTexture &lightMapTexture);
+    void render(Font &font, LightMapTexture &lightMapTexture);
 
     std::shared_ptr<Entity> getEntityByID(const std::string &ID) const;
     void queueForDeletion(const std::string &ID);
@@ -188,6 +189,11 @@ public:
     /// Set time increment per EntityManager tick
     /// \param timePerTick increment per tick
     void setTimePerTick(const Time &timePerTick);
+
+    /// Get light sources on screen in screen-space coords.
+    /// Assumes that recomputeCurrentEntitiesOnScreen has been called to generate the vector of entities on screen
+    /// \return vector of light sources on screen
+    std::vector<LightMapPoint> getLightSources() const;
 };
 
 #endif // ENTITY_H_

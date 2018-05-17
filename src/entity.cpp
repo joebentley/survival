@@ -2,6 +2,7 @@
 #include "behaviours.h"
 
 #include <stdexcept>
+#include <cmath>
 
 int gNumInitialisedEntities = 0;
 
@@ -204,14 +205,20 @@ void EntityManager::tick() {
     }
 }
 
-void EntityManager::render(Font& font, Point currentWorldPos) {
+void EntityManager::render(Font &font, Point currentWorldPos, LightMapTexture &lightMapTexture) {
     for (const auto& a : toRender) {
         getEntityByID(a.first)->render(font, currentWorldPos);
     }
+
+    // Draw time-of-day fog
+    auto frac = EntityManager::getInstance().getTimeOfDay().getFractionOfDay();
+    // TODO: Add different curve for the time of day
+    auto alpha = static_cast<Uint8>(0.5 * (std::sin(2 * M_PI * frac - M_PI / 2) + 1) * 0xFF);
+    lightMapTexture.render(EntityManager::getInstance().getLightSources(), alpha);
 }
 
-void EntityManager::render(Font &font) {
-    render(font, getEntityByID("Player")->getWorldPos());
+void EntityManager::render(Font &font, LightMapTexture &lightMapTexture) {
+    render(font, getEntityByID("Player")->getWorldPos(), lightMapTexture);
 }
 
 std::shared_ptr<Entity> EntityManager::getEntityByID(const std::string &ID) const {
@@ -247,7 +254,7 @@ void EntityManager::queueForDeletion(const std::string &ID) {
 void EntityManager::eraseByID(const std::string &ID) {
     entities.erase(ID);
     --gNumInitialisedEntities;
-    reorderEntities(); // Order the entities by rendering layer
+    recomputeCurrentEntitiesOnScreen(getEntityByID("Player")->getWorldPos());
 }
 
 void EntityManager::reorderEntities() {
@@ -267,8 +274,6 @@ void EntityManager::recomputeCurrentEntitiesOnScreen(Point currentWorldPos) {
         if (a.second->getWorldPos() == currentWorldPos)
             currentlyOnScreen.emplace_back(a.second->ID);
     }
-    // Always add status UI
-    currentlyOnScreen.emplace_back("StatusUI");
     reorderEntities();
 }
 
@@ -286,4 +291,20 @@ const Time &EntityManager::getTimePerTick() const {
 
 void EntityManager::setTimePerTick(const Time &timePerTick) {
     EntityManager::timePerTick = timePerTick;
+}
+
+std::vector<LightMapPoint> EntityManager::getLightSources() const {
+    std::vector<LightMapPoint> points;
+
+    for (const auto &a : currentlyOnScreen) {
+        const auto &entity = getEntityByID(a);
+        if (entity->hasBehaviour("LightEmittingBehaviour")) {
+            const auto &b = dynamic_cast<LightEmittingBehaviour&>(*entity->getBehaviourByID("LightEmittingBehaviour"));
+            auto radius = b.getRadius();
+            auto point = worldToScreen(entity->getPos());
+            points.emplace_back(LightMapPoint(point, radius));
+        }
+    }
+
+    return points;
 }

@@ -81,7 +81,7 @@ struct CraftingScreen {
     bool enabled {false};
 
     void handleInput(SDL_KeyboardEvent &e);
-    void render(Font& font, World& world);
+    void render(Font &font, World &world, LightMapTexture &lightMapTexture);
     void reset();
 
     void enable();

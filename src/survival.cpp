@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <string>
 #include <memory>
 #include <ctime>
@@ -22,6 +23,7 @@ int main(int argc, char* argv[])
     
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
+    SDL_Texture *nightFadeTexture = nullptr;
 
     Texture texture;
     auto world = std::make_unique<World>();
@@ -29,10 +31,13 @@ int main(int argc, char* argv[])
     
     printf("video mode: %d x %d\n", SCREEN_WIDTH, SCREEN_HEIGHT);
 
+    int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG;
+
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-    }
-    else {
+    } else if (IMG_Init(imgFlags) != imgFlags) {
+        printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+    } else {
         window = SDL_CreateWindow("Survival",
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
@@ -42,6 +47,7 @@ int main(int argc, char* argv[])
         }
         else {            
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+            LightMapTexture lightMapTexture(renderer);
 
             if (renderer == NULL) {
                 printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -49,10 +55,12 @@ int main(int argc, char* argv[])
             else {
                 // if (Texture::LoadFromFile(texture, renderer, "Anikki_square_20x20.bmp") == -1) {
                 // if (Texture::LoadFromFile(texture, renderer, "curses_640x300.bmp") == -1) {
-                if (Texture::LoadFromFile(texture, renderer, "resources/curses_800x600.bmp") == -1) {
+                if (Texture::LoadFromFile(texture, renderer, "resources/curses_800x600.bmp") == -1 || lightMapTexture.load() == -1) {
                     printf("Could not load texture!\n");
                     return -1;
                 }
+
+                lightMapTexture.init();
 
                 // SDL_RenderSetScale(renderer, 1.5, 1.5);
                 SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
@@ -88,8 +96,8 @@ int main(int argc, char* argv[])
 
                 chest->addToInventory(std::make_shared<AppleEntity>());
 
-                auto healthUI = std::make_shared<StatusUIEntity>(dynamic_cast<PlayerEntity&>(*player));
-                manager.addEntity(healthUI);
+                auto statusUI = std::make_shared<StatusUIEntity>(dynamic_cast<PlayerEntity&>(*player));
+                manager.addEntity(statusUI);
 
                 auto fire = std::make_shared<FireEntity>();
                 fire->setPos(player->getPos() + Point(0, -2));
@@ -141,11 +149,14 @@ int main(int argc, char* argv[])
                     if (inventoryScreen.enabled)
                         inventoryScreen.render(font);
                     else if (craftingScreen.enabled)
-                        craftingScreen.render(font, *world);
+                        craftingScreen.render(font, *world, lightMapTexture);
                     else if (!lootingDialog.viewingDescription && !inspectionDialog.viewingDescription) {
                         if (world->render(font, player->getWorldPos()) == -1)
                             return -1;
-                        manager.render(font, player->getWorldPos());
+                        manager.render(font, player->getWorldPos(), lightMapTexture);
+
+                        // Always render UI
+                        statusUI->render(font, player->getWorldPos());
                     }
 
                     if (lootingDialog.enabled)
@@ -165,6 +176,7 @@ int main(int argc, char* argv[])
         }
     }
 
+    SDL_DestroyTexture(nightFadeTexture);
     SDL_DestroyWindow(window);
     SDL_Quit();
     return 0;

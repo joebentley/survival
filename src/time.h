@@ -41,6 +41,10 @@ struct Time {
             return "Dusk";
         return "";
     }
+
+    float getFractionOfDay() const {
+        return static_cast<float>(hour * 60 + minute) / (60 * 24);
+    }
 };
 
 inline Time operator+(Time lhs, const Time& rhs) {

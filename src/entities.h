@@ -199,6 +199,7 @@ struct GrassTuftEntity : Entity {
 struct FireEntity : Entity {
     explicit FireEntity(std::string ID = "") : Entity(std::move(ID), "Fire", "") {
         isSolid = true;
+        addBehaviour(std::make_shared<LightEmittingBehaviour>(*this, 6));
     }
 
     void render(Font &font, Point currentWorldPos) override;

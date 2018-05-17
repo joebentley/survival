@@ -154,7 +154,19 @@ public:
 // Misc behaviours
 
 struct LightEmittingBehaviour : Behaviour {
+    LightEmittingBehaviour(Entity& parent, float radius)
+            : Behaviour("LightEmittingBehaviour", parent), radius(radius) {}
 
+    int getRadius() const {
+        return radius;
+    }
+
+    void setRadius(int radius) {
+        LightEmittingBehaviour::radius = radius;
+    }
+
+private:
+    int radius;
 };
 
 #endif // BEHAVIOURS_H_

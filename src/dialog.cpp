@@ -579,11 +579,11 @@ void CraftingScreen::tryToBuildAtPosition(Point posOffset) {
     }
 }
 
-void CraftingScreen::render(Font &font, World &world) {
+void CraftingScreen::render(Font &font, World &world, LightMapTexture &lightMapTexture) {
     if (choosingPositionInWorld) {
         auto player = EntityManager::getInstance().getEntityByID("Player");
         world.render(font, player->getWorldPos());
-        EntityManager::getInstance().render(font);
+        EntityManager::getInstance().render(font, lightMapTexture);
 
         int y = 0;
         if (worldToScreen(player->getPos()).y < SCREEN_HEIGHT / 2)
