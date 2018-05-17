@@ -205,6 +205,17 @@ struct FireEntity : Entity {
     void render(Font &font, Point currentWorldPos) override;
 };
 
+struct TorchEntity : Entity {
+    explicit TorchEntity(std::string ID = "") : Entity(std::move(ID), "Torch", "$[red]$(up)") {
+        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
+        addBehaviour(std::make_shared<LightEmittingBehaviour>(*this, 4));
+        addBehaviour(std::make_shared<EquippableBehaviour>(*this,
+                std::vector<EquipmentSlot> {EquipmentSlot::LEFT_HAND, EquipmentSlot::RIGHT_HAND }));
+
+        shortDesc = "Can be equipped to produce light and some heat.";
+    }
+};
+
 struct ChestEntity : Entity {
     const std::string SHORT_DESC = "A heavy wooden chest";
     const std::string LONG_DESC = "This chest is super heavy";

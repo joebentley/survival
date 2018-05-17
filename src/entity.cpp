@@ -165,6 +165,54 @@ bool Entity::moveTo(Point p) {
     return false;
 }
 
+const std::unordered_map<EquipmentSlot, std::string> &Entity::getEquipment() const {
+    return equipment;
+}
+
+bool Entity::equip(EquipmentSlot slot, std::shared_ptr<Entity> entity) {
+    if (entity->hasBehaviour("EquippableBehaviour")) {
+        auto &b = dynamic_cast<EquippableBehaviour&>(*entity->getBehaviourByID("EquippableBehaviour"));
+        if (b.isEquippableInSlot(slot)) {
+            equipment[slot] = entity->ID;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Entity::equip(EquipmentSlot slot, std::string ID) {
+    return equip(slot, EntityManager::getInstance().getEntityByID(ID));
+}
+
+bool Entity::unequip(std::shared_ptr<Entity> entity) {
+    return unequip(entity->ID);
+}
+
+bool Entity::unequip(std::string ID) {
+    auto a = std::find_if(equipment.cbegin(), equipment.cend(), [ID] (auto b) { return b.second == ID; });
+
+    if (a == equipment.cend())
+        return false;
+    else {
+        equipment[a->first] = "";
+        return true;
+    }
+}
+
+bool Entity::unequip(EquipmentSlot slot) {
+    if (equipment[slot].empty())
+        return false;
+
+    equipment[slot] = "";
+    return true;
+}
+
+std::shared_ptr<Entity> Entity::getEquipmentEntity(EquipmentSlot slot) const {
+    if (equipment.find(slot) == equipment.cend())
+        return nullptr;
+    return EntityManager::getInstance().getEntityByID(equipment.at(slot));
+}
+
 void EntityManager::addEntity(std::shared_ptr<Entity> entity) {
     if (getEntityByID(entity->ID) != nullptr)
         throw std::invalid_argument("Entity with ID " + entity->ID + " already present!");
@@ -304,9 +352,11 @@ std::vector<LightMapPoint> EntityManager::getLightSources(Point fontSize) const 
         const auto &entity = getEntityByID(a);
         if (entity->hasBehaviour("LightEmittingBehaviour")) {
             const auto &b = dynamic_cast<LightEmittingBehaviour&>(*entity->getBehaviourByID("LightEmittingBehaviour"));
-            auto radius = fontSize.y * b.getRadius();
-            auto point = fontSize * worldToScreen(entity->getPos()) + fontSize / 2;
-            points.emplace_back(LightMapPoint(point, radius));
+            if (b.enabled) {
+                auto radius = fontSize.y * b.getRadius();
+                auto point = fontSize * worldToScreen(entity->getPos()) + fontSize / 2;
+                points.emplace_back(LightMapPoint(point, radius));
+            }
         }
     }
 

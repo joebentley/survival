@@ -52,8 +52,16 @@ struct Behaviour {
 //    }
 //};
 
-class EntityManager;
+enum class EquipmentSlot {
+    HEAD,
+    TORSO,
+    LEGS,
+    RIGHT_HAND,
+    LEFT_HAND,
+    FEET
+};
 
+class EntityManager;
 struct Entity {
     Entity(std::string ID, std::string name, std::string graphic,
            float hp, float maxhp, float regenPerTick, int hitTimes, int hitAmount, int maxCarryWeight)
@@ -63,6 +71,14 @@ struct Entity {
         if (this->ID.empty()) // use next available ID
             this->ID = std::to_string(gNumInitialisedEntities);
         gNumInitialisedEntities++;
+
+        // Add all equipment slots
+        equipment[EquipmentSlot::HEAD] = "";
+        equipment[EquipmentSlot::TORSO] = "";
+        equipment[EquipmentSlot::LEGS] = "";
+        equipment[EquipmentSlot::RIGHT_HAND] = "";
+        equipment[EquipmentSlot::LEFT_HAND] = "";
+        equipment[EquipmentSlot::FEET] = "";
     }
 
     Entity(std::string ID, std::string name, std::string graphic, float hp, float maxhp, float regenPerTick)
@@ -132,11 +148,18 @@ struct Entity {
 
     void addHealth(float health);
 
+    const std::unordered_map<EquipmentSlot, std::string> &getEquipment() const;
+    std::shared_ptr<Entity> getEquipmentEntity(EquipmentSlot slot) const;
+    bool equip(EquipmentSlot slot, std::shared_ptr<Entity> entity);
+    bool equip(EquipmentSlot slot, std::string ID);
+    bool unequip(std::shared_ptr<Entity> entity);
+    bool unequip(std::string ID);
+    bool unequip(EquipmentSlot slot);
+
 protected:
     std::vector<std::string> inventory;
     Point pos;
-
-    // TODO: add equipment
+    std::unordered_map<EquipmentSlot, std::string> equipment;
 };
 
 /// Singleton class that manages all entities

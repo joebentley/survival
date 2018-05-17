@@ -93,7 +93,7 @@ struct EatableBehaviour : Behaviour {
 };
 
 struct ApplyableBehaviour : Behaviour {
-    ApplyableBehaviour(Entity& parent)
+    explicit ApplyableBehaviour(Entity& parent)
             : Behaviour("ApplyableBehaviour", parent) {}
 
     virtual void apply() {};
@@ -154,7 +154,7 @@ public:
 // Misc behaviours
 
 struct LightEmittingBehaviour : Behaviour {
-    LightEmittingBehaviour(Entity& parent, float radius)
+    LightEmittingBehaviour(Entity& parent, int radius)
             : Behaviour("LightEmittingBehaviour", parent), radius(radius) {}
 
     int getRadius() const {
@@ -167,6 +167,25 @@ struct LightEmittingBehaviour : Behaviour {
 
 private:
     int radius;
+};
+
+struct EquippableBehaviour : Behaviour {
+    EquippableBehaviour(Entity& parent, std::vector<EquipmentSlot> equippableSlots)
+        : Behaviour("EquippableBehaviour", parent), equippableSlots(std::move(equippableSlots)) {}
+
+    EquippableBehaviour(Entity& parent, EquipmentSlot equippableSlot)
+        : EquippableBehaviour(parent, std::vector<EquipmentSlot>(1, equippableSlot)) {}
+
+    const std::vector<EquipmentSlot> &getEquippableSlots() const {
+        return equippableSlots;
+    }
+
+    bool isEquippableInSlot(EquipmentSlot slot) const {
+        return std::find(equippableSlots.cbegin(), equippableSlots.cend(), slot) != equippableSlots.cend();
+    };
+
+private:
+    std::vector<EquipmentSlot> equippableSlots;
 };
 
 #endif // BEHAVIOURS_H_

@@ -60,4 +60,15 @@ struct BandageRecipe : Recipe {
     void produce() override;
 };
 
+struct TorchRecipe : Recipe {
+    static int numProduced;
+
+    TorchRecipe() : Recipe("Torch") {
+        ingredients.emplace_back(Ingredient { 1, "wood" });
+        ingredients.emplace_back(Ingredient { 1, "grass" });
+    }
+
+    void produce() override;
+};
+
 #endif //RECIPE_H_
