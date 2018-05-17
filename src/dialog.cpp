@@ -53,20 +53,42 @@ void drawDescriptionScreen(Font& font, Entity& item) {
         font.drawText(words[i], InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + i);
     }
 
-    auto b = item.getBehaviourByID("PickuppableBehaviour");
+    int y = 2;
 
+    auto b = item.getBehaviourByID("PickuppableBehaviour");
     if (b != nullptr) {
         int weight = dynamic_cast<PickuppableBehaviour &>(*b).weight;
         font.drawText("It weighs " + std::to_string(weight) + (weight == 1 ? " pound" : " pounds"),
-                      InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + words.size() + 2);
+                      InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + words.size() + y++);
     }
 
     b = item.getBehaviourByID("MeleeWeaponBehaviour");
-
     if (b != nullptr) {
         int damage = dynamic_cast<MeleeWeaponBehaviour &>(*b).extraDamage;
         font.drawText("It adds $[red]" + std::to_string(damage) + "$[white] to your damage roll",
-                InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + words.size() + 4);
+                InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + words.size() + y++);
+    }
+
+    b = item.getBehaviourByID("AdditionalCarryWeightBehaviour");
+    if (b != nullptr) {
+        int carry = dynamic_cast<AdditionalCarryWeightBehaviour &>(*b).additionalCarryWeight;
+        font.drawText("It adds an extra " + std::to_string(carry) + "lb to your max carry weight",
+                InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + words.size() + y++);
+    }
+
+    b = item.getBehaviourByID("EquippableBehaviour");
+    if (b != nullptr) {
+        auto slots = dynamic_cast<EquippableBehaviour &>(*b).getEquippableSlots();
+        std::string slotsString;
+
+        for (auto slot = slots.cbegin(); slot != slots.cend(); ++slot) {
+            slotsString += slotToString(*slot);
+            if (slot != slots.cend() - 1)
+                slotsString += ", ";
+        }
+
+        font.drawText("Can be equipped in: " + slotsString,
+                InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + words.size() + y++);
     }
 
     font.drawText("esc-back", 1, SCREEN_HEIGHT - 2);
