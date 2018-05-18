@@ -1,6 +1,7 @@
 #ifndef BEHAVIOURS_H_
 #define BEHAVIOURS_H_
 
+#include "font.h"
 #include "entity.h"
 #include "utils.h"
 
@@ -168,6 +169,9 @@ public:
 // Misc behaviours
 
 struct LightEmittingBehaviour : Behaviour {
+    LightEmittingBehaviour(Entity& parent, int radius, Color color)
+            : Behaviour("LightEmittingBehaviour", parent), radius(radius), color(color) {}
+
     LightEmittingBehaviour(Entity& parent, int radius)
             : Behaviour("LightEmittingBehaviour", parent), radius(radius) {}
 
@@ -184,8 +188,17 @@ struct LightEmittingBehaviour : Behaviour {
         return !parent.isInAnInventory || parent.isEquipped;
     }
 
+    Color getColor() const {
+        return color;
+    }
+
+    void setColor(Color color) {
+        this->color = std::move(color);
+    }
+
 private:
     int radius;
+    Color color;
 };
 
 struct EquippableBehaviour : Behaviour {

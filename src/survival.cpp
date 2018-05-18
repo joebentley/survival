@@ -77,6 +77,10 @@ int main(int argc, char* argv[])
                 cat->setPos(player->getPos().x - 10, player->getPos().y - 10);
                 manager.addEntity(cat);
 
+                auto glowbug = std::make_shared<GlowbugEntity>();
+                glowbug->setPos(player->getPos().x - 10, player->getPos().y + 4);
+                manager.addEntity(glowbug);
+
                 auto apple = std::make_shared<AppleEntity>("apple");
                 auto banana = std::make_shared<BananaEntity>("banana");
                 manager.addEntity(apple);
@@ -108,7 +112,7 @@ int main(int argc, char* argv[])
                 player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
 
                 manager.initialize();
-                manager.setTimeOfDay(Time(6, 0));
+                manager.setTimeOfDay(Time(3, 0));
 
                 // TODO: Tidy up all the screens somehow?
                 InventoryScreen inventoryScreen(*player);

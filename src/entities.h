@@ -45,7 +45,7 @@ private:
 
 struct CatEntity : Entity {
     explicit CatEntity(std::string ID = "")
-            : Entity(std::move(ID), "cat", "$[yellow]c", 10, 10, 0.05, 1, 2, 100)
+            : Entity(std::move(ID), "Cat", "$[yellow]c", 10, 10, 0.05, 1, 2, 100)
     {
         auto wanderAttach = std::make_shared<WanderAttachBehaviour>(*this, 0.5, 0.7, 0.05);
         auto chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this, 0.8, 0.6, 8, 8, 0.9);
@@ -55,6 +55,17 @@ struct CatEntity : Entity {
     }
 
     void destroy() override;
+};
+
+struct GlowbugEntity : Entity {
+    explicit GlowbugEntity(std::string ID = "")
+            : Entity(std::move(ID), "Glowbug", "$[green]`", 10, 10, 0.05)
+    {
+        addBehaviour(std::make_shared<WanderBehaviour>(*this));
+        addBehaviour(std::make_shared<LightEmittingBehaviour>(*this, 3, getColor("green")));
+    }
+
+    void render(Font &font, Point currentWorldPos) override;
 };
 
 // Base item entities

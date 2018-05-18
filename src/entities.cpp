@@ -430,3 +430,27 @@ void FireEntity::RekindleBehaviour::render(Font &font) {
         MessageBoxRenderer::getInstance().queueMessageBoxCentered(displayStrings, 1);
     }
 }
+
+void GlowbugEntity::render(Font &font, Point currentWorldPos) {
+    static int timer = 0;
+
+    if (timer++ > (rand() % 20) + 20){
+        switch (rand() % 3) {
+            case 0:
+                graphic = "$[green]`";
+                break;
+            case 1:
+                graphic = "$[green]'";
+                break;
+            case 2:
+                graphic = "";
+                break;
+            default:
+                break;
+        }
+
+        timer = 0;
+    }
+
+    Entity::render(font, currentWorldPos);
+}

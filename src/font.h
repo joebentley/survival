@@ -2,7 +2,6 @@
 #ifndef FONT_H_
 #define FONT_H_
 
-#include "texture.h"
 #include "point.h"
 #include <SDL2/SDL.h>
 #include <string>
@@ -34,7 +33,7 @@ const std::string CHARS =
 
 
 struct Color {
-    Color() {}
+    Color() : r(0xFF), g(0xFF), b(0xFF), a(0xFF) {}
     Color(Uint8 r, Uint8 g, Uint8 b) : Color(r, g, b, 0xFF) {}
     Color(Uint8 r, Uint8 g, Uint8 b, Uint8 a) : r(r), g(g), b(b), a(a) {}
 
@@ -46,15 +45,16 @@ struct Color {
 
 Color getColor(const std::string& colorStr);
 
+struct Texture;
 class Font {
-    Texture texture;
+    Texture& texture;
     int cellWidth;
     int cellHeight;
     SDL_Renderer *renderer;
 public:
     std::unordered_map<std::string, std::tuple<int, int> > characters;
 
-    Font(const Texture &texture, int cellWidth, int cellHeight, int numPerRow,
+    Font(Texture &texture, int cellWidth, int cellHeight, int numPerRow,
          const std::string &characters, SDL_Renderer *renderer)
         : texture(texture), cellWidth(cellWidth),
           cellHeight(cellHeight), renderer(renderer)

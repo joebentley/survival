@@ -57,6 +57,7 @@ void LightMapTexture::render(std::vector<LightMapPoint> points, Uint8 background
 
     for (const auto &point : points) {
         SDL_Rect rect { point.p.x - point.radius, point.p.y - point.radius, 2 * point.radius, 2 * point.radius };
+        SDL_SetTextureColorMod(lightTexture.texture, point.color.r, point.color.g, point.color.b);
         lightTexture.render(renderer, nullptr, &rect);
     }
 

@@ -5,15 +5,15 @@
 #include <string>
 #include <vector>
 #include "point.h"
-
+#include "font.h"
 
 struct Texture {
     SDL_Texture *texture {nullptr};
 
-    Uint32 format;
-    int access;
-    int width;
-    int height;
+    Uint32 format {0};
+    int access {0};
+    int width {0};
+    int height {0};
 
     ~Texture();
 
@@ -22,12 +22,15 @@ struct Texture {
     static int LoadFromFile(Texture &texture, SDL_Renderer* renderer, const std::string& filepath);
 };
 
+struct Color;
 struct LightMapPoint {
-    LightMapPoint(Point p, int radius) : p(p), radius(radius) {}
-    LightMapPoint() : p(Point(0, 0)), radius(0) {}
+    LightMapPoint(Point p, int radius, Color color) : p(p), radius(radius), color(color) {}
+    LightMapPoint(Point p, int radius) : p(p), radius(radius), color(getColor("white")) {}
+    LightMapPoint() : p(Point(0, 0)), radius(0), color(getColor("white")) {}
 
     Point p;
     int radius;
+    struct Color color;
 };
 
 struct LightMapTexture {

@@ -471,7 +471,7 @@ std::vector<LightMapPoint> EntityManager::getLightSources(Point fontSize) const 
             if (b.isEnabled()) {
                 auto radius = fontSize.y * b.getRadius();
                 auto point = fontSize * worldToScreen(entity->getPos()) + fontSize / 2;
-                points.emplace_back(LightMapPoint(point, radius));
+                points.emplace_back(LightMapPoint(point, radius, b.getColor()));
             }
         }
     }
