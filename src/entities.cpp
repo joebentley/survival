@@ -392,6 +392,7 @@ bool FireEntity::RekindleBehaviour::handleInput(SDL_KeyboardEvent &e) {
                 const auto &entities = player->filterInventoryForCraftingMaterials(std::vector<std::string> {"grass", "wood"});
                 player->removeFromInventory(entities[choosingItemIndex]);
                 dynamic_cast<FireEntity&>(parent).fireLevel = 1;
+                NotificationMessageRenderer::getInstance().queueMessage("$[red]Rekindled fire");
                 choosingItemToUse = false;
                 return false;
             }

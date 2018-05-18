@@ -921,8 +921,12 @@ void NotificationMessageRenderer::render(Font &font) {
     for (int i = 0; front != messages.cend() && i < MAX_ON_SCREEN; ++i, ++front) {
         font.drawText(*front, 4, INITIAL_Y_POS - MAX_ON_SCREEN + i, i == 0 ? alpha : -1);
 
-        if (i == 0)
-            alpha -= ALPHA_DECAY_PER_TICK;
+        if (i == 0) {
+            if (messages.size() < MAX_ON_SCREEN)
+                alpha -= ALPHA_DECAY_PER_RENDER_IF_ALL_MESSAGES_ON_SCREEN;
+            else
+                alpha -= ALPHA_DECAY_PER_RENDER_IF_MESSAGES_ARE_WAITING;
+        }
     }
 
     if (alpha <= 0) {
