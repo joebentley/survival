@@ -13,6 +13,30 @@ std::string repeat(int n, const std::string &str) {
     return os.str();
 }
 
+void MessageBoxRenderer::queueMessageBox(const std::vector<std::string> &contents, int padding, int x, int y) {
+    renderingQueue.push_back(MessageBoxData {contents, padding, x, y});
+}
+
+void MessageBoxRenderer::queueMessageBoxCentered(const std::vector<std::string> &contents, int padding) {
+    std::vector<int> lineLengths;
+    std::transform(contents.cbegin(), contents.cend(), std::back_inserter(lineLengths),
+            [] (const auto &a) { return getFontStringLength(a); });
+    const int maxLength = *std::max_element(lineLengths.cbegin(), lineLengths.cend());
+    const int width = maxLength + 2 * padding;
+    const int height = static_cast<int>(contents.size()) + 2 * padding;
+
+    queueMessageBox(contents, padding, (SCREEN_WIDTH - width) / 2, (SCREEN_HEIGHT - height) / 2);
+}
+
+void MessageBoxRenderer::render(Font &font) {
+    while (!renderingQueue.empty()) {
+        auto data = renderingQueue.front();
+        renderingQueue.pop_front();
+
+        showMessageBox(font, data.contents, data.padding, data.x, data.y);
+    }
+}
+
 void showMessageBox(Font &font, const std::vector<std::string> &contents, int padding, int x, int y) {
     int maxNumChars = 0;
 
@@ -42,17 +66,6 @@ void showMessageBox(Font &font, const std::vector<std::string> &contents, int pa
     }
 
     font.drawText("${black}$(p22)" + repeat(innerBoxWidth, "$(p27)") + "$(p10)", x, y+1);
-}
-
-void showMessageBoxCentered(Font &font, const std::vector<std::string> &contents, int padding) {
-    std::vector<int> lineLengths;
-    std::transform(contents.cbegin(), contents.cend(), std::back_inserter(lineLengths),
-        [] (const auto &a) { return getFontStringLength(a); });
-    const int maxLength = *std::max_element(lineLengths.cbegin(), lineLengths.cend());
-    const int width = maxLength + 2 * padding;
-    const int height = static_cast<int>(contents.size()) + 2 * padding;
-
-    showMessageBox(font, contents, padding, (SCREEN_WIDTH - width) / 2, (SCREEN_HEIGHT - height) / 2);
 }
 
 void drawDescriptionScreen(Font& font, Entity& item) {
@@ -330,7 +343,7 @@ void LootingDialog::render(Font &font) {
 
     if (showingTooMuchWeightMessage) {
         const std::string& displayString = "You cannot carry that much!";
-        showMessageBox(font, displayString, 20, 20);
+        MessageBoxRenderer::getInstance().queueMessageBoxCentered(displayString, 1);
     }
 }
 
@@ -450,7 +463,7 @@ void InspectionDialog::render(Font &font) {
 
         lines.emplace_back("");
         lines.emplace_back(" (-)-$(up) (=)-$(down) return-desc");
-        showMessageBox(font, lines, xPosWindow - 1, 2);
+        MessageBoxRenderer::getInstance().queueMessageBox(lines, 1, xPosWindow - 1, 2);
         font.draw("right", xPosWindow + 2 - 1, 2 + 3 + chosenIndex);
         thereIsAnEntity = true;
     } else {
@@ -483,7 +496,7 @@ void InspectionDialog::render(Font &font) {
             *(linesCapped.end() - 1) += "...";
         }
 
-        showMessageBox(font, lines, xPosWindow, 2);
+        MessageBoxRenderer::getInstance().queueMessageBox(lines, 1, xPosWindow, 2);
 
         thereIsAnEntity = true;
     }
@@ -858,7 +871,7 @@ void EquipmentScreen::render(Font &font) {
         else
             lines.emplace_back("$(right)Equip");
 
-        showMessageBox(font, lines, 1, SCREEN_WIDTH / 2 - 10, SCREEN_HEIGHT / 2 - 10);
+        MessageBoxRenderer::getInstance().queueMessageBoxCentered(lines, 1);
     }
 
     if (choosingNewEquipment) {
@@ -881,7 +894,7 @@ void EquipmentScreen::render(Font &font) {
             }
         }
 
-        showMessageBox(font, lines, 1, SCREEN_WIDTH / 2 - 10, SCREEN_HEIGHT / 2 - 10);
+        MessageBoxRenderer::getInstance().queueMessageBoxCentered(lines, 1);
     }
 }
 
@@ -899,4 +912,3 @@ void EquipmentScreen::reset() {
     choosingNewEquipmentIndex = 0;
     choosingEquipmentActionIndex = 0;
 }
-

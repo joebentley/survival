@@ -234,7 +234,7 @@ void PlayerEntity::render(Font &font, Point currentWorldPos) {
 
     if (showingTooMuchWeightMessage) {
         const std::string& displayString = "You cannot carry that much!";
-        showMessageBox(font, displayString, 20, 10);
+        MessageBoxRenderer::getInstance().queueMessageBoxCentered(displayString, 1);
     }
 
     if (interactingWithEntity) {
@@ -402,6 +402,7 @@ bool FireEntity::RekindleBehaviour::handleInput(SDL_KeyboardEvent &e) {
                 const auto &entities = player->filterInventoryForCraftingMaterials(std::vector<std::string> {"grass", "wood"});
                 player->removeFromInventory(entities[choosingItemIndex]);
                 dynamic_cast<FireEntity&>(parent).fireLevel = 1;
+                choosingItemToUse = false;
                 return false;
             }
         case SDLK_ESCAPE:
@@ -417,7 +418,7 @@ bool FireEntity::RekindleBehaviour::handleInput(SDL_KeyboardEvent &e) {
 }
 
 void FireEntity::RekindleBehaviour::render(Font &font) {
-    showMessageBoxCentered(font, "$(right)Rekindle", 1);
+    MessageBoxRenderer::getInstance().queueMessageBoxCentered("$(right)Rekindle", 1);
 
     if (choosingItemToUse) {
         const auto &player = EntityManager::getInstance().getEntityByID("Player");
@@ -435,6 +436,6 @@ void FireEntity::RekindleBehaviour::render(Font &font) {
             displayStrings.emplace_back((i == choosingItemIndex ? "$(right)" : " ") + entity->graphic + " " + entity->name);
         }
 
-        showMessageBoxCentered(font, displayStrings, 1);
+        MessageBoxRenderer::getInstance().queueMessageBoxCentered(displayStrings, 1);
     }
 }

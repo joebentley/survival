@@ -180,9 +180,11 @@ int main(int argc, char* argv[])
                         inspectionDialog.render(font);
 
                     if (player->hp <= 0) {
-                        showMessageBox(font, "$[red]You died!", 10, 10);
+                        MessageBoxRenderer::getInstance().queueMessageBoxCentered("$[red]You died!", 1);
                         font.drawText("${black}press return to quit!", 20, 20);
                     }
+
+                    MessageBoxRenderer::getInstance().render(font);
 
                     totalTime += endTime();
                     frameTimes.push_back(endTime());
