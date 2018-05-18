@@ -129,6 +129,8 @@ int main(int argc, char* argv[])
                 float fps = 60;
 
                 while (!quit) {
+                    beginTime();
+
                     // TODO: Fix random slow input frames
                     while (SDL_PollEvent(&e) != 0) {
                         if (e.type == SDL_QUIT) {
@@ -151,8 +153,6 @@ int main(int argc, char* argv[])
                                                                                   craftingScreen, equipmentScreen);
                         }
                     }
-
-                    beginTime();
 
                     manager.cleanup();
 
