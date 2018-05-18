@@ -9,7 +9,7 @@
 
 #include "texture.h"
 #include "font.h"
-#include "dialog.h"
+#include "UI.h"
 #include "entity.h"
 #include "world.h"
 #include "entities.h"
@@ -186,6 +186,9 @@ int main(int argc, char* argv[])
 
                     MessageBoxRenderer::getInstance().render(font);
 
+                    if (!inventoryScreen.enabled && !craftingScreen.enabled && !equipmentScreen.enabled)
+                        NotificationMessageRenderer::getInstance().render(font);
+
                     totalTime += endTime();
                     frameTimes.push_back(endTime());
 
@@ -195,7 +198,6 @@ int main(int argc, char* argv[])
                     }
 
                     float fps = frameTimes.size() / totalTime;
-
 
                     font.drawText(std::to_string(fps), SCREEN_WIDTH - 5, SCREEN_HEIGHT - 1);
 

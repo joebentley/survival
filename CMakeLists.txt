@@ -6,8 +6,8 @@ file(COPY resources DESTINATION .)
 add_executable(${PROJECT_NAME}
         src/behaviours.cpp
         src/behaviours.h
-        src/dialog.cpp
-        src/dialog.h
+        src/UI.cpp
+        src/UI.h
         src/entities.cpp
         src/entities.h
         src/entity.cpp

@@ -100,7 +100,13 @@ public:
     }
     // Only use the background color, use other colors from text
     int drawText(const std::string &text, int x, int y, Color bColor);
-    // if alpha = -1, don't use it
+
+    /// Draws the text on the screen
+    /// \param text fontstring text to be rendered
+    /// \param x x-coord cell to render in
+    /// \param y y-coord cell to render in
+    /// \param alpha transparency to render foreground color with, use -1 for no transparency
+    /// \return status code
     int drawText(const std::string &text, int x, int y, int alpha);
 
     int getCellWidth() const;

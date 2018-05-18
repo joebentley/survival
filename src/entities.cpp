@@ -244,8 +244,8 @@ void PlayerEntity::render(Font &font, Point currentWorldPos) {
 
 bool PlayerEntity::addToInventory(const std::shared_ptr<Entity> &item) {
     if (Entity::addToInventory(item)) {
-        auto &ui = dynamic_cast<StatusUIEntity&>(*EntityManager::getInstance().getEntityByID("StatusUI"));
-        ui.showLootedItemNotification(item->graphic + " " + item->name);
+        NotificationMessageRenderer::getInstance()
+                .queueMessage("You got a " + item->graphic + " " + item->name + "${transparent}$[white]!");
         return true;
     }
     return false;
@@ -293,11 +293,6 @@ void StatusUIEntity::render(Font &font, Point currentWorldPos) {
         ticksWaitedDuringAnimation = 1;
     }
 
-    if (showLootedItemDisplayTimer-- > 0) {
-        auto alpha = static_cast<int>(static_cast<float>(showLootedItemDisplayTimer) / SHOW_LOOTED_DISPLAY_LENGTH * 0xFF);
-        font.drawText("You got a " + showLootedItemString, 3, SCREEN_HEIGHT - 2, alpha);
-    }
-
     if (attackTarget != nullptr) {
         float enemyhpPercent = attackTarget->hp / attackTarget->maxhp;
         std::string enemyhpString = "${black}";
@@ -341,11 +336,6 @@ void StatusUIEntity::tick() {
     }
 
     Entity::tick();
-}
-
-void StatusUIEntity::showLootedItemNotification(std::string itemString) {
-    showLootedItemString = std::move(itemString);
-    showLootedItemDisplayTimer = SHOW_LOOTED_DISPLAY_LENGTH;
 }
 
 void CatEntity::destroy() {

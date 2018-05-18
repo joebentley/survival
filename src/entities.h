@@ -3,7 +3,7 @@
 
 #include "entity.h"
 #include "behaviours.h"
-#include "dialog.h"
+#include "UI.h"
 
 struct InventoryScreen;
 struct LootingDialog;
@@ -268,16 +268,12 @@ struct BagEntity : Entity {
 
 class StatusUIEntity : public Entity {
     const int FORCE_TICK_DISPLAY_LENGTH {100};
-    const int SHOW_LOOTED_DISPLAY_LENGTH {300};
 
     PlayerEntity& player;
 
     int forceTickDisplayTimer {0};
     int ticksWaitedDuringAnimation {1};
     int attackTargetTimer {0};
-
-    std::string showLootedItemString;
-    int showLootedItemDisplayTimer {0};
 
     std::shared_ptr<Entity> attackTarget { nullptr };
     const int X_OFFSET = 10;
@@ -302,7 +298,7 @@ public:
     void clearAttackTarget() {
         this->attackTarget = nullptr;
     }
-    void showLootedItemNotification(std::string itemString);
+//    void showLootedItemNotification(std::string itemString);
 };
 
 #endif // ENTITIES_H_

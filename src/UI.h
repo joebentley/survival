@@ -45,6 +45,26 @@ private:
     std::deque<MessageBoxData> renderingQueue;
 };
 
+struct NotificationMessageRenderer {
+    static NotificationMessageRenderer& getInstance() {
+        static NotificationMessageRenderer instance;
+        return instance;
+    }
+
+    NotificationMessageRenderer() = default;
+    NotificationMessageRenderer(const NotificationMessageRenderer&) = delete;
+    void operator=(const NotificationMessageRenderer&) = delete;
+
+    void queueMessage(const std::string &message);
+    void render(Font &font);
+private:
+    const int MAX_ON_SCREEN {3};
+    const int INITIAL_Y_POS {SCREEN_HEIGHT - 2};
+    const int ALPHA_DECAY_PER_TICK {4};
+    std::deque<std::string> messages;
+    int alpha {0xFF};
+};
+
 struct PlayerEntity;
 
 struct InventoryScreen {

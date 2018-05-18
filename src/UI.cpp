@@ -1,4 +1,4 @@
-#include "dialog.h"
+#include "UI.h"
 #include "utils.h"
 #include "behaviours.h"
 #include "world.h"
@@ -910,4 +910,23 @@ void EquipmentScreen::reset() {
     choosingEquipmentAction = false;
     choosingNewEquipmentIndex = 0;
     choosingEquipmentActionIndex = 0;
+}
+
+void NotificationMessageRenderer::queueMessage(const std::string &message) {
+    messages.push_back(message);
+}
+
+void NotificationMessageRenderer::render(Font &font) {
+    auto front = messages.cbegin();
+    for (int i = 0; front != messages.cend() && i < MAX_ON_SCREEN; ++i, ++front) {
+        font.drawText(*front, 4, INITIAL_Y_POS - MAX_ON_SCREEN + i, i == 0 ? alpha : -1);
+
+        if (i == 0)
+            alpha -= ALPHA_DECAY_PER_TICK;
+    }
+
+    if (alpha <= 0) {
+        alpha = 0xFF;
+        messages.pop_front();
+    }
 }
