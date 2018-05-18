@@ -21,7 +21,7 @@ struct PlayerEntity : Entity {
 
     explicit PlayerEntity()
             : Entity("Player", "You, the player", "$[white]$(dwarf)", 10, 10, 0.1, 1, 4, 100),
-              hunger(1), hungerRate(0.005), hungerDamageRate(0.1)
+              hunger(1), hungerRate(0.005), hungerDamageRate(0.15)
     {
         renderingLayer = -1;
     }
