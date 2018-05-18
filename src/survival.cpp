@@ -14,9 +14,9 @@
 #include "world.h"
 #include "entities.h"
 
-//Screen dimension constants
 const int WINDOW_WIDTH = CHAR_WIDTH * SCREEN_WIDTH;
 const int WINDOW_HEIGHT = CHAR_HEIGHT * SCREEN_HEIGHT;
+const int MAX_FRAME_RATE = 60;
 
 int main(int argc, char* argv[])
 {
@@ -122,6 +122,7 @@ int main(int argc, char* argv[])
 
                 float totalTime = 0;
                 std::deque<float> frameTimes;
+                float fps = 60;
 
                 while (!quit) {
                     // TODO: Fix random slow input frames
@@ -182,22 +183,30 @@ int main(int argc, char* argv[])
 
                     MessageBoxRenderer::getInstance().render(font);
 
-                    if (!inventoryScreen.enabled && !craftingScreen.enabled && !equipmentScreen.enabled)
+                    if (!inventoryScreen.enabled && !equipmentScreen.enabled)
                         NotificationMessageRenderer::getInstance().render(font);
 
-                    totalTime += endTime();
-                    frameTimes.push_back(endTime());
+                    font.drawText(std::to_string(fps), SCREEN_WIDTH - 5, SCREEN_HEIGHT - 1);
+
+                    SDL_RenderPresent(renderer);
+
+                    // Cap framerate
+                    auto frameTimeBeforeCap = endTime();
+
+                    auto secondsTooFastBy = 1.0/MAX_FRAME_RATE - frameTimeBeforeCap;
+                    if (secondsTooFastBy > 0) {
+                        SDL_Delay(static_cast<Uint32>(secondsTooFastBy * 1000));
+                    }
+
+                    frameTimes.push_back(static_cast<float>(frameTimeBeforeCap + (secondsTooFastBy > 0 ? secondsTooFastBy : 0)));
+                    totalTime += frameTimes.back();
 
                     if (frameTimes.size() > 60) {
                         totalTime -= frameTimes.front();
                         frameTimes.pop_front();
                     }
 
-                    float fps = frameTimes.size() / totalTime;
-
-                    font.drawText(std::to_string(fps), SCREEN_WIDTH - 5, SCREEN_HEIGHT - 1);
-
-                    SDL_RenderPresent(renderer);
+                    fps = frameTimes.size() / totalTime;
                 }
             }
         }
