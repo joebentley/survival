@@ -181,8 +181,8 @@ int main(int argc, char* argv[])
                         inspectionDialog.render(font);
 
                     if (player->hp <= 0) {
-                        MessageBoxRenderer::getInstance().queueMessageBoxCentered("$[red]You died!", 1);
-                        font.drawText("${black}press return to quit!", 20, 20);
+                        MessageBoxRenderer::getInstance().queueMessageBoxCentered(
+                                std::vector<std::string> {"$[red]You died!", "", "Press return to quit"}, 1);
                     }
 
                     MessageBoxRenderer::getInstance().render(font);
