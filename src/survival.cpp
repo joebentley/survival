@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
                 player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
 
                 manager.initialize();
-                manager.setTimeOfDay(Time(3, 0));
+                manager.setTimeOfDay(Time(6, 0));
 
                 // TODO: Tidy up all the screens somehow?
                 InventoryScreen inventoryScreen(*player);

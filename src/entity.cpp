@@ -339,7 +339,7 @@ void EntityManager::initialize() {
     if (gNumInitialisedEntities != entities.size())
         std::cerr << UNMANAGED_ENTITIES_ERROR_MESSAGE << std::endl;
 
-    recomputeCurrentEntitiesOnScreen(getEntityByID("Player")->getWorldPos());
+    recomputeCurrentEntitiesOnScreenAndSurroundingScreens(getEntityByID("Player")->getWorldPos());
     reorderEntities(); // Order the entities by rendering layer
 }
 
@@ -351,9 +351,12 @@ void EntityManager::tick() {
     if (gNumInitialisedEntities != entities.size())
         std::cerr << UNMANAGED_ENTITIES_ERROR_MESSAGE << std::endl;
 
-    for (const auto& entity : entities) {
-        entity.second->tick();
-    }
+    // Only update entities in this screen and surrounding screens
+    // TODO: add special type of entity that always keeps updated e.g. the player's farm
+    for (const auto& ID : currentlyOnScreen)
+        getEntityByID(ID)->tick();
+    for (const auto& ID : inSurroundingScreens)
+        getEntityByID(ID)->tick();
 }
 
 void EntityManager::render(Font &font, Point currentWorldPos, LightMapTexture &lightMapTexture) {
@@ -422,7 +425,7 @@ void EntityManager::queueForDeletion(const std::string &ID) {
 void EntityManager::eraseByID(const std::string &ID) {
     entities.erase(ID);
     --gNumInitialisedEntities;
-    recomputeCurrentEntitiesOnScreen(getEntityByID("Player")->getWorldPos());
+    recomputeCurrentEntitiesOnScreenAndSurroundingScreens(getEntityByID("Player")->getWorldPos());
 }
 
 void EntityManager::reorderEntities() {
@@ -436,11 +439,15 @@ bool EntityManager::isEntityInManager(const std::string &ID) {
     return entities.find(ID) != entities.end();
 }
 
-void EntityManager::recomputeCurrentEntitiesOnScreen(Point currentWorldPos) {
+void EntityManager::recomputeCurrentEntitiesOnScreenAndSurroundingScreens(Point currentWorldPos) {
     currentlyOnScreen.clear();
+    inSurroundingScreens.clear();
     for (const auto &a : entities) {
-        if (a.second->getWorldPos() == currentWorldPos)
+        auto worldPosDiff = a.second->getWorldPos() - currentWorldPos;
+        if (worldPosDiff == Point(0, 0))
             currentlyOnScreen.emplace_back(a.second->ID);
+        else if (std::abs(worldPosDiff.x) <= 1 && std::abs(worldPosDiff.y) <= 1)
+            inSurroundingScreens.emplace_back(a.second->ID);
     }
     reorderEntities();
 }

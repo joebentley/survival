@@ -191,9 +191,9 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
                 if (!moved)
                     return; // Don't tick if didn't move
                 else {
-                    // Check if we moved to a new world coordinate, if so update current entities on world
+                    // Check if we moved to a new world coordinate, if so update current entity lists
                     if (oldWorldPos != getWorldPos())
-                        EntityManager::getInstance().recomputeCurrentEntitiesOnScreen(getWorldPos());
+                        EntityManager::getInstance().recomputeCurrentEntitiesOnScreenAndSurroundingScreens(getWorldPos());
                 }
             }
 

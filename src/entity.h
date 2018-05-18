@@ -234,6 +234,7 @@ class EntityManager {
     std::unordered_map<std::string, std::shared_ptr<Entity>> entities;
     std::queue<std::string> toBeDeleted;
     std::vector<std::string> currentlyOnScreen;
+    std::vector<std::string> inSurroundingScreens;
     std::vector<std::pair<std::string, int>> toRender;
 
     Time timeOfDay;
@@ -267,9 +268,9 @@ public:
 
     bool isEntityInManager(const std::string &ID);
 
-    /// Should be called every time the player changes screen
+    /// Should be called every time the player changes screen. Recomputes current entities on this screen and surrounding screens
     /// \param currentWorldPos current position in world space
-    void recomputeCurrentEntitiesOnScreen(Point currentWorldPos);
+    void recomputeCurrentEntitiesOnScreenAndSurroundingScreens(Point currentWorldPos);
 
     /// Get current time of day
     /// \return time of day
