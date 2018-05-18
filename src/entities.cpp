@@ -4,7 +4,7 @@
 #include <algorithm>
 
 bool PlayerEntity::attack(const Point &attackPos) {
-    auto entitiesInSquare = EntityManager::getInstance().getEntitiesAtPos(attackPos);
+    auto entitiesInSquare = EntityManager::getInstance().getEntitiesAtPosFaster(attackPos);
 
     if (entitiesInSquare.empty()) {
         return false;
@@ -77,7 +77,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
     if (hp > 0) {
         // Handle interaction
         if (key == SDLK_SPACE) {
-            auto entitiesSurrounding = EntityManager::getInstance().getEntitiesSurrounding(pos);
+            auto entitiesSurrounding = EntityManager::getInstance().getEntitiesSurroundingFaster(pos);
 
             // Just use the first interactable entity found
             for (auto &entity : entitiesSurrounding) {
@@ -92,7 +92,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
 
         // Handle looting
         if (key == SDLK_g) {
-            auto entitiesAtPos = EntityManager::getInstance().getEntitiesAtPos(pos);
+            auto entitiesAtPos = EntityManager::getInstance().getEntitiesAtPosFaster(pos);
 
             std::vector<std::shared_ptr<Entity>> entitiesWithInventories;
             std::copy_if(entitiesAtPos.begin(), entitiesAtPos.end(), std::back_inserter(entitiesWithInventories),
@@ -177,7 +177,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
             if (newPos.x < 0 || newPos.y < 0 || newPos.x >= SCREEN_WIDTH * WORLD_WIDTH || newPos.y >= SCREEN_HEIGHT * WORLD_HEIGHT)
                 return;
 
-            auto enemiesInSpace = EntityManager::getInstance().getEntitiesAtPos(pos + posOffset);
+            auto enemiesInSpace = EntityManager::getInstance().getEntitiesAtPosFaster(pos + posOffset);
             // TODO: what if more than one enemy in space?
             if (!enemiesInSpace.empty()
                 && ((enemiesInSpace[0]->getBehaviourByID("HostilityBehaviour") != nullptr

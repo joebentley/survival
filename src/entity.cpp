@@ -169,7 +169,7 @@ Point Entity::getPos() const {
 }
 
 bool Entity::moveTo(Point p) {
-    auto entities = EntityManager::getInstance().getEntitiesAtPos(p);
+    auto entities = EntityManager::getInstance().getEntitiesAtPosFaster(p);
 
     // Check if there is a solid object in space
     if (std::find_if(entities.cbegin(), entities.cend(), [] (auto &a) { return a->isSolid; }) == entities.cend()) {
@@ -322,9 +322,9 @@ void EntityManager::addEntity(std::shared_ptr<Entity> entity) {
 
     entities[entity->ID] = entity;
 
-    // Make sure new entities trigger a refresh of the render order list
+    // Make sure new entities trigger a refresh of the render order list and entity caches
     if (!toRender.empty())
-        reorderEntities();
+        recomputeCurrentEntitiesOnScreenAndSurroundingScreens(getEntityByID("Player")->getWorldPos());
 }
 
 void EntityManager::broadcast(Uint32 signal) {
@@ -340,7 +340,6 @@ void EntityManager::initialize() {
         std::cerr << UNMANAGED_ENTITIES_ERROR_MESSAGE << std::endl;
 
     recomputeCurrentEntitiesOnScreenAndSurroundingScreens(getEntityByID("Player")->getWorldPos());
-    reorderEntities(); // Order the entities by rendering layer
 }
 
 void EntityManager::tick() {
@@ -398,6 +397,22 @@ std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesAtPos(const Point
     return entitiesAtPos;
 }
 
+std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesAtPosFaster(const Point &pos) const {
+    std::vector<std::shared_ptr<Entity>> entitiesAtPos;
+
+    // TODO: remove ugly double loop
+    for (const auto& ID : inSurroundingScreens) {
+        if (getEntityByID(ID)->getPos() == pos)
+            entitiesAtPos.push_back(getEntityByID(ID));
+    }
+    for (const auto& ID : currentlyOnScreen) {
+        if (getEntityByID(ID)->getPos() == pos)
+            entitiesAtPos.push_back(getEntityByID(ID));
+    }
+
+    return entitiesAtPos;
+}
+
 std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesSurrounding(const Point &pos) const {
     std::vector<std::shared_ptr<Entity>> entitiesSurrounding;
     const std::vector<Point> surroundingPoints { pos + Point(-1, 0), pos + Point(1, 0), pos + Point(0, -1), pos + Point(0, 1),
@@ -406,6 +421,24 @@ std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesSurrounding(const
     for (const auto& entity : entities) {
         if (std::find(surroundingPoints.cbegin(), surroundingPoints.cend(), entity.second->getPos()) != surroundingPoints.cend())
             entitiesSurrounding.emplace_back(entity.second);
+    }
+
+    return entitiesSurrounding;
+}
+
+std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesSurroundingFaster(const Point &pos) const {
+    std::vector<std::shared_ptr<Entity>> entitiesSurrounding;
+    const std::vector<Point> surroundingPoints { pos + Point(-1, 0), pos + Point(1, 0), pos + Point(0, -1), pos + Point(0, 1),
+                                                 pos + Point(-1, -1), pos + Point(-1, 1), pos + Point(1, -1), pos + Point(1, 1)};
+
+    // TODO: remove ugly double loop
+    for (const auto& ID : inSurroundingScreens) {
+        if (std::find(surroundingPoints.cbegin(), surroundingPoints.cend(), getEntityByID(ID)->getPos()) != surroundingPoints.cend())
+            entitiesSurrounding.emplace_back(getEntityByID(ID));
+    }
+    for (const auto& ID : currentlyOnScreen) {
+        if (std::find(surroundingPoints.cbegin(), surroundingPoints.cend(), getEntityByID(ID)->getPos()) != surroundingPoints.cend())
+            entitiesSurrounding.emplace_back(getEntityByID(ID));
     }
 
     return entitiesSurrounding;

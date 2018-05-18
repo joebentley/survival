@@ -263,8 +263,26 @@ public:
     std::shared_ptr<Entity> getEntityByID(const std::string &ID) const;
     void queueForDeletion(const std::string &ID);
     void eraseByID(const std::string &ID);
+
+    /// Find entities at point `pos` WARNING SLOW (reads every entity)
+    /// \param pos position to look at
+    /// \return vector of shared pointers at pos
     std::vector<std::shared_ptr<Entity>> getEntitiesAtPos(const Point& pos) const;
+
+    /// Find entities at point `pos` searching only entities on the surrounding screens of player
+    /// \param pos position to look at
+    /// \return vector of shared pointers at pos
+    std::vector<std::shared_ptr<Entity>> getEntitiesAtPosFaster(const Point& pos) const;
+
+    /// Find entities surrounding point `pos` WARNING SLOW (reads every entity)
+    /// \param pos position to look around
+    /// \return vector of shared pointers to entities surrounding pos
     std::vector<std::shared_ptr<Entity>> getEntitiesSurrounding(const Point& pos) const;
+
+    /// Find entities surrounding point `pos` searching only entities on the surrounding screens of player
+    /// \param pos position to look around
+    /// \return vector of shared pointers to entities surrounding pos
+    std::vector<std::shared_ptr<Entity>> getEntitiesSurroundingFaster(const Point& pos) const;
 
     bool isEntityInManager(const std::string &ID);
 

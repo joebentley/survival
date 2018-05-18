@@ -399,7 +399,7 @@ void InspectionDialog::handleInput(SDL_KeyboardEvent &e) {
             break;
         case SDLK_EQUALS:
             if (selectingFromMultipleOptions && !viewingDescription) {
-                const auto &currentEntities = EntityManager::getInstance().getEntitiesAtPos(chosenPoint);
+                const auto &currentEntities = EntityManager::getInstance().getEntitiesAtPosFaster(chosenPoint);
                 if (chosenIndex == currentEntities.size() - 1)
                     chosenIndex = 0;
                 else
@@ -408,7 +408,7 @@ void InspectionDialog::handleInput(SDL_KeyboardEvent &e) {
             break;
         case SDLK_MINUS:
             if (selectingFromMultipleOptions && !viewingDescription) {
-                const auto &currentEntities = EntityManager::getInstance().getEntitiesAtPos(chosenPoint);
+                const auto &currentEntities = EntityManager::getInstance().getEntitiesAtPosFaster(chosenPoint);
                 if (chosenIndex == 0)
                     chosenIndex = (int)(currentEntities.size() - 1);
                 else
@@ -436,7 +436,7 @@ void InspectionDialog::handleInput(SDL_KeyboardEvent &e) {
 }
 
 void InspectionDialog::render(Font &font) {
-    const auto &entitiesAtPointBefore = EntityManager::getInstance().getEntitiesAtPos(chosenPoint);
+    const auto &entitiesAtPointBefore = EntityManager::getInstance().getEntitiesAtPosFaster(chosenPoint);
     std::vector<std::shared_ptr<Entity>> entitiesAtPoint;
 
     std::copy_if(entitiesAtPointBefore.cbegin(), entitiesAtPointBefore.cend(), std::back_inserter(entitiesAtPoint),
@@ -646,7 +646,7 @@ void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
 
 void CraftingScreen::tryToBuildAtPosition(Point posOffset) {
     auto p = posOffset + player.getPos();
-    if (EntityManager::getInstance().getEntitiesAtPos(p).empty()) {
+    if (EntityManager::getInstance().getEntitiesAtPosFaster(p).empty()) {
         haveChosenPositionInWorld = true;
         buildItem(p);
     } else {
