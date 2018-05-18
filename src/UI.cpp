@@ -724,11 +724,6 @@ void CraftingScreen::render(Font &font, World &world, LightMapTexture &lightMapT
                 font.drawText(material->graphic + " " + material->name, xOffset + 24, yOffset + i);
         }
     }
-
-    if (createdMessageTimer-- > 0) {
-        auto alpha = static_cast<int>(static_cast<float>(createdMessageTimer) / SHOW_CREATED_DISPLAY_LENGTH * 0xFF);
-        font.drawText("You created a " + createdMessage, 3, SCREEN_HEIGHT - 2, alpha);
-    }
 }
 
 std::vector<std::shared_ptr<Entity>> CraftingScreen::filterInventoryForChosenMaterials() {
@@ -782,8 +777,8 @@ void CraftingScreen::buildItem(Point pos) {
         player.removeFromInventory(ID);
         EntityManager::getInstance().eraseByID(ID);
     }
-    createdMessage = currentRecipe->nameOfProduct;
-    createdMessageTimer = SHOW_CREATED_DISPLAY_LENGTH;
+
+    NotificationMessageRenderer::getInstance().queueMessage("Created " + recipe->nameOfProduct);
 }
 
 void CraftingScreen::enable() {

@@ -145,17 +145,12 @@ private:
         MATERIAL
     };
 
-    const int SHOW_CREATED_DISPLAY_LENGTH = 2000;
-
     int chosenRecipe {0};
     int chosenIngredient {0};
     int chosenMaterial {0};
     PlayerEntity &player;
     CraftingLayer layer {CraftingLayer::RECIPE};
     std::unique_ptr<Recipe> currentRecipe {nullptr};
-
-    std::string createdMessage;
-    int createdMessageTimer {0};
 
     bool choosingPositionInWorld {false};
     bool haveChosenPositionInWorld {false};
