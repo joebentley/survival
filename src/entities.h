@@ -66,6 +66,8 @@ struct WolfEntity : Entity {
         chaseAndAttack->disable();
         addBehaviour(chaseAndAttack);
         addBehaviour(std::make_shared<HostilityBehaviour>(*this, 12, 0.95));
+
+        shortDesc = "A terrifying looking beast!";
     }
 
     void destroy() override;

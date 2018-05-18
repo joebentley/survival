@@ -14,7 +14,9 @@ bool PlayerEntity::attack(const Point &attackPos) {
     int damage = rollDamage();
     enemy->hp -= damage;
 
-    std::cout << "Player hit " << enemy->name << " with " << hitTimes << "d" << hitAmount << " for " << damage << "\n";
+    NotificationMessageRenderer::getInstance().queueMessage(
+            "$(dwarf) hit " + enemy->graphic + " " + enemy->name + "$[white] with $[red]$(heart)$[white]" + std::to_string(hitTimes) +
+            "d" + std::to_string(hitAmount) + " for " + std::to_string(damage));
 
     // TODO: Add AV
     // TODO: Add avoidance
@@ -34,8 +36,7 @@ bool PlayerEntity::attack(const Point &attackPos) {
         ui.clearAttackTarget();
         EntityManager::getInstance().queueForDeletion(enemy->ID);
         attacking = false;
-        std::cout << enemy->name << " was destroyed!" << "\n";
-
+        NotificationMessageRenderer::getInstance().queueMessage(enemy->graphic + " " + enemy->name + "$[white] was ${black}$[red]destroyed!");
         return false;
     }
 

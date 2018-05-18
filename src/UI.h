@@ -58,7 +58,7 @@ struct NotificationMessageRenderer {
     void queueMessage(const std::string &message);
     void render(Font &font);
 private:
-    const int MAX_ON_SCREEN {3};
+    const int MAX_ON_SCREEN {5};
     const int INITIAL_Y_POS {SCREEN_HEIGHT - 2};
     const int ALPHA_DECAY_PER_RENDER_IF_ALL_MESSAGES_ON_SCREEN {2};
     const int ALPHA_DECAY_PER_RENDER_IF_MESSAGES_ARE_WAITING {4};

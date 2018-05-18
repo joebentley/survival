@@ -41,13 +41,13 @@ void WanderBehaviour::tick() {
 }
 
 void AttachmentBehaviour::tick() {
-    float r = randDouble();
+    auto r = randDouble();
 
     if (!attached) {
         if (r < attachment) {
             PlayerEntity& p = dynamic_cast<PlayerEntity&>(*EntityManager::getInstance().getEntityByID("Player"));
             if (parent.getPos().distanceTo(p.getPos()) < 10) {
-                std::cout << parent.name << " has attached itself to player!" << std::endl;
+                NotificationMessageRenderer::getInstance().queueMessage(parent.graphic + "$[red]$(heart)$[white]$(dwarf)");
                 attached = true;
             }
         }
@@ -72,7 +72,6 @@ void AttachmentBehaviour::tick() {
     parent.moveTo(pos);
 
     if (r < unattachment) {
-        std::cout << parent.name << " has detached itself from player!" << std::endl;
         attached = false;
         return;
     }
@@ -124,7 +123,9 @@ void ChaseAndAttackBehaviour::tick() {
 
     int damage = parent.rollDamage();
     player.hp -= damage;
-    std::cout << parent.name << " hit player with " << parent.hitTimes << "d" << parent.hitAmount << " for " << damage << "\n";
+
+    NotificationMessageRenderer::getInstance().queueMessage(
+            parent.graphic + " " + parent.name + " $[white]hit you for ${black}$[red]" + std::to_string(damage));
 }
 
 void HostilityBehaviour::tick() {
