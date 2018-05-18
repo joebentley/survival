@@ -245,7 +245,7 @@ std::vector<std::string> Entity::getInventoryItemsEquippableInSlot(EquipmentSlot
     std::copy_if(inventory.cbegin(), inventory.cend(), std::back_inserter(IDs), [slot] (auto &ID)
     {
         auto e = EntityManager::getInstance().getEntityByID(ID);
-        if (e->hasBehaviour("EquippableBehaviour")) {
+        if (!e->isEquipped && e->hasBehaviour("EquippableBehaviour")) {
             auto &b = dynamic_cast<EquippableBehaviour&>(*e->getBehaviourByID("EquippableBehaviour"));
             return b.isEquippableInSlot(slot);
         }
