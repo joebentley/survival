@@ -67,7 +67,7 @@ void World::randomizeWorld()
             continue;
         }
 
-        if (randFloat() < 0.001) {
+        if (randFloat() < 0.0005) {
             auto bug = std::make_shared<GlowbugEntity>();
             bug->setPos(p);
             manager.addEntity(bug);
