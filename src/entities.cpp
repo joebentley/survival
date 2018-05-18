@@ -73,6 +73,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
             entityInteractingWith = nullptr;
             interactingWithEntity = false;
         }
+        return;
     }
 
     if (hp > 0) {
@@ -390,6 +391,28 @@ void GrassEntity::render(Font &font, Point currentWorldPos) {
 
 bool FireEntity::RekindleBehaviour::handleInput(SDL_KeyboardEvent &e) {
     switch (e.keysym.sym) {
+        case SDLK_j:
+            if (choosingItemToUse) {
+                const auto &player = EntityManager::getInstance().getEntityByID("Player");
+                const auto &entities = player->filterInventoryForCraftingMaterials(std::vector<std::string> {"grass", "wood"});
+
+                if (choosingItemIndex == entities.size() - 1)
+                    choosingItemIndex = 0;
+                else
+                    ++choosingItemIndex;
+            }
+            break;
+        case SDLK_k:
+            if (choosingItemToUse) {
+                const auto &player = EntityManager::getInstance().getEntityByID("Player");
+                const auto &entities = player->filterInventoryForCraftingMaterials(std::vector<std::string> {"grass", "wood"});
+
+                if (choosingItemIndex == 0)
+                    choosingItemIndex = static_cast<int>(entities.size()) - 1;
+                else
+                    ++choosingItemIndex;
+            }
+            break;
         case SDLK_RETURN:
             if (!choosingItemToUse) {
                 choosingItemToUse = true;
