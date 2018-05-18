@@ -256,10 +256,10 @@ void LootingDialog::showItemsToLoot(std::vector<std::shared_ptr<Entity>> items, 
 void LootingDialog::handleInput(SDL_KeyboardEvent &e) {
     switch (e.keysym.sym) {
         case SDLK_ESCAPE:
-            if (viewingDescription)
-                viewingDescription = false;
-            else if (showingTooMuchWeightMessage)
+            if (showingTooMuchWeightMessage)
                 showingTooMuchWeightMessage = false;
+            else if (viewingDescription)
+                viewingDescription = false;
             else {
                 enabled = false;
                 entityToTransferFrom = nullptr;
@@ -303,6 +303,11 @@ void LootingDialog::handleInput(SDL_KeyboardEvent &e) {
 }
 
 void LootingDialog::render(Font &font) {
+    if (showingTooMuchWeightMessage) {
+        const std::string& displayString = "You cannot carry that much!";
+        MessageBoxRenderer::getInstance().queueMessageBoxCentered(displayString, 1);
+    }
+
     if (viewingDescription) {
         drawDescriptionScreen(font, *itemsToShow[chosenIndex]);
         return;
@@ -339,12 +344,6 @@ void LootingDialog::render(Font &font) {
     std::string string = "g-loot  esc-quit  return-desc";
     font.drawText("${black}$(p8)  " + string + std::string(DIALOG_WIDTH - string.size() + 2, ' ') + "$(p8)", x, y+numItems+3);
     font.drawText("${black}$(p22)" + repeat(DIALOG_WIDTH + 4, "$(p27)") + "$(p10)", x, y+numItems+4);
-
-
-    if (showingTooMuchWeightMessage) {
-        const std::string& displayString = "You cannot carry that much!";
-        MessageBoxRenderer::getInstance().queueMessageBoxCentered(displayString, 1);
-    }
 }
 
 inline Point InspectionDialog::clipToScreenEdge(const Point &p) const {
