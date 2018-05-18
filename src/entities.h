@@ -57,6 +57,20 @@ struct CatEntity : Entity {
     void destroy() override;
 };
 
+struct WolfEntity : Entity {
+    explicit WolfEntity(std::string ID = "")
+            : Entity(std::move(ID), "Wolf", "${black}$[red]W", 20, 20, 0.05, 1, 4, 100)
+    {
+        addBehaviour(std::make_shared<WanderBehaviour>(*this));
+        auto chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this, 0.8, 0.6, 8, 8, 0.9);
+        chaseAndAttack->disable();
+        addBehaviour(chaseAndAttack);
+        addBehaviour(std::make_shared<HostilityBehaviour>(*this, 12, 0.95));
+    }
+
+    void destroy() override;
+};
+
 struct GlowbugEntity : Entity {
     explicit GlowbugEntity(std::string ID = "")
             : Entity(std::move(ID), "Glowbug", "$[green]`", 10, 10, 0.05)

@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-float randFloat();
+double randDouble();
 std::vector<std::string> wordWrap(const std::string &toBeWrapped, size_t columns);
 
 void beginTime();

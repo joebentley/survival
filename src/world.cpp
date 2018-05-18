@@ -44,7 +44,7 @@ void World::randomizeWorld()
         Point p(worldX * SCREEN_WIDTH + x, worldY * SCREEN_HEIGHT + y);
 
         // Random chance of creating a bush
-        if (randFloat() < 0.002) {
+        if (randDouble() < 0.002) {
             auto bush = std::make_shared<BushEntity>("bush" + std::to_string(++numBushes));
             bush->setPos(p);
             manager.addEntity(bush);
@@ -52,7 +52,7 @@ void World::randomizeWorld()
         }
 
         // Random chance of creating a twig
-        if (randFloat() < 0.002) {
+        if (randDouble() < 0.002) {
             auto twig = std::make_shared<TwigEntity>("twig" + std::to_string(++numTwigs));
             twig->setPos(p);
             manager.addEntity(twig);
@@ -60,17 +60,24 @@ void World::randomizeWorld()
         }
 
         // Random chance of creating grass
-        if (randFloat() < 0.002) {
+        if (randDouble() < 0.002) {
             auto grass = std::make_shared<GrassEntity>("grass" + std::to_string(++numGrass));
             grass->setPos(p);
             manager.addEntity(grass);
             continue;
         }
 
-        if (randFloat() < 0.0005) {
+        if (randDouble() < 0.0005) {
             auto bug = std::make_shared<GlowbugEntity>();
             bug->setPos(p);
             manager.addEntity(bug);
+            continue;
+        }
+
+        if (randDouble() < 0.00025) {
+            auto wolf = std::make_shared<WolfEntity>();
+            wolf->setPos(p);
+            manager.addEntity(wolf);
             continue;
         }
     }

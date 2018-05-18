@@ -1,8 +1,8 @@
 #include "utils.h"
 #include <cstdlib>
 
-float randFloat() {
-    return static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+double randDouble() {
+    return static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
 }
 
 std::vector<std::string> wordWrap(const std::string &toBeWrapped, size_t columns) {

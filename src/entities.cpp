@@ -344,6 +344,12 @@ void CatEntity::destroy() {
     EntityManager::getInstance().addEntity(corpse);
 }
 
+void WolfEntity::destroy() {
+    auto corpse = std::make_shared<CorpseEntity>(ID + "corpse", 0.4, name, 100);
+    corpse->setPos(getPos());
+    EntityManager::getInstance().addEntity(corpse);
+}
+
 void BushEntity::render(Font &font, Point currentWorldPos) {
     if (!isInventoryEmpty()) {
         graphic = "${black}$[purple]$(div)";

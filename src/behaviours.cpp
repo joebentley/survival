@@ -41,7 +41,7 @@ void WanderBehaviour::tick() {
 }
 
 void AttachmentBehaviour::tick() {
-    float r = randFloat();
+    float r = randDouble();
 
     if (!attached) {
         if (r < attachment) {
@@ -96,7 +96,7 @@ void ChaseAndAttackBehaviour::tick() {
 
     if (parent.getPos() + posOffset != player.getPos()) {
         if (parent.getPos().distanceTo(player.getPos()) > range) {
-            float r = randFloat();
+            float r = randDouble();
             if (r < unattachment) { // Stop attacking if far away
                 enabled = false;
                 if (parent.getBehaviourByID("WanderBehaviour") != nullptr) {
@@ -117,7 +117,7 @@ void ChaseAndAttackBehaviour::tick() {
             }
         }
 
-        if (randFloat() < clinginess)
+        if (randDouble() < clinginess)
             parent.moveTo(parent.getPos() + posOffset);
         return;
     }
@@ -132,9 +132,9 @@ void HostilityBehaviour::tick() {
     auto player = EntityManager::getInstance().getEntityByID("Player");
 
     if (chaseAndAttack != nullptr && !chaseAndAttack->isEnabled() && player != nullptr
-        && parent.getPos().distanceTo(player->getPos()) < range && randFloat() < hostility)
+        && parent.getPos().distanceTo(player->getPos()) < range && randDouble() < hostility)
     {
-        std::cout << parent.name << " became hostile!\n";
+        NotificationMessageRenderer::getInstance().queueMessage("${black}The $[red]" + parent.name + " $[white]went $[red]feral!");
         chaseAndAttack->enable();
     }
 }

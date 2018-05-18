@@ -46,7 +46,7 @@ struct WanderAttachBehaviour : Behaviour {
             return;
         }
 
-        float r = randFloat();
+        float r = randDouble();
 
         // If attached, wander OR follow not both at once
         if (attach.attached) {
@@ -77,10 +77,15 @@ struct ChaseAndAttackBehaviour : Behaviour {
 
 struct HostilityBehaviour : Behaviour {
     HostilityBehaviour(Entity& parent, float range, float hostility)
-        : Behaviour("HostilityBehaviour", parent), range(range), hostility(hostility) {}
+        : Behaviour("HostilityBehaviour", parent), range(range), hostility(hostility)
+    {
+        if (!parent.hasBehaviour("ChaseAndAttackBehaviour"))
+            throw std::invalid_argument("Error: HostilityBehaviour cannot be added to entity with ID " + parent.ID
+                                        + " as it does not have a ChaseAndAttackBehaviour");
+    }
 
     float range;
-    float hostility;
+    float hostility; // in [0, 1]
     void tick() override;
 };
 
