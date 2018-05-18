@@ -100,10 +100,6 @@ int main(int argc, char* argv[])
                 auto statusUI = std::make_shared<StatusUIEntity>(dynamic_cast<PlayerEntity&>(*player));
                 manager.addEntity(statusUI);
 
-                auto fire = std::make_shared<FireEntity>();
-                manager.addEntity(fire);
-                fire->setPos(player->getPos() + Point(0, -1));
-
                 player->Entity::addToInventory(std::make_shared<TwigEntity>());
                 player->Entity::addToInventory(std::make_shared<TwigEntity>());
                 player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
@@ -112,7 +108,7 @@ int main(int argc, char* argv[])
                 player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
 
                 manager.initialize();
-                manager.setTimeOfDay(Time(0, 0));
+                manager.setTimeOfDay(Time(6, 0));
 
                 // TODO: Tidy up all the screens somehow?
                 InventoryScreen inventoryScreen(*player);
