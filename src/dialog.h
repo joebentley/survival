@@ -15,8 +15,10 @@ inline void showMessageBox(Font& font, const std::vector<std::string> &contents,
 inline void showMessageBox(Font& font, const std::string &message, int x, int y) {
     showMessageBox(font, std::vector<std::string>{message}, 1, x, y);
 }
-
-//void inventoryScreen(Font& font, Entity &player, SDL_KeyboardEvent &e, bool &inventoryScreen);
+void showMessageBoxCentered(Font& font, const std::vector<std::string> &contents, int padding);
+inline void showMessageBoxCentered(Font& font, const std::string &message, int padding) {
+    showMessageBoxCentered(font, std::vector<std::string>{message}, padding);
+}
 
 struct PlayerEntity;
 

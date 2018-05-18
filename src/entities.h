@@ -35,6 +35,10 @@ struct PlayerEntity : Entity {
     bool addToInventory(const std::shared_ptr<Entity> &item) override;
 
     void addHunger(float hunger);
+
+private:
+    bool interactingWithEntity {false};
+    std::shared_ptr<Entity> entityInteractingWith {nullptr};
 };
 
 // AI entities
@@ -201,12 +205,27 @@ struct GrassTuftEntity : Entity {
 // Misc entities
 
 struct FireEntity : Entity {
+    struct RekindleBehaviour : InteractableBehaviour {
+        explicit RekindleBehaviour(Entity& parent) : InteractableBehaviour(parent) {}
+
+        bool handleInput(SDL_KeyboardEvent &e) override;
+        void render(Font &font) override;
+
+    private:
+        bool choosingItemToUse {false};
+        int choosingItemIndex {0};
+    };
+
     explicit FireEntity(std::string ID = "") : Entity(std::move(ID), "Fire", "") {
         isSolid = true;
         addBehaviour(std::make_shared<LightEmittingBehaviour>(*this, 6));
+        addBehaviour(std::make_shared<RekindleBehaviour>(*this));
     }
 
     void render(Font &font, Point currentWorldPos) override;
+    void tick() override;
+
+    float fireLevel {1};
 };
 
 struct TorchEntity : Entity {

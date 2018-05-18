@@ -44,6 +44,17 @@ void showMessageBox(Font &font, const std::vector<std::string> &contents, int pa
     font.drawText("${black}$(p22)" + repeat(innerBoxWidth, "$(p27)") + "$(p10)", x, y+1);
 }
 
+void showMessageBoxCentered(Font &font, const std::vector<std::string> &contents, int padding) {
+    std::vector<int> lineLengths;
+    std::transform(contents.cbegin(), contents.cend(), std::back_inserter(lineLengths),
+        [] (const auto &a) { return getFontStringLength(a); });
+    const int maxLength = *std::max_element(lineLengths.cbegin(), lineLengths.cend());
+    const int width = maxLength + 2 * padding;
+    const int height = static_cast<int>(contents.size()) + 2 * padding;
+
+    showMessageBox(font, contents, padding, (SCREEN_WIDTH - width) / 2, (SCREEN_HEIGHT - height) / 2);
+}
+
 void drawDescriptionScreen(Font& font, Entity& item) {
     font.drawText(item.graphic + " " + item.name, InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET);
     font.drawText(item.shortDesc, InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 2);

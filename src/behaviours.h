@@ -207,4 +207,12 @@ private:
     std::vector<EquipmentSlot> equippableSlots;
 };
 
+struct InteractableBehaviour : Behaviour {
+    explicit InteractableBehaviour(Entity &parent)
+            : Behaviour("InteractableBehaviour", parent) {}
+
+    virtual bool handleInput(SDL_KeyboardEvent &e) = 0;
+    virtual void render(Font &font) = 0;
+};
+
 #endif // BEHAVIOURS_H_

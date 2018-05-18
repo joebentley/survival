@@ -66,20 +66,29 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
         return;
     }
 
+    if (interactingWithEntity) {
+        auto b = entityInteractingWith->getBehaviourByID("InteractableBehaviour");
+        if (!dynamic_cast<InteractableBehaviour&>(*b).handleInput(e)) {
+            entityInteractingWith = nullptr;
+            interactingWithEntity = false;
+        }
+    }
+
     if (hp > 0) {
-        // Handle eating from ground
-//        if (key == SDLK_e) {
-//            auto entitiesAtPos = EntityManager::getInstance().getEntitiesAtPos(pos);
-//            auto it = std::find_if(entitiesAtPos.begin(), entitiesAtPos.end(),
-//                                   [](auto &a) { return a->hasBehaviour("EatableBehaviour"); });
-//            if (it == entitiesAtPos.end())
-//                return;
-//            else {
-//                EntityManager::getInstance().queueForDeletion((*it)->ID);
-//                addHunger(dynamic_cast<EatableBehaviour&>(*((*it)->getBehaviourByID("EatableBehaviour"))).hungerRestoration);
-//                didAction = true;
-//            }
-//        }
+        // Handle interaction
+        if (key == SDLK_SPACE) {
+            auto entitiesSurrounding = EntityManager::getInstance().getEntitiesSurrounding(pos);
+
+            // Just use the first interactable entity found
+            for (auto &entity : entitiesSurrounding) {
+                auto b = entity->getBehaviourByID("InteractableBehaviour");
+
+                if (b != nullptr) {
+                    interactingWithEntity = true;
+                    entityInteractingWith = entity;
+                }
+            }
+        }
 
         // Handle looting
         if (key == SDLK_g) {
@@ -211,10 +220,10 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
 
         if (key == SDLK_e)
             equipmentScreen.enable();
-
-        if (didAction)
-            EntityManager::getInstance().tick();
     }
+
+    if (didAction)
+        EntityManager::getInstance().tick();
 
     if (hp <= 0 && key == SDLK_RETURN)
         quit = true;
@@ -226,6 +235,10 @@ void PlayerEntity::render(Font &font, Point currentWorldPos) {
     if (showingTooMuchWeightMessage) {
         const std::string& displayString = "You cannot carry that much!";
         showMessageBox(font, displayString, 20, 10);
+    }
+
+    if (interactingWithEntity) {
+        dynamic_cast<InteractableBehaviour&>(*entityInteractingWith->getBehaviourByID("InteractableBehaviour")).render(font);
     }
 }
 
@@ -352,12 +365,20 @@ void BushEntity::render(Font &font, Point currentWorldPos) {
 }
 
 void FireEntity::render(Font &font, Point currentWorldPos) {
-    if (rand() % 2 == 0)
+    if (fireLevel < 0.1)
+        graphic = "${black}$[grey]%";
+    else if (rand() % 2 == 0)
         graphic = "${black}$[red]%";
     else
         graphic = "${black}$[orange]%";
 
+    dynamic_cast<LightEmittingBehaviour&>(*getBehaviourByID("LightEmittingBehaviour")).setRadius(static_cast<int>(std::round(6 * fireLevel)));
+
     Entity::render(font, currentWorldPos);
+}
+
+void FireEntity::tick() {
+    fireLevel -= 0.005;
 }
 
 void GrassEntity::render(Font &font, Point currentWorldPos) {
@@ -368,4 +389,52 @@ void GrassEntity::render(Font &font, Point currentWorldPos) {
     }
 
     Entity::render(font, currentWorldPos);
+}
+
+bool FireEntity::RekindleBehaviour::handleInput(SDL_KeyboardEvent &e) {
+    switch (e.keysym.sym) {
+        case SDLK_RETURN:
+            if (!choosingItemToUse) {
+                choosingItemToUse = true;
+                break;
+            } else {
+                const auto &player = EntityManager::getInstance().getEntityByID("Player");
+                const auto &entities = player->filterInventoryForCraftingMaterials(std::vector<std::string> {"grass", "wood"});
+                player->removeFromInventory(entities[choosingItemIndex]);
+                dynamic_cast<FireEntity&>(parent).fireLevel = 1;
+                return false;
+            }
+        case SDLK_ESCAPE:
+            if (choosingItemToUse) {
+                choosingItemToUse = false;
+                choosingItemIndex = 0;
+                break;
+            } else
+                return false;
+    }
+
+    return true;
+}
+
+void FireEntity::RekindleBehaviour::render(Font &font) {
+    showMessageBoxCentered(font, "$(right)Rekindle", 1);
+
+    if (choosingItemToUse) {
+        const auto &player = EntityManager::getInstance().getEntityByID("Player");
+        const auto &entities = player->filterInventoryForCraftingMaterials(std::vector<std::string> {"grass", "wood"});
+
+        if (entities.empty()) {
+            choosingItemToUse = false;
+            return;
+        }
+
+        std::vector<std::string> displayStrings;
+
+        for (int i = 0; i < entities.size(); ++i) {
+            const auto &entity = EntityManager::getInstance().getEntityByID(entities[i]);
+            displayStrings.emplace_back((i == choosingItemIndex ? "$(right)" : " ") + entity->graphic + " " + entity->name);
+        }
+
+        showMessageBoxCentered(font, displayStrings, 1);
+    }
 }

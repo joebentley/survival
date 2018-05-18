@@ -293,6 +293,29 @@ int Entity::getMaxCarryWeight() const {
     return maxCarryWeight;
 }
 
+inline std::vector<std::string> Entity::filterInventoryForCraftingMaterial(std::string materialType) const {
+    return filterInventoryForCraftingMaterials(std::vector<std::string> {std::move(materialType)});
+}
+
+std::vector<std::string> Entity::filterInventoryForCraftingMaterials(const std::vector<std::string> &materialTypes) const {
+    std::vector<std::string> materialIDs;
+
+    std::copy_if(inventory.cbegin(), inventory.cend(), std::back_inserter(materialIDs),
+    [materialTypes] (const auto &ID) {
+        auto entity = EntityManager::getInstance().getEntityByID(ID);
+        auto b = entity->getBehaviourByID("CraftingMaterialBehaviour");
+        if (b != nullptr) {
+            if (std::find(materialTypes.cbegin(), materialTypes.cend(),
+                    dynamic_cast<CraftingMaterialBehaviour&>(*b).type) != materialTypes.cend()) {
+                return true;
+            }
+        }
+        return false;
+    });
+
+    return materialIDs;
+}
+
 void EntityManager::addEntity(std::shared_ptr<Entity> entity) {
     if (getEntityByID(entity->ID) != nullptr)
         throw std::invalid_argument("Entity with ID " + entity->ID + " already present!");
@@ -370,6 +393,19 @@ std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesAtPos(const Point
     }
 
     return entitiesAtPos;
+}
+
+std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesSurrounding(const Point &pos) const {
+    std::vector<std::shared_ptr<Entity>> entitiesSurrounding;
+    const std::vector<Point> surroundingPoints { pos + Point(-1, 0), pos + Point(1, 0), pos + Point(0, -1), pos + Point(0, 1),
+                                                 pos + Point(-1, -1), pos + Point(-1, 1), pos + Point(1, -1), pos + Point(1, 1)};
+
+    for (const auto& entity : entities) {
+        if (std::find(surroundingPoints.cbegin(), surroundingPoints.cend(), entity.second->getPos()) != surroundingPoints.cend())
+            entitiesSurrounding.emplace_back(entity.second);
+    }
+
+    return entitiesSurrounding;
 }
 
 void EntityManager::cleanup() {

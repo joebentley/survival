@@ -171,6 +171,17 @@ struct Entity {
     bool isInventoryEmpty() const;
     std::vector<std::shared_ptr<Entity>> getInventory() const;
     bool isInInventory(std::string ID) const;
+
+    /// Filter inventory for crafting material of type `materialType` returning a vector of ID strings
+    /// \param materialType type of material to filter for
+    /// \return list of IDs of those materials
+    std::vector<std::string> filterInventoryForCraftingMaterial(std::string materialType) const;
+
+    /// Same as `filterInventoryForCraftingMaterial` but match any of the types in `materialTypes`
+    /// \param materialTypes types of material to filter for
+    /// \return list of IDs of those materials
+    std::vector<std::string> filterInventoryForCraftingMaterials(const std::vector<std::string> &materialTypes) const;
+
     int getCarryingWeight();
 
     void setPos(int x, int y) { pos = Point(x, y); }
@@ -252,6 +263,8 @@ public:
     void queueForDeletion(const std::string &ID);
     void eraseByID(const std::string &ID);
     std::vector<std::shared_ptr<Entity>> getEntitiesAtPos(const Point& pos) const;
+    std::vector<std::shared_ptr<Entity>> getEntitiesSurrounding(const Point& pos) const;
+
     bool isEntityInManager(const std::string &ID);
 
     /// Should be called every time the player changes screen
