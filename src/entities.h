@@ -48,7 +48,7 @@ struct CatEntity : Entity {
             : Entity(std::move(ID), "Cat", "$[yellow]c", 10.0f, 10.0f, 0.05f, 1, 2, 100)
     {
         auto wanderAttach = std::make_shared<WanderAttachBehaviour>(*this, 0.5f, 0.7f, 0.05f);
-        auto chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this, 0.8f, 0.6f, 8.0f, 8.0f, 0.9f);
+        auto chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this, 0.8f, 0.1f, 8.0f, 8.0f, 0.9f);
         chaseAndAttack->disable();
         addBehaviour(wanderAttach);
         addBehaviour(chaseAndAttack);
@@ -62,7 +62,7 @@ struct WolfEntity : Entity {
             : Entity(std::move(ID), "Wolf", "${black}$[red]W", 20.0f, 20.0f, 0.05f, 1, 4, 100)
     {
         addBehaviour(std::make_shared<WanderBehaviour>(*this));
-        auto chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this, 0.8f, 0.6f, 8, 8, 0.9f);
+        auto chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this, 0.8f, 0.05f, 8, 8, 0.9f);
         chaseAndAttack->disable();
         addBehaviour(chaseAndAttack);
         addBehaviour(std::make_shared<HostilityBehaviour>(*this, 12, 0.95f));
