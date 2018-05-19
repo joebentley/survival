@@ -34,9 +34,14 @@ endif(NOT MSVC)
 
 if(MSVC)
 	# set to your SDL2 install directory if using windows
-	set(SDL2_PATH "C:\\Users\\Joe\\Source\\SDL2\\lib\\x64")
+	if(x86)
+		set(SDL2_PATH "C:\\Users\\Joe\\Source\\SDL2\\lib\\x86")
+		set(SDL2_IMAGE_PATH "C:\\Users\\Joe\\Source\\SDL2_image\\lib\\x86")
+	else(x86)
+		set(SDL2_PATH "C:\\Users\\Joe\\Source\\SDL2\\lib\\x64")
+		set(SDL2_IMAGE_PATH "C:\\Users\\Joe\\Source\\SDL2_image\\lib\\x64")
+	endif(x86)
 	set(SDL2_INCLUDE_DIR "C:\\Users\\Joe\\Source\\SDL2\\include")
-	set(SDL2_IMAGE_PATH "C:\\Users\\Joe\\Source\\SDL2_image\\lib\\x64")
 	set(SDL2_IMAGE_INCLUDE_DIR "C:\\Users\\Joe\\Source\\SDL2_image\\include")
 endif(MSVC)
 
