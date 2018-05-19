@@ -174,10 +174,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
                     break;
             }
 
-            // Don't allow moving off edge of world
             auto newPos = getPos() + posOffset;
-            if (newPos.x < 0 || newPos.y < 0 || newPos.x >= SCREEN_WIDTH * WORLD_WIDTH || newPos.y >= SCREEN_HEIGHT * WORLD_HEIGHT)
-                return;
 
             auto enemiesInSpace = EntityManager::getInstance().getEntitiesAtPosFaster(pos + posOffset);
             // TODO: what if more than one enemy in space?

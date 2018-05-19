@@ -2,50 +2,63 @@
 #include "entities.h"
 #include "utils.h"
 #include <cstdlib>
-#include <cstdio>
 
-int World::render(Font& font, int worldX, int worldY)
+int World::render(Font& font, const Point worldPos)
 {
+	if (std::find(generatedScreens.cbegin(), generatedScreens.cend(), worldPos) == generatedScreens.cend())
+		randomizeScreensAround(worldPos);
+
     Color grey = getColor("grey");
     for (int y = 0; y < SCREEN_HEIGHT; ++y)
         for (int x = 0; x < SCREEN_WIDTH; ++x)
-            if (font.draw(this->floor[worldY][worldX][y][x], x, y, grey) == -1)
+            if (font.draw(this->floor[worldPosToWorld(worldPos) + Point(x, y)], x, y, grey) == -1)
                 return -1;
     return 0;
 }
 
-void World::randomizeWorld()
+void World::randomizeScreensAround(Point pos)
+{
+    const std::vector<Point> pointsIncludingSurrounding
+		{ pos, pos + Point(-1, 0), pos + Point(1, 0), pos + Point(0, -1), pos + Point(0, 1),
+          pos + Point(-1, -1), pos + Point(-1, 1), pos + Point(1, -1), pos + Point(1, 1)};
+
+	for (const auto &point : pointsIncludingSurrounding)
+	{
+		if (std::find(generatedScreens.cbegin(), generatedScreens.cend(), point) == generatedScreens.cend())
+			randomizeScreen(point);
+	}
+}
+
+void World::randomizeScreen(Point worldPos)
 {
     auto &manager = EntityManager::getInstance();
-    int numBushes = 0;
-    int numTwigs = 0;
-    int numGrass = 0;
 
-    for (int worldY = 0; worldY < WORLD_HEIGHT; ++worldY)
-    for (int worldX = 0; worldX < WORLD_WIDTH; ++worldX)
-    for (int y = 0; y < SCREEN_HEIGHT; ++y)
-    for (int x = 0; x < SCREEN_WIDTH; ++x) {
+	generatedScreens.push_back(worldPos);
+
+	Point p0 = worldPosToWorld(worldPos);
+	for (auto x = 0; x < SCREEN_WIDTH; ++x)
+	for (auto y = 0; y < SCREEN_HEIGHT; ++y)
+	{
+		auto p = p0 + Point(x, y);
         // Generate background tile
         switch (rand() % 4) {
             case 0:
-                this->floor[worldY][worldX][y][x] = "`";
+                this->floor[p] = "`";
                 break;
             case 1:
-                this->floor[worldY][worldX][y][x] = "'";
+                this->floor[p] = "'";
                 break;
             case 2:
-                this->floor[worldY][worldX][y][x] = ".";
+                this->floor[p] = ".";
                 break;
             case 3:
-                this->floor[worldY][worldX][y][x] = ",";
+                this->floor[p] = ",";
                 break;
         }
 
-        Point p(worldX * SCREEN_WIDTH + x, worldY * SCREEN_HEIGHT + y);
-
         // Random chance of creating a bush
         if (randDouble() < 0.002) {
-            auto bush = std::make_shared<BushEntity>("bush" + std::to_string(++numBushes));
+            auto bush = std::make_shared<BushEntity>();
             bush->setPos(p);
             manager.addEntity(bush);
             continue; // Don't put two on same square
@@ -53,7 +66,7 @@ void World::randomizeWorld()
 
         // Random chance of creating a twig
         if (randDouble() < 0.002) {
-            auto twig = std::make_shared<TwigEntity>("twig" + std::to_string(++numTwigs));
+            auto twig = std::make_shared<TwigEntity>();
             twig->setPos(p);
             manager.addEntity(twig);
             continue;
@@ -61,7 +74,7 @@ void World::randomizeWorld()
 
         // Random chance of creating grass
         if (randDouble() < 0.002) {
-            auto grass = std::make_shared<GrassEntity>("grass" + std::to_string(++numGrass));
+            auto grass = std::make_shared<GrassEntity>();
             grass->setPos(p);
             manager.addEntity(grass);
             continue;
@@ -80,9 +93,14 @@ void World::randomizeWorld()
             manager.addEntity(wolf);
             continue;
         }
-    }
+	}
 }
 
 Point worldToScreen(Point worldSpacePoint) {
     return { worldSpacePoint.x % SCREEN_WIDTH, worldSpacePoint.y % SCREEN_HEIGHT };
+}
+
+Point worldPosToWorld(Point worldPos)
+{
+	return { worldPos.x * SCREEN_WIDTH, worldPos.y * SCREEN_HEIGHT };
 }

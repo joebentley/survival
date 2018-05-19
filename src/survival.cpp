@@ -32,8 +32,7 @@ int main(int argc, char* argv[])
     SDL_Texture *nightFadeTexture = nullptr;
 
     Texture texture;
-    auto world = std::make_unique<World>();
-    world->randomizeWorld();
+	World world;
     
     printf("video mode: %d x %d\n", SCREEN_WIDTH, SCREEN_HEIGHT);
 
@@ -75,7 +74,7 @@ int main(int argc, char* argv[])
 
                 auto player = std::make_shared<PlayerEntity>();
                 // Place player in center of world
-                player->setPos(SCREEN_WIDTH * (WORLD_WIDTH + 1) / 2, SCREEN_HEIGHT * WORLD_HEIGHT / 2);
+                player->setPos(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
                 manager.addEntity(player);
 
                 auto cat = std::make_shared<CatEntity>("cat1");
@@ -95,7 +94,6 @@ int main(int argc, char* argv[])
                 pileOfLead->addBehaviour(std::make_shared<PickuppableBehaviour>(*pileOfLead, 100));
                 manager.addEntity(pileOfLead);
                 pileOfLead->setPos(player->getPos() + Point(2, 2));
-
 
                 apple->setPos(player->getPos() + Point(2, 2));
                 banana->setPos(player->getPos() + Point(3, 2));
@@ -167,11 +165,11 @@ int main(int argc, char* argv[])
                     if (inventoryScreen.enabled)
                         inventoryScreen.render(font);
                     else if (craftingScreen.enabled)
-                        craftingScreen.render(font, *world, lightMapTexture);
+                        craftingScreen.render(font, world, lightMapTexture);
                     else if (equipmentScreen.enabled)
                         equipmentScreen.render(font);
                     else if (!lootingDialog.viewingDescription && !inspectionDialog.viewingDescription) {
-                        if (world->render(font, player->getWorldPos()) == -1)
+                        if (world.render(font, player->getWorldPos()) == -1)
                             return -1;
                         manager.render(font, player->getWorldPos(), lightMapTexture);
 
