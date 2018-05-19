@@ -3,6 +3,11 @@ project(survival)
 
 file(COPY resources DESTINATION .)
 
+if(MSVC)
+	file(GLOB DLLS libs/*)
+	file(COPY ${DLLS} DESTINATION .)
+endif(MSVC)
+
 add_executable(${PROJECT_NAME}
         src/behaviours.cpp
         src/behaviours.h
@@ -25,7 +30,6 @@ target_compile_features(${PROJECT_NAME} PRIVATE cxx_lambdas cxx_nullptr cxx_rang
 
 if(NOT MSVC)
 	target_compile_options(${PROJECT_NAME} PRIVATE -Wall -pedantic)
-	set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/sdl2-cmake-scripts")
 endif(NOT MSVC)
 
 if(MSVC)
@@ -34,11 +38,14 @@ if(MSVC)
 	set(SDL2_INCLUDE_DIR "C:\\Users\\Joe\\Source\\SDL2\\include")
 	set(SDL2_IMAGE_PATH "C:\\Users\\Joe\\Source\\SDL2_image\\lib\\x64")
 	set(SDL2_IMAGE_INCLUDE_DIR "C:\\Users\\Joe\\Source\\SDL2_image\\include")
-	set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}\\sdl2-cmake-scripts")
 endif(MSVC)
+
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/sdl2-cmake-scripts")
 
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 
-target_include_directories(${PROJECT_NAME} PRIVATE SDL2 SDL2_image)
-target_link_libraries(${PROJECT_NAME} SDL2 SDL2_image)
+message(STATUS ${SDL2_LIBRARY})
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARIES})

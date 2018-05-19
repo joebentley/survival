@@ -3,7 +3,12 @@
 #define FONT_H_
 
 #include "point.h"
+
+#ifdef _MSC_VER
+#include <SDL.h>
+#else
 #include <SDL2/SDL.h>
+#endif
 #include <string>
 #include <sstream>
 #include <algorithm>

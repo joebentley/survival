@@ -1,7 +1,7 @@
 #ifndef TEXTURE_H_
 #define TEXTURE_H_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <string>
 #include <vector>
 #include "point.h"

@@ -20,8 +20,8 @@ struct PlayerEntity : Entity {
 //    bool showingInspectionDialog {false};
 
     explicit PlayerEntity()
-            : Entity("Player", "You, the player", "$[white]$(dwarf)", 10, 10, 0.1, 1, 4, 100),
-              hunger(1), hungerRate(0.005), hungerDamageRate(0.15)
+            : Entity("Player", "You, the player", "$[white]$(dwarf)", 10.0f, 10.0f, 0.1f, 1, 4, 100),
+              hunger(1), hungerRate(0.005f), hungerDamageRate(0.15f)
     {
         renderingLayer = -1;
     }
@@ -45,10 +45,10 @@ private:
 
 struct CatEntity : Entity {
     explicit CatEntity(std::string ID = "")
-            : Entity(std::move(ID), "Cat", "$[yellow]c", 10, 10, 0.05, 1, 2, 100)
+            : Entity(std::move(ID), "Cat", "$[yellow]c", 10.0f, 10.0f, 0.05f, 1, 2, 100)
     {
-        auto wanderAttach = std::make_shared<WanderAttachBehaviour>(*this, 0.5, 0.7, 0.05);
-        auto chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this, 0.8, 0.6, 8, 8, 0.9);
+        auto wanderAttach = std::make_shared<WanderAttachBehaviour>(*this, 0.5f, 0.7f, 0.05f);
+        auto chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this, 0.8f, 0.6f, 8.0f, 8.0f, 0.9f);
         chaseAndAttack->disable();
         addBehaviour(wanderAttach);
         addBehaviour(chaseAndAttack);
@@ -59,13 +59,13 @@ struct CatEntity : Entity {
 
 struct WolfEntity : Entity {
     explicit WolfEntity(std::string ID = "")
-            : Entity(std::move(ID), "Wolf", "${black}$[red]W", 20, 20, 0.05, 1, 4, 100)
+            : Entity(std::move(ID), "Wolf", "${black}$[red]W", 20.0f, 20.0f, 0.05f, 1, 4, 100)
     {
         addBehaviour(std::make_shared<WanderBehaviour>(*this));
-        auto chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this, 0.8, 0.6, 8, 8, 0.9);
+        auto chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this, 0.8f, 0.6f, 8, 8, 0.9f);
         chaseAndAttack->disable();
         addBehaviour(chaseAndAttack);
-        addBehaviour(std::make_shared<HostilityBehaviour>(*this, 12, 0.95));
+        addBehaviour(std::make_shared<HostilityBehaviour>(*this, 12, 0.95f));
 
         shortDesc = "A terrifying looking beast!";
     }
@@ -75,7 +75,7 @@ struct WolfEntity : Entity {
 
 struct GlowbugEntity : Entity {
     explicit GlowbugEntity(std::string ID = "")
-            : Entity(std::move(ID), "Glowbug", "$[green]`", 10, 10, 0.05)
+            : Entity(std::move(ID), "Glowbug", "$[green]`", 10.0f, 10.0f, 0.05f)
     {
         addBehaviour(std::make_shared<WanderBehaviour>(*this));
         addBehaviour(std::make_shared<LightEmittingBehaviour>(*this, 3, getColor("green")));
@@ -211,7 +211,7 @@ struct TwigEntity : Entity {
         addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
         addBehaviour(std::make_shared<CraftingMaterialBehaviour>(*this, "wood", 1));
         addBehaviour(std::make_shared<EquippableBehaviour>(*this,
-                std::vector<EquipmentSlot> {EquipmentSlot::LEFT_HAND, EquipmentSlot::RIGHT_HAND }));
+                std::vector<EquipmentSlot> {EquipmentSlot::LEFT_HAND, EquipmentSlot::RIGHT_HAND}));
         addBehaviour(std::make_shared<MeleeWeaponBehaviour>(*this, 1));
     }
 };

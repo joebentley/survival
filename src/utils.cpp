@@ -1,5 +1,6 @@
 #include "utils.h"
 #include <cstdlib>
+#include <ctime>
 
 double randDouble() {
     return static_cast<double>(rand()) / static_cast<double>(RAND_MAX);

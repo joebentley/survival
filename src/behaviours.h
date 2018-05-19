@@ -46,7 +46,7 @@ struct WanderAttachBehaviour : Behaviour {
             return;
         }
 
-        float r = randDouble();
+        double r = randDouble();
 
         // If attached, wander OR follow not both at once
         if (attach.attached) {

@@ -1,12 +1,17 @@
-#include <SDL2/SDL.h>
+#ifdef _MSC_VER
+#include <SDL.h>
+#include <SDL_image.h>
+#else
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL.h>
+#endif
+
 #include <string>
 #include <memory>
 #include <ctime>
 #include <cstdlib>
 #include <cstdio>
 #include <deque>
-
 #include "texture.h"
 #include "font.h"
 #include "UI.h"
@@ -20,10 +25,10 @@ const int MAX_FRAME_RATE = 60;
 
 int main(int argc, char* argv[])
 {
-    srand(time(NULL));
+    srand(static_cast<unsigned int>(time(NULL)));
     
-    SDL_Window *window = NULL;
-    SDL_Renderer *renderer = NULL;
+    SDL_Window *window = nullptr;
+    SDL_Renderer *renderer = nullptr;
     SDL_Texture *nightFadeTexture = nullptr;
 
     Texture texture;

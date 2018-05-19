@@ -83,21 +83,21 @@ void drawDescriptionScreen(Font& font, Entity& item) {
     if (b != nullptr) {
         int weight = dynamic_cast<PickuppableBehaviour &>(*b).weight;
         font.drawText("It weighs " + std::to_string(weight) + (weight == 1 ? " pound" : " pounds"),
-                      InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + words.size() + y++);
+                      InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + static_cast<int>(words.size()) + y++);
     }
 
     b = item.getBehaviourByID("MeleeWeaponBehaviour");
     if (b != nullptr) {
         int damage = dynamic_cast<MeleeWeaponBehaviour &>(*b).extraDamage;
         font.drawText("It adds $[red]" + std::to_string(damage) + "$[white] to your damage roll",
-                InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + words.size() + y++);
+                InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + static_cast<int>(words.size()) + y++);
     }
 
     b = item.getBehaviourByID("AdditionalCarryWeightBehaviour");
     if (b != nullptr) {
         int carry = dynamic_cast<AdditionalCarryWeightBehaviour &>(*b).additionalCarryWeight;
         font.drawText("It adds an extra " + std::to_string(carry) + "lb to your max carry weight",
-                InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + words.size() + y++);
+                InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + static_cast<int>(words.size()) + y++);
     }
 
     b = item.getBehaviourByID("EquippableBehaviour");
@@ -112,14 +112,14 @@ void drawDescriptionScreen(Font& font, Entity& item) {
         }
 
         font.drawText("Can be equipped in: " + slotsString,
-                InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + words.size() + y++);
+                InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + static_cast<int>(words.size()) + y++);
     }
 
     b = item.getBehaviourByID("HealingItemBehaviour");
     if (b != nullptr) {
         float healing = dynamic_cast<HealingItemBehaviour &>(*b).healingAmount;
         font.drawText("${white}$[red]+${black}$[white] Can be used to heal for " + std::to_string(healing),
-                InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + words.size() + y++);
+                InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + static_cast<int>(words.size()) + y++);
     }
 
     font.drawText("esc-back", 1, SCREEN_HEIGHT - 2);

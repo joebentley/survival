@@ -376,7 +376,7 @@ void FireEntity::render(Font &font, Point currentWorldPos) {
 }
 
 void FireEntity::tick() {
-    fireLevel -= 0.005;
+    fireLevel -= 0.005f;
 }
 
 void GrassEntity::render(Font &font, Point currentWorldPos) {
