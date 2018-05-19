@@ -95,7 +95,7 @@ void ChaseAndAttackBehaviour::tick() {
 
     if (parent.getPos() + posOffset != player.getPos()) {
         if (parent.getPos().distanceTo(player.getPos()) > range) {
-            float r = randDouble();
+            double r = randDouble();
             if (r < unattachment) { // Stop attacking if far away
                 enabled = false;
                 if (parent.getBehaviourByID("WanderBehaviour") != nullptr) {

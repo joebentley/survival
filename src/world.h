@@ -5,22 +5,28 @@
 #include "font.h"
 #include "point.h"
 #include <string>
+#include <unordered_map>
 
-#define WORLD_WIDTH 30
-#define WORLD_HEIGHT 21
 #define SCREEN_WIDTH 70
 #define SCREEN_HEIGHT 35
 
 Point worldToScreen(Point worldSpacePoint);
+Point worldPosToWorld(Point worldPos);
 
 struct World {
-    std::string floor[WORLD_HEIGHT][WORLD_WIDTH][SCREEN_HEIGHT][SCREEN_WIDTH];
+//    std::string floor[WORLD_HEIGHT][WORLD_WIDTH][SCREEN_HEIGHT][SCREEN_WIDTH];
+	std::unordered_map<Point, std::string> floor;
 
-    int render(Font& font, int worldX, int worldY);
-    inline int render(Font& font, Point worldPos) {
-        return render(font, worldPos.x, worldPos.y);
+    int render(Font& font, int worldX, int worldY)
+    {
+		render(font, Point(worldX, worldY));
     }
-    void randomizeWorld();
+    int render(Font& font, const Point worldPos);
+
+	void randomizeScreensAround(Point worldPos);
+	void randomizeScreen(Point worldPos);
+private:
+	std::vector<Point> generatedScreens;
 };
 
 #endif // WORLD_H_

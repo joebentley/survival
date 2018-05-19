@@ -3,6 +3,7 @@
 #define POINT_H_
 
 #include <cmath>
+#include <string>
 
 struct Point {
     int x;
@@ -56,6 +57,10 @@ struct Point {
     double length() {
         return std::sqrt(x*x + y*y);
     }
+
+	std::string to_string() const {
+		return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
+	}
 };
 
 inline Point operator+(Point lhs, const Point& rhs) {
@@ -89,6 +94,19 @@ inline Point operator/(Point lhs, int rhs) {
 
 inline double Point::distanceTo(const Point& to) {
     return (*this - to).length();
+}
+
+namespace std
+{
+	template <>
+	struct hash<Point>
+	{
+		size_t operator()(const Point& p) const
+		{
+			// Is this good enough?
+			return (p.y << 16) ^ p.x;
+		}
+	};
 }
 
 #endif // POINT_H_
