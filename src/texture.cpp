@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <SDL_image.h>
+#include <SDL2/SDL_image.h>
 #include "texture.h"
 #include "world.h"
 

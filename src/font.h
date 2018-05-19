@@ -9,6 +9,7 @@
 #else
 #include <SDL2/SDL.h>
 #endif
+
 #include <string>
 #include <sstream>
 #include <algorithm>

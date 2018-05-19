@@ -32,6 +32,7 @@ if(NOT MSVC)
 	target_compile_options(${PROJECT_NAME} PRIVATE -Wall -pedantic)
 endif(NOT MSVC)
 
+
 if(MSVC)
 	# set to your SDL2 install directory if using windows
 	if(x86)
@@ -50,7 +51,10 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/sdl2-cmake-scripts")
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 
-message(STATUS ${SDL2_LIBRARY})
-
-target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARIES})
+if(MSVC)
+	target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIRS})
+	target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARIES})
+else(MSVC)
+	target_include_directories(${PROJECT_NAME} PRIVATE SDL2 SDL2_image)
+	target_link_libraries(${PROJECT_NAME} SDL2 SDL2_image)
+endif(MSVC)

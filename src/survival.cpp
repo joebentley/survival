@@ -1,6 +1,7 @@
+
 #ifdef _MSC_VER
-#include <SDL.h>
 #include <SDL_image.h>
+#include <SDL.h>
 #else
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL.h>
@@ -169,8 +170,7 @@ int main(int argc, char* argv[])
                     else if (equipmentScreen.enabled)
                         equipmentScreen.render(font);
                     else if (!lootingDialog.viewingDescription && !inspectionDialog.viewingDescription) {
-                        if (world.render(font, player->getWorldPos()) == -1)
-                            return -1;
+                        world.render(font, player->getWorldPos());
                         manager.render(font, player->getWorldPos(), lightMapTexture);
 
                         // Always render UI

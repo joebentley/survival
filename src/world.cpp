@@ -3,7 +3,7 @@
 #include "utils.h"
 #include <cstdlib>
 
-int World::render(Font& font, const Point worldPos)
+void World::render(Font &font, const Point worldPos)
 {
 	if (std::find(generatedScreens.cbegin(), generatedScreens.cend(), worldPos) == generatedScreens.cend())
 		randomizeScreensAround(worldPos);
@@ -11,9 +11,7 @@ int World::render(Font& font, const Point worldPos)
     Color grey = getColor("grey");
     for (int y = 0; y < SCREEN_HEIGHT; ++y)
         for (int x = 0; x < SCREEN_WIDTH; ++x)
-            if (font.draw(this->floor[worldPosToWorld(worldPos) + Point(x, y)], x, y, grey) == -1)
-                return -1;
-    return 0;
+            font.draw(this->floor[worldPosToWorld(worldPos) + Point(x, y)], x, y, grey);
 }
 
 void World::randomizeScreensAround(Point pos)

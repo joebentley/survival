@@ -17,11 +17,10 @@ struct World {
 //    std::string floor[WORLD_HEIGHT][WORLD_WIDTH][SCREEN_HEIGHT][SCREEN_WIDTH];
 	std::unordered_map<Point, std::string> floor;
 
-    int render(Font& font, int worldX, int worldY)
-    {
+    void render(Font &font, int worldX, int worldY) {
 		render(font, Point(worldX, worldY));
     }
-    int render(Font& font, const Point worldPos);
+    void render(Font &font, Point worldPos);
 
 	void randomizeScreensAround(Point worldPos);
 	void randomizeScreen(Point worldPos);
