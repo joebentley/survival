@@ -22,7 +22,7 @@
 
 const int WINDOW_WIDTH = CHAR_WIDTH * SCREEN_WIDTH;
 const int WINDOW_HEIGHT = CHAR_HEIGHT * SCREEN_HEIGHT;
-const int MAX_FRAME_RATE = 60;
+const int MAX_FRAME_RATE = 30;
 
 int main(int argc, char* argv[])
 {
