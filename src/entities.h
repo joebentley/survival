@@ -18,7 +18,6 @@ struct PlayerEntity : Entity {
     float hungerDamageRate; // hp loss per tick while starving
     bool attacking {false}; // whether or not player is attacking something
     bool showingTooMuchWeightMessage {false};
-//    bool showingInspectionDialog {false};
 
     explicit PlayerEntity()
             : Entity("Player", "You, the player", "$[white]$(dwarf)", 10.0f, 10.0f, 0.1f, 1, 4, 100),

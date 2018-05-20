@@ -110,8 +110,8 @@ struct Entity {
             : hp(hp), maxhp(maxhp), regenPerTick(regenPerTick), hitTimes(hitTimes), hitAmount(hitAmount), ID(std::move(ID)),
               name(std::move(name)), graphic(std::move(graphic)), pos(0, 0), maxCarryWeight(maxCarryWeight)
     {
-        if (this->ID.empty()) // use next available ID
-            this->ID = std::to_string(gNumInitialisedEntities);
+        if (this->ID.empty())
+            this->ID = std::to_string(rand());
         gNumInitialisedEntities++;
 
         // Add all equipment slots
