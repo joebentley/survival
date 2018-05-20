@@ -177,6 +177,7 @@ int main(int argc, char* argv[])
                         notificationMessageScreen.render(font);
                     else if (!lootingDialog.viewingDescription && !inspectionDialog.viewingDescription) {
                         world.render(font, player->getWorldPos());
+                        NotificationMessageRenderer::getInstance().render(font);
                         manager.render(font, player->getWorldPos(), lightMapTexture);
 
                         // Always render UI
@@ -195,9 +196,6 @@ int main(int argc, char* argv[])
                     }
 
                     MessageBoxRenderer::getInstance().render(font);
-
-                    if (!inventoryScreen.enabled && !equipmentScreen.enabled && !notificationMessageScreen.enabled)
-                        NotificationMessageRenderer::getInstance().render(font);
 
                     font.drawText(std::to_string(fps), SCREEN_WIDTH - 5, SCREEN_HEIGHT - 1);
 
