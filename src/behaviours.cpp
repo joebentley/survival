@@ -135,6 +135,13 @@ void HostilityBehaviour::tick() {
     if (chaseAndAttack != nullptr && !chaseAndAttack->isEnabled() && player != nullptr
         && parent.getPos().distanceTo(player->getPos()) < range && randDouble() < hostility)
     {
+        // Disable wandering and wanderattach
+        auto b = parent.getBehaviourByID("WanderBehaviour");
+        if (b != nullptr)
+            b->disable();
+        b = parent.getBehaviourByID("WanderAttachBehaviour");
+        if (b != nullptr)
+            b->disable();
         NotificationMessageRenderer::getInstance().queueMessage("${black}The $[red]" + parent.name + " $[white]went $[red]feral!");
         chaseAndAttack->enable();
     }
