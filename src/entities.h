@@ -292,6 +292,19 @@ struct BagEntity : Entity {
     }
 };
 
+struct WaterEntity : Entity {
+    explicit WaterEntity(std::string ID = "")
+            : Entity(std::move(ID), "Water", "")
+    {
+        renderingLayer = 10;
+
+        if (randDouble() > 0.5)
+            graphic = "${black}$[cyan]$(approx)";
+        else
+            graphic = "${black}$[cyan]~";
+    }
+};
+
 // UI entities
 
 class StatusUIEntity : public Entity {

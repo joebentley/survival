@@ -2,6 +2,7 @@
 #include "entities.h"
 #include "utils.h"
 #include <cstdlib>
+#include <cmath>
 
 void World::render(Font &font, const Point worldPos)
 {
@@ -34,10 +35,11 @@ void World::randomizeScreen(Point worldPos)
 	generatedScreens.push_back(worldPos);
 
 	Point p0 = worldPosToWorld(worldPos);
+	// On first pass generate floor tiles
 	for (auto x = 0; x < SCREEN_WIDTH; ++x)
 	for (auto y = 0; y < SCREEN_HEIGHT; ++y)
 	{
-		auto p = p0 + Point(x, y);
+        auto p = p0 + Point(x, y);
         // Generate background tile
         switch (rand() % 4) {
             case 0:
@@ -53,7 +55,39 @@ void World::randomizeScreen(Point worldPos)
                 this->floor[p] = ",";
                 break;
         }
+    }
 
+    // Choose random points from which to originate pools of water
+    const int numPools = rand() % 3;
+	std::vector<Point> poolOriginCoords;
+	for (auto i = 0; i < numPools; ++i)
+	    poolOriginCoords.emplace_back(p0 + Point(rand() % SCREEN_WIDTH, rand() % SCREEN_HEIGHT));
+
+    for (auto poolOrigin : poolOriginCoords) {
+        auto water = std::make_shared<WaterEntity>();
+        water->setPos(poolOrigin);
+        manager.addEntity(water);
+    }
+
+    // Generate water pools scaling probability on manhattan distance from pool
+    for (auto x = 0; x < SCREEN_WIDTH; ++x)
+    for (auto y = 0; y < SCREEN_HEIGHT; ++y)
+    {
+        auto p = p0 + Point(x, y);
+        for (auto poolOrigin : poolOriginCoords) {
+            if (randDouble() < std::exp(-std::pow(p.manhattanDistanceTo(poolOrigin) / 2.5, 2))) {
+                auto water = std::make_shared<WaterEntity>();
+                water->setPos(p);
+                manager.addEntity(water);
+            }
+        }
+    }
+
+    // Finally place entities
+    for (auto x = 0; x < SCREEN_WIDTH; ++x)
+    for (auto y = 0; y < SCREEN_HEIGHT; ++y)
+    {
+        auto p = p0 + Point(x, y);
         // Random chance of creating a bush
         if (randDouble() < 0.002) {
             auto bush = std::make_shared<BushEntity>();

@@ -61,6 +61,16 @@ struct Point {
 	std::string to_string() const {
 		return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
 	}
+
+	int manhattanDistanceTo(const Point &other) const {
+        return std::abs(other.x - this->x) + std::abs(other.y - this->y);
+    }
+
+    Point& abs() {
+        this->x = std::abs(x);
+        this->y = std::abs(y);
+        return *this;
+    }
 };
 
 inline Point operator+(Point lhs, const Point& rhs) {
