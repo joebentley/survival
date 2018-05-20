@@ -173,7 +173,11 @@ bool Entity::moveTo(Point p) {
 
     // Check if there is a solid object in space
     if (std::find_if(entities.cbegin(), entities.cend(), [] (auto &a) { return a->isSolid; }) == entities.cend()) {
+        auto oldWorldPos = getWorldPos();
         setPos(p);
+        // Check if we moved to a new world coordinate, if so update the current entities on screen
+        if (oldWorldPos != getWorldPos())
+            EntityManager::getInstance().recomputeCurrentEntitiesOnScreenAndSurroundingScreens();
 
         // Move all items held by entity
         for (const auto &ID : inventory)
@@ -472,6 +476,8 @@ bool EntityManager::isEntityInManager(const std::string &ID) {
     return entities.find(ID) != entities.end();
 }
 
+// TODO should split this into two separate functions for current entities on screen and for surrounding screens
+// player should call both current screen and surrounding screens, but other entity should only call current screen
 void EntityManager::recomputeCurrentEntitiesOnScreenAndSurroundingScreens(Point currentWorldPos) {
     currentlyOnScreen.clear();
     inSurroundingScreens.clear();
@@ -517,6 +523,10 @@ std::vector<LightMapPoint> EntityManager::getLightSources(Point fontSize) const 
     }
 
     return points;
+}
+
+void EntityManager::recomputeCurrentEntitiesOnScreenAndSurroundingScreens() {
+    recomputeCurrentEntitiesOnScreenAndSurroundingScreens(getEntityByID("Player")->getWorldPos());
 }
 
 

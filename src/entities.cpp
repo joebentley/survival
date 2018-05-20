@@ -186,15 +186,8 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
                     || attacking)) {
                 attack(newPos);
             } else {
-                auto oldWorldPos = getWorldPos();
-                auto moved = moveTo(newPos);
-                if (!moved)
+                if (!moveTo(newPos))
                     return; // Don't tick if didn't move
-                else {
-                    // Check if we moved to a new world coordinate, if so update current entity lists
-                    if (oldWorldPos != getWorldPos())
-                        EntityManager::getInstance().recomputeCurrentEntitiesOnScreenAndSurroundingScreens(getWorldPos());
-                }
             }
 
             didAction = true;

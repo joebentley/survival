@@ -290,6 +290,9 @@ public:
     /// \param currentWorldPos current position in world space
     void recomputeCurrentEntitiesOnScreenAndSurroundingScreens(Point currentWorldPos);
 
+    /// Same as `recomputeCurrentEntitiesOnScreenAndSurroundingScreens` but uses player's currentWorldPos
+    void recomputeCurrentEntitiesOnScreenAndSurroundingScreens();
+
     /// Get current time of day
     /// \return time of day
     const Time &getTimeOfDay() const;
