@@ -120,6 +120,7 @@ int main(int argc, char* argv[])
                 manager.setTimeOfDay(Time(6, 0));
 
                 // TODO: Tidy up all the screens somehow?
+                NotificationMessageScreen notificationMessageScreen;
                 InventoryScreen inventoryScreen(*player);
                 LootingDialog lootingDialog(*player);
                 InspectionDialog inspectionDialog(*player);
@@ -152,10 +153,12 @@ int main(int argc, char* argv[])
                                 craftingScreen.handleInput(e.key);
                             else if (equipmentScreen.enabled)
                                 equipmentScreen.handleInput(e.key);
+                            else if (notificationMessageScreen.enabled)
+                                notificationMessageScreen.handleInput(e.key);
                             else
                                 dynamic_cast<PlayerEntity &>(*player).handleInput(e.key, quit, inventoryScreen,
-                                                                                  lootingDialog, inspectionDialog,
-                                                                                  craftingScreen, equipmentScreen);
+                                        lootingDialog, inspectionDialog, craftingScreen,
+                                        equipmentScreen, notificationMessageScreen);
                         }
                     }
 
@@ -170,6 +173,8 @@ int main(int argc, char* argv[])
                         craftingScreen.render(font, world, lightMapTexture);
                     else if (equipmentScreen.enabled)
                         equipmentScreen.render(font);
+                    else if (notificationMessageScreen.enabled)
+                        notificationMessageScreen.render(font);
                     else if (!lootingDialog.viewingDescription && !inspectionDialog.viewingDescription) {
                         world.render(font, player->getWorldPos());
                         manager.render(font, player->getWorldPos(), lightMapTexture);
@@ -191,7 +196,7 @@ int main(int argc, char* argv[])
 
                     MessageBoxRenderer::getInstance().render(font);
 
-                    if (!inventoryScreen.enabled && !equipmentScreen.enabled)
+                    if (!inventoryScreen.enabled && !equipmentScreen.enabled && !notificationMessageScreen.enabled)
                         NotificationMessageRenderer::getInstance().render(font);
 
                     font.drawText(std::to_string(fps), SCREEN_WIDTH - 5, SCREEN_HEIGHT - 1);

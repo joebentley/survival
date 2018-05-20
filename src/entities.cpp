@@ -55,7 +55,8 @@ void PlayerEntity::tick() {
 
 void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen,
                                LootingDialog &lootingDialog, InspectionDialog &inspectionDialog,
-                               CraftingScreen &craftingScreen, EquipmentScreen &equipmentScreen) {
+                               CraftingScreen &craftingScreen, EquipmentScreen &equipmentScreen,
+                               NotificationMessageScreen &notificationMessageScreen) {
     auto key = e.keysym.sym;
     auto mod = e.keysym.mod;
 
@@ -219,6 +220,9 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
 
         if (key == SDLK_e)
             equipmentScreen.enable();
+
+        if (key == SDLK_m)
+            notificationMessageScreen.enabled = true;
     }
 
     if (didAction)

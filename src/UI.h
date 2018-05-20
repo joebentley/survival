@@ -57,13 +57,25 @@ struct NotificationMessageRenderer {
 
     void queueMessage(const std::string &message);
     void render(Font &font);
+
+    std::deque<std::string> getMessages() const {
+        return allMessages;
+    }
+
 private:
-    const int MAX_ON_SCREEN {5};
+    const int MAX_ON_SCREEN {6};
     const int INITIAL_Y_POS {SCREEN_HEIGHT - 2};
-    const int ALPHA_DECAY_PER_RENDER_IF_ALL_MESSAGES_ON_SCREEN {2};
-    const int ALPHA_DECAY_PER_RENDER_IF_MESSAGES_ARE_WAITING {4};
-    std::deque<std::string> messages;
+    const int ALPHA_DECAY_PER_RENDER {2};
+    std::deque<std::string> messagesToBeRendered;
+    std::deque<std::string> allMessages;
     int alpha {0xFF};
+};
+
+struct NotificationMessageScreen {
+    bool enabled {false};
+
+    void handleInput(SDL_KeyboardEvent &e);
+    void render(Font& font);
 };
 
 struct PlayerEntity;

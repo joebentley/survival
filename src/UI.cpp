@@ -908,24 +908,47 @@ void EquipmentScreen::reset() {
 }
 
 void NotificationMessageRenderer::queueMessage(const std::string &message) {
-    messages.push_back(message);
+    messagesToBeRendered.push_back(message);
+    if (messagesToBeRendered.size() > MAX_ON_SCREEN)
+        messagesToBeRendered.pop_front();
+    allMessages.push_back(message);
 }
 
 void NotificationMessageRenderer::render(Font &font) {
-    auto front = messages.cbegin();
-    for (int i = 0; front != messages.cend() && i < MAX_ON_SCREEN; ++i, ++front) {
-        font.drawText(*front, 4, INITIAL_Y_POS - MAX_ON_SCREEN + i, i == 0 ? alpha : -1);
+    auto front = messagesToBeRendered.cbegin();
+    for (int i = 0; front != messagesToBeRendered.cend() && i < MAX_ON_SCREEN; ++i, ++front) {
+        font.drawText(*front, 4, INITIAL_Y_POS - static_cast<int>(messagesToBeRendered.size()) + i, i == 0 ? alpha : -1);
 
-        if (i == 0) {
-            if (messages.size() < MAX_ON_SCREEN)
-                alpha -= ALPHA_DECAY_PER_RENDER_IF_ALL_MESSAGES_ON_SCREEN;
-            else
-                alpha -= ALPHA_DECAY_PER_RENDER_IF_MESSAGES_ARE_WAITING;
-        }
+        if (i == 0)
+            alpha -= ALPHA_DECAY_PER_RENDER;
     }
 
     if (alpha <= 0) {
         alpha = 0xFF;
-        messages.pop_front();
+        messagesToBeRendered.pop_front();
+    }
+}
+
+void NotificationMessageScreen::handleInput(SDL_KeyboardEvent &e) {
+    switch (e.keysym.sym) {
+        case SDLK_ESCAPE:
+        case SDLK_m:
+            enabled = false;
+            break;
+    }
+}
+
+void NotificationMessageScreen::render(Font &font) {
+    auto messages = NotificationMessageRenderer::getInstance().getMessages();
+
+    const int numMessagesToShow = SCREEN_HEIGHT - 4;
+    const int xOffset = 4;
+
+    font.drawText("Message history", xOffset, 1);
+    font.drawText("m or esc to exit", SCREEN_WIDTH - 20, 1);
+
+    auto front = messages.crbegin();
+    for (int i = 0; front != messages.crend() && i < numMessagesToShow; ++i, ++front) {
+        font.drawText(*front, xOffset, numMessagesToShow + 1 - i);
     }
 }

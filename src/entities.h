@@ -10,6 +10,7 @@ struct LootingDialog;
 class InspectionDialog;
 struct CraftingScreen;
 struct EquipmentScreen;
+struct NotificationMessageScreen;
 
 struct PlayerEntity : Entity {
     float hunger;
@@ -30,7 +31,8 @@ struct PlayerEntity : Entity {
     void tick() override;
     void handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen,
                          LootingDialog &lootingDialog, InspectionDialog &inspectionDialog,
-                         CraftingScreen &craftingScreen, EquipmentScreen &equipmentScreen);
+                         CraftingScreen &craftingScreen, EquipmentScreen &equipmentScreen,
+                         NotificationMessageScreen &notificationMessageScreen);
     void render(Font &font, Point currentWorldPos) override;
     bool addToInventory(const std::shared_ptr<Entity> &item) override;
 
