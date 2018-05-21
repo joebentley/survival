@@ -198,7 +198,7 @@ struct LightEmittingBehaviour : Behaviour {
     }
 
     void setColor(Color color) {
-        this->color = std::move(color);
+        this->color = color;
     }
 
 private:
