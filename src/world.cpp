@@ -3,6 +3,10 @@
 #include "utils.h"
 #include <cstdlib>
 #include <cmath>
+#include <unordered_set>
+
+#define FOR_EACH_SCREEN_POINT for (auto x = 0; x < SCREEN_WIDTH; ++x) \
+    for (auto y = 0; y < SCREEN_HEIGHT; ++y)
 
 void World::render(Font &font, const Point worldPos)
 {
@@ -36,8 +40,7 @@ void World::randomizeScreen(Point worldPos)
 
 	Point p0 = worldPosToWorld(worldPos);
 	// On first pass generate floor tiles
-	for (auto x = 0; x < SCREEN_WIDTH; ++x)
-	for (auto y = 0; y < SCREEN_HEIGHT; ++y)
+    FOR_EACH_SCREEN_POINT
 	{
         auto p = p0 + Point(x, y);
         // Generate background tile
@@ -63,29 +66,30 @@ void World::randomizeScreen(Point worldPos)
 	for (auto i = 0; i < numPools; ++i)
 	    poolOriginCoords.emplace_back(p0 + Point(rand() % SCREEN_WIDTH, rand() % SCREEN_HEIGHT));
 
-    for (auto poolOrigin : poolOriginCoords) {
+	// Set of tiles that will have water in (used set to avoid duplicates)
+    std::unordered_set<Point> currentWaterTiles;
+    for (auto poolOrigin : poolOriginCoords)
+        currentWaterTiles.emplace(poolOrigin);
+
+    // Generate water pools scaling probability on manhattan distance from pool
+    FOR_EACH_SCREEN_POINT
+    {
+        auto p = p0 + Point(x, y);
+
+        for (auto poolOrigin : poolOriginCoords)
+            if (randDouble() < std::exp(-std::pow(p.manhattanDistanceTo(poolOrigin) / 2.5, 2)))
+                currentWaterTiles.emplace(p);
+    }
+
+    // Add all the generated water tiles
+    for (auto p : currentWaterTiles) {
         auto water = std::make_shared<WaterEntity>();
-        water->setPos(poolOrigin);
+        water->setPos(p);
         manager.addEntity(water);
     }
 
-    // Generate water pools scaling probability on manhattan distance from pool
-    for (auto x = 0; x < SCREEN_WIDTH; ++x)
-    for (auto y = 0; y < SCREEN_HEIGHT; ++y)
-    {
-        auto p = p0 + Point(x, y);
-        for (auto poolOrigin : poolOriginCoords) {
-            if (randDouble() < std::exp(-std::pow(p.manhattanDistanceTo(poolOrigin) / 2.5, 2))) {
-                auto water = std::make_shared<WaterEntity>();
-                water->setPos(p);
-                manager.addEntity(water);
-            }
-        }
-    }
-
     // Finally place entities
-    for (auto x = 0; x < SCREEN_WIDTH; ++x)
-    for (auto y = 0; y < SCREEN_HEIGHT; ++y)
+    FOR_EACH_SCREEN_POINT
     {
         auto p = p0 + Point(x, y);
         // Random chance of creating a bush
