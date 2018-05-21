@@ -115,6 +115,7 @@ int main(int argc, char* argv[])
                 player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
                 player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
                 player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
+                player->Entity::addToInventory(std::make_shared<WaterskinEntity>());
 
                 manager.initialize();
                 manager.setTimeOfDay(Time(6, 0));

@@ -120,7 +120,7 @@ struct HealingItemBehaviour : ApplyableBehaviour {
 };
 
 struct PickuppableBehaviour : Behaviour {
-    PickuppableBehaviour(Entity& parent, int weight)
+    PickuppableBehaviour(Entity& parent, int weight = 1)
             : Behaviour("PickuppableBehaviour", parent), weight(weight) {}
 
     int weight;
@@ -231,6 +231,35 @@ struct InteractableBehaviour : Behaviour {
 
     virtual bool handleInput(SDL_KeyboardEvent &e) = 0;
     virtual void render(Font &font) = 0;
+};
+
+struct WaterContainerBehaviour : Behaviour {
+    explicit WaterContainerBehaviour(Entity &parent, int maxCapacity = 64)
+            : Behaviour("WaterContainerBehaviour", parent), maxCapacity(maxCapacity) {}
+
+    int getMaxCapacity() const {
+        return maxCapacity;
+    }
+
+    void setMaxCapacity(int maxCapacity) {
+        WaterContainerBehaviour::maxCapacity = maxCapacity;
+    }
+
+    int getAmount() const {
+        return currentAmount;
+    }
+
+    void setAmount(int currentAmount) {
+        WaterContainerBehaviour::currentAmount = currentAmount;
+    }
+
+    void addAmount(int amount) {
+        currentAmount = std::min(maxCapacity, currentAmount + amount);
+    }
+
+private:
+    int maxCapacity;
+    int currentAmount;
 };
 
 #endif // BEHAVIOURS_H_

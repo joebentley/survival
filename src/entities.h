@@ -305,6 +305,16 @@ struct WaterEntity : Entity {
     }
 };
 
+// Water containers
+
+struct WaterskinEntity : Entity {
+    explicit WaterskinEntity() : Entity("", "Waterskin", "$[brown]$(male)")
+    {
+        addBehaviour(std::make_shared<WaterContainerBehaviour>(*this));
+        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
+    }
+};
+
 // UI entities
 
 class StatusUIEntity : public Entity {
