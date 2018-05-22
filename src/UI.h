@@ -9,6 +9,16 @@
 #include "entities.h"
 #include "recipe.h"
 
+enum class ScreenType {
+    NOTIFICATION,
+    INVENTORY,
+    LOOTING,
+    INSPECTION,
+    CRAFTING,
+    EQUIPMENT,
+    HELP
+};
+
 void showMessageBox(Font& font, const std::vector<std::string> &contents, int padding, int x, int y);
 
 struct MessageBoxRenderer {

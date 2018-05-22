@@ -6,6 +6,7 @@
 #include "UI.h"
 
 struct Screen;
+enum class ScreenType;
 
 struct PlayerEntity : Entity {
     float hunger;
@@ -23,7 +24,7 @@ struct PlayerEntity : Entity {
 
     bool attack(const Point& attackPos);
     void tick() override;
-    void handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_map<std::string, std::shared_ptr<Screen>> &screens);
+    void handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_map<ScreenType, std::shared_ptr<Screen>> &screens);
     void render(Font &font, Point currentWorldPos) override;
     bool addToInventory(const std::shared_ptr<Entity> &item) override;
 

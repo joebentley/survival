@@ -120,15 +120,15 @@ int main(int argc, char* argv[])
                 manager.initialize();
                 manager.setTimeOfDay(Time(6, 0));
 
-                std::unordered_map<std::string, std::shared_ptr<Screen>> screens;
+                std::unordered_map<ScreenType, std::shared_ptr<Screen>> screens;
 
-                screens["NotificationMessageScreen"] = std::make_shared<NotificationMessageScreen>();
-                screens["InventoryScreen"] = std::make_shared<InventoryScreen>(*player);
-                screens["LootingDialog"] = std::make_shared<LootingDialog>(*player);
-                screens["InspectionDialog"] = std::make_shared<InspectionDialog>(*player);
-                screens["CraftingScreen"] = std::make_shared<CraftingScreen>(*player);
-                screens["EquipmentScreen"] = std::make_shared<EquipmentScreen>(*player);
-                screens["HelpScreen"] = std::make_shared<HelpScreen>();
+                screens[ScreenType::NOTIFICATION] = std::make_shared<NotificationMessageScreen>();
+                screens[ScreenType::INVENTORY] = std::make_shared<InventoryScreen>(*player);
+                screens[ScreenType::LOOTING] = std::make_shared<LootingDialog>(*player);
+                screens[ScreenType::INSPECTION] = std::make_shared<InspectionDialog>(*player);
+                screens[ScreenType::CRAFTING] = std::make_shared<CraftingScreen>(*player);
+                screens[ScreenType::EQUIPMENT] = std::make_shared<EquipmentScreen>(*player);
+                screens[ScreenType::HELP] = std::make_shared<HelpScreen>();
 
                 bool initialMessage = true;
                 std::vector<std::string> initialMessageLines({

@@ -53,7 +53,7 @@ void PlayerEntity::tick() {
     Entity::tick();
 }
 
-void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_map<std::string, std::shared_ptr<Screen>> &screens)
+void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_map<ScreenType, std::shared_ptr<Screen>> &screens)
 {
     auto key = e.keysym.sym;
     auto mod = e.keysym.mod;
@@ -118,7 +118,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
                         return;
                     }
                 } else {
-                    auto &lootingDialog = dynamic_cast<LootingDialog&>(*screens.at("LootingDialog"));
+                    auto &lootingDialog = dynamic_cast<LootingDialog&>(*screens[ScreenType::LOOTING]);
                     lootingDialog.showItemsToLoot(entity->getInventory(), entity);
                     return;
                 }
@@ -143,7 +143,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
                     return;
                 }
             } else {
-                auto &lootingDialog = dynamic_cast<LootingDialog&>(*screens.at("LootingDialog"));
+                auto &lootingDialog = dynamic_cast<LootingDialog&>(*screens[ScreenType::LOOTING]);
                 lootingDialog.showItemsToLoot(pickuppableEntities);
                 return;
             }
@@ -201,7 +201,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
         }
 
         if (key == SDLK_i) {
-            screens.at("InventoryScreen")->enable();
+            screens[ScreenType::INVENTORY]->enable();
         }
 
         if (key == SDLK_PERIOD) {
@@ -210,21 +210,21 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
         }
 
         if (key == SDLK_SEMICOLON) {
-            auto &b = dynamic_cast<InspectionDialog&>(*screens.at("InspectionDialog"));
+            auto &b = dynamic_cast<InspectionDialog&>(*screens[ScreenType::INSPECTION]);
             b.enableAtPoint(pos);
         }
 
         if (key == SDLK_c)
-            screens.at("CraftingScreen")->enable();
+            screens[ScreenType::CRAFTING]->enable();
 
         if (key == SDLK_e)
-            screens.at("EquipmentScreen")->enable();
+            screens[ScreenType::EQUIPMENT]->enable();
 
         if (key == SDLK_m)
-            screens.at("NotificationMessageScreen")->enable();
+            screens[ScreenType::NOTIFICATION]->enable();
 
         if (mod & KMOD_SHIFT && key == SDLK_SLASH)
-            screens.at("HelpScreen")->enable();
+            screens[ScreenType::HELP]->enable();
     }
 
     if (didAction)
