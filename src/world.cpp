@@ -136,7 +136,6 @@ Point worldToScreen(Point worldSpacePoint) {
     return { worldSpacePoint.x % SCREEN_WIDTH, worldSpacePoint.y % SCREEN_HEIGHT };
 }
 
-Point worldPosToWorld(Point worldPos)
-{
+Point worldPosToWorld(Point worldPos) {
 	return { worldPos.x * SCREEN_WIDTH, worldPos.y * SCREEN_HEIGHT };
 }
