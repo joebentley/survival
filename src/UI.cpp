@@ -962,3 +962,18 @@ void NotificationMessageScreen::render(Font &font) {
         font.drawText(*front, xOffset, numMessagesToShow + 1 - i);
     }
 }
+
+void HelpScreen::handleInput(SDL_KeyboardEvent &e) {
+    if (e.keysym.sym == SDLK_ESCAPE || (e.keysym.sym == SDLK_SLASH && e.keysym.mod & KMOD_SHIFT))
+        enabled = false;
+}
+
+void HelpScreen::render(Font &font) {
+    const int yPadding = 2;
+    const int xPadding = 2;
+    int y = 0;
+
+    for (auto line : displayLines) {
+        font.drawText(line, xPadding, yPadding + y++);
+    }
+}

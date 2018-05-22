@@ -56,7 +56,7 @@ void PlayerEntity::tick() {
 void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen,
                                LootingDialog &lootingDialog, InspectionDialog &inspectionDialog,
                                CraftingScreen &craftingScreen, EquipmentScreen &equipmentScreen,
-                               NotificationMessageScreen &notificationMessageScreen) {
+                               NotificationMessageScreen &notificationMessageScreen, HelpScreen &helpScreen) {
     auto key = e.keysym.sym;
     auto mod = e.keysym.mod;
 
@@ -97,6 +97,9 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
         if (key == SDLK_g) {
             auto entitiesAtPos = EntityManager::getInstance().getEntitiesAtPosFaster(pos);
 
+            // TODO: need to handle multiple items on same square properly
+//            std::vector<std::shared_ptr<Entity>> waterEntities;
+
             std::vector<std::shared_ptr<Entity>> entitiesWithInventories;
             std::copy_if(entitiesAtPos.begin(), entitiesAtPos.end(), std::back_inserter(entitiesWithInventories),
                          [](auto &a) {
@@ -111,6 +114,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
                     if (addToInventory(entity->getInventoryItem(0))) {
                         entity->removeFromInventory(0);
                         didAction = true;
+                        goto postLooting;
                     } else {
                         showingTooMuchWeightMessage = true;
                         return;
@@ -134,6 +138,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
             else if (pickuppableEntities.size() == 1) {
                 if (addToInventory(*pickuppableEntities.begin())) {
                     didAction = true;
+                    goto postLooting;
                 } else {
                     showingTooMuchWeightMessage = true;
                     return;
@@ -143,6 +148,8 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
                 return;
             }
         }
+
+        postLooting:
 
         if (hp > 0 && (key == SDLK_h || key == SDLK_j || key == SDLK_k || key == SDLK_l ||
                        key == SDLK_y || key == SDLK_u || key == SDLK_b || key == SDLK_n)) // Only ever attack if moving
@@ -216,6 +223,9 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
 
         if (key == SDLK_m)
             notificationMessageScreen.enabled = true;
+
+        if (mod & KMOD_SHIFT && key == SDLK_SLASH)
+            helpScreen.enabled = true;
     }
 
     if (didAction)

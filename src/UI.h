@@ -200,4 +200,22 @@ private:
     int choosingNewEquipmentIndex {0};
 };
 
+struct HelpScreen {
+    const std::vector<std::string> displayLines = {
+        "Diagonal movement: y u b n",
+        "Cardinal movement: h j k l",
+        "Get item: g",
+        "Wait 1 tick: period (.)",
+        "Force attack: shift + direction",
+        "Inventory: i",
+        "Equipment: e",
+        "Crafting: c",
+        "Message log: m",
+        "This screen: ?"
+    };
+
+    bool enabled {false};
+    void handleInput(SDL_KeyboardEvent &e);
+    void render(Font &font);
+};
 #endif // DIALOG_H_

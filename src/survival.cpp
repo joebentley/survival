@@ -120,13 +120,21 @@ int main(int argc, char* argv[])
                 manager.initialize();
                 manager.setTimeOfDay(Time(6, 0));
 
-                // TODO: Tidy up all the screens somehow?
+                // TODO: Tidy up all the screens
                 NotificationMessageScreen notificationMessageScreen;
                 InventoryScreen inventoryScreen(*player);
                 LootingDialog lootingDialog(*player);
                 InspectionDialog inspectionDialog(*player);
                 CraftingScreen craftingScreen(*player);
                 EquipmentScreen equipmentScreen(*player);
+                HelpScreen helpScreen;
+
+                bool initialMessage = true;
+                std::vector<std::string> initialMessageLines({
+                        "Welcome to the game",
+                        "? for help (once you've closed this)",
+                        "return to start"
+                });
 
                 bool quit = false;
                 SDL_Event e;
@@ -140,10 +148,11 @@ int main(int argc, char* argv[])
 
                     // TODO: Fix random slow input frames
                     while (SDL_PollEvent(&e) != 0) {
-                        if (e.type == SDL_QUIT) {
+                        if (e.type == SDL_QUIT)
                             quit = true;
-                        }
-                        else if (e.type == SDL_KEYDOWN) {
+                        else if (initialMessage && e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_RETURN)
+                            initialMessage = false;
+                        else if (!initialMessage && e.type == SDL_KEYDOWN) {
                             if (inventoryScreen.enabled)
                                 inventoryScreen.handleInput(e.key);
                             else if (lootingDialog.enabled)
@@ -156,10 +165,12 @@ int main(int argc, char* argv[])
                                 equipmentScreen.handleInput(e.key);
                             else if (notificationMessageScreen.enabled)
                                 notificationMessageScreen.handleInput(e.key);
+                            else if (helpScreen.enabled)
+                                helpScreen.handleInput(e.key);
                             else
                                 dynamic_cast<PlayerEntity &>(*player).handleInput(e.key, quit, inventoryScreen,
                                         lootingDialog, inspectionDialog, craftingScreen,
-                                        equipmentScreen, notificationMessageScreen);
+                                        equipmentScreen, notificationMessageScreen, helpScreen);
                         }
                     }
 
@@ -176,6 +187,8 @@ int main(int argc, char* argv[])
                         equipmentScreen.render(font);
                     else if (notificationMessageScreen.enabled)
                         notificationMessageScreen.render(font);
+                    else if (helpScreen.enabled)
+                        helpScreen.render(font);
                     else if (!lootingDialog.viewingDescription && !inspectionDialog.viewingDescription) {
                         world.render(font, player->getWorldPos());
                         NotificationMessageRenderer::getInstance().render(font);
@@ -195,6 +208,9 @@ int main(int argc, char* argv[])
                         MessageBoxRenderer::getInstance().queueMessageBoxCentered(
                                 std::vector<std::string> {"$[red]You died!", "", "Press return to quit"}, 1);
                     }
+
+                    if (initialMessage)
+                        MessageBoxRenderer::getInstance().queueMessageBoxCentered(initialMessageLines, 1);
 
                     MessageBoxRenderer::getInstance().render(font);
 
