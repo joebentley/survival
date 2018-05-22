@@ -4,10 +4,10 @@
 
 #include <SDL2/SDL.h>
 #include <string>
+#include <ctime>
 #include "font.h"
 #include "entities.h"
 #include "recipe.h"
-
 
 void showMessageBox(Font& font, const std::vector<std::string> &contents, int padding, int x, int y);
 
@@ -51,7 +51,10 @@ struct NotificationMessageRenderer {
         return instance;
     }
 
-    NotificationMessageRenderer() = default;
+    NotificationMessageRenderer() {
+        previousTime = clock();
+    }
+
     NotificationMessageRenderer(const NotificationMessageRenderer&) = delete;
     void operator=(const NotificationMessageRenderer&) = delete;
 
@@ -65,14 +68,15 @@ struct NotificationMessageRenderer {
 private:
     const int MAX_ON_SCREEN {6};
     const int INITIAL_Y_POS {SCREEN_HEIGHT - 2};
-    const int ALPHA_DECAY_PER_RENDER {2};
+    const float ALPHA_DECAY_PER_SEC {1};
     std::deque<std::string> messagesToBeRendered;
     std::deque<std::string> allMessages;
-    int alpha {0xFF};
+    float alpha {1};
+    clock_t previousTime {0};
 };
 
 struct Screen {
-    Screen(bool shouldRenderWorld) : mShouldRenderWorld(shouldRenderWorld) {}
+    explicit Screen(bool shouldRenderWorld) : mShouldRenderWorld(shouldRenderWorld) {}
 
     virtual void enable() {
         enabled = true;

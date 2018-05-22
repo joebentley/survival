@@ -191,11 +191,9 @@ int main(int argc, char* argv[])
                     statusUI->render(font, player->getWorldPos());
                     NotificationMessageRenderer::getInstance().render(font);
 
-
                     if (screenToRender != nullptr) {
                         screenToRender->render(font);
                     }
-
 
                     if (player->hp <= 0) {
                         MessageBoxRenderer::getInstance().queueMessageBoxCentered(

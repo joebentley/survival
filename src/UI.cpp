@@ -937,18 +937,23 @@ void NotificationMessageRenderer::queueMessage(const std::string &message) {
 }
 
 void NotificationMessageRenderer::render(Font &font) {
+    auto currentTime = clock();
+
     auto front = messagesToBeRendered.cbegin();
     for (int i = 0; front != messagesToBeRendered.cend() && i < MAX_ON_SCREEN; ++i, ++front) {
-        font.drawText(*front, 4, INITIAL_Y_POS - static_cast<int>(messagesToBeRendered.size()) + i, i == 0 ? alpha : -1);
+        font.drawText(*front, 4, INITIAL_Y_POS - static_cast<int>(messagesToBeRendered.size()) + i,
+                i == 0 ? static_cast<int>(0xFF * alpha) : -1);
 
-        if (i == 0)
-            alpha -= ALPHA_DECAY_PER_RENDER;
+        if (i == 0) // TODO: why is alpha decay slower when in a menu?
+            alpha -= ALPHA_DECAY_PER_SEC * static_cast<float>(currentTime - previousTime) / CLOCKS_PER_SEC;
     }
 
     if (alpha <= 0) {
-        alpha = 0xFF;
+        alpha = 1;
         messagesToBeRendered.pop_front();
     }
+
+    previousTime = currentTime;
 }
 
 void NotificationMessageScreen::handleInput(SDL_KeyboardEvent &e) {
