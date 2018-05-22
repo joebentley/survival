@@ -472,7 +472,7 @@ void InspectionDialog::render(Font &font) {
 
         lines.emplace_back("");
         lines.emplace_back(" (-)-$(up) (=)-$(down) return-desc");
-        MessageBoxRenderer::getInstance().queueMessageBox(lines, 1, xPosWindow - 1, 2);
+        showMessageBox(font, lines, 1, xPosWindow - 1, 2);
         font.draw("right", xPosWindow + 2 - 1, 2 + 3 + chosenIndex);
         thereIsAnEntity = true;
     } else {
