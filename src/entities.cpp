@@ -12,11 +12,11 @@ bool PlayerEntity::attack(const Point &attackPos) {
 
     auto enemy = entitiesInSquare[0];
     int damage = rollDamage();
-    enemy->hp -= damage;
+    enemy->mHp -= damage;
 
     NotificationMessageRenderer::getInstance().queueMessage(
-            "$(dwarf) hit " + enemy->graphic + " " + enemy->name + "$[white] with $[red]$(heart)$[white]" + std::to_string(hitTimes) +
-            "d" + std::to_string(hitAmount) + " for " + std::to_string(damage));
+            "$(dwarf) hit " + enemy->mGraphic + " " + enemy->mName + "$[white] with $[red]$(heart)$[white]" + std::to_string(mHitTimes) +
+            "d" + std::to_string(mHitAmount) + " for " + std::to_string(damage));
 
     // TODO: Add AV
     // TODO: Add avoidance
@@ -32,11 +32,11 @@ bool PlayerEntity::attack(const Point &attackPos) {
     auto& ui = dynamic_cast<StatusUIEntity&>(*EntityManager::getInstance().getEntityByID("StatusUI"));
     ui.setAttackTarget(enemy);
 
-    if (enemy->hp <= 0) {
+    if (enemy->mHp <= 0) {
         ui.clearAttackTarget();
-        EntityManager::getInstance().queueForDeletion(enemy->ID);
+        EntityManager::getInstance().queueForDeletion(enemy->mID);
         attacking = false;
-        NotificationMessageRenderer::getInstance().queueMessage(enemy->graphic + " " + enemy->name + "$[white] was ${black}$[red]destroyed!");
+        NotificationMessageRenderer::getInstance().queueMessage(enemy->mGraphic + " " + enemy->mName + "$[white] was ${black}$[red]destroyed!");
         return false;
     }
 
@@ -48,7 +48,7 @@ void PlayerEntity::tick() {
     hunger -= hungerRate;
 
     if (hunger < 0.3)
-        hp -= hungerDamageRate;
+        mHp -= hungerDamageRate;
 
     Entity::tick();
 }
@@ -75,10 +75,10 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
         return;
     }
 
-    if (hp > 0) {
+    if (mHp > 0) {
         // Handle interaction
         if (key == SDLK_SPACE) {
-            auto entitiesSurrounding = EntityManager::getInstance().getEntitiesSurroundingFaster(pos);
+            auto entitiesSurrounding = EntityManager::getInstance().getEntitiesSurroundingFaster(mPos);
 
             // Just use the first interactable entity found
             for (auto &entity : entitiesSurrounding) {
@@ -93,7 +93,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
 
         // Handle looting
         if (key == SDLK_g) {
-            auto entitiesAtPos = EntityManager::getInstance().getEntitiesAtPosFaster(pos);
+            auto entitiesAtPos = EntityManager::getInstance().getEntitiesAtPosFaster(mPos);
 
             // TODO: need to handle multiple items on same square properly
 //            std::vector<std::shared_ptr<Entity>> waterEntities;
@@ -107,7 +107,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
             if (!entitiesWithInventories.empty()) {
                 // TODO: what if multiple chests are present?
                 auto entity = entitiesWithInventories[0];
-                if (entity->skipLootingDialog) {
+                if (entity->mSkipLootingDialog) {
                     // Loot just the first item
                     if (addToInventory(entity->getInventoryItem(0))) {
                         entity->removeFromInventory(0);
@@ -151,7 +151,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
 
         postLooting:
 
-        if (hp > 0 && (key == SDLK_h || key == SDLK_j || key == SDLK_k || key == SDLK_l ||
+        if (mHp > 0 && (key == SDLK_h || key == SDLK_j || key == SDLK_k || key == SDLK_l ||
                        key == SDLK_y || key == SDLK_u || key == SDLK_b || key == SDLK_n)) // Only ever attack if moving
         {
             Point posOffset;
@@ -184,7 +184,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
 
             auto newPos = getPos() + posOffset;
 
-            auto enemiesInSpace = EntityManager::getInstance().getEntitiesAtPosFaster(pos + posOffset);
+            auto enemiesInSpace = EntityManager::getInstance().getEntitiesAtPosFaster(mPos + posOffset);
             // TODO: what if more than one enemy in space?
             if (!enemiesInSpace.empty()
                 && ((enemiesInSpace[0]->getBehaviourByID("HostilityBehaviour") != nullptr
@@ -211,7 +211,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
 
         if (key == SDLK_SEMICOLON) {
             auto &b = dynamic_cast<InspectionDialog&>(*screens[ScreenType::INSPECTION]);
-            b.enableAtPoint(pos);
+            b.enableAtPoint(mPos);
         }
 
         if (key == SDLK_c)
@@ -230,7 +230,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
     if (didAction)
         EntityManager::getInstance().tick();
 
-    if (hp <= 0 && key == SDLK_RETURN)
+    if (mHp <= 0 && key == SDLK_RETURN)
         quit = true;
 }
 
@@ -250,7 +250,7 @@ void PlayerEntity::render(Font &font, Point currentWorldPos) {
 bool PlayerEntity::addToInventory(const std::shared_ptr<Entity> &item) {
     if (Entity::addToInventory(item)) {
         NotificationMessageRenderer::getInstance()
-                .queueMessage("You got a " + item->graphic + " " + item->name + "${transparent}$[white]!");
+                .queueMessage("You got a " + item->mGraphic + " " + item->mName + "${transparent}$[white]!");
         return true;
     }
     return false;
@@ -262,7 +262,7 @@ void PlayerEntity::addHunger(float hungerRestoration) {
 
 void StatusUIEntity::render(Font &font, Point currentWorldPos) {
     std::string colorStr;
-    float hpPercent = player.hp / player.maxhp;
+    float hpPercent = player.mHp / player.mMaxHp;
 
     if (hpPercent > 0.7)
         colorStr = "$[green]";
@@ -271,8 +271,8 @@ void StatusUIEntity::render(Font &font, Point currentWorldPos) {
     else
         colorStr = "$[red]";
 
-    font.drawText("${black}" + colorStr + "hp " + std::to_string((int)ceil(player.hp))
-                  + "/" + std::to_string((int)ceil(player.maxhp)), SCREEN_WIDTH - X_OFFSET, 1);
+    font.drawText("${black}" + colorStr + "hp " + std::to_string((int)ceil(player.mHp))
+                  + "/" + std::to_string((int)ceil(player.mMaxHp)), SCREEN_WIDTH - X_OFFSET, 1);
 
     if (player.hunger > 0.7)
         font.drawText("${black}$[green]sated", SCREEN_WIDTH - X_OFFSET, 2);
@@ -281,7 +281,7 @@ void StatusUIEntity::render(Font &font, Point currentWorldPos) {
     else
         font.drawText("${black}$[red]starving", SCREEN_WIDTH - X_OFFSET, 2);
 
-    font.drawText("$[red]$(heart)$[white]" + std::to_string(player.hitTimes) + "d" + std::to_string(player.computeMaxDamage())
+    font.drawText("$[red]$(heart)$[white]" + std::to_string(player.mHitTimes) + "d" + std::to_string(player.computeMaxDamage())
             , SCREEN_WIDTH - X_OFFSET, 3);
 
     font.drawText("${black}" + std::to_string(player.getCarryingWeight()) + "/" + std::to_string(player.getMaxCarryWeight()) + "lb",
@@ -299,7 +299,7 @@ void StatusUIEntity::render(Font &font, Point currentWorldPos) {
     }
 
     if (attackTarget != nullptr) {
-        float enemyhpPercent = attackTarget->hp / attackTarget->maxhp;
+        float enemyhpPercent = attackTarget->mHp / attackTarget->mMaxHp;
         std::string enemyhpString = "${black}";
 
         if (enemyhpPercent == 1)
@@ -344,22 +344,22 @@ void StatusUIEntity::tick() {
 }
 
 void CatEntity::destroy() {
-    auto corpse = std::make_shared<CorpseEntity>(ID + "corpse", 0.4, name, 100);
+    auto corpse = std::make_shared<CorpseEntity>(mID + "corpse", 0.4, mName, 100);
     corpse->setPos(getPos());
     EntityManager::getInstance().addEntity(corpse);
 }
 
 void WolfEntity::destroy() {
-    auto corpse = std::make_shared<CorpseEntity>(ID + "corpse", 0.4, name, 100);
+    auto corpse = std::make_shared<CorpseEntity>(mID + "corpse", 0.4, mName, 100);
     corpse->setPos(getPos());
     EntityManager::getInstance().addEntity(corpse);
 }
 
 void BushEntity::render(Font &font, Point currentWorldPos) {
     if (!isInventoryEmpty()) {
-        graphic = "${black}$[purple]$(div)";
+        mGraphic = "${black}$[purple]$(div)";
     } else {
-        graphic = "${black}$[green]$(div)";
+        mGraphic = "${black}$[green]$(div)";
     }
 
     Entity::render(font, currentWorldPos);
@@ -367,11 +367,11 @@ void BushEntity::render(Font &font, Point currentWorldPos) {
 
 void FireEntity::render(Font &font, Point currentWorldPos) {
     if (fireLevel < 0.1)
-        graphic = "${black}$[grey]%";
+        mGraphic = "${black}$[grey]%";
     else if (rand() % 2 == 0)
-        graphic = "${black}$[red]%";
+        mGraphic = "${black}$[red]%";
     else
-        graphic = "${black}$[orange]%";
+        mGraphic = "${black}$[orange]%";
 
     dynamic_cast<LightEmittingBehaviour&>(*getBehaviourByID("LightEmittingBehaviour")).setRadius(static_cast<int>(std::round(6 * fireLevel)));
 
@@ -384,9 +384,9 @@ void FireEntity::tick() {
 
 void GrassEntity::render(Font &font, Point currentWorldPos) {
     if (!isInventoryEmpty()) {
-        graphic = "${black}$[grasshay]$(tau)";
+        mGraphic = "${black}$[grasshay]$(tau)";
     } else {
-        graphic = "${black}$[grasshay].";
+        mGraphic = "${black}$[grasshay].";
     }
 
     Entity::render(font, currentWorldPos);
@@ -424,7 +424,7 @@ bool FireEntity::RekindleBehaviour::handleInput(SDL_KeyboardEvent &e) {
                 const auto &player = EntityManager::getInstance().getEntityByID("Player");
                 const auto &entities = player->filterInventoryForCraftingMaterials(std::vector<std::string> {"grass", "wood"});
                 player->removeFromInventory(entities[choosingItemIndex]);
-                dynamic_cast<FireEntity&>(parent).fireLevel = 1;
+                dynamic_cast<FireEntity&>(mParent).fireLevel = 1;
                 NotificationMessageRenderer::getInstance().queueMessage("$[red]Rekindled fire");
                 choosingItemToUse = false;
                 return false;
@@ -457,7 +457,7 @@ void FireEntity::RekindleBehaviour::render(Font &font) {
 
         for (int i = 0; i < entities.size(); ++i) {
             const auto &entity = EntityManager::getInstance().getEntityByID(entities[i]);
-            displayStrings.emplace_back((i == choosingItemIndex ? "$(right)" : " ") + entity->graphic + " " + entity->name);
+            displayStrings.emplace_back((i == choosingItemIndex ? "$(right)" : " ") + entity->mGraphic + " " + entity->mName);
         }
 
         MessageBoxRenderer::getInstance().queueMessageBoxCentered(displayStrings, 1);
@@ -470,13 +470,13 @@ void GlowbugEntity::render(Font &font, Point currentWorldPos) {
     if (timer++ > (rand() % 20) + 20){
         switch (rand() % 3) {
             case 0:
-                graphic = "$[green]`";
+                mGraphic = "$[green]`";
                 break;
             case 1:
-                graphic = "$[green]'";
+                mGraphic = "$[green]'";
                 break;
             case 2:
-                graphic = "";
+                mGraphic = "";
                 break;
             default:
                 break;

@@ -10,13 +10,13 @@
 
 void World::render(Font &font, const Point worldPos)
 {
-	if (std::find(generatedScreens.cbegin(), generatedScreens.cend(), worldPos) == generatedScreens.cend())
+	if (std::find(mGeneratedScreens.cbegin(), mGeneratedScreens.cend(), worldPos) == mGeneratedScreens.cend())
 		randomizeScreensAround(worldPos);
 
     Color grey = getColor("grey");
     for (int y = 0; y < SCREEN_HEIGHT; ++y)
         for (int x = 0; x < SCREEN_WIDTH; ++x)
-            font.draw(this->floor[worldPosToWorld(worldPos) + Point(x, y)], x, y, grey);
+            font.draw(this->mFloor[worldPosToWorld(worldPos) + Point(x, y)], x, y, grey);
 }
 
 void World::randomizeScreensAround(Point pos)
@@ -27,7 +27,7 @@ void World::randomizeScreensAround(Point pos)
 
 	for (const auto &point : pointsIncludingSurrounding)
 	{
-		if (std::find(generatedScreens.cbegin(), generatedScreens.cend(), point) == generatedScreens.cend())
+		if (std::find(mGeneratedScreens.cbegin(), mGeneratedScreens.cend(), point) == mGeneratedScreens.cend())
 			randomizeScreen(point);
 	}
 }
@@ -36,7 +36,7 @@ void World::randomizeScreen(Point worldPos)
 {
     auto &manager = EntityManager::getInstance();
 
-	generatedScreens.push_back(worldPos);
+	mGeneratedScreens.push_back(worldPos);
 
 	Point p0 = worldPosToWorld(worldPos);
 	// On first pass generate floor tiles
@@ -46,16 +46,16 @@ void World::randomizeScreen(Point worldPos)
         // Generate background tile
         switch (rand() % 4) {
             case 0:
-                this->floor[p] = "`";
+                this->mFloor[p] = "`";
                 break;
             case 1:
-                this->floor[p] = "'";
+                this->mFloor[p] = "'";
                 break;
             case 2:
-                this->floor[p] = ".";
+                this->mFloor[p] = ".";
                 break;
             case 3:
-                this->floor[p] = ",";
+                this->mFloor[p] = ",";
                 break;
         }
     }
@@ -133,9 +133,9 @@ void World::randomizeScreen(Point worldPos)
 }
 
 Point worldToScreen(Point worldSpacePoint) {
-    return { worldSpacePoint.x % SCREEN_WIDTH, worldSpacePoint.y % SCREEN_HEIGHT };
+    return { worldSpacePoint.mX % SCREEN_WIDTH, worldSpacePoint.mY % SCREEN_HEIGHT };
 }
 
 Point worldPosToWorld(Point worldPos) {
-	return { worldPos.x * SCREEN_WIDTH, worldPos.y * SCREEN_HEIGHT };
+	return { worldPos.mX * SCREEN_WIDTH, worldPos.mY * SCREEN_HEIGHT };
 }

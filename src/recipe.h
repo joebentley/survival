@@ -8,7 +8,7 @@
 
 struct Recipe;
 struct RecipeManager {
-    std::vector<std::shared_ptr<Recipe>> recipes;
+    std::vector<std::shared_ptr<Recipe>> mRecipes;
 
     static RecipeManager& getInstance() {
         static RecipeManager instance;
@@ -22,17 +22,17 @@ struct RecipeManager {
 
 struct Recipe {
     struct Ingredient {
-        int quantity;
-        std::string entityType;
+        int mQuantity;
+        std::string mEntityType;
     };
 
-    std::vector<Ingredient> ingredients;
-    std::string nameOfProduct; // Name to show in crafting menu
-    bool goesIntoInventory {true}; // If true, item will go into inventory, if not it will be built in the world
-    Point pointIfNotGoingIntoInventory;
+    std::vector<Ingredient> mIngredients;
+    std::string mNameOfProduct; // Name to show in crafting menu
+    bool mGoesIntoInventory {true}; // If true, item will go into inventory, if not it will be built in the world
+    Point mPointIfNotGoingIntoInventory;
 
     Recipe() : Recipe("") {}
-    explicit Recipe(std::string nameOfProduct) : nameOfProduct(std::move(nameOfProduct)) {}
+    explicit Recipe(std::string nameOfProduct) : mNameOfProduct(std::move(nameOfProduct)) {}
     Recipe(const Recipe &other) = default;
 
     virtual void produce() {};
@@ -42,9 +42,9 @@ struct FireRecipe : Recipe {
     static int numProduced;
 
     FireRecipe() : Recipe("Fire") {
-        ingredients.emplace_back(Ingredient { 2, "wood" });
-        ingredients.emplace_back(Ingredient { 2, "grass" });
-        goesIntoInventory = false;
+        mIngredients.emplace_back(Ingredient { 2, "wood" });
+        mIngredients.emplace_back(Ingredient { 2, "grass" });
+        mGoesIntoInventory = false;
     }
 
     void produce() override;
@@ -54,7 +54,7 @@ struct BandageRecipe : Recipe {
     static int numProduced;
 
     BandageRecipe() : Recipe("Bandage") {
-        ingredients.emplace_back(Ingredient { 1, "grass" });
+        mIngredients.emplace_back(Ingredient { 1, "grass" });
     }
 
     void produce() override;
@@ -64,8 +64,8 @@ struct TorchRecipe : Recipe {
     static int numProduced;
 
     TorchRecipe() : Recipe("Torch") {
-        ingredients.emplace_back(Ingredient { 1, "wood" });
-        ingredients.emplace_back(Ingredient { 1, "grass" });
+        mIngredients.emplace_back(Ingredient { 1, "wood" });
+        mIngredients.emplace_back(Ingredient { 1, "grass" });
     }
 
     void produce() override;
@@ -73,7 +73,7 @@ struct TorchRecipe : Recipe {
 
 struct BagRecipe : Recipe {
     BagRecipe() : Recipe("Bag") {
-        ingredients.emplace_back(Ingredient { 5, "grass" });
+        mIngredients.emplace_back(Ingredient { 5, "grass" });
     }
 
     void produce() override;

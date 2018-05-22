@@ -14,8 +14,7 @@ Point worldToScreen(Point worldSpacePoint);
 Point worldPosToWorld(Point worldPos);
 
 struct World {
-//    std::string floor[WORLD_HEIGHT][WORLD_WIDTH][SCREEN_HEIGHT][SCREEN_WIDTH];
-	std::unordered_map<Point, std::string> floor;
+	std::unordered_map<Point, std::string> mFloor;
 
     void render(Font &font, int worldX, int worldY) {
 		render(font, Point(worldX, worldY));
@@ -25,7 +24,7 @@ struct World {
 	void randomizeScreensAround(Point worldPos);
 	void randomizeScreen(Point worldPos);
 private:
-	std::vector<Point> generatedScreens;
+	std::vector<Point> mGeneratedScreens;
 };
 
 #endif // WORLD_H_

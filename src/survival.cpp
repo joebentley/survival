@@ -80,11 +80,11 @@ int main(int argc, char* argv[])
                 manager.addEntity(player);
 
                 auto cat = std::make_shared<CatEntity>("cat1");
-                cat->setPos(player->getPos().x - 10, player->getPos().y - 10);
+                cat->setPos(player->getPos().mX - 10, player->getPos().mY - 10);
                 manager.addEntity(cat);
 
                 auto glowbug = std::make_shared<GlowbugEntity>();
-                glowbug->setPos(player->getPos().x - 10, player->getPos().y + 4);
+                glowbug->setPos(player->getPos().mX - 10, player->getPos().mY + 4);
                 manager.addEntity(glowbug);
 
                 auto apple = std::make_shared<AppleEntity>("apple");
@@ -195,7 +195,7 @@ int main(int argc, char* argv[])
                         screenToRender->render(font);
                     }
 
-                    if (player->hp <= 0) {
+                    if (player->mHp <= 0) {
                         MessageBoxRenderer::getInstance().queueMessageBoxCentered(
                                 std::vector<std::string> {"$[red]You died!", "", "Press return to quit"}, 1);
                     }

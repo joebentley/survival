@@ -46,13 +46,13 @@ struct MessageBoxRenderer {
 
 private:
     struct MessageBoxData {
-        std::vector<std::string> contents;
-        int padding;
-        int x;
-        int y;
+        std::vector<std::string> mContents;
+        int mPadding;
+        int mX;
+        int mY;
     };
 
-    std::deque<MessageBoxData> renderingQueue;
+    std::deque<MessageBoxData> mRenderingQueue;
 };
 
 struct NotificationMessageRenderer {
@@ -72,16 +72,16 @@ struct NotificationMessageRenderer {
     void render(Font &font);
 
     std::deque<std::string> getMessages() const {
-        return allMessages;
+        return mAllMessages;
     }
 
 private:
-    const int MAX_ON_SCREEN {6};
-    const int INITIAL_Y_POS {SCREEN_HEIGHT - 2};
-    const float ALPHA_DECAY_PER_SEC {1};
-    std::deque<std::string> messagesToBeRendered;
-    std::deque<std::string> allMessages;
-    float alpha {1};
+    const int cMaxOnScreen {6};
+    const int cInitialYPos {SCREEN_HEIGHT - 2};
+    const float cAlphaDecayPerSec {1};
+    std::deque<std::string> mMessagesToBeRendered;
+    std::deque<std::string> mAllMessages;
+    float mAlpha {1};
     clock_t previousTime {0};
 };
 
@@ -89,13 +89,13 @@ struct Screen {
     explicit Screen(bool shouldRenderWorld) : mShouldRenderWorld(shouldRenderWorld) {}
 
     virtual void enable() {
-        enabled = true;
+        mEnabled = true;
     }
     virtual void disable() {
-        enabled = false;
+        mEnabled = false;
     }
     bool isEnabled() const {
-        return enabled;
+        return mEnabled;
     }
     bool shouldRenderWorld() const {
         return mShouldRenderWorld;
@@ -104,7 +104,7 @@ struct Screen {
     virtual void render(Font &font) = 0;
 
 protected:
-    bool enabled {false};
+    bool mEnabled {false};
     bool mShouldRenderWorld;
 };
 
@@ -123,24 +123,24 @@ struct InventoryScreen : Screen {
     static const int Y_OFFSET = 4;
     static const int WORD_WRAP_COLUMN = 60;
 
-    explicit InventoryScreen(PlayerEntity &player) : Screen(false), player(player) {}
+    explicit InventoryScreen(PlayerEntity &player) : Screen(false), mPlayer(player) {}
 
     void handleInput(SDL_KeyboardEvent &e) override;
     void render(Font& font) override;
 
     void enable() override {
-        chosenIndex = 0;
+        mChosenIndex = 0;
         Screen::enable();
     }
 
 private:
-    PlayerEntity &player;
-    int chosenIndex {0};
-    bool viewingDescription {false};
+    PlayerEntity &mPlayer;
+    int mChosenIndex {0};
+    bool mViewingDescription {false};
 };
 
 struct LootingDialog : Screen {
-    explicit LootingDialog(PlayerEntity &player) : Screen(true), player(player) {}
+    explicit LootingDialog(PlayerEntity &player) : Screen(true), mPlayer(player) {}
 
     void showItemsToLoot(std::vector<std::shared_ptr<Entity>> items);
     void showItemsToLoot(std::vector<std::shared_ptr<Entity>> items, std::shared_ptr<Entity> entityToTransferFrom);
@@ -150,38 +150,38 @@ struct LootingDialog : Screen {
 private:
     const int DIALOG_WIDTH = 30;
 
-    bool viewingDescription {false};
-    bool showingTooMuchWeightMessage {false};
-    PlayerEntity &player;
-    std::vector<std::shared_ptr<Entity>> itemsToShow;
-    int chosenIndex {0};
-    std::shared_ptr<Entity> entityToTransferFrom;
+    bool mViewingDescription {false};
+    bool mShowingTooMuchWeightMessage {false};
+    PlayerEntity &mPlayer;
+    std::vector<std::shared_ptr<Entity>> mItemsToShow;
+    int mChosenIndex {0};
+    std::shared_ptr<Entity> mEntityToTransferFrom;
 };
 
 struct InspectionDialog : Screen {
-    explicit InspectionDialog(PlayerEntity &player) : Screen(true), player(player) {}
+    explicit InspectionDialog(PlayerEntity &player) : Screen(true), mPlayer(player) {}
 
     void handleInput(SDL_KeyboardEvent &e) override;
     void render(Font& font) override;
 
     void enableAtPoint(Point initialPoint) {
-        chosenPoint = initialPoint;
+        mChosenPoint = initialPoint;
         Screen::enable();
     }
 
 private:
     inline Point clipToScreenEdge(const Point &p) const;
-    PlayerEntity &player;
-    Point chosenPoint;
-    bool selectingFromMultipleOptions {false};
-    int chosenIndex {0};
-    bool viewingDescription {false};
-    bool thereIsAnEntity {false};
+    PlayerEntity &mPlayer;
+    Point mChosenPoint;
+    bool mSelectingFromMultipleOptions {false};
+    int mChosenIndex {0};
+    bool mViewingDescription {false};
+    bool mThereIsAnEntity {false};
 };
 
 struct Recipe;
 struct CraftingScreen : Screen {
-    explicit CraftingScreen(PlayerEntity &player) : Screen(false), player(player) {}
+    explicit CraftingScreen(PlayerEntity &player) : Screen(false), mPlayer(player) {}
 
     void handleInput(SDL_KeyboardEvent &e) override;
 
@@ -198,18 +198,18 @@ struct CraftingScreen : Screen {
         MATERIAL
     };
 private:
-    int chosenRecipe {0};
-    int chosenIngredient {0};
-    int chosenMaterial {0};
-    PlayerEntity &player;
-    CraftingLayer layer {CraftingLayer::RECIPE};
-    std::unique_ptr<Recipe> currentRecipe {nullptr};
+    int mChosenRecipe {0};
+    int mChosenIngredient {0};
+    int mChosenMaterial {0};
+    PlayerEntity &mPlayer;
+    CraftingLayer mLayer {CraftingLayer::RECIPE};
+    std::unique_ptr<Recipe> mCurrentRecipe {nullptr};
 
-    bool choosingPositionInWorld {false};
-    bool haveChosenPositionInWorld {false};
-    bool couldNotBuildAtPosition {false};
+    bool mChoosingPositionInWorld {false};
+    bool mHaveChosenPositionInWorld {false};
+    bool mCouldNotBuildAtPosition {false};
 
-    std::vector<std::string> currentlyChosenMaterials;
+    std::vector<std::string> mCurrentlyChosenMaterials;
     /// Filter inventory items for items that are of the currently chosen material type and are not in currentlyChosenMaterials
     /// \return vector of shared pointers to the inventory items as described above
     std::vector<std::shared_ptr<Entity>> filterInventoryForChosenMaterials();
@@ -219,7 +219,7 @@ private:
 };
 
 struct EquipmentScreen : Screen {
-    explicit EquipmentScreen(PlayerEntity &player) : Screen(false), player(player) {}
+    explicit EquipmentScreen(PlayerEntity &player) : Screen(false), mPlayer(player) {}
 
     void handleInput(SDL_KeyboardEvent &e) override;
 
@@ -231,18 +231,18 @@ struct EquipmentScreen : Screen {
     void enable() override;
 
 private:
-    PlayerEntity &player;
-    EquipmentSlot chosenSlot {EquipmentSlot::HEAD};
-    bool choosingEquipmentAction {false};
-    int choosingEquipmentActionIndex {0};
-    bool choosingNewEquipment {false};
-    int choosingNewEquipmentIndex {0};
+    PlayerEntity &mPlayer;
+    EquipmentSlot mChosenSlot {EquipmentSlot::HEAD};
+    bool mChoosingEquipmentAction {false};
+    int mChoosingEquipmentActionIndex {0};
+    bool mChoosingNewEquipment {false};
+    int mChoosingNewEquipmentIndex {0};
 };
 
 struct HelpScreen : Screen {
     HelpScreen() : Screen(false) {}
 
-    const std::vector<std::string> displayLines = {
+    const std::vector<std::string> cDisplayLines = {
         "Diagonal movement: y u b n",
         "Cardinal movement: h j k l",
         "Get item: g",

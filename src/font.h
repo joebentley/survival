@@ -53,17 +53,17 @@ Color getColor(const std::string& colorStr);
 
 struct Texture;
 class Font {
-    Texture& texture;
-    int cellWidth;
-    int cellHeight;
-    SDL_Renderer *renderer;
+    Texture& mTexture;
+    int mCellWidth;
+    int mCellHeight;
+    SDL_Renderer *mRenderer;
 public:
     std::unordered_map<std::string, std::tuple<int, int> > characters;
 
     Font(Texture &texture, int cellWidth, int cellHeight, int numPerRow,
          const std::string &characters, SDL_Renderer *renderer)
-        : texture(texture), cellWidth(cellWidth),
-          cellHeight(cellHeight), renderer(renderer)
+        : mTexture(texture), mCellWidth(cellWidth),
+          mCellHeight(cellHeight), mRenderer(renderer)
     {
         std::vector<std::string> words;
         std::istringstream iss(characters);
@@ -84,25 +84,25 @@ public:
         return draw(character, x, y, Color(0xFF, 0xFF, 0xFF, 0xFF), Color(0, 0, 0, 0));
     }
     int draw(const std::string &character, Point p) {
-        return draw(character, p.x, p.y);
+        return draw(character, p.mX, p.mY);
     }
     int draw(const std::string &character, int x, int y, Color fColor) {
         return draw(character, x, y, fColor, Color(0, 0, 0, 0));
     }
     int draw(const std::string &character, Point p, Color fColor) {
-        return draw(character, p.x, p.y, fColor);
+        return draw(character, p.mX, p.mY, fColor);
     }
     int draw(const std::string &character, int x, int y, Color fColor, Color bColor);
     int draw(const std::string &character, Point p, Color fColor, Color bColor) {
-        return draw(character, p.x, p.y, fColor, bColor);
+        return draw(character, p.mX, p.mY, fColor, bColor);
     }
     int drawText(const std::string &text, int x, int y);
     int drawText(const std::string &text, Point p) {
-        return drawText(text, p.x, p.y);
+        return drawText(text, p.mX, p.mY);
     }
     int drawText(const std::string &text, int x, int y, Color fColor, Color bColor);
     int drawText(const std::string &text, Point p, Color fColor, Color bColor) {
-        return drawText(text, p.x, p.y, fColor, bColor);
+        return drawText(text, p.mX, p.mY, fColor, bColor);
     }
     // Only use the background color, use other colors from text
     int drawText(const std::string &text, int x, int y, Color bColor);

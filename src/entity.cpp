@@ -7,49 +7,49 @@
 int gNumInitialisedEntities = 0;
 
 void Entity::addBehaviour(std::shared_ptr<Behaviour> behaviour) {
-    behaviours[behaviour->ID] = std::move(behaviour);
+    mBehaviours[behaviour->mID] = std::move(behaviour);
 }
 
 void Entity::tick() {
-    if (hp < maxhp)
-        hp += regenPerTick;
+    if (mHp < mMaxHp)
+        mHp += mRegenPerTick;
 
-    if (hp > maxhp)
-        hp = maxhp;
+    if (mHp > mMaxHp)
+        mHp = mMaxHp;
 
-    for (auto& behaviour : behaviours) {
+    for (auto& behaviour : mBehaviours) {
         if (behaviour.second->isEnabled())
             behaviour.second->tick();
     }
 }
 
 void Entity::emit(Uint32 signal) {
-    for (auto& behaviour : behaviours) {
+    for (auto& behaviour : mBehaviours) {
         behaviour.second->handle(signal);
     }
 }
 
 void Entity::render(Font& font, Point currentWorldPos) {
-    if (!shouldRender)
+    if (!mShouldRender)
         return;
 
-    int currentWorldX = currentWorldPos.x;
-    int currentWorldY = currentWorldPos.y;
+    int currentWorldX = currentWorldPos.mX;
+    int currentWorldY = currentWorldPos.mY;
 
     // Only draw if the entity is on the current world screen
     if (
-        pos.x >= SCREEN_WIDTH * currentWorldX && pos.x < SCREEN_WIDTH * (currentWorldX + 1) &&
-        pos.y >= SCREEN_HEIGHT * currentWorldY && pos.y < SCREEN_HEIGHT * (currentWorldY + 1)
+        mPos.mX >= SCREEN_WIDTH * currentWorldX && mPos.mX < SCREEN_WIDTH * (currentWorldX + 1) &&
+        mPos.mY >= SCREEN_HEIGHT * currentWorldY && mPos.mY < SCREEN_HEIGHT * (currentWorldY + 1)
     )
     {
-        font.drawText(graphic, this->pos.x - SCREEN_WIDTH * currentWorldX,
-                               this->pos.y - SCREEN_HEIGHT * currentWorldY);
+        font.drawText(mGraphic, this->mPos.mX - SCREEN_WIDTH * currentWorldX,
+                               this->mPos.mY - SCREEN_HEIGHT * currentWorldY);
     }
 }
 
 std::shared_ptr<Behaviour> Entity::getBehaviourByID(const std::string& ID) const {
     try {
-        return behaviours.at(ID);
+        return mBehaviours.at(ID);
     } catch (const std::out_of_range &e) {
         return nullptr;
     }
@@ -62,16 +62,16 @@ int Entity::computeMaxDamage() const {
 
         if (a->hasBehaviour("MeleeWeaponBehaviour")) {
             auto &b = dynamic_cast<MeleeWeaponBehaviour&>(*a->getBehaviourByID("MeleeWeaponBehaviour"));
-            return hitAmount + b.extraDamage;
+            return mHitAmount + b.extraDamage;
         }
     }
 
-    return hitAmount;
+    return mHitAmount;
 }
 
 int Entity::rollDamage() {
     int totalDamage = 0;
-    for (int i = 0; i < hitTimes; ++i) {
+    for (int i = 0; i < mHitTimes; ++i) {
         totalDamage += rand() % (computeMaxDamage() + 1);
     }
     return totalDamage;
@@ -80,15 +80,15 @@ int Entity::rollDamage() {
 bool Entity::addToInventory(const std::shared_ptr<Entity> &item) {
     auto b = item->getBehaviourByID("PickuppableBehaviour");
     if (b != nullptr) {
-        if (!EntityManager::getInstance().isEntityInManager(item->ID))
+        if (!EntityManager::getInstance().isEntityInManager(item->mID))
             EntityManager::getInstance().addEntity(item);
 
         if (getCarryingWeight() + dynamic_cast<PickuppableBehaviour&>(*b).weight > getMaxCarryWeight())
             return false;
-        item->setPos(pos);
-        inventory.push_back(item->ID);
-        item->shouldRender = false;
-        item->isInAnInventory = true;
+        item->setPos(mPos);
+        mInventory.push_back(item->mID);
+        item->mShouldRender = false;
+        item->mIsInAnInventory = true;
         return true;
     } else {
         throw std::invalid_argument("item does not have PickuppableBehaviour");
@@ -96,46 +96,46 @@ bool Entity::addToInventory(const std::shared_ptr<Entity> &item) {
 }
 
 void Entity::removeFromInventory(const std::string &ID) {
-    inventory.erase(std::remove(inventory.begin(), inventory.end(), ID), inventory.end());
+    mInventory.erase(std::remove(mInventory.begin(), mInventory.end(), ID), mInventory.end());
 }
 
 void Entity::removeFromInventory(int inventoryIndex) {
-    inventory.erase(inventory.begin() + inventoryIndex);
+    mInventory.erase(mInventory.begin() + inventoryIndex);
 }
 
 void Entity::dropItem(int inventoryIndex) {
-    auto item = EntityManager::getInstance().getEntityByID(inventory[inventoryIndex]);
+    auto item = EntityManager::getInstance().getEntityByID(mInventory[inventoryIndex]);
 
-    inventory.erase(inventory.begin() + inventoryIndex);
-    item->shouldRender = true;
-    item->isInAnInventory = false;
-    item->setPos(pos);
+    mInventory.erase(mInventory.begin() + inventoryIndex);
+    item->mShouldRender = true;
+    item->mIsInAnInventory = false;
+    item->setPos(mPos);
 }
 
 std::shared_ptr<Entity> Entity::getInventoryItem(int inventoryIndex) const {
-    return EntityManager::getInstance().getEntityByID(inventory[inventoryIndex]);
+    return EntityManager::getInstance().getEntityByID(mInventory[inventoryIndex]);
 }
 
 
 size_t Entity::getInventorySize() const {
-    return inventory.size();
+    return mInventory.size();
 }
 
 bool Entity::isInventoryEmpty() const {
-    return inventory.empty();
+    return mInventory.empty();
 }
 
 bool Entity::hasBehaviour(const std::string &ID) const {
-    return behaviours.find(ID) != behaviours.end();
+    return mBehaviours.find(ID) != mBehaviours.end();
 }
 
 void Entity::destroy() {
-    EntityManager::getInstance().eraseByID(ID);
+    EntityManager::getInstance().eraseByID(mID);
 }
 
 int Entity::getCarryingWeight() {
     int totalWeight = 0;
-    for (const auto& ID : inventory) {
+    for (const auto& ID : mInventory) {
         auto item = EntityManager::getInstance().getEntityByID(ID);
         if (item->hasBehaviour("PickuppableBehaviour")) {
             auto a = dynamic_cast<PickuppableBehaviour&>(*item->getBehaviourByID("PickuppableBehaviour"));
@@ -146,13 +146,13 @@ int Entity::getCarryingWeight() {
 }
 
 void Entity::addHealth(float health) {
-    this->hp = std::min(this->hp + health, maxhp);
+    this->mHp = std::min(this->mHp + health, mMaxHp);
 }
 
 std::vector<std::shared_ptr<Entity>> Entity::getInventory() const {
     std::vector<std::shared_ptr<Entity>> output;
 
-    std::transform(inventory.cbegin(), inventory.cend(), std::back_inserter(output),
+    std::transform(mInventory.cbegin(), mInventory.cend(), std::back_inserter(output),
     [] (auto &a) -> std::shared_ptr<Entity> {
         return EntityManager::getInstance().getEntityByID(a);
     });
@@ -161,11 +161,11 @@ std::vector<std::shared_ptr<Entity>> Entity::getInventory() const {
 }
 
 bool Entity::isInInventory(std::string ID) const {
-    return std::find(inventory.cbegin(), inventory.cend(), ID) != inventory.cend();
+    return std::find(mInventory.cbegin(), mInventory.cend(), ID) != mInventory.cend();
 }
 
 Point Entity::getPos() const {
-    return pos;
+    return mPos;
 }
 
 bool Entity::moveTo(Point p) {
@@ -180,7 +180,7 @@ bool Entity::moveTo(Point p) {
             EntityManager::getInstance().recomputeCurrentEntitiesOnScreenAndSurroundingScreens();
 
         // Move all items held by entity
-        for (const auto &ID : inventory)
+        for (const auto &ID : mInventory)
             EntityManager::getInstance().getEntityByID(ID)->setPos(p);
 
         return true;
@@ -189,7 +189,7 @@ bool Entity::moveTo(Point p) {
 }
 
 const std::unordered_map<EquipmentSlot, std::string> &Entity::getEquipment() const {
-    return equipment;
+    return mEquipment;
 }
 
 bool Entity::equip(EquipmentSlot slot, std::shared_ptr<Entity> entity) {
@@ -197,11 +197,11 @@ bool Entity::equip(EquipmentSlot slot, std::shared_ptr<Entity> entity) {
         auto &b = dynamic_cast<EquippableBehaviour&>(*entity->getBehaviourByID("EquippableBehaviour"));
         if (b.isEquippableInSlot(slot)) {
             // Make sure it is in the player inventory (and in turn the entity manager)
-            if (!isInInventory(entity->ID))
+            if (!isInInventory(entity->mID))
                 Entity::addToInventory(entity);
 
-            entity->isEquipped = true;
-            equipment[slot] = entity->ID;
+            entity->mIsEquipped = true;
+            mEquipment[slot] = entity->mID;
             return true;
         }
     }
@@ -213,40 +213,40 @@ bool Entity::equip(EquipmentSlot slot, std::string ID) {
 }
 
 bool Entity::unequip(std::shared_ptr<Entity> entity) {
-    return unequip(entity->ID);
+    return unequip(entity->mID);
 }
 
 bool Entity::unequip(std::string ID) {
-    auto a = std::find_if(equipment.cbegin(), equipment.cend(), [ID] (auto b) { return b.second == ID; });
+    auto a = std::find_if(mEquipment.cbegin(), mEquipment.cend(), [ID] (auto b) { return b.second == ID; });
 
-    if (a == equipment.cend())
+    if (a == mEquipment.cend())
         return false;
     else {
         EntityManager::getInstance().getEntityByID(a->second)->isEquipped = false;
-        equipment[a->first] = "";
+        mEquipment[a->first] = "";
         return true;
     }
 }
 
 bool Entity::unequip(EquipmentSlot slot) {
-    if (equipment[slot].empty())
+    if (mEquipment[slot].empty())
         return false;
 
     EntityManager::getInstance().getEntityByID(getEquipmentID(slot))->isEquipped = false;
-    equipment[slot] = "";
+    mEquipment[slot] = "";
     return true;
 }
 
 std::shared_ptr<Entity> Entity::getEquipmentEntity(EquipmentSlot slot) const {
-    if (equipment.find(slot) == equipment.cend())
+    if (mEquipment.find(slot) == mEquipment.cend())
         return nullptr;
-    return EntityManager::getInstance().getEntityByID(equipment.at(slot));
+    return EntityManager::getInstance().getEntityByID(mEquipment.at(slot));
 }
 
 std::vector<std::string> Entity::getInventoryItemsEquippableInSlot(EquipmentSlot slot) const {
     std::vector<std::string> IDs;
 
-    std::copy_if(inventory.cbegin(), inventory.cend(), std::back_inserter(IDs), [slot] (auto &ID)
+    std::copy_if(mInventory.cbegin(), mInventory.cend(), std::back_inserter(IDs), [slot] (auto &ID)
     {
         auto e = EntityManager::getInstance().getEntityByID(ID);
         if (!e->isEquipped && e->hasBehaviour("EquippableBehaviour")) {
@@ -260,28 +260,28 @@ std::vector<std::string> Entity::getInventoryItemsEquippableInSlot(EquipmentSlot
 }
 
 std::string Entity::getEquipmentID(EquipmentSlot slot) const {
-    return equipment.at(slot);
+    return mEquipment.at(slot);
 }
 
 bool Entity::hasEquippedInSlot(EquipmentSlot slot) const {
-    return !equipment.at(slot).empty();
+    return !mEquipment.at(slot).empty();
 }
 
 bool Entity::hasEquipped(std::string ID) const {
-    return std::find_if(equipment.cbegin(), equipment.cend(), [ID] (auto &a) { return a.second == ID; }) != equipment.cend();
+    return std::find_if(mEquipment.cbegin(), mEquipment.cend(), [ID] (auto &a) { return a.second == ID; }) != mEquipment.cend();
 }
 
 EquipmentSlot Entity::getEquipmentSlotByID(std::string ID) const {
-    auto a = std::find_if(equipment.cbegin(), equipment.cend(), [ID] (auto &a) { return a.second == ID; });
+    auto a = std::find_if(mEquipment.cbegin(), mEquipment.cend(), [ID] (auto &a) { return a.second == ID; });
 
-    if (a == equipment.cend())
+    if (a == mEquipment.cend())
         throw std::out_of_range("Nothing equipped with ID: " + ID);
 
     return a->first;
 }
 
 std::string Entity::getInventoryItemID(int inventoryIndex) const {
-    return inventory[inventoryIndex];
+    return mInventory[inventoryIndex];
 }
 
 int Entity::getMaxCarryWeight() const {
@@ -290,11 +290,11 @@ int Entity::getMaxCarryWeight() const {
     if (a != nullptr) {
         auto b = a->getBehaviourByID("AdditionalCarryWeightBehaviour");
         if (b != nullptr) {
-            return maxCarryWeight + dynamic_cast<AdditionalCarryWeightBehaviour&>(*b).additionalCarryWeight;
+            return mMaxCarryWeight + dynamic_cast<AdditionalCarryWeightBehaviour&>(*b).additionalCarryWeight;
         }
     }
 
-    return maxCarryWeight;
+    return mMaxCarryWeight;
 }
 
 inline std::vector<std::string> Entity::filterInventoryForCraftingMaterial(std::string materialType) const {
@@ -304,7 +304,7 @@ inline std::vector<std::string> Entity::filterInventoryForCraftingMaterial(std::
 std::vector<std::string> Entity::filterInventoryForCraftingMaterials(const std::vector<std::string> &materialTypes) const {
     std::vector<std::string> materialIDs;
 
-    std::copy_if(inventory.cbegin(), inventory.cend(), std::back_inserter(materialIDs),
+    std::copy_if(mInventory.cbegin(), mInventory.cend(), std::back_inserter(materialIDs),
     [materialTypes] (const auto &ID) {
         auto entity = EntityManager::getInstance().getEntityByID(ID);
         auto b = entity->getBehaviourByID("CraftingMaterialBehaviour");
@@ -321,18 +321,18 @@ std::vector<std::string> Entity::filterInventoryForCraftingMaterials(const std::
 }
 
 void EntityManager::addEntity(std::shared_ptr<Entity> entity) {
-    if (getEntityByID(entity->ID) != nullptr)
-        throw std::invalid_argument("Entity with ID " + entity->ID + " already present!");
+    if (getEntityByID(entity->mID) != nullptr)
+        throw std::invalid_argument("Entity with ID " + entity->mID + " already present!");
 
-    entities[entity->ID] = entity;
+    mEntities[entity->mID] = entity;
 
     // Make sure new entities trigger a refresh of the render order list and entity caches
-    if (!toRender.empty())
+    if (!mToRender.empty())
         recomputeCurrentEntitiesOnScreenAndSurroundingScreens(getEntityByID("Player")->getWorldPos());
 }
 
 void EntityManager::broadcast(Uint32 signal) {
-    for (const auto& entity : entities) {
+    for (const auto& entity : mEntities) {
         entity.second->emit(signal);
     }
 }
@@ -340,7 +340,7 @@ void EntityManager::broadcast(Uint32 signal) {
 #define UNMANAGED_ENTITIES_ERROR_MESSAGE "Warning! The number of initialised entities is not equal to the number of entities in the entity manager!"
 
 void EntityManager::initialize() {
-    if (gNumInitialisedEntities != entities.size())
+    if (gNumInitialisedEntities != mEntities.size())
         std::cerr << UNMANAGED_ENTITIES_ERROR_MESSAGE << std::endl;
 
     recomputeCurrentEntitiesOnScreenAndSurroundingScreens(getEntityByID("Player")->getWorldPos());
@@ -349,21 +349,21 @@ void EntityManager::initialize() {
 void EntityManager::tick() {
     cleanup();
 
-    timeOfDay += timePerTick;
+    mTimeOfDay += mTimePerTick;
 
-    if (gNumInitialisedEntities != entities.size())
+    if (gNumInitialisedEntities != mEntities.size())
         std::cerr << UNMANAGED_ENTITIES_ERROR_MESSAGE << std::endl;
 
     // Only update entities in this screen and surrounding screens
     // TODO: add special type of entity that always keeps updated e.g. the player's farm
-    for (const auto& ID : currentlyOnScreen)
+    for (const auto& ID : mCurrentlyOnScreen)
         getEntityByID(ID)->tick();
-    for (const auto& ID : inSurroundingScreens)
+    for (const auto& ID : mInSurroundingScreens)
         getEntityByID(ID)->tick();
 }
 
 void EntityManager::render(Font &font, Point currentWorldPos, LightMapTexture &lightMapTexture) {
-    for (const auto& a : toRender) {
+    for (const auto& a : mToRender) {
         getEntityByID(a.first)->render(font, currentWorldPos);
     }
 
@@ -384,7 +384,7 @@ void EntityManager::render(Font &font, LightMapTexture &lightMapTexture) {
 
 std::shared_ptr<Entity> EntityManager::getEntityByID(const std::string &ID) const {
     try {
-        return entities.at(ID);
+        return mEntities.at(ID);
     } catch (const std::out_of_range &e) {
         return nullptr;
     }
@@ -393,7 +393,7 @@ std::shared_ptr<Entity> EntityManager::getEntityByID(const std::string &ID) cons
 std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesAtPos(const Point &pos) const {
     std::vector<std::shared_ptr<Entity>> entitiesAtPos;
 
-    for (const auto& entity : entities) {
+    for (const auto& entity : mEntities) {
         if (entity.second->getPos() == pos)
             entitiesAtPos.push_back(entity.second);
     }
@@ -405,11 +405,11 @@ std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesAtPosFaster(const
     std::vector<std::shared_ptr<Entity>> entitiesAtPos;
 
     // TODO: remove ugly double loop
-    for (const auto& ID : inSurroundingScreens) {
+    for (const auto& ID : mInSurroundingScreens) {
         if (getEntityByID(ID)->getPos() == pos)
             entitiesAtPos.push_back(getEntityByID(ID));
     }
-    for (const auto& ID : currentlyOnScreen) {
+    for (const auto& ID : mCurrentlyOnScreen) {
         if (getEntityByID(ID)->getPos() == pos)
             entitiesAtPos.push_back(getEntityByID(ID));
     }
@@ -422,7 +422,7 @@ std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesSurrounding(const
     const std::vector<Point> surroundingPoints { pos + Point(-1, 0), pos + Point(1, 0), pos + Point(0, -1), pos + Point(0, 1),
                                                  pos + Point(-1, -1), pos + Point(-1, 1), pos + Point(1, -1), pos + Point(1, 1)};
 
-    for (const auto& entity : entities) {
+    for (const auto& entity : mEntities) {
         if (std::find(surroundingPoints.cbegin(), surroundingPoints.cend(), entity.second->getPos()) != surroundingPoints.cend())
             entitiesSurrounding.emplace_back(entity.second);
     }
@@ -436,11 +436,11 @@ std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesSurroundingFaster
                                                  pos + Point(-1, -1), pos + Point(-1, 1), pos + Point(1, -1), pos + Point(1, 1)};
 
     // TODO: remove ugly double loop
-    for (const auto& ID : inSurroundingScreens) {
+    for (const auto& ID : mInSurroundingScreens) {
         if (std::find(surroundingPoints.cbegin(), surroundingPoints.cend(), getEntityByID(ID)->getPos()) != surroundingPoints.cend())
             entitiesSurrounding.emplace_back(getEntityByID(ID));
     }
-    for (const auto& ID : currentlyOnScreen) {
+    for (const auto& ID : mCurrentlyOnScreen) {
         if (std::find(surroundingPoints.cbegin(), surroundingPoints.cend(), getEntityByID(ID)->getPos()) != surroundingPoints.cend())
             entitiesSurrounding.emplace_back(getEntityByID(ID));
     }
@@ -449,73 +449,73 @@ std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesSurroundingFaster
 }
 
 void EntityManager::cleanup() {
-    while (!toBeDeleted.empty()) {
-        eraseByID(toBeDeleted.front());
-        toBeDeleted.pop();
+    while (!mToBeDeleted.empty()) {
+        eraseByID(mToBeDeleted.front());
+        mToBeDeleted.pop();
     }
 }
 
 void EntityManager::queueForDeletion(const std::string &ID) {
-    toBeDeleted.push(ID);
+    mToBeDeleted.push(ID);
 }
 
 void EntityManager::eraseByID(const std::string &ID) {
-    entities.erase(ID);
+    mEntities.erase(ID);
     --gNumInitialisedEntities;
     recomputeCurrentEntitiesOnScreenAndSurroundingScreens(getEntityByID("Player")->getWorldPos());
 }
 
 void EntityManager::reorderEntities() {
-    toRender.clear();
-    std::transform(currentlyOnScreen.cbegin(), currentlyOnScreen.cend(), std::back_inserter(toRender),
-            [this] (auto &a) -> auto { return std::make_pair(a, getEntityByID(a)->renderingLayer); });
-    std::sort(toRender.begin(), toRender.end(), [](auto &a, auto &b) { return a.second > b.second; });
+    mToRender.clear();
+    std::transform(mCurrentlyOnScreen.cbegin(), mCurrentlyOnScreen.cend(), std::back_inserter(mToRender),
+            [this] (auto &a) -> auto { return std::make_pair(a, getEntityByID(a)->mRenderingLayer); });
+    std::sort(mToRender.begin(), mToRender.end(), [](auto &a, auto &b) { return a.second > b.second; });
 }
 
 bool EntityManager::isEntityInManager(const std::string &ID) {
-    return entities.find(ID) != entities.end();
+    return mEntities.find(ID) != mEntities.end();
 }
 
 // TODO should split this into two separate functions for current entities on screen and for surrounding screens
 // player should call both current screen and surrounding screens, but other entity should only call current screen
 void EntityManager::recomputeCurrentEntitiesOnScreenAndSurroundingScreens(Point currentWorldPos) {
-    currentlyOnScreen.clear();
-    inSurroundingScreens.clear();
-    for (const auto &a : entities) {
+    mCurrentlyOnScreen.clear();
+    mInSurroundingScreens.clear();
+    for (const auto &a : mEntities) {
         auto worldPosDiff = a.second->getWorldPos() - currentWorldPos;
         if (worldPosDiff == Point(0, 0))
-            currentlyOnScreen.emplace_back(a.second->ID);
-        else if (std::abs(worldPosDiff.x) <= 1 && std::abs(worldPosDiff.y) <= 1)
-            inSurroundingScreens.emplace_back(a.second->ID);
+            mCurrentlyOnScreen.emplace_back(a.second->mID);
+        else if (std::abs(worldPosDiff.mX) <= 1 && std::abs(worldPosDiff.mY) <= 1)
+            mInSurroundingScreens.emplace_back(a.second->mID);
     }
     reorderEntities();
 }
 
 const Time &EntityManager::getTimeOfDay() const {
-    return timeOfDay;
+    return mTimeOfDay;
 }
 
 void EntityManager::setTimeOfDay(const Time &timeOfDay) {
-    EntityManager::timeOfDay = timeOfDay;
+    EntityManager::mTimeOfDay = timeOfDay;
 }
 
 const Time &EntityManager::getTimePerTick() const {
-    return timePerTick;
+    return mTimePerTick;
 }
 
 void EntityManager::setTimePerTick(const Time &timePerTick) {
-    EntityManager::timePerTick = timePerTick;
+    EntityManager::mTimePerTick = timePerTick;
 }
 
 std::vector<LightMapPoint> EntityManager::getLightSources(Point fontSize) const {
     std::vector<LightMapPoint> points;
 
-    for (const auto &a : currentlyOnScreen) {
+    for (const auto &a : mCurrentlyOnScreen) {
         const auto &entity = getEntityByID(a);
         if (entity->hasBehaviour("LightEmittingBehaviour")) {
             const auto &b = dynamic_cast<LightEmittingBehaviour&>(*entity->getBehaviourByID("LightEmittingBehaviour"));
             if (b.isEnabled()) {
-                auto radius = fontSize.y * b.getRadius();
+                auto radius = fontSize.mY * b.getRadius();
                 auto point = fontSize * worldToScreen(entity->getPos()) + fontSize / 2;
                 points.emplace_back(LightMapPoint(point, radius, b.getColor()));
             }

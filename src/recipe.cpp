@@ -1,10 +1,10 @@
 #include "recipe.h"
 
 RecipeManager::RecipeManager() {
-    recipes.emplace_back(std::make_shared<FireRecipe>());
-    recipes.emplace_back(std::make_shared<BandageRecipe>());
-    recipes.emplace_back(std::make_shared<TorchRecipe>());
-    recipes.emplace_back(std::make_shared<BagRecipe>());
+    mRecipes.emplace_back(std::make_shared<FireRecipe>());
+    mRecipes.emplace_back(std::make_shared<BandageRecipe>());
+    mRecipes.emplace_back(std::make_shared<TorchRecipe>());
+    mRecipes.emplace_back(std::make_shared<BagRecipe>());
 }
 
 int FireRecipe::numProduced = 0;
@@ -12,7 +12,7 @@ void FireRecipe::produce() {
     auto &em = EntityManager::getInstance();
     auto player = em.getEntityByID("Player");
     auto fire = std::make_shared<FireEntity>("fire" + std::to_string(++numProduced));
-    fire->setPos(pointIfNotGoingIntoInventory);
+    fire->setPos(mPointIfNotGoingIntoInventory);
     em.addEntity(fire);
 }
 

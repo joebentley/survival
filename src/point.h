@@ -6,15 +6,15 @@
 #include <string>
 
 struct Point {
-    int x;
-    int y;
+    int mX;
+    int mY;
 
-    Point() : x(0), y(0) {}
-    Point(int x, int y) : x(x), y(y) {}
+    Point() : mX(0), mY(0) {}
+    Point(int x, int y) : mX(x), mY(y) {}
 
     bool operator==(const Point &rhs) const {
-        return x == rhs.x &&
-               y == rhs.y;
+        return mX == rhs.mX &&
+               mY == rhs.mY;
     }
 
     bool operator!=(const Point &rhs) const {
@@ -22,53 +22,53 @@ struct Point {
     }
 
     Point& operator+=(const Point& rhs) {
-        this->x = this->x + rhs.x;
-        this->y = this->y + rhs.y;
+        this->mX = this->mX + rhs.mX;
+        this->mY = this->mY + rhs.mY;
         return *this;
     }
 
     Point& operator-=(const Point& rhs) {
-        this->x = this->x - rhs.x;
-        this->y = this->y - rhs.y;
+        this->mX = this->mX - rhs.mX;
+        this->mY = this->mY - rhs.mY;
         return *this;
     }
 
     Point& operator*=(int rhs) {
-        this->x *= rhs;
-        this->y *= rhs;
+        this->mX *= rhs;
+        this->mY *= rhs;
         return *this;
     }
 
     Point& operator/=(int rhs) {
-        this->x /= rhs;
-        this->y /= rhs;
+        this->mX /= rhs;
+        this->mY /= rhs;
         return *this;
     }
 
     // element-wise multiplication
     Point& operator*=(const Point& rhs) {
-        this->x *= rhs.x;
-        this->y *= rhs.y;
+        this->mX *= rhs.mX;
+        this->mY *= rhs.mY;
         return *this;
     }
 
     double distanceTo(const Point& to);
 
     double length() {
-        return std::sqrt(x*x + y*y);
+        return std::sqrt(mX*mX + mY*mY);
     }
 
 	std::string to_string() const {
-		return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
+		return "(" + std::to_string(mX) + ", " + std::to_string(mY) + ")";
 	}
 
 	int manhattanDistanceTo(const Point &other) const {
-        return std::abs(other.x - this->x) + std::abs(other.y - this->y);
+        return std::abs(other.mX - this->mX) + std::abs(other.mY - this->mY);
     }
 
     Point& abs() {
-        this->x = std::abs(x);
-        this->y = std::abs(y);
+        this->mX = std::abs(mX);
+        this->mY = std::abs(mY);
         return *this;
     }
 };
@@ -114,7 +114,7 @@ namespace std
 		size_t operator()(const Point& p) const
 		{
 			// Is this good enough?
-			return (p.y << 16) ^ p.x;
+			return (p.mY << 16) ^ p.mX;
 		}
 	};
 }

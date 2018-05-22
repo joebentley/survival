@@ -22,48 +22,28 @@ extern int gNumInitialisedEntities;
 struct Entity;
 
 struct Behaviour {
-    Behaviour(std::string ID, Entity& parent) : ID(std::move(ID)), parent(parent) {}
+    Behaviour(std::string ID, Entity& parent) : mID(std::move(ID)), mParent(parent) {}
 
-    std::string ID;
-    Entity& parent;
+    std::string mID;
+    Entity& mParent;
 
     virtual void tick() {};
     virtual void handle(Uint32 signal) {};
 
     virtual bool isEnabled() const {
-        return enabled;
+        return mEnabled;
     }
 
     void enable() {
-        enabled = true;
+        mEnabled = true;
     }
 
     void disable() {
-        enabled = false;
+        mEnabled = false;
     }
 protected:
-    bool enabled {true};
+    bool mEnabled {true};
 };
-
-//class ExampleBehaviour : public Behaviour {
-//public:
-//    ExampleBehaviour(std::string ID, Entity& parent) : Behaviour(std::move(ID), parent) {}
-//
-//    void initialize() {
-//        printf("Initialized\n");
-//    }
-//
-//    void tick() {
-//        printf("Ticked\n");
-//    }
-//
-//    void handle(const std::string& event) {
-//        if (event == "smell")
-//            printf("I can smell something\n");
-//        else
-//            printf("I can't smell anything\n");
-//    }
-//};
 
 enum class EquipmentSlot {
     HEAD,
@@ -107,21 +87,21 @@ class EntityManager;
 struct Entity {
     Entity(std::string ID, std::string name, std::string graphic,
            float hp, float maxhp, float regenPerTick, int hitTimes, int hitAmount, int maxCarryWeight)
-            : hp(hp), maxhp(maxhp), regenPerTick(regenPerTick), hitTimes(hitTimes), hitAmount(hitAmount), ID(std::move(ID)),
-              name(std::move(name)), graphic(std::move(graphic)), pos(0, 0), maxCarryWeight(maxCarryWeight)
+            : mHp(hp), mMaxHp(maxhp), mRegenPerTick(regenPerTick), mHitTimes(hitTimes), mHitAmount(hitAmount), mID(std::move(ID)),
+              mName(std::move(name)), mGraphic(std::move(graphic)), mPos(0, 0), mMaxCarryWeight(maxCarryWeight)
     {
-        if (this->ID.empty())
-            this->ID = std::to_string(rand());
+        if (this->mID.empty())
+            this->mID = std::to_string(rand());
         gNumInitialisedEntities++;
 
         // Add all equipment slots
-        equipment[EquipmentSlot::HEAD] = "";
-        equipment[EquipmentSlot::TORSO] = "";
-        equipment[EquipmentSlot::LEGS] = "";
-        equipment[EquipmentSlot::RIGHT_HAND] = "";
-        equipment[EquipmentSlot::LEFT_HAND] = "";
-        equipment[EquipmentSlot::FEET] = "";
-        equipment[EquipmentSlot::BACK] = "";
+        mEquipment[EquipmentSlot::HEAD] = "";
+        mEquipment[EquipmentSlot::TORSO] = "";
+        mEquipment[EquipmentSlot::LEGS] = "";
+        mEquipment[EquipmentSlot::RIGHT_HAND] = "";
+        mEquipment[EquipmentSlot::LEFT_HAND] = "";
+        mEquipment[EquipmentSlot::FEET] = "";
+        mEquipment[EquipmentSlot::BACK] = "";
     }
 
     Entity(std::string ID, std::string name, std::string graphic, float hp, float maxhp, float regenPerTick)
@@ -130,30 +110,30 @@ struct Entity {
     Entity(std::string ID, std::string name, std::string graphic)
             : Entity(std::move(ID), std::move(name), std::move(graphic), 1, 1, 0, 1, 2, 100) {}
 
-    float hp;
-    float maxhp;
-    float regenPerTick;
-    int hitTimes;
-    int hitAmount;
-    bool shouldRender {true};
-    bool isInAnInventory {false};
-    bool isEquipped {false};
-    bool isSolid {false}; // If true, cannot be walked on
+    float mHp;
+    float mMaxHp;
+    float mRegenPerTick;
+    int mHitTimes;
+    int mHitAmount;
+    bool mShouldRender {true};
+    bool mIsInAnInventory {false};
+    bool mIsEquipped {false};
+    bool mIsSolid {false}; // If true, cannot be walked on
 
-    bool skipLootingDialog {false}; // automatically pick up first item in inventory when looting
+    bool mSkipLootingDialog {false}; // automatically pick up first item in inventory when looting
 
-    std::string ID; // Must be unique!
+    std::string mID; // Must be unique!
 
-    float quality {1}; // Quality as a product
+    float mQuality {1}; // Quality as a product
 
-    std::string name;
-    std::string shortDesc; // TODO: Getter for this, change based on quality?
-    std::string longDesc;
+    std::string mName;
+    std::string mShortDesc; // TODO: Getter for this, change based on quality?
+    std::string mLongDesc;
 
-    std::string graphic;
-    std::unordered_map<std::string, std::shared_ptr<Behaviour>> behaviours;
+    std::string mGraphic;
+    std::unordered_map<std::string, std::shared_ptr<Behaviour>> mBehaviours;
 
-    int renderingLayer {0};
+    int mRenderingLayer {0};
 
     virtual void addBehaviour(std::shared_ptr<Behaviour> behaviour);
     virtual void tick();
@@ -184,11 +164,11 @@ struct Entity {
 
     int getCarryingWeight();
 
-    void setPos(int x, int y) { pos = Point(x, y); }
-    void setPos(Point p) { pos = p; }
+    void setPos(int x, int y) { mPos = Point(x, y); }
+    void setPos(Point p) { mPos = p; }
     Point getPos() const;
     Point getWorldPos() const {
-        return { this->pos.x / SCREEN_WIDTH, this->pos.y / SCREEN_HEIGHT };
+        return { this->mPos.mX / SCREEN_WIDTH, this->mPos.mY / SCREEN_HEIGHT };
     }
 
     int getMaxCarryWeight() const;
@@ -223,22 +203,22 @@ struct Entity {
     EquipmentSlot getEquipmentSlotByID(std::string ID) const;
 
 protected:
-    std::vector<std::string> inventory;
-    Point pos;
-    std::unordered_map<EquipmentSlot, std::string> equipment;
-    int maxCarryWeight;
+    std::vector<std::string> mInventory;
+    Point mPos;
+    std::unordered_map<EquipmentSlot, std::string> mEquipment;
+    int mMaxCarryWeight;
 };
 
 /// Singleton class that manages all entities
 class EntityManager {
-    std::unordered_map<std::string, std::shared_ptr<Entity>> entities;
-    std::queue<std::string> toBeDeleted;
-    std::vector<std::string> currentlyOnScreen;
-    std::vector<std::string> inSurroundingScreens;
-    std::vector<std::pair<std::string, int>> toRender;
+    std::unordered_map<std::string, std::shared_ptr<Entity>> mEntities;
+    std::queue<std::string> mToBeDeleted;
+    std::vector<std::string> mCurrentlyOnScreen;
+    std::vector<std::string> mInSurroundingScreens;
+    std::vector<std::pair<std::string, int>> mToRender;
 
-    Time timeOfDay;
-    Time timePerTick { 0, 2 };
+    Time mTimeOfDay;
+    Time mTimePerTick { 0, 2 };
 
     void reorderEntities();
 public:

@@ -4,11 +4,11 @@
 #include "world.h"
 
 Texture::~Texture() {
-    SDL_DestroyTexture(texture);
+    SDL_DestroyTexture(mTexture);
 }
 
 void Texture::render(SDL_Renderer *renderer, SDL_Rect *src, SDL_Rect *dst) {
-    SDL_RenderCopy(renderer, texture, src, dst);
+    SDL_RenderCopy(renderer, mTexture, src, dst);
 }
 
 int Texture::LoadFromFile(Texture &texture, SDL_Renderer* renderer, const std::string& filepath) {
@@ -20,8 +20,8 @@ int Texture::LoadFromFile(Texture &texture, SDL_Renderer* renderer, const std::s
     else {
         SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 0xFF, 0, 0xFF));
 
-        texture.texture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
-        if (texture.texture == NULL) {
+        texture.mTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
+        if (texture.mTexture == NULL) {
             printf("Unable to create texture from %s! SDL Error: %s\n", filepath.c_str(), SDL_GetError());
             return -1;
         }
@@ -29,38 +29,38 @@ int Texture::LoadFromFile(Texture &texture, SDL_Renderer* renderer, const std::s
         SDL_FreeSurface(loadedSurface);
     }
 
-    SDL_QueryTexture(texture.texture, &texture.format, &texture.access, &texture.width, &texture.height);
+    SDL_QueryTexture(texture.mTexture, &texture.mFormat, &texture.mAccess, &texture.mWidth, &texture.mHeight);
 
     return 0;
 }
 
 LightMapTexture::~LightMapTexture() {
-    SDL_DestroyTexture(nightFadeTexture);
+    SDL_DestroyTexture(mNightFadeTexture);
 }
 
 int LightMapTexture::load() {
-    return Texture::LoadFromFile(lightTexture, renderer, "resources/light.png");
+    return Texture::LoadFromFile(mLightTexture, mRenderer, "resources/light.png");
 }
 
 void LightMapTexture::init() {
-    nightFadeTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, CHAR_WIDTH * SCREEN_WIDTH, CHAR_HEIGHT * SCREEN_HEIGHT);
-    SDL_SetTextureBlendMode(nightFadeTexture, SDL_BLENDMODE_MOD);
-    SDL_SetTextureBlendMode(lightTexture.texture, SDL_BLENDMODE_ADD);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
-    SDL_RenderClear(renderer);
+    mNightFadeTexture = SDL_CreateTexture(mRenderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, CHAR_WIDTH * SCREEN_WIDTH, CHAR_HEIGHT * SCREEN_HEIGHT);
+    SDL_SetTextureBlendMode(mNightFadeTexture, SDL_BLENDMODE_MOD);
+    SDL_SetTextureBlendMode(mLightTexture.mTexture, SDL_BLENDMODE_ADD);
+    SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 0xFF);
+    SDL_RenderClear(mRenderer);
 }
 
 void LightMapTexture::render(std::vector<LightMapPoint> points, Uint8 backgroundAlpha) {
-    SDL_SetRenderTarget(renderer, nightFadeTexture);
-    SDL_SetRenderDrawColor(renderer, backgroundAlpha, backgroundAlpha, backgroundAlpha, 0xFF);
-    SDL_RenderFillRect(renderer, nullptr);
+    SDL_SetRenderTarget(mRenderer, mNightFadeTexture);
+    SDL_SetRenderDrawColor(mRenderer, backgroundAlpha, backgroundAlpha, backgroundAlpha, 0xFF);
+    SDL_RenderFillRect(mRenderer, nullptr);
 
     for (const auto &point : points) {
-        SDL_Rect rect { point.p.x - point.radius, point.p.y - point.radius, 2 * point.radius, 2 * point.radius };
-        SDL_SetTextureColorMod(lightTexture.texture, point.color.r, point.color.g, point.color.b);
-        lightTexture.render(renderer, nullptr, &rect);
+        SDL_Rect rect { point.mPoint.mX - point.mRadius, point.mPoint.mY - point.mRadius, 2 * point.mRadius, 2 * point.mRadius };
+        SDL_SetTextureColorMod(mLightTexture.mTexture, point.mColor.r, point.mColor.g, point.mColor.b);
+        mLightTexture.render(mRenderer, nullptr, &rect);
     }
 
-    SDL_SetRenderTarget(renderer, nullptr);
-    SDL_RenderCopy(renderer, nightFadeTexture, nullptr, nullptr);
+    SDL_SetRenderTarget(mRenderer, nullptr);
+    SDL_RenderCopy(mRenderer, mNightFadeTexture, nullptr, nullptr);
 }

@@ -13,12 +13,12 @@
 #include "font.h"
 
 struct Texture {
-    SDL_Texture *texture {nullptr};
+    SDL_Texture *mTexture {nullptr};
 
-    Uint32 format {0};
-    int access {0};
-    int width {0};
-    int height {0};
+    Uint32 mFormat {0};
+    int mAccess {0};
+    int mWidth {0};
+    int mHeight {0};
 
     ~Texture();
 
@@ -29,26 +29,26 @@ struct Texture {
 
 struct Color;
 struct LightMapPoint {
-    LightMapPoint(Point p, int radius, Color color) : p(p), radius(radius), color(color) {}
-    LightMapPoint(Point p, int radius) : p(p), radius(radius), color(getColor("white")) {}
-    LightMapPoint() : p(Point(0, 0)), radius(0), color(getColor("white")) {}
+    LightMapPoint(Point p, int radius, Color color) : mPoint(p), mRadius(radius), mColor(color) {}
+    LightMapPoint(Point p, int radius) : mPoint(p), mRadius(radius), mColor(getColor("white")) {}
+    LightMapPoint() : mPoint(Point(0, 0)), mRadius(0), mColor(getColor("white")) {}
 
-    Point p;
-    int radius;
-    struct Color color;
+    Point mPoint;
+    int mRadius;
+    struct Color mColor;
 };
 
 struct LightMapTexture {
-    explicit LightMapTexture(SDL_Renderer *renderer) : renderer(renderer) {}
+    explicit LightMapTexture(SDL_Renderer *renderer) : mRenderer(renderer) {}
     ~LightMapTexture();
 
     int load();
     void init();
     void render(std::vector<LightMapPoint> points, Uint8 backgroundAlpha);
 private:
-    SDL_Renderer *renderer;
-    Texture lightTexture;
-    SDL_Texture *nightFadeTexture {nullptr};
+    SDL_Renderer *mRenderer;
+    Texture mLightTexture;
+    SDL_Texture *mNightFadeTexture {nullptr};
 };
 
 #endif // TEXTURE_H_

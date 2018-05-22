@@ -2,15 +2,15 @@
 #define TIME_H_
 
 struct Time {
-    int hour;
-    int minute;
+    int mHour;
+    int mMinute;
 
-    Time() : hour(0), minute(0) {}
-    Time(int hour, int minute) : hour(hour), minute(minute) {}
+    Time() : mHour(0), mMinute(0) {}
+    Time(int hour, int minute) : mHour(hour), mMinute(minute) {}
 
     bool operator==(const Time &rhs) const {
-        return hour == rhs.hour &&
-               minute == rhs.minute;
+        return mHour == rhs.mHour &&
+               mMinute == rhs.mMinute;
     }
 
     bool operator!=(const Time &rhs) const {
@@ -18,32 +18,32 @@ struct Time {
     }
 
     Time& operator+=(const Time& rhs) {
-        hour += (minute + rhs.minute) / 60;
-        minute = (minute + rhs.minute) % 60;
-        hour += rhs.hour;
-        hour %= 24;
+        mHour += (mMinute + rhs.mMinute) / 60;
+        mMinute = (mMinute + rhs.mMinute) % 60;
+        mHour += rhs.mHour;
+        mHour %= 24;
 
         return *this;
     }
 
     std::string toString() const {
-        return (hour < 10 ? "0" : "") + std::to_string(hour) + ":" + (minute < 10 ? "0" : "") + std::to_string(minute);
+        return (mHour < 10 ? "0" : "") + std::to_string(mHour) + ":" + (mMinute < 10 ? "0" : "") + std::to_string(mMinute);
     }
 
     std::string toWordString() const {
-        if (hour >= 21 || hour < 5)
+        if (mHour >= 21 || mHour < 5)
             return "Night";
-        else if (hour < 8)
+        else if (mHour < 8)
             return "Dawn";
-        else if (hour < 16)
+        else if (mHour < 16)
             return "Day";
-        else if (hour < 21)
+        else if (mHour < 21)
             return "Dusk";
         return "";
     }
 
     float getFractionOfDay() const {
-        return static_cast<float>(hour * 60 + minute) / (60 * 24);
+        return static_cast<float>(mHour * 60 + mMinute) / (60 * 24);
     }
 };
 

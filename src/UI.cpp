@@ -14,7 +14,7 @@ std::string repeat(int n, const std::string &str) {
 }
 
 void MessageBoxRenderer::queueMessageBox(const std::vector<std::string> &contents, int padding, int x, int y) {
-    renderingQueue.push_back(MessageBoxData {contents, padding, x, y});
+    mRenderingQueue.push_back(MessageBoxData {contents, padding, x, y});
 }
 
 void MessageBoxRenderer::queueMessageBoxCentered(const std::vector<std::string> &contents, int padding) {
@@ -29,11 +29,11 @@ void MessageBoxRenderer::queueMessageBoxCentered(const std::vector<std::string> 
 }
 
 void MessageBoxRenderer::render(Font &font) {
-    while (!renderingQueue.empty()) {
-        auto data = renderingQueue.front();
-        renderingQueue.pop_front();
+    while (!mRenderingQueue.empty()) {
+        auto data = mRenderingQueue.front();
+        mRenderingQueue.pop_front();
 
-        showMessageBox(font, data.contents, data.padding, data.x, data.y);
+        showMessageBox(font, data.mContents, data.mPadding, data.mX, data.mY);
     }
 }
 
@@ -69,10 +69,10 @@ void showMessageBox(Font &font, const std::vector<std::string> &contents, int pa
 }
 
 void drawDescriptionScreen(Font& font, Entity& item) {
-    font.drawText(item.graphic + " " + item.name, InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET);
-    font.drawText(item.shortDesc, InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 2);
+    font.drawText(item.mGraphic + " " + item.mName, InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET);
+    font.drawText(item.mShortDesc, InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 2);
 
-    auto words = wordWrap(item.longDesc, InventoryScreen::WORD_WRAP_COLUMN);
+    auto words = wordWrap(item.mLongDesc, InventoryScreen::WORD_WRAP_COLUMN);
     for (int i = 0; i < words.size(); ++i) {
         font.drawText(words[i], InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + i);
     }
@@ -138,88 +138,88 @@ void drawDescriptionScreen(Font& font, Entity& item) {
 void InventoryScreen::handleInput(SDL_KeyboardEvent &e) {
     switch (e.keysym.sym) {
         case SDLK_ESCAPE:
-            if (viewingDescription)
-                viewingDescription = false;
+            if (mViewingDescription)
+                mViewingDescription = false;
             else
-                enabled = false;
+                mEnabled = false;
             break;
         case SDLK_j:
-            if (!viewingDescription && !player.isInventoryEmpty()) {
-                if (chosenIndex < (player.getInventorySize() - 1))
-                    chosenIndex++;
+            if (!mViewingDescription && !mPlayer.isInventoryEmpty()) {
+                if (mChosenIndex < (mPlayer.getInventorySize() - 1))
+                    mChosenIndex++;
                 else
-                    chosenIndex = 0;
+                    mChosenIndex = 0;
             }
             break;
         case SDLK_k:
-            if (!viewingDescription && !player.isInventoryEmpty()) {
-                if (chosenIndex > 0)
-                    chosenIndex--;
+            if (!mViewingDescription && !mPlayer.isInventoryEmpty()) {
+                if (mChosenIndex > 0)
+                    mChosenIndex--;
                 else
-                    chosenIndex = (int) player.getInventorySize() - 1;
+                    mChosenIndex = (int) mPlayer.getInventorySize() - 1;
             }
             break;
         case SDLK_d:
-            if (!viewingDescription && !player.isInventoryEmpty()) {
-                auto itemID = player.getInventoryItemID(chosenIndex);
-                if (player.hasEquipped(itemID))
-                    player.unequip(itemID);
+            if (!mViewingDescription && !mPlayer.isInventoryEmpty()) {
+                auto itemID = mPlayer.getInventoryItemID(mChosenIndex);
+                if (mPlayer.hasEquipped(itemID))
+                    mPlayer.unequip(itemID);
 
-                player.dropItem(chosenIndex);
+                mPlayer.dropItem(mChosenIndex);
 
-                if (player.getInventorySize() - 1 < chosenIndex)
-                    chosenIndex--;
+                if (mPlayer.getInventorySize() - 1 < mChosenIndex)
+                    mChosenIndex--;
             }
             break;
         case SDLK_e:
-            if (!viewingDescription && !player.isInventoryEmpty()) {
-                auto item = player.getInventoryItem(chosenIndex);
+            if (!mViewingDescription && !mPlayer.isInventoryEmpty()) {
+                auto item = mPlayer.getInventoryItem(mChosenIndex);
                 if (item->hasBehaviour("EatableBehaviour")) {
-                    player.addHunger(dynamic_cast<EatableBehaviour &>(*(*item).getBehaviourByID("EatableBehaviour")).hungerRestoration);
-                    player.removeFromInventory(chosenIndex);
+                    mPlayer.addHunger(dynamic_cast<EatableBehaviour &>(*(*item).getBehaviourByID("EatableBehaviour")).hungerRestoration);
+                    mPlayer.removeFromInventory(mChosenIndex);
                     item->destroy();
-                    if (player.getInventorySize() - 1 < chosenIndex)
-                        chosenIndex--;
+                    if (mPlayer.getInventorySize() - 1 < mChosenIndex)
+                        mChosenIndex--;
                 }
             }
             break;
         case SDLK_a:
-            if (!viewingDescription && !player.isInventoryEmpty()) {
-                auto item = player.getInventoryItem(chosenIndex);
+            if (!mViewingDescription && !mPlayer.isInventoryEmpty()) {
+                auto item = mPlayer.getInventoryItem(mChosenIndex);
                 if (item->hasBehaviour("ApplyableBehaviour")) {
                     dynamic_cast<ApplyableBehaviour&>(*(*item).getBehaviourByID("ApplyableBehaviour")).apply();
-                    if (player.getInventorySize() - 1 < chosenIndex)
-                        chosenIndex--;
+                    if (mPlayer.getInventorySize() - 1 < mChosenIndex)
+                        mChosenIndex--;
                 }
             }
             break;
         case SDLK_RETURN:
-            if (!player.isInventoryEmpty())
-                viewingDescription = true;
+            if (!mPlayer.isInventoryEmpty())
+                mViewingDescription = true;
             break;
     }
 }
 
 void InventoryScreen::render(Font &font) {
-    if (viewingDescription) {
-        drawDescriptionScreen(font, *player.getInventoryItem(chosenIndex));
+    if (mViewingDescription) {
+        drawDescriptionScreen(font, *mPlayer.getInventoryItem(mChosenIndex));
         return;
     }
 
-    font.draw("right", X_OFFSET - 1, chosenIndex + Y_OFFSET);
+    font.draw("right", X_OFFSET - 1, mChosenIndex + Y_OFFSET);
 
-    for (int i = 0; i < player.getInventorySize(); ++i) {
-        auto item = player.getInventoryItem(i);
-        std::string displayString = item->graphic + " " + item->name;
+    for (int i = 0; i < mPlayer.getInventorySize(); ++i) {
+        auto item = mPlayer.getInventoryItem(i);
+        std::string displayString = item->mGraphic + " " + item->mName;
 
         font.drawText(displayString, X_OFFSET, i + Y_OFFSET);
-        if (player.hasEquipped(item->ID))
-            font.drawText("(" + slotToString(player.getEquipmentSlotByID(item->ID)) + ")",
+        if (mPlayer.hasEquipped(item->mID))
+            font.drawText("(" + slotToString(mPlayer.getEquipmentSlotByID(item->mID)) + ")",
                     X_OFFSET + getFontStringLength(displayString) + 2, i + Y_OFFSET);
     }
 
     std::string colorStr;
-    float hpPercent = player.hp / player.maxhp;
+    float hpPercent = mPlayer.mHp / mPlayer.mMaxHp;
 
     if (hpPercent > 0.7)
         colorStr = "$[green]";
@@ -228,21 +228,21 @@ void InventoryScreen::render(Font &font) {
     else
         colorStr = "$[red]";
 
-    font.drawText("${black}" + colorStr + "hp " + std::to_string((int)ceil(player.hp))
-                  + "/" + std::to_string((int)ceil(player.maxhp)), SCREEN_WIDTH - X_STATUS_OFFSET, 1);
+    font.drawText("${black}" + colorStr + "hp " + std::to_string((int)ceil(mPlayer.mHp))
+                  + "/" + std::to_string((int)ceil(mPlayer.mMaxHp)), SCREEN_WIDTH - X_STATUS_OFFSET, 1);
 
-    if (player.hunger > 0.7)
+    if (mPlayer.hunger > 0.7)
         font.drawText("${black}$[green]sated", SCREEN_WIDTH - X_STATUS_OFFSET, 2);
-    else if (player.hunger > 0.3)
+    else if (mPlayer.hunger > 0.3)
         font.drawText("${black}$[yellow]hungry", SCREEN_WIDTH - X_STATUS_OFFSET, 2);
     else
         font.drawText("${black}$[red]starving", SCREEN_WIDTH - X_STATUS_OFFSET, 2);
 
-    font.drawText("${black}" + std::to_string(player.getCarryingWeight()) + "/" + std::to_string(player.getMaxCarryWeight()) + "lb",
+    font.drawText("${black}" + std::to_string(mPlayer.getCarryingWeight()) + "/" + std::to_string(mPlayer.getMaxCarryWeight()) + "lb",
                   SCREEN_WIDTH - X_STATUS_OFFSET, 4);
 
     std::string helpString;
-    auto item = player.getInventoryItem(chosenIndex);
+    auto item = mPlayer.getInventoryItem(mChosenIndex);
     if (item->hasBehaviour("EatableBehaviour"))
         helpString += "e-eat  ";
     if (item->hasBehaviour("ApplyableBehaviour"))
@@ -251,87 +251,87 @@ void InventoryScreen::render(Font &font) {
 }
 
 void LootingDialog::showItemsToLoot(std::vector<std::shared_ptr<Entity>> items) {
-    itemsToShow = std::move(items);
-    enabled = true;
+    mItemsToShow = std::move(items);
+    mEnabled = true;
 }
 
 void LootingDialog::showItemsToLoot(std::vector<std::shared_ptr<Entity>> items, std::shared_ptr<Entity> entityToTransferFrom)
 {
-    itemsToShow = std::move(items);
-    this->entityToTransferFrom = std::move(entityToTransferFrom);
-    enabled = true;
+    mItemsToShow = std::move(items);
+    this->mEntityToTransferFrom = std::move(entityToTransferFrom);
+    mEnabled = true;
 }
 
 void LootingDialog::handleInput(SDL_KeyboardEvent &e) {
     switch (e.keysym.sym) {
         case SDLK_ESCAPE:
-            if (showingTooMuchWeightMessage)
-                showingTooMuchWeightMessage = false;
-            else if (viewingDescription)
-                viewingDescription = false;
+            if (mShowingTooMuchWeightMessage)
+                mShowingTooMuchWeightMessage = false;
+            else if (mViewingDescription)
+                mViewingDescription = false;
             else {
-                enabled = false;
-                entityToTransferFrom = nullptr;
+                mEnabled = false;
+                mEntityToTransferFrom = nullptr;
             }
             break;
         case SDLK_j:
-            if (!showingTooMuchWeightMessage && !itemsToShow.empty()) {
-                if (chosenIndex < (itemsToShow.size() - 1))
-                    chosenIndex++;
+            if (!mShowingTooMuchWeightMessage && !mItemsToShow.empty()) {
+                if (mChosenIndex < (mItemsToShow.size() - 1))
+                    mChosenIndex++;
                 else
-                    chosenIndex = 0;
+                    mChosenIndex = 0;
             }
             break;
         case SDLK_k:
-            if (!showingTooMuchWeightMessage && !itemsToShow.empty()) {
-                if (chosenIndex > 0)
-                    chosenIndex--;
+            if (!mShowingTooMuchWeightMessage && !mItemsToShow.empty()) {
+                if (mChosenIndex > 0)
+                    mChosenIndex--;
                 else
-                    chosenIndex = (int) itemsToShow.size() - 1;
+                    mChosenIndex = (int) mItemsToShow.size() - 1;
             }
             break;
         case SDLK_g:
-            if (player.addToInventory(itemsToShow[chosenIndex])) {
-                if (entityToTransferFrom != nullptr) {
-                    entityToTransferFrom->dropItem(chosenIndex);
+            if (mPlayer.addToInventory(mItemsToShow[mChosenIndex])) {
+                if (mEntityToTransferFrom != nullptr) {
+                    mEntityToTransferFrom->dropItem(mChosenIndex);
                 }
 
-                itemsToShow.erase(itemsToShow.begin() + chosenIndex);
-                chosenIndex = 0;
+                mItemsToShow.erase(mItemsToShow.begin() + mChosenIndex);
+                mChosenIndex = 0;
             } else {
-                showingTooMuchWeightMessage = true;
+                mShowingTooMuchWeightMessage = true;
             }
             break;
         case SDLK_RETURN:
-            if (!showingTooMuchWeightMessage)
-                viewingDescription = true;
+            if (!mShowingTooMuchWeightMessage)
+                mViewingDescription = true;
             else
-                showingTooMuchWeightMessage = false;
+                mShowingTooMuchWeightMessage = false;
             break;
     }
 
-    if (viewingDescription)
+    if (mViewingDescription)
         mShouldRenderWorld = false;
     else
         mShouldRenderWorld = true;
 }
 
 void LootingDialog::render(Font &font) {
-    if (showingTooMuchWeightMessage) {
+    if (mShowingTooMuchWeightMessage) {
         const std::string& displayString = "You cannot carry that much!";
         MessageBoxRenderer::getInstance().queueMessageBoxCentered(displayString, 1);
     }
 
-    if (viewingDescription) {
-        drawDescriptionScreen(font, *itemsToShow[chosenIndex]);
+    if (mViewingDescription) {
+        drawDescriptionScreen(font, *mItemsToShow[mChosenIndex]);
         return;
     }
 
-    auto numItems = (int)itemsToShow.size();
+    auto numItems = (int)mItemsToShow.size();
 
     if (numItems == 0) {
-        enabled = false;
-        entityToTransferFrom = nullptr;
+        mEnabled = false;
+        mEntityToTransferFrom = nullptr;
         return;
     }
 
@@ -342,17 +342,17 @@ void LootingDialog::render(Font &font) {
     font.drawText("${black}$(p8)" + std::string(DIALOG_WIDTH + 4, ' ') + "$(p8)", x, y+1);
 
     for (int i = 0; i < numItems; ++i) {
-        auto item = itemsToShow[i];
+        auto item = mItemsToShow[i];
         int weight = dynamic_cast<PickuppableBehaviour&>(*item->getBehaviourByID("PickuppableBehaviour")).weight;
 
         std::string weightString = std::to_string(weight);
-        std::string string = item->graphic + " " + item->name.substr(0, DIALOG_WIDTH - 6);
+        std::string string = item->mGraphic + " " + item->mName.substr(0, DIALOG_WIDTH - 6);
         string += std::string(DIALOG_WIDTH - getFontStringLength(string) - 3 - weightString.size() + 1, ' ') + "$[white]" + weightString + " lb";
 
         font.drawText("${black}$(p8)  " + string + "${black} $[white]$(p8)", x, y+2+i);
     }
 
-    font.draw("right", x + 2, y + 2 + chosenIndex);
+    font.draw("right", x + 2, y + 2 + mChosenIndex);
 
     font.drawText("${black}$(p8)" + std::string(DIALOG_WIDTH + 4, ' ') + "$(p8)", x, y+numItems+2);
     std::string string = "g-loot  esc-quit  return-desc";
@@ -361,17 +361,17 @@ void LootingDialog::render(Font &font) {
 }
 
 inline Point InspectionDialog::clipToScreenEdge(const Point &p) const {
-    auto worldPos = player.getWorldPos();
+    auto worldPos = mPlayer.getWorldPos();
     auto point = p - Point(SCREEN_WIDTH, SCREEN_HEIGHT) * worldPos;
     Point returnPoint(p);
-    if (point.x < 0)
-        returnPoint.x = worldPos.x * SCREEN_WIDTH;
-    else if (point.x > SCREEN_WIDTH - 1)
-        returnPoint.x = (worldPos.x + 1) * SCREEN_WIDTH - 1;
-    if (point.y < 0)
-        returnPoint.y = worldPos.y * SCREEN_HEIGHT;
-    else if (point.y > SCREEN_HEIGHT - 1)
-        returnPoint.y = (worldPos.y + 1) * SCREEN_HEIGHT - 1;
+    if (point.mX < 0)
+        returnPoint.mX = worldPos.mX * SCREEN_WIDTH;
+    else if (point.mX > SCREEN_WIDTH - 1)
+        returnPoint.mX = (worldPos.mX + 1) * SCREEN_WIDTH - 1;
+    if (point.mY < 0)
+        returnPoint.mY = worldPos.mY * SCREEN_HEIGHT;
+    else if (point.mY > SCREEN_HEIGHT - 1)
+        returnPoint.mY = (worldPos.mY + 1) * SCREEN_HEIGHT - 1;
     return returnPoint;
 }
 
@@ -380,64 +380,64 @@ void InspectionDialog::handleInput(SDL_KeyboardEvent &e) {
 
     switch (e.keysym.sym) {
         case SDLK_h:
-            if (!viewingDescription)
+            if (!mViewingDescription)
                 posOffset = Point(-1, 0);
             break;
         case SDLK_j:
-            if (!viewingDescription)
+            if (!mViewingDescription)
                 posOffset = Point(0, 1);
             break;
         case SDLK_k:
-            if (!viewingDescription)
+            if (!mViewingDescription)
                 posOffset = Point(0, -1);
             break;
         case SDLK_l:
-            if (!viewingDescription)
+            if (!mViewingDescription)
                 posOffset = Point(1, 0);
             break;
         case SDLK_y:
-            if (!viewingDescription)
+            if (!mViewingDescription)
                 posOffset = Point(-1, -1);
             break;
         case SDLK_u:
-            if (!viewingDescription)
+            if (!mViewingDescription)
                 posOffset = Point(1, -1);
             break;
         case SDLK_b:
-            if (!viewingDescription)
+            if (!mViewingDescription)
                 posOffset = Point(-1, 1);
             break;
         case SDLK_n:
-            if (!viewingDescription)
+            if (!mViewingDescription)
                 posOffset = Point(1, 1);
             break;
         case SDLK_EQUALS:
-            if (selectingFromMultipleOptions && !viewingDescription) {
-                const auto &currentEntities = EntityManager::getInstance().getEntitiesAtPosFaster(chosenPoint);
-                if (chosenIndex == currentEntities.size() - 1)
-                    chosenIndex = 0;
+            if (mSelectingFromMultipleOptions && !mViewingDescription) {
+                const auto &currentEntities = EntityManager::getInstance().getEntitiesAtPosFaster(mChosenPoint);
+                if (mChosenIndex == currentEntities.size() - 1)
+                    mChosenIndex = 0;
                 else
-                    chosenIndex++;
+                    mChosenIndex++;
             }
             break;
         case SDLK_MINUS:
-            if (selectingFromMultipleOptions && !viewingDescription) {
-                const auto &currentEntities = EntityManager::getInstance().getEntitiesAtPosFaster(chosenPoint);
-                if (chosenIndex == 0)
-                    chosenIndex = (int)(currentEntities.size() - 1);
+            if (mSelectingFromMultipleOptions && !mViewingDescription) {
+                const auto &currentEntities = EntityManager::getInstance().getEntitiesAtPosFaster(mChosenPoint);
+                if (mChosenIndex == 0)
+                    mChosenIndex = (int)(currentEntities.size() - 1);
                 else
-                    chosenIndex--;
+                    mChosenIndex--;
             }
             break;
         case SDLK_RETURN:
-            if (thereIsAnEntity)
-                viewingDescription = true;
+            if (mThereIsAnEntity)
+                mViewingDescription = true;
             break;
         case SDLK_ESCAPE:
-            if (viewingDescription)
-                viewingDescription = false;
+            if (mViewingDescription)
+                mViewingDescription = false;
             else
-                enabled = false;
+                mEnabled = false;
             break;
         default:
             break;
@@ -446,33 +446,33 @@ void InspectionDialog::handleInput(SDL_KeyboardEvent &e) {
     if (e.keysym.mod & KMOD_SHIFT)
         posOffset *= 5;
 
-    chosenPoint = clipToScreenEdge(chosenPoint + posOffset);
+    mChosenPoint = clipToScreenEdge(mChosenPoint + posOffset);
 
-    if (viewingDescription)
+    if (mViewingDescription)
         mShouldRenderWorld = false;
     else
         mShouldRenderWorld = true;
 }
 
 void InspectionDialog::render(Font &font) {
-    const auto &entitiesAtPointBefore = EntityManager::getInstance().getEntitiesAtPosFaster(chosenPoint);
+    const auto &entitiesAtPointBefore = EntityManager::getInstance().getEntitiesAtPosFaster(mChosenPoint);
     std::vector<std::shared_ptr<Entity>> entitiesAtPoint;
 
     std::copy_if(entitiesAtPointBefore.cbegin(), entitiesAtPointBefore.cend(), std::back_inserter(entitiesAtPoint),
     [] (auto &a) { return !a->isInAnInventory; });
 
-    if (viewingDescription) {
-        drawDescriptionScreen(font, *entitiesAtPoint[chosenIndex]);
+    if (mViewingDescription) {
+        drawDescriptionScreen(font, *entitiesAtPoint[mChosenIndex]);
         return;
     }
 
-    const auto &chosenPointScreen = worldToScreen(chosenPoint);
+    const auto &chosenPointScreen = worldToScreen(mChosenPoint);
     font.drawText("${black}$[yellow]X", chosenPointScreen);
 
-    int xPosWindow = chosenPointScreen.x >= SCREEN_WIDTH / 2 ? 2 : SCREEN_WIDTH / 2 + 1;
+    int xPosWindow = chosenPointScreen.mX >= SCREEN_WIDTH / 2 ? 2 : SCREEN_WIDTH / 2 + 1;
 
     if (entitiesAtPoint.size() > 1) {
-        selectingFromMultipleOptions = true;
+        mSelectingFromMultipleOptions = true;
         std::vector<std::string> lines;
 
         lines.emplace_back(" You see");
@@ -482,28 +482,28 @@ void InspectionDialog::render(Font &font) {
         lines.emplace_back("");
         lines.emplace_back(" (-)-$(up) (=)-$(down) return-desc");
         showMessageBox(font, lines, 1, xPosWindow - 1, 2);
-        font.draw("right", xPosWindow + 2 - 1, 2 + 3 + chosenIndex);
-        thereIsAnEntity = true;
+        font.draw("right", xPosWindow + 2 - 1, 2 + 3 + mChosenIndex);
+        mThereIsAnEntity = true;
     } else {
-        selectingFromMultipleOptions = false;
-        chosenIndex = 0;
+        mSelectingFromMultipleOptions = false;
+        mChosenIndex = 0;
     }
 
     if (entitiesAtPoint.size() == 1) {
         const auto &entity = *entitiesAtPoint[0];
 
         std::vector<std::string> lines;
-        lines.emplace_back(entity.graphic + " " + entity.name);
+        lines.emplace_back(entity.mGraphic + " " + entity.mName);
 
-        if (!entity.shortDesc.empty()) {
+        if (!entity.mShortDesc.empty()) {
             lines.emplace_back("");
-            auto descLines = wordWrap(entity.shortDesc, SCREEN_WIDTH / 2 - 5);
+            auto descLines = wordWrap(entity.mShortDesc, SCREEN_WIDTH / 2 - 5);
             std::copy(descLines.begin(), descLines.end(), std::back_inserter(lines));
         }
 
-        if (!entity.longDesc.empty()) {
+        if (!entity.mLongDesc.empty()) {
             lines.emplace_back("");
-            auto descLines = wordWrap(entity.longDesc, SCREEN_WIDTH / 2 - 5);
+            auto descLines = wordWrap(entity.mLongDesc, SCREEN_WIDTH / 2 - 5);
             std::copy(descLines.begin(), descLines.end(), std::back_inserter(lines));
         }
 
@@ -516,178 +516,178 @@ void InspectionDialog::render(Font &font) {
 
         MessageBoxRenderer::getInstance().queueMessageBox(lines, 1, xPosWindow, 2);
 
-        thereIsAnEntity = true;
+        mThereIsAnEntity = true;
     }
 
     if (entitiesAtPoint.empty())
-        thereIsAnEntity = false;
+        mThereIsAnEntity = false;
 }
 
 void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
     auto &rm = RecipeManager::getInstance();
     switch (e.keysym.sym) {
         case SDLK_ESCAPE:
-            enabled = false;
+            mEnabled = false;
             break;
         case SDLK_j:
-            if (choosingPositionInWorld) {
+            if (mChoosingPositionInWorld) {
                 tryToBuildAtPosition(Point {0, 1});
                 break;
             }
 
-            if (layer == CraftingLayer::RECIPE) {
-                if (chosenRecipe == rm.recipes.size() - 1)
-                    chosenRecipe = 0;
+            if (mLayer == CraftingLayer::RECIPE) {
+                if (mChosenRecipe == rm.mRecipes.size() - 1)
+                    mChosenRecipe = 0;
                 else
-                    chosenRecipe++;
-                chosenIngredient = 0;
-                chosenMaterial = 0;
-            } else if (layer == CraftingLayer::INGREDIENT) {
-                if (chosenIngredient == rm.recipes[chosenRecipe]->ingredients.size())
-                    chosenIngredient = 0;
+                    mChosenRecipe++;
+                mChosenIngredient = 0;
+                mChosenMaterial = 0;
+            } else if (mLayer == CraftingLayer::INGREDIENT) {
+                if (mChosenIngredient == rm.mRecipes[mChosenRecipe]->mIngredients.size())
+                    mChosenIngredient = 0;
                 else
-                    chosenIngredient++;
-                chosenMaterial = 0;
-            } else if (layer == CraftingLayer::MATERIAL) {
+                    mChosenIngredient++;
+                mChosenMaterial = 0;
+            } else if (mLayer == CraftingLayer::MATERIAL) {
                 std::vector<std::shared_ptr<Entity>> inventoryMaterials = filterInventoryForChosenMaterials();
-                if (chosenMaterial == inventoryMaterials.size() - 1)
-                    chosenMaterial = 0;
+                if (mChosenMaterial == inventoryMaterials.size() - 1)
+                    mChosenMaterial = 0;
                 else
-                    chosenMaterial++;
+                    mChosenMaterial++;
             }
             break;
         case SDLK_k:
-            if (choosingPositionInWorld) {
+            if (mChoosingPositionInWorld) {
                 tryToBuildAtPosition(Point {0, -1});
                 break;
             }
 
-            if (layer == CraftingLayer::RECIPE) {
-                if (chosenRecipe == 0)
-                    chosenRecipe = (int) rm.recipes.size() - 1;
+            if (mLayer == CraftingLayer::RECIPE) {
+                if (mChosenRecipe == 0)
+                    mChosenRecipe = (int) rm.mRecipes.size() - 1;
                 else
-                    chosenRecipe--;
-                chosenIngredient = 0;
-                chosenMaterial = 0;
-            } else if (layer == CraftingLayer::INGREDIENT) {
-                if (chosenIngredient == 0)
-                    chosenIngredient = (int)rm.recipes[chosenRecipe]->ingredients.size();
+                    mChosenRecipe--;
+                mChosenIngredient = 0;
+                mChosenMaterial = 0;
+            } else if (mLayer == CraftingLayer::INGREDIENT) {
+                if (mChosenIngredient == 0)
+                    mChosenIngredient = (int)rm.mRecipes[mChosenRecipe]->mIngredients.size();
                 else
-                    chosenIngredient--;
-                chosenMaterial = 0;
-            } else if (layer == CraftingLayer::MATERIAL) {
+                    mChosenIngredient--;
+                mChosenMaterial = 0;
+            } else if (mLayer == CraftingLayer::MATERIAL) {
                 std::vector<std::shared_ptr<Entity>> inventoryMaterials = filterInventoryForChosenMaterials();
-                if (chosenMaterial == 0)
-                    chosenMaterial = (int)inventoryMaterials.size() - 1;
+                if (mChosenMaterial == 0)
+                    mChosenMaterial = (int)inventoryMaterials.size() - 1;
                 else
-                    chosenMaterial--;
+                    mChosenMaterial--;
             }
             break;
         case SDLK_l:
-            if (choosingPositionInWorld) {
+            if (mChoosingPositionInWorld) {
                 tryToBuildAtPosition(Point {1, 0});
                 break;
             }
         case SDLK_RETURN:
-            if (layer == CraftingLayer::RECIPE) {
-                chosenIngredient = 0;
-                chosenMaterial = 0;
-                layer = CraftingLayer::INGREDIENT;
+            if (mLayer == CraftingLayer::RECIPE) {
+                mChosenIngredient = 0;
+                mChosenMaterial = 0;
+                mLayer = CraftingLayer::INGREDIENT;
 
-                currentRecipe = std::make_unique<Recipe>(Recipe(*rm.recipes[chosenRecipe]));
-            } else if (layer == CraftingLayer::INGREDIENT) {
-                if (chosenIngredient == currentRecipe->ingredients.size()) {
+                mCurrentRecipe = std::make_unique<Recipe>(Recipe(*rm.mRecipes[mChosenRecipe]));
+            } else if (mLayer == CraftingLayer::INGREDIENT) {
+                if (mChosenIngredient == mCurrentRecipe->mIngredients.size()) {
                     if (currentRecipeSatisfied()) {
-                        if (rm.recipes[chosenRecipe]->goesIntoInventory || haveChosenPositionInWorld) {
+                        if (rm.mRecipes[mChosenRecipe]->mGoesIntoInventory || mHaveChosenPositionInWorld) {
                             buildItem(Point {0, 0});
                             this->reset();
                         } else {
                             // Get player to build object into the world
-                            choosingPositionInWorld = true;
+                            mChoosingPositionInWorld = true;
                             break;
                         }
                     }
-                } else if (currentRecipe->ingredients[chosenIngredient].quantity > 0 && !filterInventoryForChosenMaterials().empty())
-                    layer = CraftingLayer::MATERIAL;
-            } else if (layer == CraftingLayer::MATERIAL) {
+                } else if (mCurrentRecipe->mIngredients[mChosenIngredient].mQuantity > 0 && !filterInventoryForChosenMaterials().empty())
+                    mLayer = CraftingLayer::MATERIAL;
+            } else if (mLayer == CraftingLayer::MATERIAL) {
                 auto inventoryMaterials = filterInventoryForChosenMaterials();
 
-                if (currentRecipe->ingredients[chosenIngredient].quantity > 0) {
-                    currentlyChosenMaterials.emplace_back(inventoryMaterials[chosenMaterial]->ID);
-                    currentRecipe->ingredients[chosenIngredient].quantity--;
+                if (mCurrentRecipe->mIngredients[mChosenIngredient].mQuantity > 0) {
+                    mCurrentlyChosenMaterials.emplace_back(inventoryMaterials[mChosenMaterial]->mID);
+                    mCurrentRecipe->mIngredients[mChosenIngredient].mQuantity--;
                 }
                 // Have finished this material requirement
-                if (currentRecipe->ingredients[chosenIngredient].quantity == 0) {
-                    layer = CraftingLayer::INGREDIENT;
-                    chosenIngredient++; // Automatically go to next ingredient for faster crafting
+                if (mCurrentRecipe->mIngredients[mChosenIngredient].mQuantity == 0) {
+                    mLayer = CraftingLayer::INGREDIENT;
+                    mChosenIngredient++; // Automatically go to next ingredient for faster crafting
                 }
                 // This means we have now ran out of the desired material and should ensure that we leave the current crafting layer
                 else if (inventoryMaterials.size() == 1) {
-                    layer = CraftingLayer::INGREDIENT;
+                    mLayer = CraftingLayer::INGREDIENT;
                 }
             }
             break;
         case SDLK_h:
-            if (choosingPositionInWorld) {
+            if (mChoosingPositionInWorld) {
                 tryToBuildAtPosition(Point {-1, 0});
                 break;
             }
         case SDLK_BACKSPACE:
-            if (layer == CraftingLayer::INGREDIENT) {
-                chosenMaterial = 0;
-                layer = CraftingLayer::RECIPE;
-                currentRecipe.release();
-                currentlyChosenMaterials.clear();
-            } else if (layer == CraftingLayer::MATERIAL) {
-                chosenMaterial = 0;
-                layer = CraftingLayer::INGREDIENT;
+            if (mLayer == CraftingLayer::INGREDIENT) {
+                mChosenMaterial = 0;
+                mLayer = CraftingLayer::RECIPE;
+                mCurrentRecipe.release();
+                mCurrentlyChosenMaterials.clear();
+            } else if (mLayer == CraftingLayer::MATERIAL) {
+                mChosenMaterial = 0;
+                mLayer = CraftingLayer::INGREDIENT;
             }
             break;
         case SDLK_y:
-            if (choosingPositionInWorld)
+            if (mChoosingPositionInWorld)
                 tryToBuildAtPosition(Point {-1, -1});
             break;
         case SDLK_u:
-            if (choosingPositionInWorld)
+            if (mChoosingPositionInWorld)
                 tryToBuildAtPosition(Point {1, -1});
             break;
         case SDLK_b:
-            if (choosingPositionInWorld)
+            if (mChoosingPositionInWorld)
                 tryToBuildAtPosition(Point {-1, 1});
             break;
         case SDLK_n:
-            if (choosingPositionInWorld)
+            if (mChoosingPositionInWorld)
                 tryToBuildAtPosition(Point {1, 1});
             break;
     }
 
-    if (choosingPositionInWorld)
+    if (mChoosingPositionInWorld)
         mShouldRenderWorld = true;
     else
         mShouldRenderWorld = false;
 }
 
 void CraftingScreen::tryToBuildAtPosition(Point posOffset) {
-    auto p = posOffset + player.getPos();
+    auto p = posOffset + mPlayer.getPos();
     if (EntityManager::getInstance().getEntitiesAtPosFaster(p).empty()) {
-        haveChosenPositionInWorld = true;
-        choosingPositionInWorld = false;
+        mHaveChosenPositionInWorld = true;
+        mChoosingPositionInWorld = false;
         buildItem(p);
     } else {
-        couldNotBuildAtPosition = true;
+        mCouldNotBuildAtPosition = true;
     }
 }
 
 void CraftingScreen::render(Font &font) {
-    if (choosingPositionInWorld) {
+    if (mChoosingPositionInWorld) {
         auto player = EntityManager::getInstance().getEntityByID("Player");
 
         int y = 0;
-        if (worldToScreen(player->getPos()).y < SCREEN_HEIGHT / 2)
+        if (worldToScreen(player->getPos()).mY < SCREEN_HEIGHT / 2)
             y = SCREEN_HEIGHT - 1;
 
         std::string message = "Choose direction to place object";
-        if (couldNotBuildAtPosition)
+        if (mCouldNotBuildAtPosition)
             message = "Please choose a square that does not already have an entity on";
 
         font.drawText(message, 1, y, getColor("white"), getColor("black"));
@@ -698,29 +698,29 @@ void CraftingScreen::render(Font &font) {
     const int xOffset = 3;
     const int yOffset = 3;
 
-    for (int i = 0; i < rm.recipes.size(); ++i) {
-        auto recipe = *rm.recipes.at(i);
+    for (int i = 0; i < rm.mRecipes.size(); ++i) {
+        auto recipe = *rm.mRecipes.at(i);
         Color bColor = getColor("black");
 
-        if (i == chosenRecipe)
+        if (i == mChosenRecipe)
             bColor = getColor("blue");
 
-        font.drawText(recipe.nameOfProduct, xOffset, yOffset + i, getColor("white"), bColor);
+        font.drawText(recipe.mNameOfProduct, xOffset, yOffset + i, getColor("white"), bColor);
     }
 
-    auto &ingredients = rm.recipes[chosenRecipe]->ingredients;
+    auto &ingredients = rm.mRecipes[mChosenRecipe]->mIngredients;
     for (int i = 0; i < ingredients.size() + 1; ++i) {
         Color bColor = getColor("black");
 
-        if ((layer == CraftingLayer::INGREDIENT || layer == CraftingLayer::MATERIAL) && i == chosenIngredient)
+        if ((mLayer == CraftingLayer::INGREDIENT || mLayer == CraftingLayer::MATERIAL) && i == mChosenIngredient)
             bColor = getColor("blue");
 
         if (i != ingredients.size()) {
             auto ingredient = ingredients.at(i);
-            if (currentRecipe != nullptr)
-                ingredient = currentRecipe->ingredients[i];
+            if (mCurrentRecipe != nullptr)
+                ingredient = mCurrentRecipe->mIngredients[i];
 
-            font.drawText(std::to_string(ingredient.quantity) + "x " + ingredient.entityType, xOffset + 14, yOffset + i,
+            font.drawText(std::to_string(ingredient.mQuantity) + "x " + ingredient.mEntityType, xOffset + 14, yOffset + i,
                           getColor("white"), bColor);
         } else {
             Color fColor = getColor("grey");
@@ -732,18 +732,18 @@ void CraftingScreen::render(Font &font) {
         }
     }
 
-    if (layer == CraftingLayer::INGREDIENT || layer == CraftingLayer::MATERIAL) {
+    if (mLayer == CraftingLayer::INGREDIENT || mLayer == CraftingLayer::MATERIAL) {
         std::vector<std::shared_ptr<Entity>> inventoryMaterials = filterInventoryForChosenMaterials();
 
         for (int i = 0; i < inventoryMaterials.size(); ++i) {
             Color bColor;
             auto &material = inventoryMaterials.at(i);
 
-            if (layer == CraftingLayer::MATERIAL && i == chosenMaterial) {
+            if (mLayer == CraftingLayer::MATERIAL && i == mChosenMaterial) {
                 bColor = getColor("blue");
-                font.drawText(material->graphic + " " + material->name, xOffset + 24, yOffset + i, bColor);
+                font.drawText(material->mGraphic + " " + material->mName, xOffset + 24, yOffset + i, bColor);
             } else
-                font.drawText(material->graphic + " " + material->name, xOffset + 24, yOffset + i);
+                font.drawText(material->mGraphic + " " + material->mName, xOffset + 24, yOffset + i);
         }
     }
 }
@@ -752,55 +752,55 @@ std::vector<std::shared_ptr<Entity>> CraftingScreen::filterInventoryForChosenMat
     auto &rm = RecipeManager::getInstance();
 
     std::vector<std::shared_ptr<Entity>> inventoryMaterials;
-    auto inventory = player.getInventory();
+    auto inventory = mPlayer.getInventory();
     std::copy_if(inventory.cbegin(), inventory.cend(), std::back_inserter(inventoryMaterials),
     [this, &rm] (auto &a) {
         if (!a->hasBehaviour("CraftingMaterialBehaviour"))
             return false;
-        if (std::find(currentlyChosenMaterials.begin(), currentlyChosenMaterials.end(), a->ID) != currentlyChosenMaterials.end())
+        if (std::find(mCurrentlyChosenMaterials.begin(), mCurrentlyChosenMaterials.end(), a->ID) != mCurrentlyChosenMaterials.end())
             return false;
 
         auto &b = dynamic_cast<CraftingMaterialBehaviour&>(*a->getBehaviourByID("CraftingMaterialBehaviour"));
-        return rm.recipes[chosenRecipe]->ingredients[chosenIngredient].entityType == b.type;
+        return rm.mRecipes[mChosenRecipe]->mIngredients[mChosenIngredient].mEntityType == b.type;
     });
 
     return inventoryMaterials;
 }
 
 bool CraftingScreen::currentRecipeSatisfied() {
-    return (currentRecipe != nullptr &&
-            std::all_of(currentRecipe->ingredients.begin(), currentRecipe->ingredients.end(),
+    return (mCurrentRecipe != nullptr &&
+            std::all_of(mCurrentRecipe->mIngredients.begin(), mCurrentRecipe->mIngredients.end(),
                     [] (auto &a) { return a.quantity == 0; }));
 }
 
 void CraftingScreen::reset() {
-    currentlyChosenMaterials.clear();
-    currentRecipe = nullptr;
-    chosenRecipe = 0;
-    chosenIngredient = 0;
-    chosenMaterial = 0;
-    layer = CraftingLayer::RECIPE;
-    choosingPositionInWorld = false;
-    haveChosenPositionInWorld = false;
-    couldNotBuildAtPosition = false;
+    mCurrentlyChosenMaterials.clear();
+    mCurrentRecipe = nullptr;
+    mChosenRecipe = 0;
+    mChosenIngredient = 0;
+    mChosenMaterial = 0;
+    mLayer = CraftingLayer::RECIPE;
+    mChoosingPositionInWorld = false;
+    mHaveChosenPositionInWorld = false;
+    mCouldNotBuildAtPosition = false;
 }
 
 void CraftingScreen::buildItem(Point pos) {
-    auto recipe = RecipeManager::getInstance().recipes[chosenRecipe];
+    auto recipe = RecipeManager::getInstance().mRecipes[mChosenRecipe];
 
-    if (!recipe->goesIntoInventory) {
-        recipe->pointIfNotGoingIntoInventory = pos;
-        enabled = false;
+    if (!recipe->mGoesIntoInventory) {
+        recipe->mPointIfNotGoingIntoInventory = pos;
+        mEnabled = false;
     }
 
     recipe->produce();
 
-    for (const auto &ID : currentlyChosenMaterials) {
-        player.removeFromInventory(ID);
+    for (const auto &ID : mCurrentlyChosenMaterials) {
+        mPlayer.removeFromInventory(ID);
         EntityManager::getInstance().eraseByID(ID);
     }
 
-    NotificationMessageRenderer::getInstance().queueMessage("Created " + recipe->nameOfProduct);
+    NotificationMessageRenderer::getInstance().queueMessage("Created " + recipe->mNameOfProduct);
 }
 
 void CraftingScreen::enable() {
@@ -811,50 +811,50 @@ void CraftingScreen::enable() {
 void EquipmentScreen::handleInput(SDL_KeyboardEvent &e) {
     switch (e.keysym.sym) {
         case SDLK_ESCAPE:
-            if (choosingEquipmentAction)
-                choosingEquipmentAction = false;
-            else if (choosingNewEquipment)
-                choosingNewEquipment = false;
+            if (mChoosingEquipmentAction)
+                mChoosingEquipmentAction = false;
+            else if (mChoosingNewEquipment)
+                mChoosingNewEquipment = false;
             else
-                enabled = false;
+                mEnabled = false;
             break;
         case SDLK_j:
-            if (choosingNewEquipment) {
-                auto equippableIDs = player.getInventoryItemsEquippableInSlot(chosenSlot);
-                if (choosingNewEquipmentIndex == equippableIDs.size() - 1)
-                    choosingNewEquipmentIndex = 0;
+            if (mChoosingNewEquipment) {
+                auto equippableIDs = mPlayer.getInventoryItemsEquippableInSlot(mChosenSlot);
+                if (mChoosingNewEquipmentIndex == equippableIDs.size() - 1)
+                    mChoosingNewEquipmentIndex = 0;
                 else
-                    ++choosingNewEquipmentIndex;
-            } else if (!choosingEquipmentAction)
-                ++chosenSlot;
+                    ++mChoosingNewEquipmentIndex;
+            } else if (!mChoosingEquipmentAction)
+                ++mChosenSlot;
             break;
         case SDLK_k:
-            if (choosingNewEquipment) {
-                auto equippableIDs = player.getInventoryItemsEquippableInSlot(chosenSlot);
-                if (choosingNewEquipmentIndex == 0)
-                    choosingNewEquipmentIndex = static_cast<int>(equippableIDs.size()) - 1;
+            if (mChoosingNewEquipment) {
+                auto equippableIDs = mPlayer.getInventoryItemsEquippableInSlot(mChosenSlot);
+                if (mChoosingNewEquipmentIndex == 0)
+                    mChoosingNewEquipmentIndex = static_cast<int>(equippableIDs.size()) - 1;
                 else
-                    --choosingNewEquipmentIndex;
-            } else if (!choosingEquipmentAction)
-                --chosenSlot;
+                    --mChoosingNewEquipmentIndex;
+            } else if (!mChoosingEquipmentAction)
+                --mChosenSlot;
             break;
         case SDLK_RETURN:
-            if (choosingNewEquipment) {
-                auto equippableIDs = player.getInventoryItemsEquippableInSlot(chosenSlot);
-                player.equip(chosenSlot, equippableIDs[choosingNewEquipmentIndex]);
+            if (mChoosingNewEquipment) {
+                auto equippableIDs = mPlayer.getInventoryItemsEquippableInSlot(mChosenSlot);
+                mPlayer.equip(mChosenSlot, equippableIDs[mChoosingNewEquipmentIndex]);
                 reset();
-            } else if (choosingEquipmentAction) {
-                if (player.hasEquippedInSlot(chosenSlot)) {
-                    player.unequip(chosenSlot);
-                } else if (!player.getInventoryItemsEquippableInSlot(chosenSlot).empty()) {
-                    choosingNewEquipment = true;
+            } else if (mChoosingEquipmentAction) {
+                if (mPlayer.hasEquippedInSlot(mChosenSlot)) {
+                    mPlayer.unequip(mChosenSlot);
+                } else if (!mPlayer.getInventoryItemsEquippableInSlot(mChosenSlot).empty()) {
+                    mChoosingNewEquipment = true;
                 }
-                choosingEquipmentAction = false;
-                choosingEquipmentActionIndex = 0;
-            } else if (!player.hasEquippedInSlot(chosenSlot) && !player.getInventoryItemsEquippableInSlot(chosenSlot).empty())
-                choosingNewEquipment = true;
+                mChoosingEquipmentAction = false;
+                mChoosingEquipmentActionIndex = 0;
+            } else if (!mPlayer.hasEquippedInSlot(mChosenSlot) && !mPlayer.getInventoryItemsEquippableInSlot(mChosenSlot).empty())
+                mChoosingNewEquipment = true;
             else
-                choosingEquipmentAction = true;
+                mChoosingEquipmentAction = true;
             break;
     }
 }
@@ -864,25 +864,25 @@ void EquipmentScreen::render(Font &font) {
 
     for (auto slot : EQUIPMENT_SLOTS) {
         Color bColor = getColor("black");
-        if (chosenSlot == slot)
+        if (mChosenSlot == slot)
             bColor = getColor("blue");
 
-        std::string currentlyEquipped = player.getEquipmentID(slot);
+        std::string currentlyEquipped = mPlayer.getEquipmentID(slot);
         if (!currentlyEquipped.empty()) {
             auto e = EntityManager::getInstance().getEntityByID(currentlyEquipped);
-            font.drawText(e->graphic + " " + e->name +
+            font.drawText(e->mGraphic + " " + e->mName +
                           (slot == EquipmentSlot::RIGHT_HAND ?
-                           " $[red]$(heart)$[white]" + std::to_string(player.hitTimes)
-                           + "d" + std::to_string(player.computeMaxDamage()) : "")
+                           " $[red]$(heart)$[white]" + std::to_string(mPlayer.mHitTimes)
+                           + "d" + std::to_string(mPlayer.computeMaxDamage()) : "")
                     , 20, y);
         }
 
         font.drawText(slotToString(slot), 6, y++, bColor);
     }
 
-    if (choosingEquipmentAction) {
+    if (mChoosingEquipmentAction) {
         std::vector<std::string> lines;
-        if (player.hasEquippedInSlot(chosenSlot))
+        if (mPlayer.hasEquippedInSlot(mChosenSlot))
             lines.emplace_back("$(right)Unequip");
         else
             lines.emplace_back("$(right)Equip");
@@ -890,22 +890,22 @@ void EquipmentScreen::render(Font &font) {
         MessageBoxRenderer::getInstance().queueMessageBoxCentered(lines, 1);
     }
 
-    if (choosingNewEquipment) {
-        auto equippableIDs = player.getInventoryItemsEquippableInSlot(chosenSlot);
+    if (mChoosingNewEquipment) {
+        auto equippableIDs = mPlayer.getInventoryItemsEquippableInSlot(mChosenSlot);
         std::vector<std::string> lines;
 
         for (int i = 0; i < equippableIDs.size(); ++i) {
             auto ID = equippableIDs[i];
             auto entity = EntityManager::getInstance().getEntityByID(ID);
 
-            lines.emplace_back((i == choosingNewEquipmentIndex ? "$(right)" : " ") + entity->graphic + " " + entity->name);
+            lines.emplace_back((i == mChoosingNewEquipmentIndex ? "$(right)" : " ") + entity->mGraphic + " " + entity->mName);
 
-            if (chosenSlot == EquipmentSlot::RIGHT_HAND) {
+            if (mChosenSlot == EquipmentSlot::RIGHT_HAND) {
                 auto b = entity->getBehaviourByID("MeleeWeaponBehaviour");
                 if (b != nullptr) {
-                    lines[i] += " $[red]$(heart)$[white]" + std::to_string(player.hitTimes)
+                    lines[i] += " $[red]$(heart)$[white]" + std::to_string(mPlayer.mHitTimes)
                                 + "d" +
-                                std::to_string(player.hitAmount + dynamic_cast<MeleeWeaponBehaviour &>(*b).extraDamage);
+                                std::to_string(mPlayer.mHitAmount + dynamic_cast<MeleeWeaponBehaviour &>(*b).extraDamage);
                 }
             }
         }
@@ -915,42 +915,42 @@ void EquipmentScreen::render(Font &font) {
 }
 
 void EquipmentScreen::enable() {
-    enabled = true;
-    choosingEquipmentAction = false;
-    choosingEquipmentActionIndex = 0;
-    choosingNewEquipment = false;
-    choosingNewEquipmentIndex = 0;
+    mEnabled = true;
+    mChoosingEquipmentAction = false;
+    mChoosingEquipmentActionIndex = 0;
+    mChoosingNewEquipment = false;
+    mChoosingNewEquipmentIndex = 0;
 }
 
 void EquipmentScreen::reset() {
-    choosingNewEquipment = false;
-    choosingEquipmentAction = false;
-    choosingNewEquipmentIndex = 0;
-    choosingEquipmentActionIndex = 0;
+    mChoosingNewEquipment = false;
+    mChoosingEquipmentAction = false;
+    mChoosingNewEquipmentIndex = 0;
+    mChoosingEquipmentActionIndex = 0;
 }
 
 void NotificationMessageRenderer::queueMessage(const std::string &message) {
-    messagesToBeRendered.push_back(message);
-    if (messagesToBeRendered.size() > MAX_ON_SCREEN)
-        messagesToBeRendered.pop_front();
-    allMessages.push_back(message);
+    mMessagesToBeRendered.push_back(message);
+    if (mMessagesToBeRendered.size() > cMaxOnScreen)
+        mMessagesToBeRendered.pop_front();
+    mAllMessages.push_back(message);
 }
 
 void NotificationMessageRenderer::render(Font &font) {
     auto currentTime = clock();
 
-    auto front = messagesToBeRendered.cbegin();
-    for (int i = 0; front != messagesToBeRendered.cend() && i < MAX_ON_SCREEN; ++i, ++front) {
-        font.drawText(*front, 4, INITIAL_Y_POS - static_cast<int>(messagesToBeRendered.size()) + i,
-                i == 0 ? static_cast<int>(0xFF * alpha) : -1);
+    auto front = mMessagesToBeRendered.cbegin();
+    for (int i = 0; front != mMessagesToBeRendered.cend() && i < cMaxOnScreen; ++i, ++front) {
+        font.drawText(*front, 4, cInitialYPos - static_cast<int>(mMessagesToBeRendered.size()) + i,
+                i == 0 ? static_cast<int>(0xFF * mAlpha) : -1);
 
         if (i == 0) // TODO: why is alpha decay slower when in a menu?
-            alpha -= ALPHA_DECAY_PER_SEC * static_cast<float>(currentTime - previousTime) / CLOCKS_PER_SEC;
+            mAlpha -= ALPHA_DECAY_PER_SEC * static_cast<float>(currentTime - previousTime) / CLOCKS_PER_SEC;
     }
 
-    if (alpha <= 0) {
-        alpha = 1;
-        messagesToBeRendered.pop_front();
+    if (mAlpha <= 0) {
+        mAlpha = 1;
+        mMessagesToBeRendered.pop_front();
     }
 
     previousTime = currentTime;
@@ -960,7 +960,7 @@ void NotificationMessageScreen::handleInput(SDL_KeyboardEvent &e) {
     switch (e.keysym.sym) {
         case SDLK_ESCAPE:
         case SDLK_m:
-            enabled = false;
+            mEnabled = false;
             break;
     }
 }
@@ -982,7 +982,7 @@ void NotificationMessageScreen::render(Font &font) {
 
 void HelpScreen::handleInput(SDL_KeyboardEvent &e) {
     if (e.keysym.sym == SDLK_ESCAPE || (e.keysym.sym == SDLK_SLASH && e.keysym.mod & KMOD_SHIFT))
-        enabled = false;
+        mEnabled = false;
 }
 
 void HelpScreen::render(Font &font) {
@@ -990,7 +990,7 @@ void HelpScreen::render(Font &font) {
     const int xPadding = 2;
     int y = 0;
 
-    for (auto line : displayLines) {
+    for (auto line : cDisplayLines) {
         font.drawText(line, xPadding, yPadding + y++);
     }
 }

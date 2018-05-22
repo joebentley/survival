@@ -24,8 +24,8 @@ Color getColor(const std::string& colorStr) {
 }
 
 void Font::setFontColor(Color c) {
-    SDL_SetTextureColorMod(texture.texture, c.r, c.g, c.b);
-    SDL_SetTextureAlphaMod(texture.texture, c.a);
+    SDL_SetTextureColorMod(mTexture.mTexture, c.r, c.g, c.b);
+    SDL_SetTextureAlphaMod(mTexture.mTexture, c.a);
 }
 
 int Font::draw(const std::string &character, int x, int y, Color fColor, Color bColor)
@@ -45,13 +45,13 @@ int Font::draw(const std::string &character, int x, int y, Color fColor, Color b
     int cellX = std::get<0>(position);
     int cellY = std::get<1>(position);
 
-    SDL_Rect srcRect = { cellX * cellWidth, cellY * cellHeight, cellWidth, cellHeight };
-    SDL_Rect destRect = { x * cellWidth, y * cellHeight, cellWidth, cellHeight };
+    SDL_Rect srcRect = { cellX * mCellWidth, cellY * mCellHeight, mCellWidth, mCellHeight };
+    SDL_Rect destRect = { x * mCellWidth, y * mCellHeight, mCellWidth, mCellHeight };
 
-    SDL_SetRenderDrawColor(renderer, bColor.r, bColor.g, bColor.b, bColor.a);
-    SDL_RenderFillRect(renderer, &destRect);
+    SDL_SetRenderDrawColor(mRenderer, bColor.r, bColor.g, bColor.b, bColor.a);
+    SDL_RenderFillRect(mRenderer, &destRect);
 
-    texture.render(renderer, &srcRect, &destRect);
+    mTexture.render(mRenderer, &srcRect, &destRect);
     return 0;
 }
 
@@ -232,15 +232,15 @@ int Font::drawText(const std::string &text, int x0, int y, Color bColor) {
 }
 
 int Font::getCellWidth() const {
-    return cellWidth;
+    return mCellWidth;
 }
 
 int Font::getCellHeight() const {
-    return cellHeight;
+    return mCellHeight;
 }
 
 Point Font::getCellSize() const {
-    return Point(cellWidth, cellHeight);
+    return Point(mCellWidth, mCellHeight);
 }
 
 int getFontStringLength(const std::string& text)

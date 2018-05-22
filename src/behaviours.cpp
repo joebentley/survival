@@ -5,39 +5,39 @@
 #include <iostream>
 
 void WanderBehaviour::tick() {
-    Point p = parent.getPos();
+    Point p = mParent.getPos();
     switch (rand() % 20) {
         case 0:
-            p.x++;
+            p.mX++;
             break;
         case 1:
-            p.x--;
+            p.mX--;
             break;
         case 2:
-            p.y++;
+            p.mY++;
             break;
         case 3:
-            p.y--;
+            p.mY--;
             break;
         case 4:
-            p.x++;
-            p.y++;
+            p.mX++;
+            p.mY++;
             break;
         case 5:
-            p.x--;
-            p.y++;
+            p.mX--;
+            p.mY++;
             break;
         case 6:
-            p.x++;
-            p.y--;
+            p.mX++;
+            p.mY--;
             break;
         case 7:
-            p.x--;
-            p.y--;
+            p.mX--;
+            p.mY--;
             break;
     }
 
-    parent.moveTo(p);
+    mParent.moveTo(p);
 }
 
 void AttachmentBehaviour::tick() {
@@ -46,8 +46,8 @@ void AttachmentBehaviour::tick() {
     if (!attached) {
         if (r < attachment) {
             PlayerEntity& p = dynamic_cast<PlayerEntity&>(*EntityManager::getInstance().getEntityByID("Player"));
-            if (parent.getPos().distanceTo(p.getPos()) < 10) {
-                NotificationMessageRenderer::getInstance().queueMessage(parent.graphic + "$[red]$(heart)$[white]$(dwarf)");
+            if (mParent.getPos().distanceTo(p.getPos()) < 10) {
+                NotificationMessageRenderer::getInstance().queueMessage(mParent.mGraphic + "$[red]$(heart)$[white]$(dwarf)");
                 attached = true;
             }
         }
@@ -57,19 +57,19 @@ void AttachmentBehaviour::tick() {
     PlayerEntity& p = dynamic_cast<PlayerEntity&>(*EntityManager::getInstance().getEntityByID("Player"));
 
     // Don't follow too closely
-    auto pos = parent.getPos();
+    auto pos = mParent.getPos();
     if (pos.distanceTo(p.getPos()) > 2 && r < clinginess) {
-        if (pos.x < p.getPos().x)
-            pos.x++;
-        else if (pos.x > p.getPos().x)
-            pos.x--;
-        if (pos.y < p.getPos().y)
-            pos.y++;
-        else if (pos.y > p.getPos().y)
-            pos.y--;
+        if (pos.mX < p.getPos().mX)
+            pos.mX++;
+        else if (pos.mX > p.getPos().mX)
+            pos.mX--;
+        if (pos.mY < p.getPos().mY)
+            pos.mY++;
+        else if (pos.mY > p.getPos().mY)
+            pos.mY--;
     }
 
-    parent.moveTo(pos);
+    mParent.moveTo(pos);
 
     if (r < unattachment) {
         attached = false;
@@ -79,70 +79,70 @@ void AttachmentBehaviour::tick() {
 
 void ChaseAndAttackBehaviour::tick() {
     auto& ui = dynamic_cast<StatusUIEntity&>(*EntityManager::getInstance().getEntityByID("StatusUI"));
-    ui.setAttackTarget(std::make_shared<Entity>(parent));
+    ui.setAttackTarget(std::make_shared<Entity>(mParent));
 
     auto& player = *EntityManager::getInstance().getEntityByID("Player");
     Point posOffset;
 
-    if (player.getPos().x > parent.getPos().x)
-        posOffset.x = 1;
-    else if (player.getPos().x < parent.getPos().x)
-        posOffset.x = -1;
-    if (player.getPos().y > parent.getPos().y)
-        posOffset.y = 1;
-    else if (player.getPos().y < parent.getPos().y)
-        posOffset.y = -1;
+    if (player.getPos().mX > mParent.getPos().mX)
+        posOffset.mX = 1;
+    else if (player.getPos().mX < mParent.getPos().mX)
+        posOffset.mX = -1;
+    if (player.getPos().mY > mParent.getPos().mY)
+        posOffset.mY = 1;
+    else if (player.getPos().mY < mParent.getPos().mY)
+        posOffset.mY = -1;
 
-    if (parent.getPos() + posOffset != player.getPos()) {
-        if (parent.getPos().distanceTo(player.getPos()) > range) {
+    if (mParent.getPos() + posOffset != player.getPos()) {
+        if (mParent.getPos().distanceTo(player.getPos()) > range) {
             double r = randDouble();
             if (r < unattachment) { // Stop attacking if far away
-                enabled = false;
-                if (parent.getBehaviourByID("WanderBehaviour") != nullptr) {
-                    parent.getBehaviourByID("WanderBehaviour")->enable();
+                mEnabled = false;
+                if (mParent.getBehaviourByID("WanderBehaviour") != nullptr) {
+                    mParent.getBehaviourByID("WanderBehaviour")->enable();
                 }
-                if (parent.getBehaviourByID("WanderAttachBehaviour") != nullptr) {
-                    auto& wanderAttach = dynamic_cast<WanderAttachBehaviour&>(*parent.getBehaviourByID("WanderAttachBehaviour"));
+                if (mParent.getBehaviourByID("WanderAttachBehaviour") != nullptr) {
+                    auto& wanderAttach = dynamic_cast<WanderAttachBehaviour&>(*mParent.getBehaviourByID("WanderAttachBehaviour"));
                     wanderAttach.onlyWander = true; // Never attach to player anymore
                     wanderAttach.enable();
                 }
-                if (parent.getBehaviourByID("HostilityBehaviour") != nullptr) {
-                    parent.getBehaviourByID("HostilityBehaviour")->enable();
+                if (mParent.getBehaviourByID("HostilityBehaviour") != nullptr) {
+                    mParent.getBehaviourByID("HostilityBehaviour")->enable();
                 } else if (postHostility != 0) { // Don't bother adding hostility if it won't ever be triggered
                     std::shared_ptr<Behaviour> hostilityBehaviour =
-                            std::make_shared<HostilityBehaviour>(parent, postHostilityRange, postHostility);
-                    parent.addBehaviour(hostilityBehaviour);
+                            std::make_shared<HostilityBehaviour>(mParent, postHostilityRange, postHostility);
+                    mParent.addBehaviour(hostilityBehaviour);
                 }
             }
         }
 
         if (randDouble() < clinginess)
-            parent.moveTo(parent.getPos() + posOffset);
+            mParent.moveTo(mParent.getPos() + posOffset);
         return;
     }
 
-    int damage = parent.rollDamage();
-    player.hp -= damage;
+    int damage = mParent.rollDamage();
+    player.mHp -= damage;
 
     NotificationMessageRenderer::getInstance().queueMessage(
-            parent.graphic + " " + parent.name + " $[white]hit you for ${black}$[red]" + std::to_string(damage));
+            mParent.mGraphic + " " + mParent.mName + " $[white]hit you for ${black}$[red]" + std::to_string(damage));
 }
 
 void HostilityBehaviour::tick() {
-    auto chaseAndAttack = parent.getBehaviourByID("ChaseAndAttackBehaviour");
+    auto chaseAndAttack = mParent.getBehaviourByID("ChaseAndAttackBehaviour");
     auto player = EntityManager::getInstance().getEntityByID("Player");
 
     if (chaseAndAttack != nullptr && !chaseAndAttack->isEnabled() && player != nullptr
-        && parent.getPos().distanceTo(player->getPos()) < range && randDouble() < hostility)
+        && mParent.getPos().distanceTo(player->getPos()) < range && randDouble() < hostility)
     {
         // Disable wandering and wanderattach
-        auto b = parent.getBehaviourByID("WanderBehaviour");
+        auto b = mParent.getBehaviourByID("WanderBehaviour");
         if (b != nullptr)
             b->disable();
-        b = parent.getBehaviourByID("WanderAttachBehaviour");
+        b = mParent.getBehaviourByID("WanderAttachBehaviour");
         if (b != nullptr)
             b->disable();
-        NotificationMessageRenderer::getInstance().queueMessage("${black}The $[red]" + parent.name + " $[white]went $[red]feral!");
+        NotificationMessageRenderer::getInstance().queueMessage("${black}The $[red]" + mParent.mName + " $[white]went $[red]feral!");
         chaseAndAttack->enable();
     }
 }

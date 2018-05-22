@@ -80,7 +80,7 @@ struct HostilityBehaviour : Behaviour {
         : Behaviour("HostilityBehaviour", parent), range(range), hostility(hostility)
     {
         if (!parent.hasBehaviour("ChaseAndAttackBehaviour"))
-            throw std::invalid_argument("Error: HostilityBehaviour cannot be added to entity with ID " + parent.ID
+            throw std::invalid_argument("Error: HostilityBehaviour cannot be added to entity with ID " + parent.mID
                                         + " as it does not have a ChaseAndAttackBehaviour");
     }
 
@@ -114,8 +114,8 @@ struct HealingItemBehaviour : ApplyableBehaviour {
     void apply() override {
         auto player = EntityManager::getInstance().getEntityByID("Player");
         player->addHealth(healingAmount);
-        player->removeFromInventory(parent.ID);
-        parent.destroy();
+        player->removeFromInventory(mParent.mID);
+        mParent.destroy();
     }
 };
 
@@ -161,9 +161,9 @@ public:
             : Behaviour("KeepStockedBehaviour", parent), restockRate(restockRate), ticksUntilRestock(restockRate) {}
 
     void tick() override {
-        if (ticksUntilRestock == 0 && parent.isInventoryEmpty()) {
+        if (ticksUntilRestock == 0 && mParent.isInventoryEmpty()) {
             auto item = std::make_shared<T>();
-            parent.addToInventory(item);
+            mParent.addToInventory(item);
             ticksUntilRestock = restockRate;
         }
         if (ticksUntilRestock > 0)
@@ -190,7 +190,7 @@ struct LightEmittingBehaviour : Behaviour {
 
     bool isEnabled() const override {
         // Don't be enabled if just sitting in someone's inventory
-        return !parent.isInAnInventory || parent.isEquipped;
+        return !mParent.mIsInAnInventory || mParent.mIsEquipped;
     }
 
     Color getColor() const {
