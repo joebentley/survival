@@ -211,6 +211,7 @@ struct HelpScreen {
         "Equipment: e",
         "Crafting: c",
         "Message log: m",
+        "Inspect: semicolon (;)",
         "This screen: ?"
     };
 
