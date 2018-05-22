@@ -71,92 +71,119 @@ private:
     int alpha {0xFF};
 };
 
-struct NotificationMessageScreen {
-    bool enabled {false};
+struct Screen {
+    Screen(bool shouldRenderWorld) : mShouldRenderWorld(shouldRenderWorld) {}
 
-    void handleInput(SDL_KeyboardEvent &e);
-    void render(Font& font);
+    virtual void enable() {
+        enabled = true;
+    }
+    virtual void disable() {
+        enabled = false;
+    }
+    bool isEnabled() const {
+        return enabled;
+    }
+    bool shouldRenderWorld() const {
+        return mShouldRenderWorld;
+    }
+    virtual void handleInput(SDL_KeyboardEvent &e) = 0;
+    virtual void render(Font &font) = 0;
+
+protected:
+    bool enabled {false};
+    bool mShouldRenderWorld;
+};
+
+struct NotificationMessageScreen : Screen {
+    NotificationMessageScreen() : Screen(false) {}
+
+    void handleInput(SDL_KeyboardEvent &e) override;
+    void render(Font& font) override;
 };
 
 struct PlayerEntity;
 
-struct InventoryScreen {
+struct InventoryScreen : Screen {
     static const int X_OFFSET = 4;
     static const int X_STATUS_OFFSET = 10;
     static const int Y_OFFSET = 4;
     static const int WORD_WRAP_COLUMN = 60;
 
+    explicit InventoryScreen(PlayerEntity &player) : Screen(false), player(player) {}
+
+    void handleInput(SDL_KeyboardEvent &e) override;
+    void render(Font& font) override;
+
+    void enable() override {
+        chosenIndex = 0;
+        Screen::enable();
+    }
+
+private:
     PlayerEntity &player;
     int chosenIndex {0};
-    bool enabled {false};
     bool viewingDescription {false};
-
-    explicit InventoryScreen(PlayerEntity &player) : player(player) {}
-
-    void handleInput(SDL_KeyboardEvent &e);
-    void render(Font& font);
 };
 
-struct LootingDialog {
+struct LootingDialog : Screen {
+    explicit LootingDialog(PlayerEntity &player) : Screen(true), player(player) {}
+
+    void showItemsToLoot(std::vector<std::shared_ptr<Entity>> items);
+    void showItemsToLoot(std::vector<std::shared_ptr<Entity>> items, std::shared_ptr<Entity> entityToTransferFrom);
+
+    void handleInput(SDL_KeyboardEvent &e) override;
+    void render(Font& font) override;
+private:
     const int DIALOG_WIDTH = 30;
 
-    bool enabled {false};
     bool viewingDescription {false};
     bool showingTooMuchWeightMessage {false};
     PlayerEntity &player;
     std::vector<std::shared_ptr<Entity>> itemsToShow;
     int chosenIndex {0};
     std::shared_ptr<Entity> entityToTransferFrom;
-
-    explicit LootingDialog(PlayerEntity &player) : player(player) {}
-
-    void showItemsToLoot(std::vector<std::shared_ptr<Entity>> items);
-    void showItemsToLoot(std::vector<std::shared_ptr<Entity>> items, std::shared_ptr<Entity> entityToTransferFrom);
-
-    void handleInput(SDL_KeyboardEvent &e);
-    void render(Font& font);
 };
 
-class InspectionDialog {
+struct InspectionDialog : Screen {
+    explicit InspectionDialog(PlayerEntity &player) : Screen(true), player(player) {}
+
+    void handleInput(SDL_KeyboardEvent &e) override;
+    void render(Font& font) override;
+
+    void enableAtPoint(Point initialPoint) {
+        chosenPoint = initialPoint;
+        Screen::enable();
+    }
+
+private:
     inline Point clipToScreenEdge(const Point &p) const;
-public:
-    bool enabled {false};
     PlayerEntity &player;
     Point chosenPoint;
     bool selectingFromMultipleOptions {false};
     int chosenIndex {0};
     bool viewingDescription {false};
     bool thereIsAnEntity {false};
-
-    explicit InspectionDialog(PlayerEntity &player) : player(player) {}
-
-    void handleInput(SDL_KeyboardEvent &e);
-    void render(Font& font);
 };
 
 struct Recipe;
-struct CraftingScreen {
-    explicit CraftingScreen(PlayerEntity &player) : player(player) {}
+struct CraftingScreen : Screen {
+    explicit CraftingScreen(PlayerEntity &player) : Screen(false), player(player) {}
 
-    bool enabled {false};
-
-    void handleInput(SDL_KeyboardEvent &e);
+    void handleInput(SDL_KeyboardEvent &e) override;
 
     /// Render crafting screen
     /// \param font Font object to render using
-    /// \param world World object used for rendering
-    /// \param lightMapTexture Light map texture used for rendering
-    void render(Font &font, World &world, LightMapTexture &lightMapTexture);
+    void render(Font &font) override;
     void reset();
 
-    void enable();
-private:
+    void enable() override;
+
     enum class CraftingLayer {
         RECIPE,
         INGREDIENT,
         MATERIAL
     };
-
+private:
     int chosenRecipe {0};
     int chosenIngredient {0};
     int chosenMaterial {0};
@@ -177,19 +204,17 @@ private:
     void buildItem(Point pos);
 };
 
-struct EquipmentScreen {
-    explicit EquipmentScreen(PlayerEntity &player) : player(player) {}
+struct EquipmentScreen : Screen {
+    explicit EquipmentScreen(PlayerEntity &player) : Screen(false), player(player) {}
 
-    bool enabled {false};
-
-    void handleInput(SDL_KeyboardEvent &e);
+    void handleInput(SDL_KeyboardEvent &e) override;
 
     /// Render equipment screen
     /// \param font Font object to render using
-    void render(Font &font);
+    void render(Font &font) override;
 
     void reset();
-    void enable();
+    void enable() override;
 
 private:
     PlayerEntity &player;
@@ -200,7 +225,9 @@ private:
     int choosingNewEquipmentIndex {0};
 };
 
-struct HelpScreen {
+struct HelpScreen : Screen {
+    HelpScreen() : Screen(false) {}
+
     const std::vector<std::string> displayLines = {
         "Diagonal movement: y u b n",
         "Cardinal movement: h j k l",
@@ -215,8 +242,7 @@ struct HelpScreen {
         "This screen: ?"
     };
 
-    bool enabled {false};
-    void handleInput(SDL_KeyboardEvent &e);
-    void render(Font &font);
+    void handleInput(SDL_KeyboardEvent &e) override;
+    void render(Font &font) override;
 };
 #endif // DIALOG_H_

@@ -5,13 +5,7 @@
 #include "behaviours.h"
 #include "UI.h"
 
-struct InventoryScreen;
-struct LootingDialog;
-class InspectionDialog;
-struct CraftingScreen;
-struct EquipmentScreen;
-struct NotificationMessageScreen;
-struct HelpScreen;
+struct Screen;
 
 struct PlayerEntity : Entity {
     float hunger;
@@ -29,10 +23,7 @@ struct PlayerEntity : Entity {
 
     bool attack(const Point& attackPos);
     void tick() override;
-    void handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen,
-                         LootingDialog &lootingDialog, InspectionDialog &inspectionDialog,
-                         CraftingScreen &craftingScreen, EquipmentScreen &equipmentScreen,
-                         NotificationMessageScreen &notificationMessageScreen, HelpScreen &helpScreen);
+    void handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_map<std::string, std::shared_ptr<Screen>> &screens);
     void render(Font &font, Point currentWorldPos) override;
     bool addToInventory(const std::shared_ptr<Entity> &item) override;
 

@@ -53,10 +53,8 @@ void PlayerEntity::tick() {
     Entity::tick();
 }
 
-void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen &inventoryScreen,
-                               LootingDialog &lootingDialog, InspectionDialog &inspectionDialog,
-                               CraftingScreen &craftingScreen, EquipmentScreen &equipmentScreen,
-                               NotificationMessageScreen &notificationMessageScreen, HelpScreen &helpScreen) {
+void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_map<std::string, std::shared_ptr<Screen>> &screens)
+{
     auto key = e.keysym.sym;
     auto mod = e.keysym.mod;
 
@@ -120,6 +118,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
                         return;
                     }
                 } else {
+                    auto &lootingDialog = dynamic_cast<LootingDialog&>(*screens.at("LootingDialog"));
                     lootingDialog.showItemsToLoot(entity->getInventory(), entity);
                     return;
                 }
@@ -144,6 +143,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
                     return;
                 }
             } else {
+                auto &lootingDialog = dynamic_cast<LootingDialog&>(*screens.at("LootingDialog"));
                 lootingDialog.showItemsToLoot(pickuppableEntities);
                 return;
             }
@@ -201,8 +201,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
         }
 
         if (key == SDLK_i) {
-            inventoryScreen.chosenIndex = 0;
-            inventoryScreen.enabled = true;
+            screens.at("InventoryScreen")->enable();
         }
 
         if (key == SDLK_PERIOD) {
@@ -211,21 +210,21 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, InventoryScreen
         }
 
         if (key == SDLK_SEMICOLON) {
-            inspectionDialog.enabled = true;
-            inspectionDialog.chosenPoint = pos;
+            auto &b = dynamic_cast<InspectionDialog&>(*screens.at("InspectionDialog"));
+            b.enableAtPoint(pos);
         }
 
         if (key == SDLK_c)
-            craftingScreen.enable();
+            screens.at("CraftingScreen")->enable();
 
         if (key == SDLK_e)
-            equipmentScreen.enable();
+            screens.at("EquipmentScreen")->enable();
 
         if (key == SDLK_m)
-            notificationMessageScreen.enabled = true;
+            screens.at("NotificationMessageScreen")->enable();
 
         if (mod & KMOD_SHIFT && key == SDLK_SLASH)
-            helpScreen.enabled = true;
+            screens.at("HelpScreen")->enable();
     }
 
     if (didAction)

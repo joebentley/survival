@@ -120,14 +120,15 @@ int main(int argc, char* argv[])
                 manager.initialize();
                 manager.setTimeOfDay(Time(6, 0));
 
-                // TODO: Tidy up all the screens
-                NotificationMessageScreen notificationMessageScreen;
-                InventoryScreen inventoryScreen(*player);
-                LootingDialog lootingDialog(*player);
-                InspectionDialog inspectionDialog(*player);
-                CraftingScreen craftingScreen(*player);
-                EquipmentScreen equipmentScreen(*player);
-                HelpScreen helpScreen;
+                std::unordered_map<std::string, std::shared_ptr<Screen>> screens;
+
+                screens["NotificationMessageScreen"] = std::make_shared<NotificationMessageScreen>();
+                screens["InventoryScreen"] = std::make_shared<InventoryScreen>(*player);
+                screens["LootingDialog"] = std::make_shared<LootingDialog>(*player);
+                screens["InspectionDialog"] = std::make_shared<InspectionDialog>(*player);
+                screens["CraftingScreen"] = std::make_shared<CraftingScreen>(*player);
+                screens["EquipmentScreen"] = std::make_shared<EquipmentScreen>(*player);
+                screens["HelpScreen"] = std::make_shared<HelpScreen>();
 
                 bool initialMessage = true;
                 std::vector<std::string> initialMessageLines({
@@ -153,24 +154,16 @@ int main(int argc, char* argv[])
                         else if (initialMessage && e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_RETURN)
                             initialMessage = false;
                         else if (!initialMessage && e.type == SDL_KEYDOWN) {
-                            if (inventoryScreen.enabled)
-                                inventoryScreen.handleInput(e.key);
-                            else if (lootingDialog.enabled)
-                                lootingDialog.handleInput(e.key);
-                            else if (inspectionDialog.enabled)
-                                inspectionDialog.handleInput(e.key);
-                            else if (craftingScreen.enabled)
-                                craftingScreen.handleInput(e.key);
-                            else if (equipmentScreen.enabled)
-                                equipmentScreen.handleInput(e.key);
-                            else if (notificationMessageScreen.enabled)
-                                notificationMessageScreen.handleInput(e.key);
-                            else if (helpScreen.enabled)
-                                helpScreen.handleInput(e.key);
-                            else
-                                dynamic_cast<PlayerEntity &>(*player).handleInput(e.key, quit, inventoryScreen,
-                                        lootingDialog, inspectionDialog, craftingScreen,
-                                        equipmentScreen, notificationMessageScreen, helpScreen);
+                            bool screenEnabled = false;
+                            for (auto screen : screens) {
+                                if (screen.second->isEnabled()) {
+                                    screen.second->handleInput(e.key);
+                                    screenEnabled = true;
+                                    break;
+                                }
+                            }
+                            if (!screenEnabled)
+                                dynamic_cast<PlayerEntity &>(*player).handleInput(e.key, quit, screens);
                         }
                     }
 
@@ -179,30 +172,30 @@ int main(int argc, char* argv[])
                     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
                     SDL_RenderClear(renderer);
 
-                    if (inventoryScreen.enabled)
-                        inventoryScreen.render(font);
-                    else if (craftingScreen.enabled)
-                        craftingScreen.render(font, world, lightMapTexture);
-                    else if (equipmentScreen.enabled)
-                        equipmentScreen.render(font);
-                    else if (notificationMessageScreen.enabled)
-                        notificationMessageScreen.render(font);
-                    else if (helpScreen.enabled)
-                        helpScreen.render(font);
-                    else if (!lootingDialog.viewingDescription && !inspectionDialog.viewingDescription) {
-                        world.render(font, player->getWorldPos());
-                        NotificationMessageRenderer::getInstance().render(font);
-                        manager.render(font, player->getWorldPos(), lightMapTexture);
-
-                        // Always render UI
-                        statusUI->render(font, player->getWorldPos());
+                    bool shouldRenderWorld = true;
+                    std::shared_ptr<Screen> screenToRender = nullptr;
+                    for (auto screen : screens) {
+                        if (screen.second->isEnabled()) {
+                            shouldRenderWorld = screen.second->shouldRenderWorld();
+                            screenToRender = screen.second;
+                            break;
+                        }
                     }
 
-                    if (lootingDialog.enabled)
-                        lootingDialog.render(font);
+                    if (shouldRenderWorld) {
+                        world.render(font, player->getWorldPos());
+                        manager.render(font, player->getWorldPos(), lightMapTexture);
+                    }
 
-                    if (inspectionDialog.enabled)
-                        inspectionDialog.render(font);
+                    // Always render status and notification UI
+                    statusUI->render(font, player->getWorldPos());
+                    NotificationMessageRenderer::getInstance().render(font);
+
+
+                    if (screenToRender != nullptr) {
+                        screenToRender->render(font);
+                    }
+
 
                     if (player->hp <= 0) {
                         MessageBoxRenderer::getInstance().queueMessageBoxCentered(

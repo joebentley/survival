@@ -255,7 +255,6 @@ void LootingDialog::showItemsToLoot(std::vector<std::shared_ptr<Entity>> items) 
     enabled = true;
 }
 
-
 void LootingDialog::showItemsToLoot(std::vector<std::shared_ptr<Entity>> items, std::shared_ptr<Entity> entityToTransferFrom)
 {
     itemsToShow = std::move(items);
@@ -310,6 +309,11 @@ void LootingDialog::handleInput(SDL_KeyboardEvent &e) {
                 showingTooMuchWeightMessage = false;
             break;
     }
+
+    if (viewingDescription)
+        mShouldRenderWorld = false;
+    else
+        mShouldRenderWorld = true;
 }
 
 void LootingDialog::render(Font &font) {
@@ -434,15 +438,20 @@ void InspectionDialog::handleInput(SDL_KeyboardEvent &e) {
                 viewingDescription = false;
             else
                 enabled = false;
-            return;
+            break;
         default:
-            return;
+            break;
     }
 
     if (e.keysym.mod & KMOD_SHIFT)
         posOffset *= 5;
 
     chosenPoint = clipToScreenEdge(chosenPoint + posOffset);
+
+    if (viewingDescription)
+        mShouldRenderWorld = false;
+    else
+        mShouldRenderWorld = true;
 }
 
 void InspectionDialog::render(Font &font) {
@@ -650,25 +659,28 @@ void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
             if (choosingPositionInWorld)
                 tryToBuildAtPosition(Point {1, 1});
             break;
-
     }
+
+    if (choosingPositionInWorld)
+        mShouldRenderWorld = true;
+    else
+        mShouldRenderWorld = false;
 }
 
 void CraftingScreen::tryToBuildAtPosition(Point posOffset) {
     auto p = posOffset + player.getPos();
     if (EntityManager::getInstance().getEntitiesAtPosFaster(p).empty()) {
         haveChosenPositionInWorld = true;
+        choosingPositionInWorld = false;
         buildItem(p);
     } else {
         couldNotBuildAtPosition = true;
     }
 }
 
-void CraftingScreen::render(Font &font, World &world, LightMapTexture &lightMapTexture) {
+void CraftingScreen::render(Font &font) {
     if (choosingPositionInWorld) {
         auto player = EntityManager::getInstance().getEntityByID("Player");
-        world.render(font, player->getWorldPos());
-        EntityManager::getInstance().render(font, lightMapTexture);
 
         int y = 0;
         if (worldToScreen(player->getPos()).y < SCREEN_HEIGHT / 2)
@@ -792,7 +804,7 @@ void CraftingScreen::buildItem(Point pos) {
 }
 
 void CraftingScreen::enable() {
-    enabled = true;
+    Screen::enable();
     reset();
 }
 
