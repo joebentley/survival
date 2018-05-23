@@ -293,4 +293,22 @@ public:
     std::vector<LightMapPoint> getLightSources(Point fontSize) const;
 };
 
+template<typename T>
+void makeEntityAndAddToInventory(Entity *entityToAddTo)
+{
+    auto item = std::make_unique<T>();
+    auto ID = item->mID;
+    EntityManager::getInstance().addEntity(std::move(item));
+    entityToAddTo->Entity::addToInventory(ID);
+}
+
+template<typename T>
+T *makeEntity()
+{
+    auto entity = std::make_unique<T>();
+    auto p = entity.get();
+    EntityManager::getInstance().addEntity(std::move(entity));
+    return p;
+}
+
 #endif // ENTITY_H_

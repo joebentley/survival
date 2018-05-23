@@ -74,28 +74,18 @@ int main(int argc, char* argv[])
                 auto &manager = EntityManager::getInstance();
 
                 // TODO clean up all this initialisation stuff
-                auto player = std::make_unique<PlayerEntity>();
-                auto pPlayer = player.get();
+                auto pPlayer = makeEntity<PlayerEntity>();
                 // Place player in center of world
                 // TODO: Fix bug that occurs at (0,0)
-                player->setPos(SCREEN_WIDTH * 1000 + SCREEN_WIDTH / 2, SCREEN_HEIGHT * 1000 + SCREEN_HEIGHT / 2);
-                auto playerPos = player->getPos();
-                manager.addEntity(std::move(player));
+                pPlayer->setPos(SCREEN_WIDTH * 1000 + SCREEN_WIDTH / 2, SCREEN_HEIGHT * 1000 + SCREEN_HEIGHT / 2);
+                auto playerPos = pPlayer->getPos();
 
-                auto cat = std::make_unique<CatEntity>("cat1");
-                cat->setPos(playerPos.mX - 10, playerPos.mY - 10);
-                manager.addEntity(std::move(cat));
+                makeEntity<CatEntity>()->setPos(playerPos.mX - 10, playerPos.mY - 10);
 
-                auto glowbug = std::make_unique<GlowbugEntity>();
-                glowbug->setPos(playerPos.mX - 10, playerPos.mY + 4);
-                manager.addEntity(std::move(glowbug));
-
-                auto apple = std::make_unique<AppleEntity>("apple");
-                auto banana = std::make_unique<BananaEntity>("banana");
+                auto apple = makeEntity<AppleEntity>();
+                auto banana = makeEntity<BananaEntity>();
                 apple->setPos(playerPos + Point(2, 2));
                 banana->setPos(playerPos + Point(3, 2));
-                manager.addEntity(std::move(apple));
-                manager.addEntity(std::move(banana));
 
                 auto pileOfLead = std::make_unique<Entity>("pileOfLead", "Huge Pile Of Lead", "$[grey]L");
                 pileOfLead->addBehaviour(std::make_unique<PickuppableBehaviour>(*pileOfLead, 100));
@@ -107,23 +97,23 @@ int main(int argc, char* argv[])
                 chest->setPos(playerPos + Point(-2, 2));
                 manager.addEntity(std::move(chest));
 
-                apple = std::make_unique<AppleEntity>();
-                auto ID = apple->mID;
-                EntityManager::getInstance().addEntity(std::move(apple));
-                pChest->addToInventory(ID);
+                makeEntityAndAddToInventory<AppleEntity>(pChest);
 
                 auto statusUI = std::make_unique<StatusUIEntity>(dynamic_cast<PlayerEntity&>(*pPlayer));
                 auto pStatusUI = statusUI.get();
                 manager.addEntity(std::move(statusUI));
 
-                auto waterskin = std::make_unique<WaterskinEntity>();
-                ID = waterskin->mID;
-                EntityManager::getInstance().addEntity(std::move(waterskin));
-                pPlayer->Entity::addToInventory(ID);
+                makeEntityAndAddToInventory<WaterskinEntity>(pPlayer);
+                makeEntityAndAddToInventory<GrassTuftEntity>(pPlayer);
+                makeEntityAndAddToInventory<GrassTuftEntity>(pPlayer);
+                makeEntityAndAddToInventory<TwigEntity>(pPlayer);
+                makeEntityAndAddToInventory<TwigEntity>(pPlayer);
+                makeEntityAndAddToInventory<TwigEntity>(pPlayer);
 
                 manager.initialize();
                 manager.setTimeOfDay(Time(6, 0));
 
+                // TODO change to unique_ptr
                 std::unordered_map<ScreenType, std::shared_ptr<Screen>> screens;
 
                 screens[ScreenType::NOTIFICATION] = std::make_shared<NotificationMessageScreen>();
