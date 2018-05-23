@@ -142,8 +142,8 @@ private:
 struct LootingDialog : Screen {
     explicit LootingDialog(PlayerEntity &player) : Screen(true), mPlayer(player) {}
 
-    void showItemsToLoot(std::vector<std::shared_ptr<Entity>> items);
-    void showItemsToLoot(std::vector<std::shared_ptr<Entity>> items, std::shared_ptr<Entity> entityToTransferFrom);
+    void showItemsToLoot(std::vector<Entity *> items);
+    void showItemsToLoot(std::vector<Entity *> items, Entity *entityToTransferFrom);
 
     void handleInput(SDL_KeyboardEvent &e) override;
     void render(Font& font) override;
@@ -153,9 +153,9 @@ private:
     bool mViewingDescription {false};
     bool mShowingTooMuchWeightMessage {false};
     PlayerEntity &mPlayer;
-    std::vector<std::shared_ptr<Entity>> mItemsToShow;
+    std::vector<Entity *> mItemsToShow;
     int mChosenIndex {0};
-    std::shared_ptr<Entity> mEntityToTransferFrom;
+    Entity *mEntityToTransferFrom;
 };
 
 struct InspectionDialog : Screen {
@@ -212,7 +212,7 @@ private:
     std::vector<std::string> mCurrentlyChosenMaterials;
     /// Filter inventory items for items that are of the currently chosen material type and are not in currentlyChosenMaterials
     /// \return vector of shared pointers to the inventory items as described above
-    std::vector<std::shared_ptr<Entity>> filterInventoryForChosenMaterials();
+    std::vector<Entity *> filterInventoryForChosenMaterials();
     bool currentRecipeSatisfied();
     void tryToBuildAtPosition(Point posOffset);
     void buildItem(Point pos);

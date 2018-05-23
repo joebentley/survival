@@ -131,25 +131,24 @@ struct Entity {
     std::string mLongDesc;
 
     std::string mGraphic;
-    std::unordered_map<std::string, std::shared_ptr<Behaviour>> mBehaviours;
 
     int mRenderingLayer {0};
 
-    virtual void addBehaviour(std::shared_ptr<Behaviour> behaviour);
+    virtual void addBehaviour(std::unique_ptr<Behaviour> behaviour);
     virtual void tick();
     virtual void destroy();
     virtual void emit(uint32_t signal);
     virtual void render(Font& font, Point currentWorldPos);
 
-    virtual bool addToInventory(const std::shared_ptr<Entity> &item);
+    virtual bool addToInventory(const std::string &ID);
     void removeFromInventory(const std::string &ID);
     void removeFromInventory(int inventoryIndex);
     void dropItem(int inventoryIndex);
-    std::shared_ptr<Entity> getInventoryItem(int inventoryIndex) const;
+    Entity * getInventoryItem(int inventoryIndex) const;
     std::string getInventoryItemID(int inventoryIndex) const;
     size_t getInventorySize() const;
     bool isInventoryEmpty() const;
-    std::vector<std::shared_ptr<Entity>> getInventory() const;
+    std::vector<Entity *> getInventory() const;
     bool isInInventory(std::string ID) const;
 
     /// Filter inventory for crafting material of type `materialType` returning a vector of ID strings
@@ -178,7 +177,7 @@ struct Entity {
     /// \return Whether or not the movement was performed
     bool moveTo(Point p);
 
-    std::shared_ptr<Behaviour> getBehaviourByID(const std::string& ID) const;
+    Behaviour * getBehaviourByID(const std::string &ID) const;
     bool hasBehaviour(const std::string& ID) const;
 
     int computeMaxDamage() const;
@@ -191,10 +190,10 @@ struct Entity {
     /// Return shared pointer to entity in slot, returning nullptr if no entity in slot
     /// \param slot EquipmentSlot to look in
     /// \return shared_ptr to entity in slot
-    std::shared_ptr<Entity> getEquipmentEntity(EquipmentSlot slot) const;
-    bool equip(EquipmentSlot slot, std::shared_ptr<Entity> entity);
+    Entity * getEquipmentEntity(EquipmentSlot slot) const;
+    bool equip(EquipmentSlot slot, Entity *entity);
     bool equip(EquipmentSlot slot, std::string ID);
-    bool unequip(std::shared_ptr<Entity> entity);
+    bool unequip(Entity *entity);
     bool unequip(std::string ID);
     bool unequip(EquipmentSlot slot);
     std::vector<std::string> getInventoryItemsEquippableInSlot(EquipmentSlot slot) const;
@@ -203,6 +202,7 @@ struct Entity {
     EquipmentSlot getEquipmentSlotByID(std::string ID) const;
 
 protected:
+    std::unordered_map<std::string, std::unique_ptr<Behaviour>> mBehaviours;
     std::vector<std::string> mInventory;
     Point mPos;
     std::unordered_map<EquipmentSlot, std::string> mEquipment;
@@ -211,7 +211,7 @@ protected:
 
 /// Singleton class that manages all entities
 class EntityManager {
-    std::unordered_map<std::string, std::shared_ptr<Entity>> mEntities;
+    std::unordered_map<std::string, std::unique_ptr<Entity>> mEntities;
     std::queue<std::string> mToBeDeleted;
     std::vector<std::string> mCurrentlyOnScreen;
     std::vector<std::string> mInSurroundingScreens;
@@ -231,7 +231,7 @@ public:
     EntityManager(const EntityManager&) = delete;
     void operator=(const EntityManager&) = delete;
 
-    void addEntity(std::shared_ptr<Entity> entity);
+    void addEntity(std::unique_ptr<Entity> entity);
     void broadcast(uint32_t signal);
     void initialize();
     void tick();
@@ -240,29 +240,29 @@ public:
     void render(Font &font, Point currentWorldPos, LightMapTexture &lightMapTexture);
     void render(Font &font, LightMapTexture &lightMapTexture);
 
-    std::shared_ptr<Entity> getEntityByID(const std::string &ID) const;
+    Entity * getEntityByID(const std::string &ID) const;
     void queueForDeletion(const std::string &ID);
     void eraseByID(const std::string &ID);
 
     /// Find entities at point `pos` WARNING SLOW (reads every entity)
     /// \param pos position to look at
     /// \return vector of shared pointers at pos
-    std::vector<std::shared_ptr<Entity>> getEntitiesAtPos(const Point& pos) const;
+    std::vector<Entity *> getEntitiesAtPos(const Point &pos) const;
 
     /// Find entities at point `pos` searching only entities on the surrounding screens of player
     /// \param pos position to look at
     /// \return vector of shared pointers at pos
-    std::vector<std::shared_ptr<Entity>> getEntitiesAtPosFaster(const Point& pos) const;
+    std::vector<Entity *> getEntitiesAtPosFaster(const Point &pos) const;
 
     /// Find entities surrounding point `pos` WARNING SLOW (reads every entity)
     /// \param pos position to look around
     /// \return vector of shared pointers to entities surrounding pos
-    std::vector<std::shared_ptr<Entity>> getEntitiesSurrounding(const Point& pos) const;
+    std::vector<Entity *> getEntitiesSurrounding(const Point& pos) const;
 
     /// Find entities surrounding point `pos` searching only entities on the surrounding screens of player
     /// \param pos position to look around
     /// \return vector of shared pointers to entities surrounding pos
-    std::vector<std::shared_ptr<Entity>> getEntitiesSurroundingFaster(const Point& pos) const;
+    std::vector<Entity *> getEntitiesSurroundingFaster(const Point& pos) const;
 
     bool isEntityInManager(const std::string &ID);
 

@@ -83,9 +83,9 @@ void World::randomizeScreen(Point worldPos)
 
     // Add all the generated water tiles
     for (auto p : currentWaterTiles) {
-        auto water = std::make_shared<WaterEntity>();
+        auto water = std::make_unique<WaterEntity>();
         water->setPos(p);
-        manager.addEntity(water);
+        manager.addEntity(std::move(water));
     }
 
     // Finally place entities
@@ -94,39 +94,39 @@ void World::randomizeScreen(Point worldPos)
         auto p = p0 + Point(x, y);
         // Random chance of creating a bush
         if (randDouble() < 0.002) {
-            auto bush = std::make_shared<BushEntity>();
+            auto bush = std::make_unique<BushEntity>();
             bush->setPos(p);
-            manager.addEntity(bush);
+            manager.addEntity(std::move(bush));
             continue; // Don't put two on same square
         }
 
         // Random chance of creating a twig
         if (randDouble() < 0.002) {
-            auto twig = std::make_shared<TwigEntity>();
+            auto twig = std::make_unique<TwigEntity>();
             twig->setPos(p);
-            manager.addEntity(twig);
+            manager.addEntity(std::move(twig));
             continue;
         }
 
         // Random chance of creating grass
         if (randDouble() < 0.002) {
-            auto grass = std::make_shared<GrassEntity>();
+            auto grass = std::make_unique<GrassEntity>();
             grass->setPos(p);
-            manager.addEntity(grass);
+            manager.addEntity(std::move(grass));
             continue;
         }
 
         if (randDouble() < 0.0005) {
-            auto bug = std::make_shared<GlowbugEntity>();
+            auto bug = std::make_unique<GlowbugEntity>();
             bug->setPos(p);
-            manager.addEntity(bug);
+            manager.addEntity(std::move(bug));
             continue;
         }
 
         if (randDouble() < 0.00025) {
-            auto wolf = std::make_shared<WolfEntity>();
+            auto wolf = std::make_unique<WolfEntity>();
             wolf->setPos(p);
-            manager.addEntity(wolf);
+            manager.addEntity(std::move(wolf));
             continue;
         }
 	}

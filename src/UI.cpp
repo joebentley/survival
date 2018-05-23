@@ -250,12 +250,12 @@ void InventoryScreen::render(Font &font) {
     font.drawText(helpString + "d-drop  return-view desc  esc-exit inv", 1, SCREEN_HEIGHT - 2);
 }
 
-void LootingDialog::showItemsToLoot(std::vector<std::shared_ptr<Entity>> items) {
+void LootingDialog::showItemsToLoot(std::vector<Entity *> items) {
     mItemsToShow = std::move(items);
     mEnabled = true;
 }
 
-void LootingDialog::showItemsToLoot(std::vector<std::shared_ptr<Entity>> items, std::shared_ptr<Entity> entityToTransferFrom)
+void LootingDialog::showItemsToLoot(std::vector<Entity *> items, Entity *entityToTransferFrom)
 {
     mItemsToShow = std::move(items);
     this->mEntityToTransferFrom = std::move(entityToTransferFrom);
@@ -291,7 +291,7 @@ void LootingDialog::handleInput(SDL_KeyboardEvent &e) {
             }
             break;
         case SDLK_g:
-            if (mPlayer.addToInventory(mItemsToShow[mChosenIndex])) {
+            if (mPlayer.addToInventory(mItemsToShow[mChosenIndex]->mID)) {
                 if (mEntityToTransferFrom != nullptr) {
                     mEntityToTransferFrom->dropItem(mChosenIndex);
                 }
@@ -456,10 +456,10 @@ void InspectionDialog::handleInput(SDL_KeyboardEvent &e) {
 
 void InspectionDialog::render(Font &font) {
     const auto &entitiesAtPointBefore = EntityManager::getInstance().getEntitiesAtPosFaster(mChosenPoint);
-    std::vector<std::shared_ptr<Entity>> entitiesAtPoint;
+    std::vector<Entity *> entitiesAtPoint;
 
     std::copy_if(entitiesAtPointBefore.cbegin(), entitiesAtPointBefore.cend(), std::back_inserter(entitiesAtPoint),
-    [] (auto &a) { return !a->isInAnInventory; });
+    [] (auto &a) { return !a->mIsInAnInventory; });
 
     if (mViewingDescription) {
         drawDescriptionScreen(font, *entitiesAtPoint[mChosenIndex]);
@@ -477,7 +477,7 @@ void InspectionDialog::render(Font &font) {
 
         lines.emplace_back(" You see");
         std::transform(entitiesAtPoint.cbegin(), entitiesAtPoint.cend(), std::back_inserter(lines),
-                       [] (auto &a) -> std::string { return " " + a->graphic + " " + a->name; });
+                       [] (auto &a) -> std::string { return " " + a->mGraphic + " " + a->mName; });
 
         lines.emplace_back("");
         lines.emplace_back(" (-)-$(up) (=)-$(down) return-desc");
@@ -549,7 +549,7 @@ void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
                     mChosenIngredient++;
                 mChosenMaterial = 0;
             } else if (mLayer == CraftingLayer::MATERIAL) {
-                std::vector<std::shared_ptr<Entity>> inventoryMaterials = filterInventoryForChosenMaterials();
+                auto inventoryMaterials = filterInventoryForChosenMaterials();
                 if (mChosenMaterial == inventoryMaterials.size() - 1)
                     mChosenMaterial = 0;
                 else
@@ -576,7 +576,7 @@ void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
                     mChosenIngredient--;
                 mChosenMaterial = 0;
             } else if (mLayer == CraftingLayer::MATERIAL) {
-                std::vector<std::shared_ptr<Entity>> inventoryMaterials = filterInventoryForChosenMaterials();
+                std::vector<Entity *> inventoryMaterials = filterInventoryForChosenMaterials();
                 if (mChosenMaterial == 0)
                     mChosenMaterial = (int)inventoryMaterials.size() - 1;
                 else
@@ -733,7 +733,7 @@ void CraftingScreen::render(Font &font) {
     }
 
     if (mLayer == CraftingLayer::INGREDIENT || mLayer == CraftingLayer::MATERIAL) {
-        std::vector<std::shared_ptr<Entity>> inventoryMaterials = filterInventoryForChosenMaterials();
+        std::vector<Entity *> inventoryMaterials = filterInventoryForChosenMaterials();
 
         for (int i = 0; i < inventoryMaterials.size(); ++i) {
             Color bColor;
@@ -748,16 +748,16 @@ void CraftingScreen::render(Font &font) {
     }
 }
 
-std::vector<std::shared_ptr<Entity>> CraftingScreen::filterInventoryForChosenMaterials() {
+std::vector<Entity *> CraftingScreen::filterInventoryForChosenMaterials() {
     auto &rm = RecipeManager::getInstance();
 
-    std::vector<std::shared_ptr<Entity>> inventoryMaterials;
+    std::vector<Entity *> inventoryMaterials;
     auto inventory = mPlayer.getInventory();
     std::copy_if(inventory.cbegin(), inventory.cend(), std::back_inserter(inventoryMaterials),
     [this, &rm] (auto &a) {
         if (!a->hasBehaviour("CraftingMaterialBehaviour"))
             return false;
-        if (std::find(mCurrentlyChosenMaterials.begin(), mCurrentlyChosenMaterials.end(), a->ID) != mCurrentlyChosenMaterials.end())
+        if (std::find(mCurrentlyChosenMaterials.begin(), mCurrentlyChosenMaterials.end(), a->mID) != mCurrentlyChosenMaterials.end())
             return false;
 
         auto &b = dynamic_cast<CraftingMaterialBehaviour&>(*a->getBehaviourByID("CraftingMaterialBehaviour"));
@@ -770,7 +770,7 @@ std::vector<std::shared_ptr<Entity>> CraftingScreen::filterInventoryForChosenMat
 bool CraftingScreen::currentRecipeSatisfied() {
     return (mCurrentRecipe != nullptr &&
             std::all_of(mCurrentRecipe->mIngredients.begin(), mCurrentRecipe->mIngredients.end(),
-                    [] (auto &a) { return a.quantity == 0; }));
+                    [] (auto &a) { return a.mQuantity == 0; }));
 }
 
 void CraftingScreen::reset() {
@@ -945,7 +945,7 @@ void NotificationMessageRenderer::render(Font &font) {
                 i == 0 ? static_cast<int>(0xFF * mAlpha) : -1);
 
         if (i == 0) // TODO: why is alpha decay slower when in a menu?
-            mAlpha -= ALPHA_DECAY_PER_SEC * static_cast<float>(currentTime - previousTime) / CLOCKS_PER_SEC;
+            mAlpha -= cAlphaDecayPerSec * static_cast<float>(currentTime - previousTime) / CLOCKS_PER_SEC;
     }
 
     if (mAlpha <= 0) {

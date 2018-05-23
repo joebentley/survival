@@ -73,49 +73,53 @@ int main(int argc, char* argv[])
                 Font font(texture, CHAR_WIDTH, CHAR_HEIGHT, NUM_PER_ROW, CHARS, renderer);
                 auto &manager = EntityManager::getInstance();
 
-                auto player = std::make_shared<PlayerEntity>();
+                // TODO clean up all this initialisation stuff
+                auto player = std::make_unique<PlayerEntity>();
+                auto pPlayer = player.get();
                 // Place player in center of world
                 // TODO: Fix bug that occurs at (0,0)
                 player->setPos(SCREEN_WIDTH * 1000 + SCREEN_WIDTH / 2, SCREEN_HEIGHT * 1000 + SCREEN_HEIGHT / 2);
-                manager.addEntity(player);
+                auto playerPos = player->getPos();
+                manager.addEntity(std::move(player));
 
-                auto cat = std::make_shared<CatEntity>("cat1");
-                cat->setPos(player->getPos().mX - 10, player->getPos().mY - 10);
-                manager.addEntity(cat);
+                auto cat = std::make_unique<CatEntity>("cat1");
+                cat->setPos(playerPos.mX - 10, playerPos.mY - 10);
+                manager.addEntity(std::move(cat));
 
-                auto glowbug = std::make_shared<GlowbugEntity>();
-                glowbug->setPos(player->getPos().mX - 10, player->getPos().mY + 4);
-                manager.addEntity(glowbug);
+                auto glowbug = std::make_unique<GlowbugEntity>();
+                glowbug->setPos(playerPos.mX - 10, playerPos.mY + 4);
+                manager.addEntity(std::move(glowbug));
 
-                auto apple = std::make_shared<AppleEntity>("apple");
-                auto banana = std::make_shared<BananaEntity>("banana");
-                manager.addEntity(apple);
-                manager.addEntity(banana);
+                auto apple = std::make_unique<AppleEntity>("apple");
+                auto banana = std::make_unique<BananaEntity>("banana");
+                apple->setPos(playerPos + Point(2, 2));
+                banana->setPos(playerPos + Point(3, 2));
+                manager.addEntity(std::move(apple));
+                manager.addEntity(std::move(banana));
 
-                auto pileOfLead = std::make_shared<Entity>("pileOfLead", "Huge Pile Of Lead", "$[grey]L");
-                pileOfLead->addBehaviour(std::make_shared<PickuppableBehaviour>(*pileOfLead, 100));
-                manager.addEntity(pileOfLead);
-                pileOfLead->setPos(player->getPos() + Point(2, 2));
+                auto pileOfLead = std::make_unique<Entity>("pileOfLead", "Huge Pile Of Lead", "$[grey]L");
+                pileOfLead->addBehaviour(std::make_unique<PickuppableBehaviour>(*pileOfLead, 100));
+                pileOfLead->setPos(playerPos + Point(2, 2));
+                manager.addEntity(std::move(pileOfLead));
 
-                apple->setPos(player->getPos() + Point(2, 2));
-                banana->setPos(player->getPos() + Point(3, 2));
+                auto chest = std::make_unique<ChestEntity>("chest");
+                auto pChest = chest.get();
+                chest->setPos(playerPos + Point(-2, 2));
+                manager.addEntity(std::move(chest));
 
-                auto chest = std::make_shared<ChestEntity>("chest");
-                chest->setPos(player->getPos() + Point(-2, 2));
-                manager.addEntity(chest);
+                apple = std::make_unique<AppleEntity>();
+                auto ID = apple->mID;
+                EntityManager::getInstance().addEntity(std::move(apple));
+                pChest->addToInventory(ID);
 
-                chest->addToInventory(std::make_shared<AppleEntity>());
+                auto statusUI = std::make_unique<StatusUIEntity>(dynamic_cast<PlayerEntity&>(*pPlayer));
+                auto pStatusUI = statusUI.get();
+                manager.addEntity(std::move(statusUI));
 
-                auto statusUI = std::make_shared<StatusUIEntity>(dynamic_cast<PlayerEntity&>(*player));
-                manager.addEntity(statusUI);
-
-                player->Entity::addToInventory(std::make_shared<TwigEntity>());
-                player->Entity::addToInventory(std::make_shared<TwigEntity>());
-                player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
-                player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
-                player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
-                player->Entity::addToInventory(std::make_shared<GrassTuftEntity>());
-                player->Entity::addToInventory(std::make_shared<WaterskinEntity>());
+                auto waterskin = std::make_unique<WaterskinEntity>();
+                ID = waterskin->mID;
+                EntityManager::getInstance().addEntity(std::move(waterskin));
+                pPlayer->Entity::addToInventory(ID);
 
                 manager.initialize();
                 manager.setTimeOfDay(Time(6, 0));
@@ -123,11 +127,11 @@ int main(int argc, char* argv[])
                 std::unordered_map<ScreenType, std::shared_ptr<Screen>> screens;
 
                 screens[ScreenType::NOTIFICATION] = std::make_shared<NotificationMessageScreen>();
-                screens[ScreenType::INVENTORY] = std::make_shared<InventoryScreen>(*player);
-                screens[ScreenType::LOOTING] = std::make_shared<LootingDialog>(*player);
-                screens[ScreenType::INSPECTION] = std::make_shared<InspectionDialog>(*player);
-                screens[ScreenType::CRAFTING] = std::make_shared<CraftingScreen>(*player);
-                screens[ScreenType::EQUIPMENT] = std::make_shared<EquipmentScreen>(*player);
+                screens[ScreenType::INVENTORY] = std::make_shared<InventoryScreen>(*pPlayer);
+                screens[ScreenType::LOOTING] = std::make_shared<LootingDialog>(*pPlayer);
+                screens[ScreenType::INSPECTION] = std::make_shared<InspectionDialog>(*pPlayer);
+                screens[ScreenType::CRAFTING] = std::make_shared<CraftingScreen>(*pPlayer);
+                screens[ScreenType::EQUIPMENT] = std::make_shared<EquipmentScreen>(*pPlayer);
                 screens[ScreenType::HELP] = std::make_shared<HelpScreen>();
 
                 bool initialMessage = true;
@@ -163,7 +167,7 @@ int main(int argc, char* argv[])
                                 }
                             }
                             if (!screenEnabled)
-                                dynamic_cast<PlayerEntity &>(*player).handleInput(e.key, quit, screens);
+                                dynamic_cast<PlayerEntity &>(*pPlayer).handleInput(e.key, quit, screens);
                         }
                     }
 
@@ -183,19 +187,19 @@ int main(int argc, char* argv[])
                     }
 
                     if (shouldRenderWorld) {
-                        world.render(font, player->getWorldPos());
-                        manager.render(font, player->getWorldPos(), lightMapTexture);
+                        world.render(font, pPlayer->getWorldPos());
+                        manager.render(font, pPlayer->getWorldPos(), lightMapTexture);
                     }
 
                     // Always render status and notification UI
-                    statusUI->render(font, player->getWorldPos());
+                    pStatusUI->render(font, pPlayer->getWorldPos());
                     NotificationMessageRenderer::getInstance().render(font);
 
                     if (screenToRender != nullptr) {
                         screenToRender->render(font);
                     }
 
-                    if (player->mHp <= 0) {
+                    if (pPlayer->mHp <= 0) {
                         MessageBoxRenderer::getInstance().queueMessageBoxCentered(
                                 std::vector<std::string> {"$[red]You died!", "", "Press return to quit"}, 1);
                     }

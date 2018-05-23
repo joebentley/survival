@@ -6,7 +6,7 @@
 
 int gNumInitialisedEntities = 0;
 
-void Entity::addBehaviour(std::shared_ptr<Behaviour> behaviour) {
+void Entity::addBehaviour(std::unique_ptr<Behaviour> behaviour) {
     mBehaviours[behaviour->mID] = std::move(behaviour);
 }
 
@@ -47,12 +47,10 @@ void Entity::render(Font& font, Point currentWorldPos) {
     }
 }
 
-std::shared_ptr<Behaviour> Entity::getBehaviourByID(const std::string& ID) const {
-    try {
-        return mBehaviours.at(ID);
-    } catch (const std::out_of_range &e) {
+Behaviour *Entity::getBehaviourByID(const std::string &ID) const {
+    if (mBehaviours.find(ID) == mBehaviours.cend())
         return nullptr;
-    }
+    return mBehaviours.at(ID).get();
 }
 
 
@@ -77,12 +75,14 @@ int Entity::rollDamage() {
     return totalDamage;
 }
 
-bool Entity::addToInventory(const std::shared_ptr<Entity> &item) {
+bool Entity::addToInventory(const std::string &ID) {
+    auto item = EntityManager::getInstance().getEntityByID(ID);
+
+    if (item == nullptr)
+        throw std::invalid_argument("ID " + ID + " not found in Entity Manager");
+
     auto b = item->getBehaviourByID("PickuppableBehaviour");
     if (b != nullptr) {
-        if (!EntityManager::getInstance().isEntityInManager(item->mID))
-            EntityManager::getInstance().addEntity(item);
-
         if (getCarryingWeight() + dynamic_cast<PickuppableBehaviour&>(*b).weight > getMaxCarryWeight())
             return false;
         item->setPos(mPos);
@@ -112,7 +112,7 @@ void Entity::dropItem(int inventoryIndex) {
     item->setPos(mPos);
 }
 
-std::shared_ptr<Entity> Entity::getInventoryItem(int inventoryIndex) const {
+Entity *Entity::getInventoryItem(int inventoryIndex) const {
     return EntityManager::getInstance().getEntityByID(mInventory[inventoryIndex]);
 }
 
@@ -149,11 +149,11 @@ void Entity::addHealth(float health) {
     this->mHp = std::min(this->mHp + health, mMaxHp);
 }
 
-std::vector<std::shared_ptr<Entity>> Entity::getInventory() const {
-    std::vector<std::shared_ptr<Entity>> output;
+std::vector<Entity *> Entity::getInventory() const {
+    std::vector<Entity *> output;
 
     std::transform(mInventory.cbegin(), mInventory.cend(), std::back_inserter(output),
-    [] (auto &a) -> std::shared_ptr<Entity> {
+    [] (auto &a) -> Entity * {
         return EntityManager::getInstance().getEntityByID(a);
     });
 
@@ -172,7 +172,7 @@ bool Entity::moveTo(Point p) {
     auto entities = EntityManager::getInstance().getEntitiesAtPosFaster(p);
 
     // Check if there is a solid object in space
-    if (std::find_if(entities.cbegin(), entities.cend(), [] (auto &a) { return a->isSolid; }) == entities.cend()) {
+    if (std::find_if(entities.cbegin(), entities.cend(), [] (auto &a) { return a->mIsSolid; }) == entities.cend()) {
         auto oldWorldPos = getWorldPos();
         setPos(p);
         // Check if we moved to a new world coordinate, if so update the current entities on screen
@@ -192,13 +192,13 @@ const std::unordered_map<EquipmentSlot, std::string> &Entity::getEquipment() con
     return mEquipment;
 }
 
-bool Entity::equip(EquipmentSlot slot, std::shared_ptr<Entity> entity) {
+bool Entity::equip(EquipmentSlot slot, Entity *entity) {
     if (entity->hasBehaviour("EquippableBehaviour") && entity->hasBehaviour("PickuppableBehaviour")) {
         auto &b = dynamic_cast<EquippableBehaviour&>(*entity->getBehaviourByID("EquippableBehaviour"));
         if (b.isEquippableInSlot(slot)) {
             // Make sure it is in the player inventory (and in turn the entity manager)
             if (!isInInventory(entity->mID))
-                Entity::addToInventory(entity);
+                Entity::addToInventory(entity->mID);
 
             entity->mIsEquipped = true;
             mEquipment[slot] = entity->mID;
@@ -212,7 +212,7 @@ bool Entity::equip(EquipmentSlot slot, std::string ID) {
     return equip(slot, EntityManager::getInstance().getEntityByID(ID));
 }
 
-bool Entity::unequip(std::shared_ptr<Entity> entity) {
+bool Entity::unequip(Entity *entity) {
     return unequip(entity->mID);
 }
 
@@ -222,7 +222,7 @@ bool Entity::unequip(std::string ID) {
     if (a == mEquipment.cend())
         return false;
     else {
-        EntityManager::getInstance().getEntityByID(a->second)->isEquipped = false;
+        EntityManager::getInstance().getEntityByID(a->second)->mIsEquipped = false;
         mEquipment[a->first] = "";
         return true;
     }
@@ -232,12 +232,12 @@ bool Entity::unequip(EquipmentSlot slot) {
     if (mEquipment[slot].empty())
         return false;
 
-    EntityManager::getInstance().getEntityByID(getEquipmentID(slot))->isEquipped = false;
+    EntityManager::getInstance().getEntityByID(getEquipmentID(slot))->mIsEquipped = false;
     mEquipment[slot] = "";
     return true;
 }
 
-std::shared_ptr<Entity> Entity::getEquipmentEntity(EquipmentSlot slot) const {
+Entity *Entity::getEquipmentEntity(EquipmentSlot slot) const {
     if (mEquipment.find(slot) == mEquipment.cend())
         return nullptr;
     return EntityManager::getInstance().getEntityByID(mEquipment.at(slot));
@@ -249,7 +249,7 @@ std::vector<std::string> Entity::getInventoryItemsEquippableInSlot(EquipmentSlot
     std::copy_if(mInventory.cbegin(), mInventory.cend(), std::back_inserter(IDs), [slot] (auto &ID)
     {
         auto e = EntityManager::getInstance().getEntityByID(ID);
-        if (!e->isEquipped && e->hasBehaviour("EquippableBehaviour")) {
+        if (!e->mIsEquipped && e->hasBehaviour("EquippableBehaviour")) {
             auto &b = dynamic_cast<EquippableBehaviour&>(*e->getBehaviourByID("EquippableBehaviour"));
             return b.isEquippableInSlot(slot);
         }
@@ -320,11 +320,11 @@ std::vector<std::string> Entity::filterInventoryForCraftingMaterials(const std::
     return materialIDs;
 }
 
-void EntityManager::addEntity(std::shared_ptr<Entity> entity) {
+void EntityManager::addEntity(std::unique_ptr<Entity> entity) {
     if (getEntityByID(entity->mID) != nullptr)
         throw std::invalid_argument("Entity with ID " + entity->mID + " already present!");
 
-    mEntities[entity->mID] = entity;
+    mEntities[entity->mID] = std::move(entity);
 
     // Make sure new entities trigger a refresh of the render order list and entity caches
     if (!mToRender.empty())
@@ -382,27 +382,25 @@ void EntityManager::render(Font &font, LightMapTexture &lightMapTexture) {
     render(font, getEntityByID("Player")->getWorldPos(), lightMapTexture);
 }
 
-std::shared_ptr<Entity> EntityManager::getEntityByID(const std::string &ID) const {
-    try {
-        return mEntities.at(ID);
-    } catch (const std::out_of_range &e) {
+Entity *EntityManager::getEntityByID(const std::string &ID) const {
+    if (mEntities.find(ID) == mEntities.cend())
         return nullptr;
-    }
+    return mEntities.at(ID).get();
 }
 
-std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesAtPos(const Point &pos) const {
-    std::vector<std::shared_ptr<Entity>> entitiesAtPos;
+std::vector<Entity *> EntityManager::getEntitiesAtPos(const Point &pos) const {
+    std::vector<Entity *> entitiesAtPos;
 
     for (const auto& entity : mEntities) {
         if (entity.second->getPos() == pos)
-            entitiesAtPos.push_back(entity.second);
+            entitiesAtPos.push_back(entity.second.get());
     }
 
     return entitiesAtPos;
 }
 
-std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesAtPosFaster(const Point &pos) const {
-    std::vector<std::shared_ptr<Entity>> entitiesAtPos;
+std::vector<Entity *> EntityManager::getEntitiesAtPosFaster(const Point &pos) const {
+    std::vector<Entity *> entitiesAtPos;
 
     // TODO: remove ugly double loop
     for (const auto& ID : mInSurroundingScreens) {
@@ -417,21 +415,21 @@ std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesAtPosFaster(const
     return entitiesAtPos;
 }
 
-std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesSurrounding(const Point &pos) const {
-    std::vector<std::shared_ptr<Entity>> entitiesSurrounding;
+std::vector<Entity *> EntityManager::getEntitiesSurrounding(const Point &pos) const {
+    std::vector<Entity *> entitiesSurrounding;
     const std::vector<Point> surroundingPoints { pos + Point(-1, 0), pos + Point(1, 0), pos + Point(0, -1), pos + Point(0, 1),
                                                  pos + Point(-1, -1), pos + Point(-1, 1), pos + Point(1, -1), pos + Point(1, 1)};
 
     for (const auto& entity : mEntities) {
         if (std::find(surroundingPoints.cbegin(), surroundingPoints.cend(), entity.second->getPos()) != surroundingPoints.cend())
-            entitiesSurrounding.emplace_back(entity.second);
+            entitiesSurrounding.emplace_back(entity.second.get());
     }
 
     return entitiesSurrounding;
 }
 
-std::vector<std::shared_ptr<Entity>> EntityManager::getEntitiesSurroundingFaster(const Point &pos) const {
-    std::vector<std::shared_ptr<Entity>> entitiesSurrounding;
+std::vector<Entity *> EntityManager::getEntitiesSurroundingFaster(const Point &pos) const {
+    std::vector<Entity *> entitiesSurrounding;
     const std::vector<Point> surroundingPoints { pos + Point(-1, 0), pos + Point(1, 0), pos + Point(0, -1), pos + Point(0, 1),
                                                  pos + Point(-1, -1), pos + Point(-1, 1), pos + Point(1, -1), pos + Point(1, 1)};
 

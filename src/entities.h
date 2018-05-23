@@ -26,13 +26,13 @@ struct PlayerEntity : Entity {
     void tick() override;
     void handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_map<ScreenType, std::shared_ptr<Screen>> &screens);
     void render(Font &font, Point currentWorldPos) override;
-    bool addToInventory(const std::shared_ptr<Entity> &item) override;
+    bool addToInventory(const std::string &ID) override;
 
     void addHunger(float hunger);
 
 private:
     bool interactingWithEntity {false};
-    std::shared_ptr<Entity> entityInteractingWith {nullptr};
+    std::string mEntityInteractingWith;
 };
 
 // AI entities
@@ -41,11 +41,11 @@ struct CatEntity : Entity {
     explicit CatEntity(std::string ID = "")
             : Entity(std::move(ID), "Cat", "$[yellow]c", 10.0f, 10.0f, 0.05f, 1, 2, 100)
     {
-        auto wanderAttach = std::make_shared<WanderAttachBehaviour>(*this, 0.5f, 0.7f, 0.05f);
-        auto chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this, 0.8f, 0.1f, 8.0f, 8.0f, 0.9f);
+        auto wanderAttach = std::make_unique<WanderAttachBehaviour>(*this, 0.5f, 0.7f, 0.05f);
+        auto chaseAndAttack = std::make_unique<ChaseAndAttackBehaviour>(*this, 0.8f, 0.1f, 8.0f, 8.0f, 0.9f);
         chaseAndAttack->disable();
-        addBehaviour(wanderAttach);
-        addBehaviour(chaseAndAttack);
+        addBehaviour(std::move(wanderAttach));
+        addBehaviour(std::move(chaseAndAttack));
     }
 
     void destroy() override;
@@ -55,11 +55,11 @@ struct WolfEntity : Entity {
     explicit WolfEntity(std::string ID = "")
             : Entity(std::move(ID), "Wolf", "${black}$[red]W", 20.0f, 20.0f, 0.05f, 1, 4, 100)
     {
-        addBehaviour(std::make_shared<WanderBehaviour>(*this));
-        auto chaseAndAttack = std::make_shared<ChaseAndAttackBehaviour>(*this, 0.8f, 0.05f, 8, 8, 0.9f);
+        addBehaviour(std::make_unique<WanderBehaviour>(*this));
+        auto chaseAndAttack = std::make_unique<ChaseAndAttackBehaviour>(*this, 0.8f, 0.05f, 8, 8, 0.9f);
         chaseAndAttack->disable();
-        addBehaviour(chaseAndAttack);
-        addBehaviour(std::make_shared<HostilityBehaviour>(*this, 12, 0.95f));
+        addBehaviour(std::move(chaseAndAttack));
+        addBehaviour(std::make_unique<HostilityBehaviour>(*this, 12, 0.95f));
 
         mShortDesc = "A terrifying looking beast!";
     }
@@ -71,8 +71,8 @@ struct GlowbugEntity : Entity {
     explicit GlowbugEntity(std::string ID = "")
             : Entity(std::move(ID), "Glowbug", "$[green]`", 10.0f, 10.0f, 0.05f)
     {
-        addBehaviour(std::make_shared<WanderBehaviour>(*this));
-        addBehaviour(std::make_shared<LightEmittingBehaviour>(*this, 3, getColor("green")));
+        addBehaviour(std::make_unique<WanderBehaviour>(*this));
+        addBehaviour(std::make_unique<LightEmittingBehaviour>(*this, 3, getColor("green")));
     }
 
     void render(Font &font, Point currentWorldPos) override;
@@ -84,7 +84,7 @@ struct EatableEntity : Entity {
     EatableEntity(std::string ID, std::string name, std::string graphic, float hungerRestoration)
             : Entity(std::move(ID), std::move(name), std::move(graphic))
     {
-        addBehaviour(std::make_shared<EatableBehaviour>(*this, hungerRestoration));
+        addBehaviour(std::make_unique<EatableBehaviour>(*this, hungerRestoration));
     }
 };
 
@@ -97,14 +97,7 @@ struct BushEntity : Entity {
     const std::string SHORT_DESC = "It's a bush!";
     const std::string LONG_DESC = "";
 
-    explicit BushEntity(std::string ID = "") : Entity(std::move(ID), "Bush", "${black}$[purple]$(div)")
-    {
-        mShortDesc = SHORT_DESC;
-        mLongDesc = LONG_DESC;
-        mSkipLootingDialog = true;
-        addBehaviour(std::make_shared<KeepStockedBehaviour<BerryEntity>>(*this, RESTOCK_RATE));
-        addToInventory(std::dynamic_pointer_cast<Entity>(std::make_shared<BerryEntity>()));
-    }
+    explicit BushEntity(std::string ID = "");
 
     void render(Font& font, Point currentWorldPos) override;
 };
@@ -116,14 +109,7 @@ struct GrassEntity : Entity {
     const std::string SHORT_DESC = "It is dry grass";
     const std::string LONG_DESC = "You can harvest it";
 
-    explicit GrassEntity(std::string ID = "") : Entity(std::move(ID), "Grass", "${black}$[grasshay]$(tau)")
-    {
-        mShortDesc = SHORT_DESC;
-        mLongDesc = LONG_DESC;
-        mSkipLootingDialog = true;
-        addBehaviour(std::make_shared<KeepStockedBehaviour<GrassTuftEntity>>(*this, RESTOCK_RATE));
-        addToInventory(std::dynamic_pointer_cast<Entity>(std::make_shared<GrassTuftEntity>()));
-    }
+    explicit GrassEntity(std::string ID = "");
 
     void render(Font& font, Point currentWorldPos) override;
 };
@@ -134,7 +120,7 @@ struct CorpseEntity : EatableEntity {
     CorpseEntity(std::string ID, float hungerRestoration, const std::string& corpseOf, int weight)
             : EatableEntity(std::move(ID), "Corpse of " + corpseOf, "${black}$[red]x", hungerRestoration)
     {
-        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, weight));
+        addBehaviour(std::make_unique<PickuppableBehaviour>(*this, weight));
     }
 };
 
@@ -147,7 +133,7 @@ struct AppleEntity : EatableEntity {
     {
         mShortDesc = SHORT_DESC;
         mLongDesc = LONG_DESC;
-        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
+        addBehaviour(std::make_unique<PickuppableBehaviour>(*this, 1));
     }
 };
 
@@ -160,7 +146,7 @@ struct BananaEntity : EatableEntity {
     {
         mShortDesc = SHORT_DESC;
         mLongDesc = LONG_DESC;
-        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
+        addBehaviour(std::make_unique<PickuppableBehaviour>(*this, 1));
     }
 };
 
@@ -173,7 +159,7 @@ struct BerryEntity : EatableEntity {
     {
         mShortDesc = SHORT_DESC;
         mLongDesc = LONG_DESC;
-        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
+        addBehaviour(std::make_unique<PickuppableBehaviour>(*this, 1));
     }
 };
 
@@ -186,8 +172,8 @@ struct BandageEntity : Entity {
             : Entity(std::move(ID), "Bandage", "$[white]~")
     {
         mShortDesc = SHORT_DESC;
-        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
-        addBehaviour(std::make_shared<HealingItemBehaviour>(*this, 5));
+        addBehaviour(std::make_unique<PickuppableBehaviour>(*this, 1));
+        addBehaviour(std::make_unique<HealingItemBehaviour>(*this, 5));
     }
 };
 
@@ -202,11 +188,11 @@ struct TwigEntity : Entity {
     {
         mShortDesc = SHORT_DESC;
         mLongDesc = LONG_DESC;
-        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
-        addBehaviour(std::make_shared<CraftingMaterialBehaviour>(*this, "wood", 1));
-        addBehaviour(std::make_shared<EquippableBehaviour>(*this,
+        addBehaviour(std::make_unique<PickuppableBehaviour>(*this, 1));
+        addBehaviour(std::make_unique<CraftingMaterialBehaviour>(*this, "wood", 1));
+        addBehaviour(std::make_unique<EquippableBehaviour>(*this,
                 std::vector<EquipmentSlot> {EquipmentSlot::LEFT_HAND, EquipmentSlot::RIGHT_HAND}));
-        addBehaviour(std::make_shared<MeleeWeaponBehaviour>(*this, 1));
+        addBehaviour(std::make_unique<MeleeWeaponBehaviour>(*this, 1));
     }
 };
 
@@ -218,8 +204,8 @@ struct GrassTuftEntity : Entity {
     {
         mShortDesc = SHORT_DESC;
         mLongDesc = LONG_DESC;
-        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
-        addBehaviour(std::make_shared<CraftingMaterialBehaviour>(*this, "grass", 1));
+        addBehaviour(std::make_unique<PickuppableBehaviour>(*this, 1));
+        addBehaviour(std::make_unique<CraftingMaterialBehaviour>(*this, "grass", 1));
     }
 };
 
@@ -239,8 +225,8 @@ struct FireEntity : Entity {
 
     explicit FireEntity(std::string ID = "") : Entity(std::move(ID), "Fire", "") {
         mIsSolid = true;
-        addBehaviour(std::make_shared<LightEmittingBehaviour>(*this, 6));
-        addBehaviour(std::make_shared<RekindleBehaviour>(*this));
+        addBehaviour(std::make_unique<LightEmittingBehaviour>(*this, 6));
+        addBehaviour(std::make_unique<RekindleBehaviour>(*this));
     }
 
     void render(Font &font, Point currentWorldPos) override;
@@ -251,9 +237,9 @@ struct FireEntity : Entity {
 
 struct TorchEntity : Entity {
     explicit TorchEntity(std::string ID = "") : Entity(std::move(ID), "Torch", "$[red]$(up)") {
-        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
-        addBehaviour(std::make_shared<LightEmittingBehaviour>(*this, 4));
-        addBehaviour(std::make_shared<EquippableBehaviour>(*this,
+        addBehaviour(std::make_unique<PickuppableBehaviour>(*this, 1));
+        addBehaviour(std::make_unique<LightEmittingBehaviour>(*this, 4));
+        addBehaviour(std::make_unique<EquippableBehaviour>(*this,
                 std::vector<EquipmentSlot> {EquipmentSlot::LEFT_HAND, EquipmentSlot::RIGHT_HAND }));
 
         mShortDesc = "Can be equipped to produce light and some heat.";
@@ -279,9 +265,9 @@ struct BagEntity : Entity {
             : Entity(std::move(ID), "Grass Bag", "$[green]$(Phi)")
     {
         mShortDesc = "This crude grass bag allows you to carry a few more items";
-        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
-        addBehaviour(std::make_shared<EquippableBehaviour>(*this, EquipmentSlot::BACK));
-        addBehaviour(std::make_shared<AdditionalCarryWeightBehaviour>(*this, 20));
+        addBehaviour(std::make_unique<PickuppableBehaviour>(*this, 1));
+        addBehaviour(std::make_unique<EquippableBehaviour>(*this, EquipmentSlot::BACK));
+        addBehaviour(std::make_unique<AdditionalCarryWeightBehaviour>(*this, 20));
     }
 };
 
@@ -303,8 +289,8 @@ struct WaterEntity : Entity {
 struct WaterskinEntity : Entity {
     explicit WaterskinEntity() : Entity("", "Waterskin", "$[brown]$(male)")
     {
-        addBehaviour(std::make_shared<WaterContainerBehaviour>(*this));
-        addBehaviour(std::make_shared<PickuppableBehaviour>(*this, 1));
+        addBehaviour(std::make_unique<WaterContainerBehaviour>(*this));
+        addBehaviour(std::make_unique<PickuppableBehaviour>(*this, 1));
     }
 };
 
@@ -319,7 +305,7 @@ class StatusUIEntity : public Entity {
     int ticksWaitedDuringAnimation {1};
     int attackTargetTimer {0};
 
-    std::shared_ptr<Entity> attackTarget { nullptr };
+    std::string mAttackTargetID;
     const int X_OFFSET = 10;
 
 public:
@@ -335,12 +321,12 @@ public:
     void render(Font &font, Point currentWorldPos) override;
     void emit(Uint32 signal) override;
     void tick() override;
-    void setAttackTarget(std::shared_ptr<Entity> attackTarget) {
-        this->attackTarget = std::move(attackTarget);
+    void setAttackTarget(const std::string &attackTargetID) {
+        mAttackTargetID = attackTargetID;
         attackTargetTimer = 10;
     }
     void clearAttackTarget() {
-        this->attackTarget = nullptr;
+        mAttackTargetID.clear();
     }
 //    void showLootedItemNotification(std::string itemString);
 };

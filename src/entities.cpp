@@ -30,7 +30,7 @@ bool PlayerEntity::attack(const Point &attackPos) {
         enemy->getBehaviourByID("ChaseAndAttackBehaviour")->enable();
 
     auto& ui = dynamic_cast<StatusUIEntity&>(*EntityManager::getInstance().getEntityByID("StatusUI"));
-    ui.setAttackTarget(enemy);
+    ui.setAttackTarget(enemy->mID);
 
     if (enemy->mHp <= 0) {
         ui.clearAttackTarget();
@@ -67,9 +67,10 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
     }
 
     if (interactingWithEntity) {
-        auto b = entityInteractingWith->getBehaviourByID("InteractableBehaviour");
+        auto entity = EntityManager::getInstance().getEntityByID(mEntityInteractingWith);
+        auto b = entity->getBehaviourByID("InteractableBehaviour");
         if (!dynamic_cast<InteractableBehaviour&>(*b).handleInput(e)) {
-            entityInteractingWith = nullptr;
+            mEntityInteractingWith.clear();
             interactingWithEntity = false;
         }
         return;
@@ -86,7 +87,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
 
                 if (b != nullptr) {
                     interactingWithEntity = true;
-                    entityInteractingWith = entity;
+                    mEntityInteractingWith = entity->mID;
                 }
             }
         }
@@ -98,10 +99,10 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
             // TODO: need to handle multiple items on same square properly
 //            std::vector<std::shared_ptr<Entity>> waterEntities;
 
-            std::vector<std::shared_ptr<Entity>> entitiesWithInventories;
+            std::vector<Entity *> entitiesWithInventories;
             std::copy_if(entitiesAtPos.begin(), entitiesAtPos.end(), std::back_inserter(entitiesWithInventories),
                          [](auto &a) {
-                return a->ID != "Player" && !a->isInventoryEmpty();
+                return a->mID != "Player" && !a->isInventoryEmpty();
             });
 
             if (!entitiesWithInventories.empty()) {
@@ -109,7 +110,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
                 auto entity = entitiesWithInventories[0];
                 if (entity->mSkipLootingDialog) {
                     // Loot just the first item
-                    if (addToInventory(entity->getInventoryItem(0))) {
+                    if (addToInventory(entity->getInventoryItem(0)->mID)) {
                         entity->removeFromInventory(0);
                         didAction = true;
                         goto postLooting;
@@ -124,18 +125,18 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
                 }
             }
 
-            std::vector<std::shared_ptr<Entity>> pickuppableEntities;
+            std::vector<Entity *> pickuppableEntities;
             std::copy_if(entitiesAtPos.begin(), entitiesAtPos.end(), std::back_inserter(pickuppableEntities),
                          [this](auto &a) {
                 auto b = a->getBehaviourByID("PickuppableBehaviour");
                 // Don't pick up if it isn't pickuppable, or if it is already in the player's inventory
-                return (b != nullptr && !isInInventory(a->ID));
+                return (b != nullptr && !isInInventory(a->mID));
             });
 
             if (pickuppableEntities.empty())
                 return;
             else if (pickuppableEntities.size() == 1) {
-                if (addToInventory(*pickuppableEntities.begin())) {
+                if (addToInventory((*pickuppableEntities.begin())->mID)) {
                     didAction = true;
                     goto postLooting;
                 } else {
@@ -243,14 +244,16 @@ void PlayerEntity::render(Font &font, Point currentWorldPos) {
     }
 
     if (interactingWithEntity) {
+        auto entityInteractingWith = EntityManager::getInstance().getEntityByID(mEntityInteractingWith);
         dynamic_cast<InteractableBehaviour&>(*entityInteractingWith->getBehaviourByID("InteractableBehaviour")).render(font);
     }
 }
 
-bool PlayerEntity::addToInventory(const std::shared_ptr<Entity> &item) {
-    if (Entity::addToInventory(item)) {
+bool PlayerEntity::addToInventory(const std::string &ID) {
+    if (Entity::addToInventory(ID)) {
+        auto entity = EntityManager::getInstance().getEntityByID(ID);
         NotificationMessageRenderer::getInstance()
-                .queueMessage("You got a " + item->mGraphic + " " + item->mName + "${transparent}$[white]!");
+                .queueMessage("You got a " + entity->mGraphic + " " + entity->mName + "${transparent}$[white]!");
         return true;
     }
     return false;
@@ -298,7 +301,8 @@ void StatusUIEntity::render(Font &font, Point currentWorldPos) {
         ticksWaitedDuringAnimation = 1;
     }
 
-    if (attackTarget != nullptr) {
+    if (!mAttackTargetID.empty()) {
+        auto attackTarget = EntityManager::getInstance().getEntityByID(mAttackTargetID);
         float enemyhpPercent = attackTarget->mHp / attackTarget->mMaxHp;
         std::string enemyhpString = "${black}";
 
@@ -316,7 +320,7 @@ void StatusUIEntity::render(Font &font, Point currentWorldPos) {
 
     // Drop attack target after 10 turns of inactivity
     if (attackTargetTimer == 0)
-        attackTarget = nullptr;
+        mAttackTargetID.clear();
 
     font.drawText(EntityManager::getInstance().getTimeOfDay().toWordString(), SCREEN_WIDTH - X_OFFSET, 8);
 }
@@ -333,26 +337,28 @@ void StatusUIEntity::emit(uint32_t signal) {
 }
 
 void StatusUIEntity::tick() {
-    if (attackTarget != nullptr &&
-        attackTarget->getBehaviourByID("ChaseAndAttackBehaviour") != nullptr &&
-        !attackTarget->getBehaviourByID("ChaseAndAttackBehaviour")->isEnabled())
-    {
-        attackTargetTimer--;
+    if (!mAttackTargetID.empty()) {
+        auto attackTarget = EntityManager::getInstance().getEntityByID(mAttackTargetID);
+        if (attackTarget->getBehaviourByID("ChaseAndAttackBehaviour") != nullptr &&
+            !attackTarget->getBehaviourByID("ChaseAndAttackBehaviour")->isEnabled())
+        {
+            attackTargetTimer--;
+        }
     }
 
     Entity::tick();
 }
 
 void CatEntity::destroy() {
-    auto corpse = std::make_shared<CorpseEntity>(mID + "corpse", 0.4, mName, 100);
+    auto corpse = std::make_unique<CorpseEntity>(mID + "corpse", 0.4, mName, 100);
     corpse->setPos(getPos());
-    EntityManager::getInstance().addEntity(corpse);
+    EntityManager::getInstance().addEntity(std::move(corpse));
 }
 
 void WolfEntity::destroy() {
-    auto corpse = std::make_shared<CorpseEntity>(mID + "corpse", 0.4, mName, 100);
+    auto corpse = std::make_unique<CorpseEntity>(mID + "corpse", 0.4, mName, 100);
     corpse->setPos(getPos());
-    EntityManager::getInstance().addEntity(corpse);
+    EntityManager::getInstance().addEntity(std::move(corpse));
 }
 
 void BushEntity::render(Font &font, Point currentWorldPos) {
@@ -363,6 +369,17 @@ void BushEntity::render(Font &font, Point currentWorldPos) {
     }
 
     Entity::render(font, currentWorldPos);
+}
+
+BushEntity::BushEntity(std::string ID) : Entity(std::move(ID), "Bush", "${black}$[purple]$(div)") {
+    mShortDesc = SHORT_DESC;
+    mLongDesc = LONG_DESC;
+    mSkipLootingDialog = true;
+    addBehaviour(std::make_unique<KeepStockedBehaviour<BerryEntity>>(*this, RESTOCK_RATE));
+    auto item = std::make_unique<BerryEntity>();
+    auto itemID = item->mID;
+    EntityManager::getInstance().addEntity(std::move(item));
+    addToInventory(itemID);
 }
 
 void FireEntity::render(Font &font, Point currentWorldPos) {
@@ -390,6 +407,17 @@ void GrassEntity::render(Font &font, Point currentWorldPos) {
     }
 
     Entity::render(font, currentWorldPos);
+}
+
+GrassEntity::GrassEntity(std::string ID) : Entity(std::move(ID), "Grass", "${black}$[grasshay]$(tau)") {
+    mShortDesc = SHORT_DESC;
+    mLongDesc = LONG_DESC;
+    mSkipLootingDialog = true;
+    addBehaviour(std::make_unique<KeepStockedBehaviour<GrassTuftEntity>>(*this, RESTOCK_RATE));
+    auto item = std::make_unique<GrassTuftEntity>();
+    auto itemID = item->mID;
+    EntityManager::getInstance().addEntity(std::move(item));
+    addToInventory(itemID);
 }
 
 bool FireEntity::RekindleBehaviour::handleInput(SDL_KeyboardEvent &e) {

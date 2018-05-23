@@ -162,8 +162,10 @@ public:
 
     void tick() override {
         if (ticksUntilRestock == 0 && mParent.isInventoryEmpty()) {
-            auto item = std::make_shared<T>();
-            mParent.addToInventory(item);
+            auto item = std::make_unique<T>();
+            auto ID = item->mID;
+            EntityManager::getInstance().addEntity(std::move(item));
+            mParent.addToInventory(ID);
             ticksUntilRestock = restockRate;
         }
         if (ticksUntilRestock > 0)

@@ -79,7 +79,7 @@ void AttachmentBehaviour::tick() {
 
 void ChaseAndAttackBehaviour::tick() {
     auto& ui = dynamic_cast<StatusUIEntity&>(*EntityManager::getInstance().getEntityByID("StatusUI"));
-    ui.setAttackTarget(std::make_shared<Entity>(mParent));
+    ui.setAttackTarget(mParent.mID);
 
     auto& player = *EntityManager::getInstance().getEntityByID("Player");
     Point posOffset;
@@ -109,9 +109,7 @@ void ChaseAndAttackBehaviour::tick() {
                 if (mParent.getBehaviourByID("HostilityBehaviour") != nullptr) {
                     mParent.getBehaviourByID("HostilityBehaviour")->enable();
                 } else if (postHostility != 0) { // Don't bother adding hostility if it won't ever be triggered
-                    std::shared_ptr<Behaviour> hostilityBehaviour =
-                            std::make_shared<HostilityBehaviour>(mParent, postHostilityRange, postHostility);
-                    mParent.addBehaviour(hostilityBehaviour);
+                    mParent.addBehaviour(std::make_unique<HostilityBehaviour>(mParent, postHostilityRange, postHostility));
                 }
             }
         }
