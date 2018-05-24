@@ -59,8 +59,6 @@ int main(int argc, char* argv[])
                 printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
             }
             else {
-                // if (Texture::LoadFromFile(texture, renderer, "Anikki_square_20x20.bmp") == -1) {
-                // if (Texture::LoadFromFile(texture, renderer, "curses_640x300.bmp") == -1) {
                 if (Texture::LoadFromFile(texture, renderer, "resources/curses_800x600.bmp") == -1 || lightMapTexture.load() == -1) {
                     printf("Could not load texture!\n");
                     return -1;
