@@ -13,7 +13,7 @@ void World::render(Font &font, const Point worldPos)
 	if (std::find(mGeneratedScreens.cbegin(), mGeneratedScreens.cend(), worldPos) == mGeneratedScreens.cend())
 		randomizeScreensAround(worldPos);
 
-    Color grey = FontColor::getColorMap()("grey");
+    Color grey = FontColor::getColor("grey");
     for (int y = 0; y < SCREEN_HEIGHT; ++y)
         for (int x = 0; x < SCREEN_WIDTH; ++x)
             font.draw(this->mFloor[worldPosToWorld(worldPos) + Point(x, y)], x, y, grey);

@@ -24,7 +24,7 @@ add_executable(${PROJECT_NAME}
 		src/Texture.cpp
 		src/Texture.h
         src/world.cpp
-        src/world.h src/flags.h src/utils.h src/utils.cpp src/recipe.cpp src/recipe.h src/time.h src/Game.h src/Game.cpp src/SDLManager.cpp src/SDLManager.h src/FontColor.cpp src/FontColor.h)
+        src/world.h src/flags.h src/utils.h src/utils.cpp src/recipe.cpp src/recipe.h src/time.h src/Game.h src/Game.cpp src/SDLManager.cpp src/SDLManager.h src/FontColor.cpp src/FontColor.h src/EntityBuilder.h)
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_lambdas cxx_nullptr cxx_range_for cxx_strong_enums cxx_std_14)
 

@@ -11,12 +11,12 @@ const int MAX_FRAME_RATE = 30;
 class Game {
 public:
     int init();
-    int run();
+    void run();
 
 private:
-    int loop();
+    void loop();
 
-    SDLManager *mSDLManager {nullptr};
+    SDLManager mSDLManager;
     std::unique_ptr<Texture> mFontTexture {nullptr};
 };
 

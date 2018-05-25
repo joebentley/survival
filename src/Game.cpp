@@ -1,34 +1,97 @@
 #include "Game.h"
 #include "utils.h"
 #include "Font.h"
+#include "entity.h"
+#include "entities.h"
+#include "EntityBuilder.h"
 #include <deque>
 
 int Game::init() {
     srand(static_cast<unsigned int>(time(NULL)));
 
     Uint32 imgFlags = IMG_INIT_PNG | IMG_INIT_JPG;
-    return mSDLManager->initialize(SDL_INIT_VIDEO, imgFlags);
+    return mSDLManager.initialize(SDL_INIT_VIDEO, imgFlags);
 }
 
-int Game::run() {
-    mFontTexture = std::make_unique<Texture>(mSDLManager->getRenderer());
+void Game::run() {
+    mFontTexture = std::make_unique<Texture>(mSDLManager.getRenderer());
     mFontTexture->loadFromFile("resources/curses_800x600.bmp");
 
-    return loop();
+    loop();
 }
 
-int Game::loop() {
+void Game::loop() {
+    SDL_Renderer *renderer = mSDLManager.getRenderer();
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+    LightMapTexture lightMapTexture(renderer);
+
+    Font font(*mFontTexture, CHAR_WIDTH, CHAR_HEIGHT, NUM_PER_ROW, CHARS, renderer);
+
+    World world;
+    auto &manager = EntityManager::getInstance();
+
+    // TODO clean up all this initialisation stuff
+    auto pPlayer = EntityBuilder::makeEntity<PlayerEntity>();
+    // Place player in center of world
+    // TODO: Fix bug that occurs at (0,0)
+    pPlayer->setPos(SCREEN_WIDTH * 1000 + SCREEN_WIDTH / 2, SCREEN_HEIGHT * 1000 + SCREEN_HEIGHT / 2);
+    auto playerPos = pPlayer->getPos();
+
+    EntityBuilder::makeEntity<CatEntity>()->setPos(playerPos.mX - 10, playerPos.mY - 10);
+
+    auto apple = EntityBuilder::makeEntity<AppleEntity>();
+    auto banana = EntityBuilder::makeEntity<BananaEntity>();
+    apple->setPos(playerPos + Point(2, 2));
+    banana->setPos(playerPos + Point(3, 2));
+
+    auto pPileOfLead = EntityBuilder::makeEntity("pileOfLead", "Huge Pile Of Lead", "$[grey]L");
+    pPileOfLead->addBehaviour(std::make_unique<PickuppableBehaviour>(*pPileOfLead, 100));
+    pPileOfLead->setPos(playerPos + Point(2, 2));
+
+    auto pChest = EntityBuilder::makeEntity<ChestEntity>();
+    pChest->setPos(playerPos + Point(-2, 2));
+
+    EntityBuilder::makeEntityAndAddToInventory<AppleEntity>(pChest);
+
+    auto statusUI = std::make_unique<StatusUIEntity>(dynamic_cast<PlayerEntity&>(*pPlayer));
+    auto pStatusUI = statusUI.get();
+    manager.addEntity(std::move(statusUI));
+
+    EntityBuilder::makeEntityAndAddToInventory<WaterskinEntity>(pPlayer);
+    EntityBuilder::makeEntityAndAddToInventory<GrassTuftEntity>(pPlayer);
+    EntityBuilder::makeEntityAndAddToInventory<GrassTuftEntity>(pPlayer);
+    EntityBuilder::makeEntityAndAddToInventory<TwigEntity>(pPlayer);
+    EntityBuilder::makeEntityAndAddToInventory<TwigEntity>(pPlayer);
+    EntityBuilder::makeEntityAndAddToInventory<TwigEntity>(pPlayer);
+
+    manager.initialize();
+    manager.setTimeOfDay(Time(6, 0));
+
+    // TODO change to unique_ptr
+    std::unordered_map<ScreenType, std::shared_ptr<Screen>> screens;
+
+    screens[ScreenType::NOTIFICATION] = std::make_shared<NotificationMessageScreen>();
+    screens[ScreenType::INVENTORY] = std::make_shared<InventoryScreen>(*pPlayer);
+    screens[ScreenType::LOOTING] = std::make_shared<LootingDialog>(*pPlayer);
+    screens[ScreenType::INSPECTION] = std::make_shared<InspectionDialog>(*pPlayer);
+    screens[ScreenType::CRAFTING] = std::make_shared<CraftingScreen>(*pPlayer);
+    screens[ScreenType::EQUIPMENT] = std::make_shared<EquipmentScreen>(*pPlayer);
+    screens[ScreenType::HELP] = std::make_shared<HelpScreen>();
+
+    bool initialMessage = true;
+    std::vector<std::string> initialMessageLines({
+            "Welcome to the game",
+            "? for help (once you've closed this)",
+            "return to start"
+    });
+
     bool quit = false;
     SDL_Event e;
 
     float totalTime = 0;
     std::deque<float> frameTimes;
     float fps = 60;
-
-    SDL_Renderer *renderer = mSDLManager->getRenderer();
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-
-    Font font(mFontTexture.get(), CHAR_WIDTH, CHAR_HEIGHT, NUM_PER_ROW, CHARS, renderer);
 
     while (!quit) {
         beginTime();
