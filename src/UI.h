@@ -8,6 +8,7 @@
 #include "Font.h"
 #include "entities.h"
 #include "recipe.h"
+#include "UIState.h"
 
 enum class ScreenType {
     NOTIFICATION,
@@ -133,10 +134,19 @@ struct InventoryScreen : Screen {
         Screen::enable();
     }
 
+    PlayerEntity &getPlayer() const;
+
+    int getChosenIndex() const;
+    void setChosenIndex(int chosenIndex);
+
+    bool isViewingDescription() const;
+    void setViewingDescription(bool viewingDescription);
+
 private:
     PlayerEntity &mPlayer;
     int mChosenIndex {0};
     bool mViewingDescription {false};
+    std::unique_ptr<InventoryScreenState> mState {std::make_unique<ViewingInventoryState>()};
 };
 
 struct LootingDialog : Screen {
