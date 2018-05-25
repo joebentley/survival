@@ -72,7 +72,7 @@ struct GlowbugEntity : Entity {
             : Entity(std::move(ID), "Glowbug", "$[green]`", 10.0f, 10.0f, 0.05f)
     {
         addBehaviour(std::make_unique<WanderBehaviour>(*this));
-        addBehaviour(std::make_unique<LightEmittingBehaviour>(*this, 3, getColor("green")));
+        addBehaviour(std::make_unique<LightEmittingBehaviour>(*this, 3, FontColor::getColor("green")));
     }
 
     void render(Font &font, Point currentWorldPos) override;

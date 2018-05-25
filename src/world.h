@@ -2,8 +2,8 @@
 #ifndef WORLD_H_
 #define WORLD_H_
 
-#include "font.h"
-#include "point.h"
+#include "Font.h"
+#include "Point.h"
 #include <string>
 #include <unordered_map>
 

@@ -1,7 +1,7 @@
 #ifndef BEHAVIOURS_H_
 #define BEHAVIOURS_H_
 
-#include "font.h"
+#include "Font.h"
 #include "entity.h"
 #include "utils.h"
 

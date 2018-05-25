@@ -1,31 +1,11 @@
-#include "font.h"
-#include "texture.h"
+#include "Font.h"
+#include "Texture.h"
 #include <iostream>
 #include <stdexcept>
 
-std::unordered_map<std::string, Color> colorMap = {
-    {"white", Color(0xFF, 0xFF, 0xFF)},
-    {"yellow", Color(0xFF, 0xFF, 0)},
-    {"red", Color(0xFF, 0, 0)},
-    {"green", Color(0, 0xFF, 0)},
-    {"grasshay", Color(218, 197, 134)},
-    {"blue", Color(0, 0, 0xFF)},
-    {"cyan", Color(0, 0xCC, 0xCC)},
-    {"grey", Color(0x88, 0x88, 0x88)},
-    {"black", Color(0, 0, 0)},
-    {"brown", Color(150, 75, 0)},
-    {"purple", Color(180, 0, 180)},
-    {"orange", Color(255, 128, 0)},
-    {"transparent", Color(0, 0, 0, 0)}
-};
-
-Color getColor(const std::string& colorStr) {
-    return colorMap[colorStr];    
-}
-
 void Font::setFontColor(Color c) {
-    SDL_SetTextureColorMod(mTexture.mTexture, c.r, c.g, c.b);
-    SDL_SetTextureAlphaMod(mTexture.mTexture, c.a);
+    SDL_SetTextureColorMod(mTexture.getTexture(), c.r, c.g, c.b);
+    SDL_SetTextureAlphaMod(mTexture.getTexture(), c.a);
 }
 
 int Font::draw(const std::string &character, int x, int y, Color fColor, Color bColor)
@@ -51,7 +31,7 @@ int Font::draw(const std::string &character, int x, int y, Color fColor, Color b
     SDL_SetRenderDrawColor(mRenderer, bColor.r, bColor.g, bColor.b, bColor.a);
     SDL_RenderFillRect(mRenderer, &destRect);
 
-    mTexture.render(mRenderer, &srcRect, &destRect);
+    mTexture.render(&srcRect, &destRect);
     return 0;
 }
 
@@ -122,11 +102,11 @@ int Font::drawText(const std::string &text, int x0, int y, int alpha) {
             while (text[++i] != ']');
 
             std::string fontStr = text.substr(begin, i - begin);
-            if (colorMap.find(fontStr) == colorMap.end()) {
+            if (FontColor::getColorMap().find(fontStr) == FontColor::getColorMap().end()) {
                 std::cerr << "Invalid foreground font color: " << fontStr << std::endl;
                 return -1;
             }
-            fColor = colorMap[fontStr];
+            fColor = FontColor::getColorMap()[fontStr];
             if (alpha != -1)
                 fColor.a = (Uint8)alpha;
 
@@ -140,11 +120,11 @@ int Font::drawText(const std::string &text, int x0, int y, int alpha) {
             while (text[++i] != '}');
 
             std::string fontStr = text.substr(begin, i - begin);
-            if (colorMap.find(fontStr) == colorMap.end()) {
+            if (FontColor::getColorMap().find(fontStr) == FontColor::getColorMap().end()) {
                 std::cerr << "Invalid background font color: " << fontStr << std::endl;
                 return -1;
             }
-            bColor = colorMap[fontStr];
+            bColor = FontColor::getColorMap()[fontStr];
 
             continue;
         }
@@ -194,11 +174,11 @@ int Font::drawText(const std::string &text, int x0, int y, Color bColor) {
             while (text[++i] != ']');
 
             std::string fontStr = text.substr(begin, i - begin);
-            if (colorMap.find(fontStr) == colorMap.end()) {
+            if (FontColor::getColorMap().find(fontStr) == FontColor::getColorMap().end()) {
                 std::cerr << "Invalid foreground font color: " << fontStr << std::endl;
                 return -1;
             }
-            fColor = colorMap[fontStr];
+            fColor = FontColor::getColorMap()[fontStr];
 
             continue;
         }

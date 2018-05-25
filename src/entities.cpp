@@ -295,7 +295,7 @@ void StatusUIEntity::render(Font &font, Point currentWorldPos) {
                       + " tick" + (ticksWaitedDuringAnimation > 1 ? "s" : "") + "...",
                       SCREEN_WIDTH - X_OFFSET - 8, SCREEN_HEIGHT - 2,
                       Color(0xFF, 0xFF, 0xFF, static_cast<Uint8>(static_cast<float>(forceTickDisplayTimer) / FORCE_TICK_DISPLAY_LENGTH * 0xFF)),
-                      getColor("transparent"));
+                FontColor::getColor("transparent"));
     } else {
         forceTickDisplayTimer = 0;
         ticksWaitedDuringAnimation = 1;

@@ -690,7 +690,7 @@ void CraftingScreen::render(Font &font) {
         if (mCouldNotBuildAtPosition)
             message = "Please choose a square that does not already have an entity on";
 
-        font.drawText(message, 1, y, getColor("white"), getColor("black"));
+        font.drawText(message, 1, y, FontColor::getColor("white"), FontColor::getColor("black"));
         return;
     }
 
@@ -700,20 +700,20 @@ void CraftingScreen::render(Font &font) {
 
     for (int i = 0; i < rm.mRecipes.size(); ++i) {
         auto recipe = *rm.mRecipes.at(i);
-        Color bColor = getColor("black");
+        Color bColor = FontColor::getColor("black");
 
         if (i == mChosenRecipe)
-            bColor = getColor("blue");
+            bColor = FontColor::getColor("blue");
 
-        font.drawText(recipe.mNameOfProduct, xOffset, yOffset + i, getColor("white"), bColor);
+        font.drawText(recipe.mNameOfProduct, xOffset, yOffset + i, FontColor::getColor("white"), bColor);
     }
 
     auto &ingredients = rm.mRecipes[mChosenRecipe]->mIngredients;
     for (int i = 0; i < ingredients.size() + 1; ++i) {
-        Color bColor = getColor("black");
+        Color bColor = FontColor::getColor("black");
 
         if ((mLayer == CraftingLayer::INGREDIENT || mLayer == CraftingLayer::MATERIAL) && i == mChosenIngredient)
-            bColor = getColor("blue");
+            bColor = FontColor::getColor("blue");
 
         if (i != ingredients.size()) {
             auto ingredient = ingredients.at(i);
@@ -721,12 +721,12 @@ void CraftingScreen::render(Font &font) {
                 ingredient = mCurrentRecipe->mIngredients[i];
 
             font.drawText(std::to_string(ingredient.mQuantity) + "x " + ingredient.mEntityType, xOffset + 14, yOffset + i,
-                          getColor("white"), bColor);
+                    FontColor::getColor("white"), bColor);
         } else {
-            Color fColor = getColor("grey");
+            Color fColor = FontColor::getColor("grey");
 
             if (currentRecipeSatisfied())
-                fColor = getColor("white");
+                fColor = FontColor::getColor("white");
 
             font.drawText("Construct", xOffset + 14, yOffset + i, fColor, bColor);
         }
@@ -740,7 +740,7 @@ void CraftingScreen::render(Font &font) {
             auto &material = inventoryMaterials.at(i);
 
             if (mLayer == CraftingLayer::MATERIAL && i == mChosenMaterial) {
-                bColor = getColor("blue");
+                bColor = FontColor::getColor("blue");
                 font.drawText(material->mGraphic + " " + material->mName, xOffset + 24, yOffset + i, bColor);
             } else
                 font.drawText(material->mGraphic + " " + material->mName, xOffset + 24, yOffset + i);
@@ -863,9 +863,9 @@ void EquipmentScreen::render(Font &font) {
     int y = 3;
 
     for (auto slot : EQUIPMENT_SLOTS) {
-        Color bColor = getColor("black");
+        Color bColor = FontColor::getColor("black");
         if (mChosenSlot == slot)
-            bColor = getColor("blue");
+            bColor = FontColor::getColor("blue");
 
         std::string currentlyEquipped = mPlayer.getEquipmentID(slot);
         if (!currentlyEquipped.empty()) {

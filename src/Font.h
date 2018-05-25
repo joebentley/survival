@@ -2,7 +2,9 @@
 #ifndef FONT_H_
 #define FONT_H_
 
-#include "point.h"
+#include "Point.h"
+#include "FontColor.h"
+#include "Texture.h"
 
 #ifdef _MSC_VER
 #include <SDL.h>
@@ -38,20 +40,6 @@ const std::string CHARS =
     "equiv pm gteq lteq upperint lowerint div approx degree cdot hyphen sqrt endquote power2 block space3";
 
 
-struct Color {
-    Color() : r(0xFF), g(0xFF), b(0xFF), a(0xFF) {}
-    Color(Uint8 r, Uint8 g, Uint8 b) : Color(r, g, b, 0xFF) {}
-    Color(Uint8 r, Uint8 g, Uint8 b, Uint8 a) : r(r), g(g), b(b), a(a) {}
-
-    Uint8 r;
-    Uint8 g;
-    Uint8 b;
-    Uint8 a;
-};
-
-Color getColor(const std::string& colorStr);
-
-struct Texture;
 class Font {
     Texture& mTexture;
     int mCellWidth;

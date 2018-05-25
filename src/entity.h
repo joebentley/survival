@@ -10,12 +10,12 @@
 #include <memory>
 #include <unordered_map>
 #include <stdexcept>
-#include "font.h"
+#include "Font.h"
 #include "world.h"
-#include "point.h"
+#include "Point.h"
 #include "flags.h"
 #include "time.h"
-#include "texture.h"
+#include "Texture.h"
 
 extern int gNumInitialisedEntities;
 

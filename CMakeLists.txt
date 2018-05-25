@@ -17,14 +17,14 @@ add_executable(${PROJECT_NAME}
         src/entities.h
         src/entity.cpp
         src/entity.h
-        src/font.cpp
-        src/font.h
-        src/point.h
+		src/Font.cpp
+		src/Font.h
+		src/Point.h
         src/survival.cpp
-        src/texture.cpp
-        src/texture.h
+		src/Texture.cpp
+		src/Texture.h
         src/world.cpp
-        src/world.h src/flags.h src/utils.h src/utils.cpp src/recipe.cpp src/recipe.h src/time.h)
+        src/world.h src/flags.h src/utils.h src/utils.cpp src/recipe.cpp src/recipe.h src/time.h src/Game.h src/Game.cpp src/SDLManager.cpp src/SDLManager.h src/FontColor.cpp src/FontColor.h)
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_lambdas cxx_nullptr cxx_range_for cxx_strong_enums cxx_std_14)
 

@@ -5,7 +5,7 @@
 #include <SDL2/SDL.h>
 #include <string>
 #include <ctime>
-#include "font.h"
+#include "Font.h"
 #include "entities.h"
 #include "recipe.h"
 
