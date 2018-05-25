@@ -142,69 +142,6 @@ void InventoryScreen::handleInput(SDL_KeyboardEvent &e) {
         mState = std::move(newState);
         mState->onEntry(*this);
     }
-
-//    switch (e.keysym.sym) {
-//        case SDLK_ESCAPE:
-//            if (mViewingDescription)
-//                mViewingDescription = false;
-//            else
-//                mEnabled = false;
-//            break;
-//        case SDLK_j:
-//            if (!mViewingDescription && !mPlayer.isInventoryEmpty()) {
-//                if (mChosenIndex < (mPlayer.getInventorySize() - 1))
-//                    mChosenIndex++;
-//                else
-//                    mChosenIndex = 0;
-//            }
-//            break;
-//        case SDLK_k:
-//            if (!mViewingDescription && !mPlayer.isInventoryEmpty()) {
-//                if (mChosenIndex > 0)
-//                    mChosenIndex--;
-//                else
-//                    mChosenIndex = (int) mPlayer.getInventorySize() - 1;
-//            }
-//            break;
-//        case SDLK_d:
-//            if (!mViewingDescription && !mPlayer.isInventoryEmpty()) {
-//                auto itemID = mPlayer.getInventoryItemID(mChosenIndex);
-//                if (mPlayer.hasEquipped(itemID))
-//                    mPlayer.unequip(itemID);
-//
-//                mPlayer.dropItem(mChosenIndex);
-//
-//                if (mPlayer.getInventorySize() - 1 < mChosenIndex)
-//                    mChosenIndex--;
-//            }
-//            break;
-//        case SDLK_e:
-//            if (!mViewingDescription && !mPlayer.isInventoryEmpty()) {
-//                auto item = mPlayer.getInventoryItem(mChosenIndex);
-//                if (item->hasBehaviour("EatableBehaviour")) {
-//                    mPlayer.addHunger(dynamic_cast<EatableBehaviour &>(*(*item).getBehaviourByID("EatableBehaviour")).hungerRestoration);
-//                    mPlayer.removeFromInventory(mChosenIndex);
-//                    item->destroy();
-//                    if (mPlayer.getInventorySize() - 1 < mChosenIndex)
-//                        mChosenIndex--;
-//                }
-//            }
-//            break;
-//        case SDLK_a:
-//            if (!mViewingDescription && !mPlayer.isInventoryEmpty()) {
-//                auto item = mPlayer.getInventoryItem(mChosenIndex);
-//                if (item->hasBehaviour("ApplyableBehaviour")) {
-//                    dynamic_cast<ApplyableBehaviour&>(*(*item).getBehaviourByID("ApplyableBehaviour")).apply();
-//                    if (mPlayer.getInventorySize() - 1 < mChosenIndex)
-//                        mChosenIndex--;
-//                }
-//            }
-//            break;
-//        case SDLK_RETURN:
-//            if (!mPlayer.isInventoryEmpty())
-//                mViewingDescription = true;
-//            break;
-//    }
 }
 
 void InventoryScreen::render(Font &font) {
