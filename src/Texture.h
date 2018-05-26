@@ -55,7 +55,6 @@ public:
     void render(std::vector<LightMapPoint> points, Uint8 backgroundAlpha);
 private:
     SDL_Texture *mNightFadeTexture {nullptr};
-    SDL_Renderer *mRenderer {nullptr};
 };
 
 #endif // TEXTURE_H_

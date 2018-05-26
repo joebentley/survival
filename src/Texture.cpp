@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <SDL2/SDL_image.h>
 #include "Texture.h"
+#include "SDLManager.h"
 #include "world.h"
 
 Texture::~Texture() {
@@ -60,12 +61,10 @@ LightMapTexture::~LightMapTexture() {
 
 LightMapTexture::LightMapTexture(SDL_Renderer *renderer) : Texture(renderer) {
     loadFromFile("resources/light.png");
-    mNightFadeTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET,
-            CHAR_WIDTH * SCREEN_WIDTH, CHAR_HEIGHT * SCREEN_HEIGHT);
+    mNightFadeTexture = SDL_CreateTexture(mRenderer, mFormat, SDL_TEXTUREACCESS_TARGET,
+            WINDOW_WIDTH, WINDOW_HEIGHT);
     SDL_SetTextureBlendMode(mNightFadeTexture, SDL_BLENDMODE_MOD);
     SDL_SetTextureBlendMode(mTexture, SDL_BLENDMODE_ADD);
-//    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
-//    SDL_RenderClear(renderer);
 }
 
 void LightMapTexture::render(std::vector<LightMapPoint> points, Uint8 backgroundAlpha) {
