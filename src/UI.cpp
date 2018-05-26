@@ -484,158 +484,17 @@ void InspectionDialog::render(Font &font) {
 }
 
 void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
-    auto &rm = RecipeManager::getInstance();
-    switch (e.keysym.sym) {
-        case SDLK_ESCAPE:
-            mEnabled = false;
-            break;
-        case SDLK_j:
-            if (mChoosingPositionInWorld) {
-                tryToBuildAtPosition(Point {0, 1});
-                break;
-            }
-
-            if (mLayer == CraftingLayer::RECIPE) {
-                if (mChosenRecipe == rm.mRecipes.size() - 1)
-                    mChosenRecipe = 0;
-                else
-                    mChosenRecipe++;
-                mChosenIngredient = 0;
-                mChosenMaterial = 0;
-            } else if (mLayer == CraftingLayer::INGREDIENT) {
-                if (mChosenIngredient == rm.mRecipes[mChosenRecipe]->mIngredients.size())
-                    mChosenIngredient = 0;
-                else
-                    mChosenIngredient++;
-                mChosenMaterial = 0;
-            } else if (mLayer == CraftingLayer::MATERIAL) {
-                auto inventoryMaterials = filterInventoryForChosenMaterials();
-                if (mChosenMaterial == inventoryMaterials.size() - 1)
-                    mChosenMaterial = 0;
-                else
-                    mChosenMaterial++;
-            }
-            break;
-        case SDLK_k:
-            if (mChoosingPositionInWorld) {
-                tryToBuildAtPosition(Point {0, -1});
-                break;
-            }
-
-            if (mLayer == CraftingLayer::RECIPE) {
-                if (mChosenRecipe == 0)
-                    mChosenRecipe = (int) rm.mRecipes.size() - 1;
-                else
-                    mChosenRecipe--;
-                mChosenIngredient = 0;
-                mChosenMaterial = 0;
-            } else if (mLayer == CraftingLayer::INGREDIENT) {
-                if (mChosenIngredient == 0)
-                    mChosenIngredient = (int)rm.mRecipes[mChosenRecipe]->mIngredients.size();
-                else
-                    mChosenIngredient--;
-                mChosenMaterial = 0;
-            } else if (mLayer == CraftingLayer::MATERIAL) {
-                std::vector<Entity *> inventoryMaterials = filterInventoryForChosenMaterials();
-                if (mChosenMaterial == 0)
-                    mChosenMaterial = (int)inventoryMaterials.size() - 1;
-                else
-                    mChosenMaterial--;
-            }
-            break;
-        case SDLK_l:
-            if (mChoosingPositionInWorld) {
-                tryToBuildAtPosition(Point {1, 0});
-                break;
-            }
-        case SDLK_RETURN:
-            if (mLayer == CraftingLayer::RECIPE) {
-                mChosenIngredient = 0;
-                mChosenMaterial = 0;
-                mLayer = CraftingLayer::INGREDIENT;
-
-                mCurrentRecipe = std::make_unique<Recipe>(Recipe(*rm.mRecipes[mChosenRecipe]));
-            } else if (mLayer == CraftingLayer::INGREDIENT) {
-                if (mChosenIngredient == mCurrentRecipe->mIngredients.size()) {
-                    if (currentRecipeSatisfied()) {
-                        if (rm.mRecipes[mChosenRecipe]->mGoesIntoInventory || mHaveChosenPositionInWorld) {
-                            buildItem(Point {0, 0});
-                            this->reset();
-                        } else {
-                            // Get player to build object into the world
-                            mChoosingPositionInWorld = true;
-                            break;
-                        }
-                    }
-                } else if (mCurrentRecipe->mIngredients[mChosenIngredient].mQuantity > 0 && !filterInventoryForChosenMaterials().empty())
-                    mLayer = CraftingLayer::MATERIAL;
-            } else if (mLayer == CraftingLayer::MATERIAL) {
-                auto inventoryMaterials = filterInventoryForChosenMaterials();
-
-                if (mCurrentRecipe->mIngredients[mChosenIngredient].mQuantity > 0) {
-                    mCurrentlyChosenMaterials.emplace_back(inventoryMaterials[mChosenMaterial]->mID);
-                    mCurrentRecipe->mIngredients[mChosenIngredient].mQuantity--;
-                }
-                // Have finished this material requirement
-                if (mCurrentRecipe->mIngredients[mChosenIngredient].mQuantity == 0) {
-                    mLayer = CraftingLayer::INGREDIENT;
-                    mChosenIngredient++; // Automatically go to next ingredient for faster crafting
-                }
-                // This means we have now ran out of the desired material and should ensure that we leave the current crafting layer
-                else if (inventoryMaterials.size() == 1) {
-                    mLayer = CraftingLayer::INGREDIENT;
-                }
-            }
-            break;
-        case SDLK_h:
-            if (mChoosingPositionInWorld) {
-                tryToBuildAtPosition(Point {-1, 0});
-                break;
-            }
-        case SDLK_BACKSPACE:
-            if (mLayer == CraftingLayer::INGREDIENT) {
-                mChosenMaterial = 0;
-                mLayer = CraftingLayer::RECIPE;
-                mCurrentRecipe.release();
-                mCurrentlyChosenMaterials.clear();
-            } else if (mLayer == CraftingLayer::MATERIAL) {
-                mChosenMaterial = 0;
-                mLayer = CraftingLayer::INGREDIENT;
-            }
-            break;
-        case SDLK_y:
-            if (mChoosingPositionInWorld)
-                tryToBuildAtPosition(Point {-1, -1});
-            break;
-        case SDLK_u:
-            if (mChoosingPositionInWorld)
-                tryToBuildAtPosition(Point {1, -1});
-            break;
-        case SDLK_b:
-            if (mChoosingPositionInWorld)
-                tryToBuildAtPosition(Point {-1, 1});
-            break;
-        case SDLK_n:
-            if (mChoosingPositionInWorld)
-                tryToBuildAtPosition(Point {1, 1});
-            break;
+    auto newState = mState->handleInput(*this, e);
+    if (newState != nullptr) {
+        mState->onExit(*this);
+        mState = std::move(newState);
+        mState->onEntry(*this);
     }
 
     if (mChoosingPositionInWorld)
         mShouldRenderWorld = true;
     else
         mShouldRenderWorld = false;
-}
-
-void CraftingScreen::tryToBuildAtPosition(Point posOffset) {
-    auto p = posOffset + mPlayer.getPos();
-    if (EntityManager::getInstance().getEntitiesAtPosFaster(p).empty()) {
-        mHaveChosenPositionInWorld = true;
-        mChoosingPositionInWorld = false;
-        buildItem(p);
-    } else {
-        mCouldNotBuildAtPosition = true;
-    }
 }
 
 void CraftingScreen::render(Font &font) {
@@ -743,6 +602,8 @@ void CraftingScreen::reset() {
     mChoosingPositionInWorld = false;
     mHaveChosenPositionInWorld = false;
     mCouldNotBuildAtPosition = false;
+    mShouldRenderWorld = false;
+    mState = std::make_unique<ChoosingRecipeCraftingScreenState>();
 }
 
 void CraftingScreen::buildItem(Point pos) {
@@ -766,6 +627,78 @@ void CraftingScreen::buildItem(Point pos) {
 void CraftingScreen::enable() {
     Screen::enable();
     reset();
+}
+
+int CraftingScreen::getChosenRecipe() const {
+    return mChosenRecipe;
+}
+
+void CraftingScreen::setChosenRecipe(int chosenRecipe) {
+    mChosenRecipe = chosenRecipe;
+}
+
+int CraftingScreen::getChosenIngredient() const {
+    return mChosenIngredient;
+}
+
+void CraftingScreen::setChosenIngredient(int chosenIngredient) {
+    mChosenIngredient = chosenIngredient;
+}
+
+int CraftingScreen::getChosenMaterial() const {
+    return mChosenMaterial;
+}
+
+void CraftingScreen::setChosenMaterial(int chosenMaterial) {
+    mChosenMaterial = chosenMaterial;
+}
+
+CraftingScreen::CraftingLayer CraftingScreen::getLayer() const {
+    return mLayer;
+}
+
+void CraftingScreen::setLayer(CraftingScreen::CraftingLayer layer) {
+    mLayer = layer;
+}
+
+bool CraftingScreen::isChoosingPositionInWorld() const {
+    return mChoosingPositionInWorld;
+}
+
+void CraftingScreen::setChoosingPositionInWorld(bool choosingPositionInWorld) {
+    mChoosingPositionInWorld = choosingPositionInWorld;
+}
+
+bool CraftingScreen::isHaveChosenPositionInWorld() const {
+    return mHaveChosenPositionInWorld;
+}
+
+void CraftingScreen::setHaveChosenPositionInWorld(bool haveChosenPositionInWorld) {
+    mHaveChosenPositionInWorld = haveChosenPositionInWorld;
+}
+
+bool CraftingScreen::isCouldNotBuildAtPosition() const {
+    return mCouldNotBuildAtPosition;
+}
+
+void CraftingScreen::setCouldNotBuildAtPosition(bool couldNotBuildAtPosition) {
+    mCouldNotBuildAtPosition = couldNotBuildAtPosition;
+}
+
+PlayerEntity &CraftingScreen::getPlayer() const {
+    return mPlayer;
+}
+
+std::vector<std::string> & CraftingScreen::getCurrentlyChosenMaterials() {
+    return mCurrentlyChosenMaterials;
+}
+
+void CraftingScreen::setCurrentRecipe(std::unique_ptr<Recipe> currentRecipe) {
+    mCurrentRecipe = std::move(currentRecipe);
+}
+
+std::unique_ptr<Recipe> &CraftingScreen::getCurrentRecipe() {
+    return mCurrentRecipe;
 }
 
 void EquipmentScreen::handleInput(SDL_KeyboardEvent &e) {

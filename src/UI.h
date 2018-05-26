@@ -223,6 +223,40 @@ struct CraftingScreen : Screen {
         INGREDIENT,
         MATERIAL
     };
+
+    int getChosenRecipe() const;
+    void setChosenRecipe(int chosenRecipe);
+
+    int getChosenIngredient() const;
+    void setChosenIngredient(int chosenIngredient);
+
+    int getChosenMaterial() const;
+    void setChosenMaterial(int chosenMaterial);
+
+    CraftingLayer getLayer() const;
+    void setLayer(CraftingLayer layer);
+
+    bool isChoosingPositionInWorld() const;
+    void setChoosingPositionInWorld(bool choosingPositionInWorld);
+
+    bool isHaveChosenPositionInWorld() const;
+    void setHaveChosenPositionInWorld(bool haveChosenPositionInWorld);
+
+    bool isCouldNotBuildAtPosition() const;
+    void setCouldNotBuildAtPosition(bool couldNotBuildAtPosition);
+
+    PlayerEntity &getPlayer() const;
+    std::vector<std::string> & getCurrentlyChosenMaterials();
+
+    void setCurrentRecipe(std::unique_ptr<Recipe> currentRecipe);
+    std::unique_ptr<Recipe> &getCurrentRecipe();
+
+    /// Filter inventory items for items that are of the currently chosen material type and are not in currentlyChosenMaterials
+    /// \return vector of shared pointers to the inventory items as described above
+    std::vector<Entity *> filterInventoryForChosenMaterials();
+    bool currentRecipeSatisfied();
+    void buildItem(Point pos);
+
 private:
     int mChosenRecipe {0};
     int mChosenIngredient {0};
@@ -236,12 +270,8 @@ private:
     bool mCouldNotBuildAtPosition {false};
 
     std::vector<std::string> mCurrentlyChosenMaterials;
-    /// Filter inventory items for items that are of the currently chosen material type and are not in currentlyChosenMaterials
-    /// \return vector of shared pointers to the inventory items as described above
-    std::vector<Entity *> filterInventoryForChosenMaterials();
-    bool currentRecipeSatisfied();
-    void tryToBuildAtPosition(Point posOffset);
-    void buildItem(Point pos);
+
+    std::unique_ptr<CraftingScreenState> mState {std::make_unique<ChoosingRecipeCraftingScreenState>()};
 };
 
 struct EquipmentScreen : Screen {
