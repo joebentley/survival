@@ -97,7 +97,6 @@ std::unique_ptr<InventoryScreenState> ViewingDescriptionInventoryState::handleIn
     switch (e.keysym.sym) {
         case SDLK_ESCAPE:
             return std::make_unique<ViewingInventoryState>();
-
     }
 
     return nullptr;
@@ -105,4 +104,97 @@ std::unique_ptr<InventoryScreenState> ViewingDescriptionInventoryState::handleIn
 
 void ViewingDescriptionInventoryState::onExit(InventoryScreen &screen) {
     screen.setViewingDescription(false);
+}
+
+void ViewingLootingDialogState::onEntry(LootingDialog &screen) {
+    mChosenIndex = screen.getChosenIndex();
+}
+
+std::unique_ptr<LootingDialogState>
+ViewingLootingDialogState::handleInput(LootingDialog &screen, SDL_KeyboardEvent &e)
+{
+    switch (e.keysym.sym) {
+        case SDLK_ESCAPE:
+            screen.disable();
+            break;
+        case SDLK_RETURN:
+            return std::make_unique<ViewingDescriptionLootingDialogState>();
+        case SDLK_j:
+            if (!screen.getItemsToShow().empty()) {
+                if (mChosenIndex < (screen.getItemsToShow().size() - 1))
+                    mChosenIndex++;
+                else
+                    mChosenIndex = 0;
+                screen.setChosenIndex(mChosenIndex);
+            }
+            break;
+        case SDLK_k:
+            if (!screen.getItemsToShow().empty()) {
+                if (mChosenIndex > 0)
+                    mChosenIndex--;
+                else
+                    mChosenIndex = (int) screen.getItemsToShow().size() - 1;
+                screen.setChosenIndex(mChosenIndex);
+            }
+            break;
+        case SDLK_g:
+            auto &itemsToShow = screen.getItemsToShow();
+            auto entityToTransferFrom = screen.getEntityToTransferFrom();
+            if (screen.getPlayer().addToInventory(itemsToShow[mChosenIndex]->mID)) {
+                if (entityToTransferFrom != nullptr) {
+                    entityToTransferFrom->dropItem(mChosenIndex);
+                }
+
+                itemsToShow.erase(itemsToShow.begin() + mChosenIndex);
+                mChosenIndex = 0;
+                screen.setChosenIndex(mChosenIndex);
+            } else {
+                return std::make_unique<ShowingTooMuchWeightMessageLootingDialogState>();
+            }
+            break;
+    }
+
+    return nullptr;
+}
+
+void ViewingLootingDialogState::onExit(LootingDialog &screen) {
+}
+
+void ViewingDescriptionLootingDialogState::onEntry(LootingDialog &screen) {
+    screen.setViewingDescription(true);
+}
+
+std::unique_ptr<LootingDialogState>
+ViewingDescriptionLootingDialogState::handleInput(LootingDialog &screen, SDL_KeyboardEvent &e)
+{
+    switch (e.keysym.sym) {
+        case SDLK_ESCAPE:
+            return std::make_unique<ViewingLootingDialogState>();
+    }
+
+    return nullptr;
+}
+
+void ViewingDescriptionLootingDialogState::onExit(LootingDialog &screen) {
+    screen.setViewingDescription(false);
+}
+
+void ShowingTooMuchWeightMessageLootingDialogState::onEntry(LootingDialog &screen) {
+    screen.setShowingTooMuchWeightMessage(true);
+}
+
+std::unique_ptr<LootingDialogState>
+ShowingTooMuchWeightMessageLootingDialogState::handleInput(LootingDialog &screen, SDL_KeyboardEvent &e)
+{
+    switch (e.keysym.sym) {
+        case SDLK_RETURN:
+        case SDLK_ESCAPE:
+            return std::make_unique<ViewingLootingDialogState>();
+    }
+
+    return nullptr;
+}
+
+void ShowingTooMuchWeightMessageLootingDialogState::onExit(LootingDialog &screen) {
+    screen.setShowingTooMuchWeightMessage(false);
 }

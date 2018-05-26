@@ -157,6 +157,20 @@ struct LootingDialog : Screen {
 
     void handleInput(SDL_KeyboardEvent &e) override;
     void render(Font& font) override;
+
+    bool isViewingDescription() const;
+    void setViewingDescription(bool viewingDescription);
+
+    bool isShowingTooMuchWeightMessage() const;
+    void setShowingTooMuchWeightMessage(bool showingTooMuchWeightMessage);
+
+    int getChosenIndex() const;
+    void setChosenIndex(int chosenIndex);
+
+    PlayerEntity &getPlayer() const;
+    std::vector<Entity *> & getItemsToShow();
+    Entity *getEntityToTransferFrom() const;
+
 private:
     const int DIALOG_WIDTH = 30;
 
@@ -166,6 +180,8 @@ private:
     std::vector<Entity *> mItemsToShow;
     int mChosenIndex {0};
     Entity *mEntityToTransferFrom;
+
+    std::unique_ptr<LootingDialogState> mState {std::make_unique<ViewingLootingDialogState>()};
 };
 
 struct InspectionDialog : Screen {

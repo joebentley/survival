@@ -227,51 +227,11 @@ void LootingDialog::showItemsToLoot(std::vector<Entity *> items, Entity *entityT
 }
 
 void LootingDialog::handleInput(SDL_KeyboardEvent &e) {
-    switch (e.keysym.sym) {
-        case SDLK_ESCAPE:
-            if (mShowingTooMuchWeightMessage)
-                mShowingTooMuchWeightMessage = false;
-            else if (mViewingDescription)
-                mViewingDescription = false;
-            else {
-                mEnabled = false;
-                mEntityToTransferFrom = nullptr;
-            }
-            break;
-        case SDLK_j:
-            if (!mShowingTooMuchWeightMessage && !mItemsToShow.empty()) {
-                if (mChosenIndex < (mItemsToShow.size() - 1))
-                    mChosenIndex++;
-                else
-                    mChosenIndex = 0;
-            }
-            break;
-        case SDLK_k:
-            if (!mShowingTooMuchWeightMessage && !mItemsToShow.empty()) {
-                if (mChosenIndex > 0)
-                    mChosenIndex--;
-                else
-                    mChosenIndex = (int) mItemsToShow.size() - 1;
-            }
-            break;
-        case SDLK_g:
-            if (mPlayer.addToInventory(mItemsToShow[mChosenIndex]->mID)) {
-                if (mEntityToTransferFrom != nullptr) {
-                    mEntityToTransferFrom->dropItem(mChosenIndex);
-                }
-
-                mItemsToShow.erase(mItemsToShow.begin() + mChosenIndex);
-                mChosenIndex = 0;
-            } else {
-                mShowingTooMuchWeightMessage = true;
-            }
-            break;
-        case SDLK_RETURN:
-            if (!mShowingTooMuchWeightMessage)
-                mViewingDescription = true;
-            else
-                mShowingTooMuchWeightMessage = false;
-            break;
+    auto newState = mState->handleInput(*this, e);
+    if (newState != nullptr) {
+        mState->onExit(*this);
+        mState = std::move(newState);
+        mState->onEntry(*this);
     }
 
     if (mViewingDescription)
@@ -322,6 +282,42 @@ void LootingDialog::render(Font &font) {
     std::string string = "g-loot  esc-quit  return-desc";
     font.drawText("${black}$(p8)  " + string + std::string(DIALOG_WIDTH - string.size() + 2, ' ') + "$(p8)", x, y+numItems+3);
     font.drawText("${black}$(p22)" + repeat(DIALOG_WIDTH + 4, "$(p27)") + "$(p10)", x, y+numItems+4);
+}
+
+bool LootingDialog::isViewingDescription() const {
+    return mViewingDescription;
+}
+
+void LootingDialog::setViewingDescription(bool viewingDescription) {
+    mViewingDescription = viewingDescription;
+}
+
+bool LootingDialog::isShowingTooMuchWeightMessage() const {
+    return mShowingTooMuchWeightMessage;
+}
+
+void LootingDialog::setShowingTooMuchWeightMessage(bool showingTooMuchWeightMessage) {
+    mShowingTooMuchWeightMessage = showingTooMuchWeightMessage;
+}
+
+int LootingDialog::getChosenIndex() const {
+    return mChosenIndex;
+}
+
+void LootingDialog::setChosenIndex(int chosenIndex) {
+    mChosenIndex = chosenIndex;
+}
+
+PlayerEntity &LootingDialog::getPlayer() const {
+    return mPlayer;
+}
+
+std::vector<Entity *> & LootingDialog::getItemsToShow() {
+    return mItemsToShow;
+}
+
+Entity *LootingDialog::getEntityToTransferFrom() const {
+    return mEntityToTransferFrom;
 }
 
 inline Point InspectionDialog::clipToScreenEdge(const Point &p) const {
