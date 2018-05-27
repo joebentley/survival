@@ -192,14 +192,25 @@ struct InspectionDialog : Screen {
         Screen::enable();
     }
 
+    PlayerEntity &getPlayer();
+    const Point &getChosenPoint() const;
+    void setChosenPoint(const Point &chosenPoint);
+    bool isThereAnEntity() const;
+    void setViewingDescription(bool viewingDescription);
+
+    bool isSelectingFromMultipleOptions() const;
+
+    void setChosenIndex(int chosenIndex);
+
 private:
-    inline Point clipToScreenEdge(const Point &p) const;
     PlayerEntity &mPlayer;
     Point mChosenPoint;
     bool mSelectingFromMultipleOptions {false};
     int mChosenIndex {0};
     bool mViewingDescription {false};
     bool mThereIsAnEntity {false};
+
+    std::unique_ptr<InspectionDialogState> mState {std::make_unique<ChoosingPositionInspectionDialogState>()};
 };
 
 struct Recipe;

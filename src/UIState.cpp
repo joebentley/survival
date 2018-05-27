@@ -520,3 +520,112 @@ void ChoosingActionEquipmentScreenState::onExit(EquipmentScreen &screen) {
     screen.setChoosingEquipmentAction(false);
     screen.setChoosingEquipmentActionIndex(0);
 }
+
+void ChoosingPositionInspectionDialogState::onEntry(InspectionDialog &screen) {}
+
+std::unique_ptr<InspectionDialogState>
+ChoosingPositionInspectionDialogState::handleInput(InspectionDialog &screen, SDL_KeyboardEvent &e) {
+    mChosenPoint = screen.getChosenPoint();
+
+    Point posOffset;
+
+    switch (e.keysym.sym) {
+        case SDLK_ESCAPE:
+            screen.disable();
+            return nullptr;
+        case SDLK_h:
+            posOffset = Point(-1, 0);
+            break;
+        case SDLK_j:
+            posOffset = Point(0, 1);
+            break;
+        case SDLK_k:
+            posOffset = Point(0, -1);
+            break;
+        case SDLK_l:
+            posOffset = Point(1, 0);
+            break;
+        case SDLK_y:
+            posOffset = Point(-1, -1);
+            break;
+        case SDLK_u:
+            posOffset = Point(1, -1);
+            break;
+        case SDLK_b:
+            posOffset = Point(-1, 1);
+            break;
+        case SDLK_n:
+            posOffset = Point(1, 1);
+            break;
+        case SDLK_EQUALS:
+            if (screen.isSelectingFromMultipleOptions()) {
+                const auto &currentEntities = EntityManager::getInstance().getEntitiesAtPosFaster(mChosenPoint);
+                if (mChosenIndex == currentEntities.size() - 1)
+                    mChosenIndex = 0;
+                else
+                    mChosenIndex++;
+                screen.setChosenIndex(mChosenIndex);
+            }
+            break;
+        case SDLK_MINUS:
+            if (screen.isSelectingFromMultipleOptions()) {
+                const auto &currentEntities = EntityManager::getInstance().getEntitiesAtPosFaster(mChosenPoint);
+                if (mChosenIndex == 0)
+                    mChosenIndex = (int)(currentEntities.size() - 1);
+                else
+                    mChosenIndex--;
+                screen.setChosenIndex(mChosenIndex);
+            }
+            break;
+        case SDLK_RETURN:
+            if (screen.isThereAnEntity())
+                return std::make_unique<ViewingDescriptionInspectionDialogState>();
+            break;
+    }
+
+    if (e.keysym.mod & KMOD_SHIFT)
+        posOffset *= 5;
+
+    mChosenPoint = clipToScreenEdge(screen, mChosenPoint + posOffset);
+
+    screen.setChosenPoint(mChosenPoint);
+
+    return nullptr;
+}
+
+void ChoosingPositionInspectionDialogState::onExit(InspectionDialog &screen) {
+
+}
+
+inline Point ChoosingPositionInspectionDialogState::clipToScreenEdge(InspectionDialog &screen, const Point &p) const {
+    auto worldPos = screen.getPlayer().getWorldPos();
+    auto point = p - Point(SCREEN_WIDTH, SCREEN_HEIGHT) * worldPos;
+    Point returnPoint(p);
+    if (point.mX < 0)
+        returnPoint.mX = worldPos.mX * SCREEN_WIDTH;
+    else if (point.mX > SCREEN_WIDTH - 1)
+        returnPoint.mX = (worldPos.mX + 1) * SCREEN_WIDTH - 1;
+    if (point.mY < 0)
+        returnPoint.mY = worldPos.mY * SCREEN_HEIGHT;
+    else if (point.mY > SCREEN_HEIGHT - 1)
+        returnPoint.mY = (worldPos.mY + 1) * SCREEN_HEIGHT - 1;
+    return returnPoint;
+}
+
+void ViewingDescriptionInspectionDialogState::onEntry(InspectionDialog &screen) {
+    screen.setViewingDescription(true);
+}
+
+std::unique_ptr<InspectionDialogState>
+ViewingDescriptionInspectionDialogState::handleInput(InspectionDialog &screen, SDL_KeyboardEvent &e) {
+    switch (e.keysym.sym) {
+        case SDLK_ESCAPE:
+            return std::make_unique<ChoosingPositionInspectionDialogState>();
+    }
+
+    return nullptr;
+}
+
+void ViewingDescriptionInspectionDialogState::onExit(InspectionDialog &screen) {
+    screen.setViewingDescription(false);
+}

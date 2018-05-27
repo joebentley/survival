@@ -9,6 +9,7 @@
 
 struct InventoryScreen;
 struct LootingDialog;
+struct InspectionDialog;
 struct CraftingScreen;
 struct EquipmentScreen;
 
@@ -22,6 +23,7 @@ public:
 
 typedef UIState<InventoryScreen> InventoryScreenState;
 typedef UIState<LootingDialog> LootingDialogState;
+typedef UIState<InspectionDialog> InspectionDialogState;
 typedef UIState<CraftingScreen> CraftingScreenState;
 typedef UIState<EquipmentScreen> EquipmentScreenState;
 
@@ -64,6 +66,26 @@ public:
     void onEntry(LootingDialog &screen) override;
     std::unique_ptr<LootingDialogState> handleInput(LootingDialog &screen, SDL_KeyboardEvent &e) override;
     void onExit(LootingDialog &screen) override;
+};
+
+class ChoosingPositionInspectionDialogState : public InspectionDialogState {
+public:
+    void onEntry(InspectionDialog &screen) override;
+    std::unique_ptr<InspectionDialogState> handleInput(InspectionDialog &screen, SDL_KeyboardEvent &e) override;
+    void onExit(InspectionDialog &screen) override;
+
+private:
+    inline Point clipToScreenEdge(InspectionDialog &screen, const Point &p) const;
+
+    Point mChosenPoint;
+    int mChosenIndex {0};
+};
+
+class ViewingDescriptionInspectionDialogState : public InspectionDialogState {
+public:
+    void onEntry(InspectionDialog &screen) override;
+    std::unique_ptr<InspectionDialogState> handleInput(InspectionDialog &screen, SDL_KeyboardEvent &e) override;
+    void onExit(InspectionDialog &screen) override;
 };
 
 class ChoosingRecipeCraftingScreenState : public CraftingScreenState {

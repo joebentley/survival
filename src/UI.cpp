@@ -308,93 +308,14 @@ Entity *LootingDialog::getEntityToTransferFrom() const {
     return mEntityToTransferFrom;
 }
 
-inline Point InspectionDialog::clipToScreenEdge(const Point &p) const {
-    auto worldPos = mPlayer.getWorldPos();
-    auto point = p - Point(SCREEN_WIDTH, SCREEN_HEIGHT) * worldPos;
-    Point returnPoint(p);
-    if (point.mX < 0)
-        returnPoint.mX = worldPos.mX * SCREEN_WIDTH;
-    else if (point.mX > SCREEN_WIDTH - 1)
-        returnPoint.mX = (worldPos.mX + 1) * SCREEN_WIDTH - 1;
-    if (point.mY < 0)
-        returnPoint.mY = worldPos.mY * SCREEN_HEIGHT;
-    else if (point.mY > SCREEN_HEIGHT - 1)
-        returnPoint.mY = (worldPos.mY + 1) * SCREEN_HEIGHT - 1;
-    return returnPoint;
-}
 
-void InspectionDialog::handleInput(SDL_KeyboardEvent &e) {
-    Point posOffset;
-
-    switch (e.keysym.sym) {
-        case SDLK_h:
-            if (!mViewingDescription)
-                posOffset = Point(-1, 0);
-            break;
-        case SDLK_j:
-            if (!mViewingDescription)
-                posOffset = Point(0, 1);
-            break;
-        case SDLK_k:
-            if (!mViewingDescription)
-                posOffset = Point(0, -1);
-            break;
-        case SDLK_l:
-            if (!mViewingDescription)
-                posOffset = Point(1, 0);
-            break;
-        case SDLK_y:
-            if (!mViewingDescription)
-                posOffset = Point(-1, -1);
-            break;
-        case SDLK_u:
-            if (!mViewingDescription)
-                posOffset = Point(1, -1);
-            break;
-        case SDLK_b:
-            if (!mViewingDescription)
-                posOffset = Point(-1, 1);
-            break;
-        case SDLK_n:
-            if (!mViewingDescription)
-                posOffset = Point(1, 1);
-            break;
-        case SDLK_EQUALS:
-            if (mSelectingFromMultipleOptions && !mViewingDescription) {
-                const auto &currentEntities = EntityManager::getInstance().getEntitiesAtPosFaster(mChosenPoint);
-                if (mChosenIndex == currentEntities.size() - 1)
-                    mChosenIndex = 0;
-                else
-                    mChosenIndex++;
-            }
-            break;
-        case SDLK_MINUS:
-            if (mSelectingFromMultipleOptions && !mViewingDescription) {
-                const auto &currentEntities = EntityManager::getInstance().getEntitiesAtPosFaster(mChosenPoint);
-                if (mChosenIndex == 0)
-                    mChosenIndex = (int)(currentEntities.size() - 1);
-                else
-                    mChosenIndex--;
-            }
-            break;
-        case SDLK_RETURN:
-            if (mThereIsAnEntity)
-                mViewingDescription = true;
-            break;
-        case SDLK_ESCAPE:
-            if (mViewingDescription)
-                mViewingDescription = false;
-            else
-                mEnabled = false;
-            break;
-        default:
-            break;
+void InspectionDialog:: handleInput(SDL_KeyboardEvent &e) {
+    auto newState = mState->handleInput(*this, e);
+    if (newState != nullptr) {
+        mState->onExit(*this);
+        mState = std::move(newState);
+        mState->onEntry(*this);
     }
-
-    if (e.keysym.mod & KMOD_SHIFT)
-        posOffset *= 5;
-
-    mChosenPoint = clipToScreenEdge(mChosenPoint + posOffset);
 
     if (mViewingDescription)
         mShouldRenderWorld = false;
@@ -469,6 +390,34 @@ void InspectionDialog::render(Font &font) {
 
     if (entitiesAtPoint.empty())
         mThereIsAnEntity = false;
+}
+
+PlayerEntity &InspectionDialog::getPlayer() {
+    return mPlayer;
+}
+
+const Point &InspectionDialog::getChosenPoint() const {
+    return mChosenPoint;
+}
+
+void InspectionDialog::setChosenPoint(const Point &chosenPoint) {
+    mChosenPoint = chosenPoint;
+}
+
+bool InspectionDialog::isThereAnEntity() const {
+    return mThereIsAnEntity;
+}
+
+void InspectionDialog::setViewingDescription(bool viewingDescription) {
+    mViewingDescription = viewingDescription;
+}
+
+bool InspectionDialog::isSelectingFromMultipleOptions() const {
+    return mSelectingFromMultipleOptions;
+}
+
+void InspectionDialog::setChosenIndex(int chosenIndex) {
+    mChosenIndex = chosenIndex;
 }
 
 void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
