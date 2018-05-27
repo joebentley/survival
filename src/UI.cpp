@@ -206,10 +206,6 @@ void InventoryScreen::setChosenIndex(int chosenIndex) {
     mChosenIndex = chosenIndex;
 }
 
-bool InventoryScreen::isViewingDescription() const {
-    return mViewingDescription;
-}
-
 void InventoryScreen::setViewingDescription(bool viewingDescription) {
     mViewingDescription = viewingDescription;
 }
@@ -284,16 +280,8 @@ void LootingDialog::render(Font &font) {
     font.drawText("${black}$(p22)" + repeat(DIALOG_WIDTH + 4, "$(p27)") + "$(p10)", x, y+numItems+4);
 }
 
-bool LootingDialog::isViewingDescription() const {
-    return mViewingDescription;
-}
-
 void LootingDialog::setViewingDescription(bool viewingDescription) {
     mViewingDescription = viewingDescription;
-}
-
-bool LootingDialog::isShowingTooMuchWeightMessage() const {
-    return mShowingTooMuchWeightMessage;
 }
 
 void LootingDialog::setShowingTooMuchWeightMessage(bool showingTooMuchWeightMessage) {
@@ -645,24 +633,12 @@ void CraftingScreen::setChosenIngredient(int chosenIngredient) {
     mChosenIngredient = chosenIngredient;
 }
 
-int CraftingScreen::getChosenMaterial() const {
-    return mChosenMaterial;
-}
-
 void CraftingScreen::setChosenMaterial(int chosenMaterial) {
     mChosenMaterial = chosenMaterial;
 }
 
-CraftingScreen::CraftingLayer CraftingScreen::getLayer() const {
-    return mLayer;
-}
-
 void CraftingScreen::setLayer(CraftingScreen::CraftingLayer layer) {
     mLayer = layer;
-}
-
-bool CraftingScreen::isChoosingPositionInWorld() const {
-    return mChoosingPositionInWorld;
 }
 
 void CraftingScreen::setChoosingPositionInWorld(bool choosingPositionInWorld) {
@@ -671,14 +647,6 @@ void CraftingScreen::setChoosingPositionInWorld(bool choosingPositionInWorld) {
 
 bool CraftingScreen::isHaveChosenPositionInWorld() const {
     return mHaveChosenPositionInWorld;
-}
-
-void CraftingScreen::setHaveChosenPositionInWorld(bool haveChosenPositionInWorld) {
-    mHaveChosenPositionInWorld = haveChosenPositionInWorld;
-}
-
-bool CraftingScreen::isCouldNotBuildAtPosition() const {
-    return mCouldNotBuildAtPosition;
 }
 
 void CraftingScreen::setCouldNotBuildAtPosition(bool couldNotBuildAtPosition) {
@@ -875,7 +843,7 @@ void NotificationMessageScreen::render(Font &font) {
 
 void HelpScreen::handleInput(SDL_KeyboardEvent &e) {
     if (e.keysym.sym == SDLK_ESCAPE || (e.keysym.sym == SDLK_SLASH && e.keysym.mod & KMOD_SHIFT))
-        mEnabled = false;
+        disable();
 }
 
 void HelpScreen::render(Font &font) {

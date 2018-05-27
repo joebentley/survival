@@ -139,7 +139,6 @@ struct InventoryScreen : Screen {
     int getChosenIndex() const;
     void setChosenIndex(int chosenIndex);
 
-    bool isViewingDescription() const;
     void setViewingDescription(bool viewingDescription);
 
 private:
@@ -158,10 +157,8 @@ struct LootingDialog : Screen {
     void handleInput(SDL_KeyboardEvent &e) override;
     void render(Font& font) override;
 
-    bool isViewingDescription() const;
     void setViewingDescription(bool viewingDescription);
 
-    bool isShowingTooMuchWeightMessage() const;
     void setShowingTooMuchWeightMessage(bool showingTooMuchWeightMessage);
 
     int getChosenIndex() const;
@@ -179,7 +176,7 @@ private:
     PlayerEntity &mPlayer;
     std::vector<Entity *> mItemsToShow;
     int mChosenIndex {0};
-    Entity *mEntityToTransferFrom;
+    Entity *mEntityToTransferFrom {nullptr};
 
     std::unique_ptr<LootingDialogState> mState {std::make_unique<ViewingLootingDialogState>()};
 };
@@ -226,23 +223,12 @@ struct CraftingScreen : Screen {
 
     int getChosenRecipe() const;
     void setChosenRecipe(int chosenRecipe);
-
     int getChosenIngredient() const;
     void setChosenIngredient(int chosenIngredient);
-
-    int getChosenMaterial() const;
     void setChosenMaterial(int chosenMaterial);
-
-    CraftingLayer getLayer() const;
     void setLayer(CraftingLayer layer);
-
-    bool isChoosingPositionInWorld() const;
     void setChoosingPositionInWorld(bool choosingPositionInWorld);
-
     bool isHaveChosenPositionInWorld() const;
-    void setHaveChosenPositionInWorld(bool haveChosenPositionInWorld);
-
-    bool isCouldNotBuildAtPosition() const;
     void setCouldNotBuildAtPosition(bool couldNotBuildAtPosition);
 
     PlayerEntity &getPlayer() const;
