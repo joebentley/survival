@@ -415,3 +415,108 @@ ChoosingBuildPositionCraftingScreenState::handleInput(CraftingScreen &screen, SD
 void ChoosingBuildPositionCraftingScreenState::onExit(CraftingScreen &screen) {
     screen.setChoosingPositionInWorld(true);
 }
+
+void ChoosingSlotEquipmentScreenState::onEntry(EquipmentScreen &screen) {
+    mChosenSlot = screen.getChosenSlot();
+}
+
+std::unique_ptr<EquipmentScreenState>
+ChoosingSlotEquipmentScreenState::handleInput(EquipmentScreen &screen, SDL_KeyboardEvent &e) {
+    switch (e.keysym.sym) {
+        case SDLK_ESCAPE:
+            screen.reset();
+            screen.disable();
+            break;
+        case SDLK_j:
+            ++mChosenSlot;
+            screen.setChosenSlot(mChosenSlot);
+            break;
+        case SDLK_k:
+            --mChosenSlot;
+            screen.setChosenSlot(mChosenSlot);
+            break;
+        case SDLK_RETURN:
+            auto &player = screen.getPlayer();
+            if (!player.hasEquippedInSlot(mChosenSlot) && !player.getInventoryItemsEquippableInSlot(mChosenSlot).empty())
+                return std::make_unique<ChoosingNewEquipmentScreenState>();
+            else
+                return std::make_unique<ChoosingActionEquipmentScreenState>();
+    }
+
+    return nullptr;
+}
+
+void ChoosingSlotEquipmentScreenState::onExit(EquipmentScreen &screen) {}
+
+void ChoosingNewEquipmentScreenState::onEntry(EquipmentScreen &screen) {
+    screen.setChoosingNewEquipment(true);
+}
+
+std::unique_ptr<EquipmentScreenState>
+ChoosingNewEquipmentScreenState::handleInput(EquipmentScreen &screen, SDL_KeyboardEvent &e) {
+    switch (e.keysym.sym) {
+        case SDLK_ESCAPE:
+            return std::make_unique<ChoosingSlotEquipmentScreenState>();
+        case SDLK_j: {
+            auto equippableIDs = screen.getPlayer().getInventoryItemsEquippableInSlot(screen.getChosenSlot());
+            if (mChoosingNewEquipmentIndex == equippableIDs.size() - 1)
+                mChoosingNewEquipmentIndex = 0;
+            else
+                ++mChoosingNewEquipmentIndex;
+            screen.setChoosingNewEquipmentIndex(mChoosingNewEquipmentIndex);
+            break;
+        }
+        case SDLK_k: {
+            auto equippableIDs = screen.getPlayer().getInventoryItemsEquippableInSlot(screen.getChosenSlot());
+            if (mChoosingNewEquipmentIndex == 0)
+                mChoosingNewEquipmentIndex = static_cast<int>(equippableIDs.size()) - 1;
+            else
+                --mChoosingNewEquipmentIndex;
+            screen.setChoosingNewEquipmentIndex(mChoosingNewEquipmentIndex);
+            break;
+        }
+        case SDLK_RETURN: {
+            auto &player = screen.getPlayer();
+            auto chosenSlot = screen.getChosenSlot();
+            auto equippableIDs = player.getInventoryItemsEquippableInSlot(chosenSlot);
+            player.equip(chosenSlot, equippableIDs[mChoosingNewEquipmentIndex]);
+            screen.reset();
+            return std::make_unique<ChoosingSlotEquipmentScreenState>();
+        }
+    }
+
+    return nullptr;
+}
+
+void ChoosingNewEquipmentScreenState::onExit(EquipmentScreen &screen) {
+    screen.setChoosingNewEquipment(false);
+}
+
+void ChoosingActionEquipmentScreenState::onEntry(EquipmentScreen &screen) {
+    screen.setChoosingEquipmentAction(true);
+}
+
+std::unique_ptr<EquipmentScreenState>
+ChoosingActionEquipmentScreenState::handleInput(EquipmentScreen &screen, SDL_KeyboardEvent &e) {
+    switch (e.keysym.sym) {
+        case SDLK_ESCAPE:
+            return std::make_unique<ChoosingSlotEquipmentScreenState>();
+        case SDLK_RETURN: {
+            auto &player = screen.getPlayer();
+            auto chosenSlot = screen.getChosenSlot();
+            if (player.hasEquippedInSlot(chosenSlot)) {
+                player.unequip(chosenSlot);
+            } else if (!player.getInventoryItemsEquippableInSlot(chosenSlot).empty()) {
+                return std::make_unique<ChoosingNewEquipmentScreenState>();
+            }
+            return std::make_unique<ChoosingSlotEquipmentScreenState>();
+        }
+    }
+
+    return nullptr;
+}
+
+void ChoosingActionEquipmentScreenState::onExit(EquipmentScreen &screen) {
+    screen.setChoosingEquipmentAction(false);
+    screen.setChoosingEquipmentActionIndex(0);
+}

@@ -272,6 +272,16 @@ struct EquipmentScreen : Screen {
     void reset();
     void enable() override;
 
+    PlayerEntity &getPlayer();
+
+    EquipmentSlot getChosenSlot() const;
+    void setChosenSlot(EquipmentSlot chosenSlot);
+
+    void setChoosingEquipmentAction(bool choosingEquipmentAction);
+    void setChoosingEquipmentActionIndex(int choosingEquipmentActionIndex);
+    void setChoosingNewEquipment(bool choosingNewEquipment);
+    void setChoosingNewEquipmentIndex(int choosingNewEquipmentIndex);
+
 private:
     PlayerEntity &mPlayer;
     EquipmentSlot mChosenSlot {EquipmentSlot::HEAD};
@@ -279,6 +289,8 @@ private:
     int mChoosingEquipmentActionIndex {0};
     bool mChoosingNewEquipment {false};
     int mChoosingNewEquipmentIndex {0};
+
+    std::unique_ptr<EquipmentScreenState> mState {std::make_unique<ChoosingSlotEquipmentScreenState>()};
 };
 
 struct HelpScreen : Screen {

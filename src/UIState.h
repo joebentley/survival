@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include <memory>
 #include "Point.h"
+#include "entity.h"
 
 
 struct InventoryScreen;
@@ -105,6 +106,36 @@ private:
     void tryToBuildAtPosition(CraftingScreen &screen, Point posOffset);
 
     bool mHaveChosenPositionInWorld {false};
+};
+
+class ChoosingSlotEquipmentScreenState : public EquipmentScreenState {
+public:
+    void onEntry(EquipmentScreen &screen) override;
+    std::unique_ptr<EquipmentScreenState> handleInput(EquipmentScreen &screen, SDL_KeyboardEvent &e) override;
+    void onExit(EquipmentScreen &screen) override;
+
+private:
+    EquipmentSlot mChosenSlot {EquipmentSlot::HEAD};
+};
+
+class ChoosingNewEquipmentScreenState : public EquipmentScreenState {
+public:
+    void onEntry(EquipmentScreen &screen) override;
+    std::unique_ptr<EquipmentScreenState> handleInput(EquipmentScreen &screen, SDL_KeyboardEvent &e) override;
+    void onExit(EquipmentScreen &screen) override;
+
+private:
+    int mChoosingNewEquipmentIndex {0};
+};
+
+class ChoosingActionEquipmentScreenState : public EquipmentScreenState {
+public:
+    void onEntry(EquipmentScreen &screen) override;
+    std::unique_ptr<EquipmentScreenState> handleInput(EquipmentScreen &screen, SDL_KeyboardEvent &e) override;
+    void onExit(EquipmentScreen &screen) override;
+
+private:
+    int mChoosingEquipmentActionIndex {0};
 };
 
 #endif //SURVIVAL_STATE_H

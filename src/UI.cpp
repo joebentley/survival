@@ -670,53 +670,11 @@ std::unique_ptr<Recipe> &CraftingScreen::getCurrentRecipe() {
 }
 
 void EquipmentScreen::handleInput(SDL_KeyboardEvent &e) {
-    switch (e.keysym.sym) {
-        case SDLK_ESCAPE:
-            if (mChoosingEquipmentAction)
-                mChoosingEquipmentAction = false;
-            else if (mChoosingNewEquipment)
-                mChoosingNewEquipment = false;
-            else
-                mEnabled = false;
-            break;
-        case SDLK_j:
-            if (mChoosingNewEquipment) {
-                auto equippableIDs = mPlayer.getInventoryItemsEquippableInSlot(mChosenSlot);
-                if (mChoosingNewEquipmentIndex == equippableIDs.size() - 1)
-                    mChoosingNewEquipmentIndex = 0;
-                else
-                    ++mChoosingNewEquipmentIndex;
-            } else if (!mChoosingEquipmentAction)
-                ++mChosenSlot;
-            break;
-        case SDLK_k:
-            if (mChoosingNewEquipment) {
-                auto equippableIDs = mPlayer.getInventoryItemsEquippableInSlot(mChosenSlot);
-                if (mChoosingNewEquipmentIndex == 0)
-                    mChoosingNewEquipmentIndex = static_cast<int>(equippableIDs.size()) - 1;
-                else
-                    --mChoosingNewEquipmentIndex;
-            } else if (!mChoosingEquipmentAction)
-                --mChosenSlot;
-            break;
-        case SDLK_RETURN:
-            if (mChoosingNewEquipment) {
-                auto equippableIDs = mPlayer.getInventoryItemsEquippableInSlot(mChosenSlot);
-                mPlayer.equip(mChosenSlot, equippableIDs[mChoosingNewEquipmentIndex]);
-                reset();
-            } else if (mChoosingEquipmentAction) {
-                if (mPlayer.hasEquippedInSlot(mChosenSlot)) {
-                    mPlayer.unequip(mChosenSlot);
-                } else if (!mPlayer.getInventoryItemsEquippableInSlot(mChosenSlot).empty()) {
-                    mChoosingNewEquipment = true;
-                }
-                mChoosingEquipmentAction = false;
-                mChoosingEquipmentActionIndex = 0;
-            } else if (!mPlayer.hasEquippedInSlot(mChosenSlot) && !mPlayer.getInventoryItemsEquippableInSlot(mChosenSlot).empty())
-                mChoosingNewEquipment = true;
-            else
-                mChoosingEquipmentAction = true;
-            break;
+    auto newState = mState->handleInput(*this, e);
+    if (newState != nullptr) {
+        mState->onExit(*this);
+        mState = std::move(newState);
+        mState->onEntry(*this);
     }
 }
 
@@ -788,6 +746,34 @@ void EquipmentScreen::reset() {
     mChoosingEquipmentAction = false;
     mChoosingNewEquipmentIndex = 0;
     mChoosingEquipmentActionIndex = 0;
+}
+
+EquipmentSlot EquipmentScreen::getChosenSlot() const {
+    return mChosenSlot;
+}
+
+void EquipmentScreen::setChosenSlot(EquipmentSlot chosenSlot) {
+    mChosenSlot = chosenSlot;
+}
+
+PlayerEntity &EquipmentScreen::getPlayer() {
+    return mPlayer;
+}
+
+void EquipmentScreen::setChoosingEquipmentAction(bool choosingEquipmentAction) {
+    mChoosingEquipmentAction = choosingEquipmentAction;
+}
+
+void EquipmentScreen::setChoosingEquipmentActionIndex(int choosingEquipmentActionIndex) {
+    mChoosingEquipmentActionIndex = choosingEquipmentActionIndex;
+}
+
+void EquipmentScreen::setChoosingNewEquipment(bool choosingNewEquipment) {
+    mChoosingNewEquipment = choosingNewEquipment;
+}
+
+void EquipmentScreen::setChoosingNewEquipmentIndex(int choosingNewEquipmentIndex) {
+    mChoosingNewEquipmentIndex = choosingNewEquipmentIndex;
 }
 
 void NotificationMessageRenderer::queueMessage(const std::string &message) {
