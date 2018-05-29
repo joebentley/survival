@@ -3,8 +3,8 @@
 
 #include <vector>
 #include <string>
-#include "entity.h"
-#include "entities.h"
+#include "Entity.h"
+#include "Entities.h"
 
 struct Recipe;
 struct RecipeManager {

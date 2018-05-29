@@ -1,8 +1,8 @@
 #ifndef ENTITIES_H_
 #define ENTITIES_H_
 
-#include "entity.h"
-#include "behaviours.h"
+#include "Entity.h"
+#include "Behaviours.h"
 #include "UI.h"
 #include "Properties.h"
 

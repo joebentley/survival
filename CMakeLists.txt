@@ -9,22 +9,22 @@ if(MSVC)
 endif(MSVC)
 
 add_executable(${PROJECT_NAME}
-        src/behaviours.cpp
-        src/behaviours.h
+        src/Behaviours.cpp
+        src/Behaviours.h
         src/UI.cpp
         src/UI.h
-        src/entities.cpp
-        src/entities.h
-        src/entity.cpp
-        src/entity.h
+		src/Entities.cpp
+		src/Entities.h
+		src/Entity.cpp
+		src/Entity.h
 		src/Font.cpp
 		src/Font.h
 		src/Point.h
         src/survival.cpp
 		src/Texture.cpp
 		src/Texture.h
-        src/world.cpp
-        src/world.h src/flags.h src/utils.h src/utils.cpp src/recipe.cpp src/recipe.h src/Time.h src/Game.h src/Game.cpp src/SDLManager.cpp src/SDLManager.h src/FontColor.cpp src/FontColor.h src/EntityBuilder.h src/UIState.cpp src/UIState.h src/Property.cpp src/Property.h src/Properties.h)
+		src/World.cpp
+		src/World.h src/flags.h src/utils.h src/utils.cpp src/Recipe.cpp src/Recipe.h src/Time.h src/Game.h src/Game.cpp src/SDLManager.cpp src/SDLManager.h src/FontColor.cpp src/FontColor.h src/EntityBuilder.h src/UIState.cpp src/UIState.h src/Property.cpp src/Property.h src/Properties.h)
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_lambdas cxx_nullptr cxx_range_for cxx_strong_enums cxx_std_14)
 

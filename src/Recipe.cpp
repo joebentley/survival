@@ -1,4 +1,4 @@
-#include "recipe.h"
+#include "Recipe.h"
 
 RecipeManager::RecipeManager() {
     mRecipes.emplace_back(std::make_shared<FireRecipe>());

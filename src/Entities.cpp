@@ -1,5 +1,5 @@
-#include "entities.h"
-#include "world.h"
+#include "Entities.h"
+#include "World.h"
 
 #include <algorithm>
 

@@ -1,7 +1,7 @@
 #include "UI.h"
 #include "utils.h"
-#include "behaviours.h"
-#include "world.h"
+#include "Behaviours.h"
+#include "World.h"
 
 #include <sstream>
 #include <algorithm>

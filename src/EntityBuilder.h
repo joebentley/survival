@@ -1,7 +1,7 @@
 #ifndef SURVIVAL_ENTITYBUILDER_H
 #define SURVIVAL_ENTITYBUILDER_H
 
-#include "entity.h"
+#include "Entity.h"
 
 namespace EntityBuilder {
     template<typename T>

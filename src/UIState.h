@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include <memory>
 #include "Point.h"
-#include "entity.h"
+#include "Entity.h"
 
 
 struct InventoryScreen;

@@ -1,5 +1,5 @@
-#include "entity.h"
-#include "behaviours.h"
+#include "Entity.h"
+#include "Behaviours.h"
 #include "Properties.h"
 
 #include <stdexcept>

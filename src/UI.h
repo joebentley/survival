@@ -6,8 +6,8 @@
 #include <string>
 #include <ctime>
 #include "Font.h"
-#include "entities.h"
-#include "recipe.h"
+#include "Entities.h"
+#include "Recipe.h"
 #include "UIState.h"
 
 enum class ScreenType {

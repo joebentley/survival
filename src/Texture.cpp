@@ -2,7 +2,7 @@
 #include <SDL2/SDL_image.h>
 #include "Texture.h"
 #include "SDLManager.h"
-#include "world.h"
+#include "World.h"
 
 Texture::~Texture() {
     SDL_DestroyTexture(mTexture);

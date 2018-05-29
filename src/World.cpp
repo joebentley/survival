@@ -1,5 +1,5 @@
-#include "world.h"
-#include "entities.h"
+#include "World.h"
+#include "Entities.h"
 #include "utils.h"
 #include <cstdlib>
 #include <cmath>

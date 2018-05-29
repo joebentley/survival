@@ -1,6 +1,6 @@
-#include "behaviours.h"
-#include "entities.h"
-#include "world.h"
+#include "Behaviours.h"
+#include "Entities.h"
+#include "World.h"
 #include <cstdlib>
 #include <iostream>
 

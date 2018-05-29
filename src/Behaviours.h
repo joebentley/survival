@@ -2,7 +2,7 @@
 #define BEHAVIOURS_H_
 
 #include "Font.h"
-#include "entity.h"
+#include "Entity.h"
 #include "utils.h"
 
 // AI behaviours

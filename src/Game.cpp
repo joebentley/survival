@@ -1,8 +1,8 @@
 #include "Game.h"
 #include "utils.h"
 #include "Font.h"
-#include "entity.h"
-#include "entities.h"
+#include "Entity.h"
+#include "Entities.h"
 #include "EntityBuilder.h"
 #include <deque>
 

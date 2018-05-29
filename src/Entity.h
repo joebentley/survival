@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include <stdexcept>
 #include "Font.h"
-#include "world.h"
+#include "World.h"
 #include "Point.h"
 #include "flags.h"
 #include "Time.h"
