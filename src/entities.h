@@ -269,7 +269,7 @@ struct BagEntity : Entity {
         mShortDesc = "This crude grass bag allows you to carry a few more items";
         addProperty(std::make_unique<PickuppableProperty>(1));
         addProperty(std::make_unique<EquippableProperty>(EquipmentSlot::BACK));
-        addBehaviour(std::make_unique<AdditionalCarryWeightBehaviour>(*this, 20));
+        addProperty(std::make_unique<AdditionalCarryWeightProperty>(20));
     }
 };
 

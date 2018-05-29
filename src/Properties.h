@@ -50,4 +50,10 @@ public:
     };
 };
 
+class AdditionalCarryWeightProperty : public Property {
+public:
+    explicit AdditionalCarryWeightProperty(int additionalCarryWeight)
+            : Property("AdditionalCarryWeight", additionalCarryWeight) {}
+};
+
 #endif //SURVIVAL_PROPERTIES_H

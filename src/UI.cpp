@@ -99,11 +99,13 @@ void drawDescriptionScreen(Font& font, Entity& item) {
         }
     }
 
-    auto b = item.getBehaviourByID("AdditionalCarryWeightBehaviour");
-    if (b != nullptr) {
-        int carry = dynamic_cast<AdditionalCarryWeightBehaviour &>(*b).additionalCarryWeight;
-        font.drawText("It adds an extra " + std::to_string(carry) + "lb to your max carry weight",
-                InventoryScreen::X_OFFSET, yOffset + y++);
+    {
+        auto b = item.getProperty("AdditionalCarryWeight");
+        if (b != nullptr) {
+            int carry = boost::any_cast<int>(b->getValue());
+            font.drawText("It adds an extra " + std::to_string(carry) + "lb to your max carry weight",
+                    InventoryScreen::X_OFFSET, yOffset + y++);
+        }
     }
 
     {
@@ -124,7 +126,7 @@ void drawDescriptionScreen(Font& font, Entity& item) {
         }
     }
 
-    b = item.getBehaviourByID("HealingItemBehaviour");
+    auto b = item.getBehaviourByID("HealingItemBehaviour");
     if (b != nullptr) {
         float healing = dynamic_cast<HealingItemBehaviour &>(*b).healingAmount;
         font.drawText("${white}$[red]+${black}$[white] Can be used to heal for " + std::to_string(healing),

@@ -292,9 +292,9 @@ int Entity::getMaxCarryWeight() const {
     auto a = getEquipmentEntity(EquipmentSlot::BACK);
 
     if (a != nullptr) {
-        auto b = a->getBehaviourByID("AdditionalCarryWeightBehaviour");
+        auto b = a->getProperty("AdditionalCarryWeight");
         if (b != nullptr) {
-            return mMaxCarryWeight + dynamic_cast<AdditionalCarryWeightBehaviour&>(*b).additionalCarryWeight;
+            return mMaxCarryWeight + boost::any_cast<int>(b->getValue());
         }
     }
 
