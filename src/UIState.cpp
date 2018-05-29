@@ -1,18 +1,14 @@
-//
-// Created by Joe Bentley on 25/05/2018.
-//
-
 #include "UIState.h"
 #include "UI.h"
 #include <boost/any.hpp>
 
-void ViewingInventoryState::onEntry(InventoryScreen &screen) {
-    mChosenIndex = screen.getChosenIndex();
-}
+void ViewingInventoryState::onEntry(InventoryScreen &screen) {}
 
 std::unique_ptr<InventoryScreenState>
 ViewingInventoryState::handleInput(InventoryScreen &screen, SDL_KeyboardEvent &e) {
     auto &player = screen.getPlayer();
+
+    mChosenIndex = screen.getChosenIndex();
 
     switch (e.keysym.sym) {
         case SDLK_ESCAPE:
