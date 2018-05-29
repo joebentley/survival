@@ -119,14 +119,6 @@ struct HealingItemBehaviour : ApplyableBehaviour {
     }
 };
 
-struct CraftingMaterialBehaviour : Behaviour {
-    CraftingMaterialBehaviour(Entity& parent, std::string materialType, float materialQuality)
-            : Behaviour("CraftingMaterialBehaviour", parent), type(std::move(materialType)), quality(materialQuality) {}
-
-    std::string type;
-    float quality;
-};
-
 struct AdditionalCarryWeightBehaviour : Behaviour {
     AdditionalCarryWeightBehaviour(Entity &parent, int additionalCarryWeight)
             : Behaviour("AdditionalCarryWeightBehaviour", parent), additionalCarryWeight(additionalCarryWeight) {}
@@ -228,7 +220,7 @@ struct WaterContainerBehaviour : Behaviour {
 
 private:
     int maxCapacity;
-    int currentAmount;
+    int currentAmount {0};
 };
 
 #endif // BEHAVIOURS_H_

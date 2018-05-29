@@ -311,10 +311,10 @@ std::vector<std::string> Entity::filterInventoryForCraftingMaterials(const std::
     std::copy_if(mInventory.cbegin(), mInventory.cend(), std::back_inserter(materialIDs),
     [materialTypes] (const auto &ID) {
         auto entity = EntityManager::getInstance().getEntityByID(ID);
-        auto b = entity->getBehaviourByID("CraftingMaterialBehaviour");
+        auto b = entity->getProperty("CraftingMaterial");
         if (b != nullptr) {
             if (std::find(materialTypes.cbegin(), materialTypes.cend(),
-                    dynamic_cast<CraftingMaterialBehaviour&>(*b).type) != materialTypes.cend()) {
+                    boost::any_cast<CraftingMaterialProperty::Data>(b->getValue()).type) != materialTypes.cend()) {
                 return true;
             }
         }

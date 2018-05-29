@@ -190,7 +190,7 @@ struct TwigEntity : Entity {
         mShortDesc = SHORT_DESC;
         mLongDesc = LONG_DESC;
         addProperty(std::make_unique<PickuppableProperty>(1));
-        addBehaviour(std::make_unique<CraftingMaterialBehaviour>(*this, "wood", 1));
+        addProperty(std::make_unique<CraftingMaterialProperty>("wood", 1));
         addProperty(std::make_unique<EquippableProperty>(
                 std::vector<EquipmentSlot> {EquipmentSlot::LEFT_HAND, EquipmentSlot::RIGHT_HAND}));
 //        addBehaviour(std::make_unique<MeleeWeaponBehaviour>(*this, 1));
@@ -207,7 +207,7 @@ struct GrassTuftEntity : Entity {
         mShortDesc = SHORT_DESC;
         mLongDesc = LONG_DESC;
         addProperty(std::make_unique<PickuppableProperty>(1));
-        addBehaviour(std::make_unique<CraftingMaterialBehaviour>(*this, "grass", 1));
+        addProperty(std::make_unique<CraftingMaterialProperty>("grass", 1));
     }
 };
 

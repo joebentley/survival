@@ -39,4 +39,15 @@ public:
     };
 };
 
+class CraftingMaterialProperty : public Property {
+public:
+    CraftingMaterialProperty(std::string materialType, float materialQuality)
+            : Property("CraftingMaterial", Data {materialType, materialQuality}) {}
+
+    struct Data {
+        std::string type;
+        float quality;
+    };
+};
+
 #endif //SURVIVAL_PROPERTIES_H

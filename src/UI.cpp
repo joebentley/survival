@@ -519,13 +519,13 @@ std::vector<Entity *> CraftingScreen::filterInventoryForChosenMaterials() {
     auto inventory = mPlayer.getInventory();
     std::copy_if(inventory.cbegin(), inventory.cend(), std::back_inserter(inventoryMaterials),
     [this, &rm] (auto &a) {
-        if (!a->hasBehaviour("CraftingMaterialBehaviour"))
+        if (!a->hasProperty("CraftingMaterial"))
             return false;
         if (std::find(mCurrentlyChosenMaterials.begin(), mCurrentlyChosenMaterials.end(), a->mID) != mCurrentlyChosenMaterials.end())
             return false;
 
-        auto &b = dynamic_cast<CraftingMaterialBehaviour&>(*a->getBehaviourByID("CraftingMaterialBehaviour"));
-        return rm.mRecipes[mChosenRecipe]->mIngredients[mChosenIngredient].mEntityType == b.type;
+        auto type = boost::any_cast<CraftingMaterialProperty::Data>(a->getProperty("CraftingMaterial")->getValue()).type;
+        return rm.mRecipes[mChosenRecipe]->mIngredients[mChosenIngredient].mEntityType == type;
     });
 
     return inventoryMaterials;
