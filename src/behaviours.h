@@ -155,33 +155,4 @@ struct InteractableBehaviour : Behaviour {
     virtual void render(Font &font) = 0;
 };
 
-struct WaterContainerBehaviour : Behaviour {
-    explicit WaterContainerBehaviour(Entity &parent, int maxCapacity = 64)
-            : Behaviour("WaterContainerBehaviour", parent), maxCapacity(maxCapacity) {}
-
-    int getMaxCapacity() const {
-        return maxCapacity;
-    }
-
-    void setMaxCapacity(int maxCapacity) {
-        WaterContainerBehaviour::maxCapacity = maxCapacity;
-    }
-
-    int getAmount() const {
-        return currentAmount;
-    }
-
-    void setAmount(int currentAmount) {
-        WaterContainerBehaviour::currentAmount = currentAmount;
-    }
-
-    void addAmount(int amount) {
-        currentAmount = std::min(maxCapacity, currentAmount + amount);
-    }
-
-private:
-    int maxCapacity;
-    int currentAmount {0};
-};
-
 #endif // BEHAVIOURS_H_

@@ -291,7 +291,7 @@ struct WaterEntity : Entity {
 struct WaterskinEntity : Entity {
     explicit WaterskinEntity() : Entity("", "Waterskin", "$[brown]$(male)")
     {
-        addBehaviour(std::make_unique<WaterContainerBehaviour>(*this));
+        addProperty(std::make_unique<WaterContainerProperty>());
         addProperty(std::make_unique<PickuppableProperty>(1));
     }
 };

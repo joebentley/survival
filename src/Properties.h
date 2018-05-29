@@ -97,4 +97,39 @@ public:
     };
 };
 
+class WaterContainerProperty : public Property {
+public:
+    explicit WaterContainerProperty(int maxCapacity = 64)
+            : Property("WaterContainer", WaterContainer(maxCapacity)) {}
+
+    class WaterContainer {
+    public:
+        explicit WaterContainer(int maxCapacity = 64) : mMaxCapacity(maxCapacity) {}
+
+        int getMaxCapacity() const {
+            return mMaxCapacity;
+        }
+
+        void setMaxCapacity(int maxCapacity) {
+            mMaxCapacity = maxCapacity;
+        }
+
+        int getAmount() const {
+            return mCurrentAmount;
+        }
+
+        void setAmount(int currentAmount) {
+            mCurrentAmount = currentAmount;
+        }
+
+        void addAmount(int amount) {
+            mCurrentAmount = std::min(mMaxCapacity, mCurrentAmount + amount);
+        }
+
+    private:
+        int mMaxCapacity;
+        int mCurrentAmount{0};
+    };
+};
+
 #endif //SURVIVAL_PROPERTIES_H

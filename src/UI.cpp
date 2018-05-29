@@ -126,20 +126,25 @@ void drawDescriptionScreen(Font& font, Entity& item) {
         }
     }
 
-    auto b = item.getBehaviourByID("HealingItemBehaviour");
-    if (b != nullptr) {
-        float healing = dynamic_cast<HealingItemBehaviour &>(*b).healingAmount;
-        font.drawText("${white}$[red]+${black}$[white] Can be used to heal for " + std::to_string(healing),
-                InventoryScreen::X_OFFSET, yOffset + y++);
+    {
+        auto b = item.getBehaviourByID("HealingItemBehaviour");
+        if (b != nullptr) {
+            float healing = dynamic_cast<HealingItemBehaviour &>(*b).healingAmount;
+            font.drawText("${white}$[red]+${black}$[white] Can be used to heal for " + std::to_string(healing),
+                    InventoryScreen::X_OFFSET, yOffset + y++);
+        }
     }
 
-    b = item.getBehaviourByID("WaterContainerBehaviour");
-    if (b != nullptr) {
-        auto &casted = dynamic_cast<WaterContainerBehaviour &>(*b);
-        int current = casted.getAmount();
-        font.drawText("It can hold $[cyan]" + std::to_string(casted.getMaxCapacity()) + "$[white] drams of water." +
-                      (current > 0 ? " It currently holds $[cyan]" + std::to_string(current) + "$[white] drams of water." : ""),
-                InventoryScreen::X_OFFSET, yOffset + y++);
+    {
+        auto prop = item.getProperty("WaterContainer");
+        if (prop != nullptr) {
+            auto waterContainer = boost::any_cast<WaterContainerProperty::WaterContainer>(prop->getValue());
+            int current = waterContainer.getAmount();
+            font.drawText("It can hold $[cyan]" + std::to_string(waterContainer.getMaxCapacity()) + "$[white] drams of water." +
+                          (current > 0 ? " It currently holds $[cyan]" + std::to_string(current) +
+                                         "$[white] drams of water." : ""),
+                    InventoryScreen::X_OFFSET, yOffset + y++);
+        }
     }
 
     font.drawText("esc-back", 1, SCREEN_HEIGHT - 2);

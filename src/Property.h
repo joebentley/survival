@@ -7,17 +7,14 @@
 
 class PropertiesManager {
 public:
-    static PropertiesManager& getInstance() {
-        static PropertiesManager instance;
-        return instance;
-    }
+    static PropertiesManager& getInstance();
 
     PropertiesManager() = default;
     PropertiesManager(const PropertiesManager&) = delete;
     void operator=(const PropertiesManager&) = delete;
 
     void registerPropertyName(std::string propertyName);
-    bool isPropertyRegistered(std::string propertyName) const;
+    bool isPropertyRegistered(const std::string &propertyName) const;
 
 private:
     std::set<std::string> mPropertyNamesRegistered;
@@ -25,9 +22,7 @@ private:
 
 class Property {
 public:
-    Property(std::string propertyName, boost::any value) : mPropertyName(std::move(propertyName)), mValue(std::move(value)) {
-        PropertiesManager::getInstance().registerPropertyName(mPropertyName);
-    }
+    Property(std::string propertyName, boost::any value) : mPropertyName(std::move(propertyName)), mValue(std::move(value)) {}
 
     std::string getName() const;
     void setValue(boost::any value);

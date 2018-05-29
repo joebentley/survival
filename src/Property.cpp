@@ -16,6 +16,19 @@ void PropertiesManager::registerPropertyName(std::string propertyName) {
     mPropertyNamesRegistered.emplace(std::move(propertyName));
 }
 
-bool PropertiesManager::isPropertyRegistered(std::string propertyName) const {
-    return mPropertyNamesRegistered.find(std::move(propertyName)) != mPropertyNamesRegistered.cend();
+bool PropertiesManager::isPropertyRegistered(const std::string &propertyName) const {
+    return mPropertyNamesRegistered.find(propertyName) != mPropertyNamesRegistered.cend();
+}
+
+PropertiesManager &PropertiesManager::getInstance() {
+    static PropertiesManager instance;
+    // Add all the property names
+    instance.registerPropertyName("MeleeWeaponDamage");
+    instance.registerPropertyName("Pickuppable");
+    instance.registerPropertyName("Equippable");
+    instance.registerPropertyName("CraftingMaterial");
+    instance.registerPropertyName("AdditionalCarryWeight");
+    instance.registerPropertyName("LightEmitting");
+    instance.registerPropertyName("WaterContainer");
+    return instance;
 }
