@@ -30,5 +30,6 @@ PropertiesManager &PropertiesManager::getInstance() {
     instance.registerPropertyName("AdditionalCarryWeight");
     instance.registerPropertyName("LightEmitting");
     instance.registerPropertyName("WaterContainer");
+    instance.registerPropertyName("Eatable");
     return instance;
 }

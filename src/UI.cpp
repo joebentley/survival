@@ -202,7 +202,7 @@ void InventoryScreen::render(Font &font) {
 
     std::string helpString;
     auto item = mPlayer.getInventoryItem(mChosenIndex);
-    if (item->hasBehaviour("EatableBehaviour"))
+    if (item->hasProperty("Eatable"))
         helpString += "e-eat  ";
     if (item->hasBehaviour("ApplyableBehaviour"))
         helpString += "a-apply  ";

@@ -4,6 +4,7 @@
 
 #include "UIState.h"
 #include "UI.h"
+#include <boost/any.hpp>
 
 void ViewingInventoryState::onEntry(InventoryScreen &screen) {
     mChosenIndex = screen.getChosenIndex();
@@ -52,8 +53,9 @@ ViewingInventoryState::handleInput(InventoryScreen &screen, SDL_KeyboardEvent &e
         case SDLK_e:
             if (!player.isInventoryEmpty()) {
                 auto item = player.getInventoryItem(mChosenIndex);
-                if (item->hasBehaviour("EatableBehaviour")) {
-                    player.addHunger(dynamic_cast<EatableBehaviour &>(*(*item).getBehaviourByID("EatableBehaviour")).hungerRestoration);
+                auto eatable = item->getProperty("Eatable");
+                if (eatable != nullptr) {
+                    player.addHunger(boost::any_cast<float>(eatable->getValue()));
                     player.removeFromInventory(mChosenIndex);
                     item->destroy();
                     if (player.getInventorySize() - 1 < mChosenIndex) {

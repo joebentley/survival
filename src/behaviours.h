@@ -91,13 +91,6 @@ struct HostilityBehaviour : Behaviour {
 
 // Behaviours for items
 
-struct EatableBehaviour : Behaviour {
-    EatableBehaviour(Entity& parent, float hungerRestoration)
-            : Behaviour("EatableBehaviour", parent), hungerRestoration(hungerRestoration) {}
-
-    float hungerRestoration;
-};
-
 struct ApplyableBehaviour : Behaviour {
     ApplyableBehaviour(std::string ID, Entity& parent)
             : Behaviour(std::move(ID), parent) {}

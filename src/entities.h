@@ -85,7 +85,7 @@ struct EatableEntity : Entity {
     EatableEntity(std::string ID, std::string name, std::string graphic, float hungerRestoration)
             : Entity(std::move(ID), std::move(name), std::move(graphic))
     {
-        addBehaviour(std::make_unique<EatableBehaviour>(*this, hungerRestoration));
+        addProperty(std::make_unique<EatableProperty>(hungerRestoration));
     }
 };
 

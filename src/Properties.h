@@ -132,4 +132,10 @@ public:
     };
 };
 
+class EatableProperty : public Property {
+public:
+    explicit EatableProperty(float hungerRestoration)
+            : Property("Eatable", hungerRestoration) {}
+};
+
 #endif //SURVIVAL_PROPERTIES_H
