@@ -390,7 +390,8 @@ void FireEntity::render(Font &font, Point currentWorldPos) {
     else
         mGraphic = "${black}$[orange]%";
 
-    dynamic_cast<LightEmittingBehaviour&>(*getBehaviourByID("LightEmittingBehaviour")).setRadius(static_cast<int>(std::round(6 * fireLevel)));
+    boost::any_cast<LightEmittingProperty::Light>(getProperty("LightEmitting")->getValue())
+            .setRadius(static_cast<int>(std::round(6 * fireLevel)));
 
     Entity::render(font, currentWorldPos);
 }

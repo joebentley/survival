@@ -73,7 +73,7 @@ struct GlowbugEntity : Entity {
             : Entity(std::move(ID), "Glowbug", "$[green]`", 10.0f, 10.0f, 0.05f)
     {
         addBehaviour(std::make_unique<WanderBehaviour>(*this));
-        addBehaviour(std::make_unique<LightEmittingBehaviour>(*this, 3, FontColor::getColor("green")));
+        addProperty(std::make_unique<LightEmittingProperty>(this, 3, FontColor::getColor("green")));
     }
 
     void render(Font &font, Point currentWorldPos) override;
@@ -227,7 +227,7 @@ struct FireEntity : Entity {
 
     explicit FireEntity(std::string ID = "") : Entity(std::move(ID), "Fire", "") {
         mIsSolid = true;
-        addBehaviour(std::make_unique<LightEmittingBehaviour>(*this, 6));
+        addProperty(std::make_unique<LightEmittingProperty>(this, 6));
         addBehaviour(std::make_unique<RekindleBehaviour>(*this));
     }
 
@@ -240,7 +240,7 @@ struct FireEntity : Entity {
 struct TorchEntity : Entity {
     explicit TorchEntity(std::string ID = "") : Entity(std::move(ID), "Torch", "$[red]$(up)") {
         addProperty(std::make_unique<PickuppableProperty>(1));
-        addBehaviour(std::make_unique<LightEmittingBehaviour>(*this, 4));
+        addProperty(std::make_unique<LightEmittingProperty>(this, 4));
         addProperty(std::make_unique<EquippableProperty>(
                 std::vector<EquipmentSlot> {EquipmentSlot::LEFT_HAND, EquipmentSlot::RIGHT_HAND }));
 

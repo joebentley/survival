@@ -534,12 +534,13 @@ std::vector<LightMapPoint> EntityManager::getLightSources(Point fontSize) const 
 
     for (const auto &a : mCurrentlyOnScreen) {
         const auto &entity = getEntityByID(a);
-        if (entity->hasBehaviour("LightEmittingBehaviour")) {
-            const auto &b = dynamic_cast<LightEmittingBehaviour&>(*entity->getBehaviourByID("LightEmittingBehaviour"));
-            if (b.isEnabled()) {
-                auto radius = fontSize.mY * b.getRadius();
+        auto b = entity->getProperty("LightEmitting");
+        if (b != nullptr) {
+            auto light = boost::any_cast<LightEmittingProperty::Light>(b->getValue());
+            if (light.isEnabled()) {
+                auto radius = fontSize.mY * light.getRadius();
                 auto point = fontSize * worldToScreen(entity->getPos()) + fontSize / 2;
-                points.emplace_back(LightMapPoint(point, radius, b.getColor()));
+                points.emplace_back(LightMapPoint(point, radius, light.getColor()));
             }
         }
     }

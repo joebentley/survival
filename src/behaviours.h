@@ -119,13 +119,6 @@ struct HealingItemBehaviour : ApplyableBehaviour {
     }
 };
 
-//struct AdditionalCarryWeightBehaviour : Behaviour {
-//    AdditionalCarryWeightBehaviour(Entity &parent, int additionalCarryWeight)
-//            : Behaviour("AdditionalCarryWeightBehaviour", parent), additionalCarryWeight(additionalCarryWeight) {}
-//
-//    int additionalCarryWeight;
-//};
-
 // WARNING: you have to add the initial item in your Entities' constructor, or otherwise you could get a huge number
 // of entities being added by tick() in a single game tick
 // Also, T must be an Entity that has a constructor with no arguments
@@ -153,39 +146,7 @@ public:
 
 // Misc behaviours
 
-struct LightEmittingBehaviour : Behaviour {
-    LightEmittingBehaviour(Entity& parent, int radius, Color color)
-            : Behaviour("LightEmittingBehaviour", parent), radius(radius), color(color) {}
-
-    LightEmittingBehaviour(Entity& parent, int radius)
-            : Behaviour("LightEmittingBehaviour", parent), radius(radius) {}
-
-    int getRadius() const {
-        return radius;
-    }
-
-    void setRadius(int radius) {
-        LightEmittingBehaviour::radius = radius;
-    }
-
-    bool isEnabled() const override {
-        // Don't be enabled if just sitting in someone's inventory
-        return !mParent.mIsInAnInventory || mParent.mIsEquipped;
-    }
-
-    Color getColor() const {
-        return color;
-    }
-
-    void setColor(Color color) {
-        this->color = color;
-    }
-
-private:
-    int radius;
-    Color color;
-};
-
+// TODO: This should be a property, but difficult due to virtual methods
 struct InteractableBehaviour : Behaviour {
     explicit InteractableBehaviour(Entity &parent)
             : Behaviour("InteractableBehaviour", parent) {}
