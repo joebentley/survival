@@ -134,12 +134,12 @@ struct CraftingMaterialBehaviour : Behaviour {
     float quality;
 };
 
-struct MeleeWeaponBehaviour : Behaviour {
-    MeleeWeaponBehaviour(Entity &parent, int extraDamage)
-            : Behaviour("MeleeWeaponBehaviour", parent), extraDamage(extraDamage) {}
-
-    int extraDamage;
-};
+//struct MeleeWeaponBehaviour : Behaviour {
+//    MeleeWeaponBehaviour(Entity &parent, int extraDamage)
+//            : Behaviour("MeleeWeaponBehaviour", parent), extraDamage(extraDamage) {}
+//
+//    int extraDamage;
+//};
 
 struct AdditionalCarryWeightBehaviour : Behaviour {
     AdditionalCarryWeightBehaviour(Entity &parent, int additionalCarryWeight)

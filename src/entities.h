@@ -4,6 +4,7 @@
 #include "entity.h"
 #include "behaviours.h"
 #include "UI.h"
+#include "Properties.h"
 
 struct Screen;
 enum class ScreenType;
@@ -192,7 +193,8 @@ struct TwigEntity : Entity {
         addBehaviour(std::make_unique<CraftingMaterialBehaviour>(*this, "wood", 1));
         addBehaviour(std::make_unique<EquippableBehaviour>(*this,
                 std::vector<EquipmentSlot> {EquipmentSlot::LEFT_HAND, EquipmentSlot::RIGHT_HAND}));
-        addBehaviour(std::make_unique<MeleeWeaponBehaviour>(*this, 1));
+//        addBehaviour(std::make_unique<MeleeWeaponBehaviour>(*this, 1));
+        addProperty(std::make_unique<MeleeWeaponDamageProperty>(1));
     }
 };
 

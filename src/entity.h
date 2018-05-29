@@ -14,8 +14,9 @@
 #include "world.h"
 #include "Point.h"
 #include "flags.h"
-#include "time.h"
+#include "Time.h"
 #include "Texture.h"
+#include "Property.h"
 
 extern int gNumInitialisedEntities;
 
@@ -201,8 +202,14 @@ struct Entity {
     bool hasEquipped(std::string ID) const;
     EquipmentSlot getEquipmentSlotByID(std::string ID) const;
 
+    bool hasProperty(std::string propertyName) const;
+    Property * getProperty(std::string propertyName) const;
+
+    void addProperty(std::unique_ptr<Property> property);
+
 protected:
     std::unordered_map<std::string, std::unique_ptr<Behaviour>> mBehaviours;
+    std::unordered_map<std::string, std::unique_ptr<Property>> mProperties;
     std::vector<std::string> mInventory;
     Point mPos;
     std::unordered_map<EquipmentSlot, std::string> mEquipment;

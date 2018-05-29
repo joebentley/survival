@@ -57,10 +57,10 @@ Behaviour *Entity::getBehaviourByID(const std::string &ID) const {
 int Entity::computeMaxDamage() const {
     if (hasEquippedInSlot(EquipmentSlot::RIGHT_HAND)) {
         auto a = EntityManager::getInstance().getEntityByID(getEquipmentID(EquipmentSlot::RIGHT_HAND));
+        auto b = a->getProperty("MeleeWeaponDamage");
 
-        if (a->hasBehaviour("MeleeWeaponBehaviour")) {
-            auto &b = dynamic_cast<MeleeWeaponBehaviour&>(*a->getBehaviourByID("MeleeWeaponBehaviour"));
-            return mHitAmount + b.extraDamage;
+        if (b != nullptr) {
+            return mHitAmount + boost::any_cast<int>(b->getValue());
         }
     }
 
@@ -318,6 +318,26 @@ std::vector<std::string> Entity::filterInventoryForCraftingMaterials(const std::
     });
 
     return materialIDs;
+}
+
+bool Entity::hasProperty(std::string propertyName) const {
+    if (!PropertiesManager::getInstance().isPropertyRegistered(propertyName))
+        throw std::out_of_range("Property " + propertyName + " not registered into the list of known properties!");
+
+    return mProperties.find(propertyName) != mProperties.cend();
+}
+
+Property *Entity::getProperty(std::string propertyName) const {
+    if (!PropertiesManager::getInstance().isPropertyRegistered(propertyName))
+        throw std::out_of_range("Property " + propertyName + " not registered into the list of known properties!");
+
+    if (mProperties.find(propertyName) == mProperties.cend())
+        return nullptr;
+    return mProperties.at(propertyName).get();
+}
+
+void Entity::addProperty(std::unique_ptr<Property> property) {
+    mProperties[property->getName()] = std::move(property);
 }
 
 void EntityManager::addEntity(std::unique_ptr<Entity> entity) {

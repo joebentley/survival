@@ -5,6 +5,7 @@
 
 #include <sstream>
 #include <algorithm>
+#include <boost/any.hpp>
 
 std::string repeat(int n, const std::string &str) {
     std::ostringstream os;
@@ -87,11 +88,13 @@ void drawDescriptionScreen(Font& font, Entity& item) {
                       InventoryScreen::X_OFFSET, yOffset + y++);
     }
 
-    b = item.getBehaviourByID("MeleeWeaponBehaviour");
-    if (b != nullptr) {
-        int damage = dynamic_cast<MeleeWeaponBehaviour &>(*b).extraDamage;
-        font.drawText("It adds $[red]" + std::to_string(damage) + "$[white] to your damage roll",
-                InventoryScreen::X_OFFSET, yOffset + y++);
+    {
+        auto b = item.getProperty("MeleeWeaponDamage");
+        if (b != nullptr) {
+            int damage = boost::any_cast<int>(b->getValue());
+            font.drawText("It adds $[red]" + std::to_string(damage) + "$[white] to your damage roll",
+                    InventoryScreen::X_OFFSET, yOffset + y++);
+        }
     }
 
     b = item.getBehaviourByID("AdditionalCarryWeightBehaviour");
@@ -669,11 +672,11 @@ void EquipmentScreen::render(Font &font) {
             lines.emplace_back((i == mChoosingNewEquipmentIndex ? "$(right)" : " ") + entity->mGraphic + " " + entity->mName);
 
             if (mChosenSlot == EquipmentSlot::RIGHT_HAND) {
-                auto b = entity->getBehaviourByID("MeleeWeaponBehaviour");
+                auto b = entity->getProperty("MeleeWeaponDamage");
                 if (b != nullptr) {
                     lines[i] += " $[red]$(heart)$[white]" + std::to_string(mPlayer.mHitTimes)
                                 + "d" +
-                                std::to_string(mPlayer.mHitAmount + dynamic_cast<MeleeWeaponBehaviour &>(*b).extraDamage);
+                                std::to_string(mPlayer.mHitAmount + boost::any_cast<int>(b->getValue()));
                 }
             }
         }
