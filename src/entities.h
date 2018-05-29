@@ -121,7 +121,7 @@ struct CorpseEntity : EatableEntity {
     CorpseEntity(std::string ID, float hungerRestoration, const std::string& corpseOf, int weight)
             : EatableEntity(std::move(ID), "Corpse of " + corpseOf, "${black}$[red]x", hungerRestoration)
     {
-        addBehaviour(std::make_unique<PickuppableBehaviour>(*this, weight));
+        addProperty(std::make_unique<PickuppableProperty>(weight));
     }
 };
 
@@ -134,7 +134,7 @@ struct AppleEntity : EatableEntity {
     {
         mShortDesc = SHORT_DESC;
         mLongDesc = LONG_DESC;
-        addBehaviour(std::make_unique<PickuppableBehaviour>(*this, 1));
+        addProperty(std::make_unique<PickuppableProperty>(1));
     }
 };
 
@@ -147,7 +147,7 @@ struct BananaEntity : EatableEntity {
     {
         mShortDesc = SHORT_DESC;
         mLongDesc = LONG_DESC;
-        addBehaviour(std::make_unique<PickuppableBehaviour>(*this, 1));
+        addProperty(std::make_unique<PickuppableProperty>(1));
     }
 };
 
@@ -160,7 +160,7 @@ struct BerryEntity : EatableEntity {
     {
         mShortDesc = SHORT_DESC;
         mLongDesc = LONG_DESC;
-        addBehaviour(std::make_unique<PickuppableBehaviour>(*this, 1));
+        addProperty(std::make_unique<PickuppableProperty>(1));
     }
 };
 
@@ -173,7 +173,7 @@ struct BandageEntity : Entity {
             : Entity(std::move(ID), "Bandage", "$[white]~")
     {
         mShortDesc = SHORT_DESC;
-        addBehaviour(std::make_unique<PickuppableBehaviour>(*this, 1));
+        addProperty(std::make_unique<PickuppableProperty>(1));
         addBehaviour(std::make_unique<HealingItemBehaviour>(*this, 5));
     }
 };
@@ -189,9 +189,9 @@ struct TwigEntity : Entity {
     {
         mShortDesc = SHORT_DESC;
         mLongDesc = LONG_DESC;
-        addBehaviour(std::make_unique<PickuppableBehaviour>(*this, 1));
+        addProperty(std::make_unique<PickuppableProperty>(1));
         addBehaviour(std::make_unique<CraftingMaterialBehaviour>(*this, "wood", 1));
-        addBehaviour(std::make_unique<EquippableBehaviour>(*this,
+        addProperty(std::make_unique<EquippableProperty>(
                 std::vector<EquipmentSlot> {EquipmentSlot::LEFT_HAND, EquipmentSlot::RIGHT_HAND}));
 //        addBehaviour(std::make_unique<MeleeWeaponBehaviour>(*this, 1));
         addProperty(std::make_unique<MeleeWeaponDamageProperty>(1));
@@ -206,7 +206,7 @@ struct GrassTuftEntity : Entity {
     {
         mShortDesc = SHORT_DESC;
         mLongDesc = LONG_DESC;
-        addBehaviour(std::make_unique<PickuppableBehaviour>(*this, 1));
+        addProperty(std::make_unique<PickuppableProperty>(1));
         addBehaviour(std::make_unique<CraftingMaterialBehaviour>(*this, "grass", 1));
     }
 };
@@ -239,9 +239,9 @@ struct FireEntity : Entity {
 
 struct TorchEntity : Entity {
     explicit TorchEntity(std::string ID = "") : Entity(std::move(ID), "Torch", "$[red]$(up)") {
-        addBehaviour(std::make_unique<PickuppableBehaviour>(*this, 1));
+        addProperty(std::make_unique<PickuppableProperty>(1));
         addBehaviour(std::make_unique<LightEmittingBehaviour>(*this, 4));
-        addBehaviour(std::make_unique<EquippableBehaviour>(*this,
+        addProperty(std::make_unique<EquippableProperty>(
                 std::vector<EquipmentSlot> {EquipmentSlot::LEFT_HAND, EquipmentSlot::RIGHT_HAND }));
 
         mShortDesc = "Can be equipped to produce light and some heat.";
@@ -267,8 +267,8 @@ struct BagEntity : Entity {
             : Entity(std::move(ID), "Grass Bag", "$[green]$(Phi)")
     {
         mShortDesc = "This crude grass bag allows you to carry a few more items";
-        addBehaviour(std::make_unique<PickuppableBehaviour>(*this, 1));
-        addBehaviour(std::make_unique<EquippableBehaviour>(*this, EquipmentSlot::BACK));
+        addProperty(std::make_unique<PickuppableProperty>(1));
+        addProperty(std::make_unique<EquippableProperty>(EquipmentSlot::BACK));
         addBehaviour(std::make_unique<AdditionalCarryWeightBehaviour>(*this, 20));
     }
 };
@@ -292,7 +292,7 @@ struct WaterskinEntity : Entity {
     explicit WaterskinEntity() : Entity("", "Waterskin", "$[brown]$(male)")
     {
         addBehaviour(std::make_unique<WaterContainerBehaviour>(*this));
-        addBehaviour(std::make_unique<PickuppableBehaviour>(*this, 1));
+        addProperty(std::make_unique<PickuppableProperty>(1));
     }
 };
 

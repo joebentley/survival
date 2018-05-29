@@ -128,9 +128,9 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
             std::vector<Entity *> pickuppableEntities;
             std::copy_if(entitiesAtPos.begin(), entitiesAtPos.end(), std::back_inserter(pickuppableEntities),
                          [this](auto &a) {
-                auto b = a->getBehaviourByID("PickuppableBehaviour");
+                auto b = a->hasProperty("Pickuppable");
                 // Don't pick up if it isn't pickuppable, or if it is already in the player's inventory
-                return (b != nullptr && !isInInventory(a->mID));
+                return (b && !isInInventory(a->mID));
             });
 
             if (pickuppableEntities.empty())

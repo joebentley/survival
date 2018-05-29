@@ -81,11 +81,13 @@ void drawDescriptionScreen(Font& font, Entity& item) {
     int y = 2;
     const int yOffset = InventoryScreen::Y_OFFSET + 4 + static_cast<int>(words.size());
 
-    auto b = item.getBehaviourByID("PickuppableBehaviour");
-    if (b != nullptr) {
-        int weight = dynamic_cast<PickuppableBehaviour &>(*b).weight;
-        font.drawText("It weighs " + std::to_string(weight) + (weight == 1 ? " pound" : " pounds"),
-                      InventoryScreen::X_OFFSET, yOffset + y++);
+    {
+        auto b = item.getProperty("Pickuppable");
+        if (b != nullptr) {
+            int weight = boost::any_cast<int>(b->getValue());
+            font.drawText("It weighs " + std::to_string(weight) + (weight == 1 ? " pound" : " pounds"),
+                    InventoryScreen::X_OFFSET, yOffset + y++);
+        }
     }
 
     {
@@ -97,26 +99,29 @@ void drawDescriptionScreen(Font& font, Entity& item) {
         }
     }
 
-    b = item.getBehaviourByID("AdditionalCarryWeightBehaviour");
+    auto b = item.getBehaviourByID("AdditionalCarryWeightBehaviour");
     if (b != nullptr) {
         int carry = dynamic_cast<AdditionalCarryWeightBehaviour &>(*b).additionalCarryWeight;
         font.drawText("It adds an extra " + std::to_string(carry) + "lb to your max carry weight",
                 InventoryScreen::X_OFFSET, yOffset + y++);
     }
 
-    b = item.getBehaviourByID("EquippableBehaviour");
-    if (b != nullptr) {
-        auto slots = dynamic_cast<EquippableBehaviour &>(*b).getEquippableSlots();
-        std::string slotsString;
+    {
+        auto equippable = item.getProperty("Equippable");
+        if (equippable != nullptr) {
+            auto b = boost::any_cast<EquippableProperty::Equippable>(equippable->getValue());
+            auto slots = b.getEquippableSlots();
+            std::string slotsString;
 
-        for (auto slot = slots.cbegin(); slot != slots.cend(); ++slot) {
-            slotsString += slotToString(*slot);
-            if (slot != slots.cend() - 1)
-                slotsString += ", ";
+            for (auto slot = slots.cbegin(); slot != slots.cend(); ++slot) {
+                slotsString += slotToString(*slot);
+                if (slot != slots.cend() - 1)
+                    slotsString += ", ";
+            }
+
+            font.drawText("Can be equipped in: " + slotsString,
+                    InventoryScreen::X_OFFSET, yOffset + y++);
         }
-
-        font.drawText("Can be equipped in: " + slotsString,
-                InventoryScreen::X_OFFSET, yOffset + y++);
     }
 
     b = item.getBehaviourByID("HealingItemBehaviour");
@@ -266,7 +271,7 @@ void LootingDialog::render(Font &font) {
 
     for (int i = 0; i < numItems; ++i) {
         auto item = mItemsToShow[i];
-        int weight = dynamic_cast<PickuppableBehaviour&>(*item->getBehaviourByID("PickuppableBehaviour")).weight;
+        int weight = boost::any_cast<int>(item->getProperty("Pickuppable")->getValue());
 
         std::string weightString = std::to_string(weight);
         std::string string = item->mGraphic + " " + item->mName.substr(0, DIALOG_WIDTH - 6);

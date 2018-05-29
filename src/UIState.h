@@ -157,7 +157,7 @@ public:
     void onExit(EquipmentScreen &screen) override;
 
 private:
-    int mChoosingEquipmentActionIndex {0};
+//    int mChoosingEquipmentActionIndex {0};
 };
 
 #endif //SURVIVAL_STATE_H

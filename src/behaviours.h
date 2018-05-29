@@ -119,13 +119,6 @@ struct HealingItemBehaviour : ApplyableBehaviour {
     }
 };
 
-struct PickuppableBehaviour : Behaviour {
-    PickuppableBehaviour(Entity& parent, int weight = 1)
-            : Behaviour("PickuppableBehaviour", parent), weight(weight) {}
-
-    int weight;
-};
-
 struct CraftingMaterialBehaviour : Behaviour {
     CraftingMaterialBehaviour(Entity& parent, std::string materialType, float materialQuality)
             : Behaviour("CraftingMaterialBehaviour", parent), type(std::move(materialType)), quality(materialQuality) {}
@@ -133,13 +126,6 @@ struct CraftingMaterialBehaviour : Behaviour {
     std::string type;
     float quality;
 };
-
-//struct MeleeWeaponBehaviour : Behaviour {
-//    MeleeWeaponBehaviour(Entity &parent, int extraDamage)
-//            : Behaviour("MeleeWeaponBehaviour", parent), extraDamage(extraDamage) {}
-//
-//    int extraDamage;
-//};
 
 struct AdditionalCarryWeightBehaviour : Behaviour {
     AdditionalCarryWeightBehaviour(Entity &parent, int additionalCarryWeight)
@@ -206,25 +192,6 @@ struct LightEmittingBehaviour : Behaviour {
 private:
     int radius;
     Color color;
-};
-
-struct EquippableBehaviour : Behaviour {
-    EquippableBehaviour(Entity& parent, std::vector<EquipmentSlot> equippableSlots)
-        : Behaviour("EquippableBehaviour", parent), equippableSlots(std::move(equippableSlots)) {}
-
-    EquippableBehaviour(Entity& parent, EquipmentSlot equippableSlot)
-        : EquippableBehaviour(parent, std::vector<EquipmentSlot>(1, equippableSlot)) {}
-
-    const std::vector<EquipmentSlot> &getEquippableSlots() const {
-        return equippableSlots;
-    }
-
-    bool isEquippableInSlot(EquipmentSlot slot) const {
-        return std::find(equippableSlots.cbegin(), equippableSlots.cend(), slot) != equippableSlots.cend();
-    };
-
-private:
-    std::vector<EquipmentSlot> equippableSlots;
 };
 
 struct InteractableBehaviour : Behaviour {

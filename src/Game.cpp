@@ -46,7 +46,7 @@ void Game::loop() {
     banana->setPos(playerPos + Point(3, 2));
 
     auto pPileOfLead = EntityBuilder::makeEntity("pileOfLead", "Huge Pile Of Lead", "$[grey]L");
-    pPileOfLead->addBehaviour(std::make_unique<PickuppableBehaviour>(*pPileOfLead, 100));
+    pPileOfLead->addProperty(std::make_unique<PickuppableProperty>(100));
     pPileOfLead->setPos(playerPos + Point(2, 2));
 
     auto pChest = EntityBuilder::makeEntity<ChestEntity>();

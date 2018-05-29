@@ -1,8 +1,10 @@
 #include "entity.h"
 #include "behaviours.h"
+#include "Properties.h"
 
 #include <stdexcept>
 #include <cmath>
+#include <boost/any.hpp>
 
 int gNumInitialisedEntities = 0;
 
@@ -81,9 +83,9 @@ bool Entity::addToInventory(const std::string &ID) {
     if (item == nullptr)
         throw std::invalid_argument("ID " + ID + " not found in Entity Manager");
 
-    auto b = item->getBehaviourByID("PickuppableBehaviour");
+    auto b = item->getProperty("Pickuppable");
     if (b != nullptr) {
-        if (getCarryingWeight() + dynamic_cast<PickuppableBehaviour&>(*b).weight > getMaxCarryWeight())
+        if (getCarryingWeight() + boost::any_cast<int>(b->getValue()) > getMaxCarryWeight())
             return false;
         item->setPos(mPos);
         mInventory.push_back(item->mID);
@@ -91,7 +93,7 @@ bool Entity::addToInventory(const std::string &ID) {
         item->mIsInAnInventory = true;
         return true;
     } else {
-        throw std::invalid_argument("item does not have PickuppableBehaviour");
+        throw std::invalid_argument("item does not have Pickuppable property");
     }
 }
 
@@ -137,9 +139,9 @@ int Entity::getCarryingWeight() {
     int totalWeight = 0;
     for (const auto& ID : mInventory) {
         auto item = EntityManager::getInstance().getEntityByID(ID);
-        if (item->hasBehaviour("PickuppableBehaviour")) {
-            auto a = dynamic_cast<PickuppableBehaviour&>(*item->getBehaviourByID("PickuppableBehaviour"));
-            totalWeight += a.weight;
+        auto pickuppable = item->getProperty("Pickuppable");
+        if (pickuppable != nullptr) {
+            totalWeight += boost::any_cast<int>(pickuppable->getValue());
         }
     }
     return totalWeight;
@@ -193,8 +195,9 @@ const std::unordered_map<EquipmentSlot, std::string> &Entity::getEquipment() con
 }
 
 bool Entity::equip(EquipmentSlot slot, Entity *entity) {
-    if (entity->hasBehaviour("EquippableBehaviour") && entity->hasBehaviour("PickuppableBehaviour")) {
-        auto &b = dynamic_cast<EquippableBehaviour&>(*entity->getBehaviourByID("EquippableBehaviour"));
+    auto equippable = entity->getProperty("Equippable");
+    if (entity->hasProperty("Pickuppable") && equippable != nullptr) {
+        auto b = boost::any_cast<EquippableProperty::Equippable>(equippable->getValue());
         if (b.isEquippableInSlot(slot)) {
             // Make sure it is in the player inventory (and in turn the entity manager)
             if (!isInInventory(entity->mID))
@@ -249,8 +252,9 @@ std::vector<std::string> Entity::getInventoryItemsEquippableInSlot(EquipmentSlot
     std::copy_if(mInventory.cbegin(), mInventory.cend(), std::back_inserter(IDs), [slot] (auto &ID)
     {
         auto e = EntityManager::getInstance().getEntityByID(ID);
-        if (!e->mIsEquipped && e->hasBehaviour("EquippableBehaviour")) {
-            auto &b = dynamic_cast<EquippableBehaviour&>(*e->getBehaviourByID("EquippableBehaviour"));
+        auto equippable = e->getProperty("Equippable");
+        if (!e->mIsEquipped && equippable != nullptr) {
+            auto b = boost::any_cast<EquippableProperty::Equippable>(equippable->getValue());
             return b.isEquippableInSlot(slot);
         }
         return false;
