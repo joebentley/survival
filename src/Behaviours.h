@@ -91,6 +91,7 @@ struct HostilityBehaviour : Behaviour {
 
 // Behaviours for items
 
+// TODO: This should be a property, but difficult due to virtual methods
 struct ApplyableBehaviour : Behaviour {
     ApplyableBehaviour(std::string ID, Entity& parent)
             : Behaviour(std::move(ID), parent) {}
