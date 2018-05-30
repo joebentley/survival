@@ -11,7 +11,7 @@ $ cmake ..
 $ make
 ```
 
-Requires `cmake`, `SDL2`, and `SDL2_image` to be installed
+Build requirements: `cmake`, `Boost`, `SDL2`, and `SDL2_image`
 
 
 [Design document](https://docs.google.com/document/d/1QQWnJ2frBN2tIl7ah1RWHNOQuj8oJjD81V8b4rahGfY/edit?usp=sharing)
