@@ -26,6 +26,15 @@ struct Time {
         return *this;
     }
 
+    Time& operator-=(const Time& rhs) {
+        if (mMinute - rhs.mMinute < 0)
+            mHour = wrap(mHour - 1, 0, 23);
+        mMinute = wrap(mMinute - rhs.mMinute, 0, 59);
+        mHour = wrap(mHour - rhs.mHour, 0, 23);
+
+        return *this;
+    }
+
     std::string toString() const {
         return (mHour < 10 ? "0" : "") + std::to_string(mHour) + ":" + (mMinute < 10 ? "0" : "") + std::to_string(mMinute);
     }
@@ -45,10 +54,26 @@ struct Time {
     float getFractionOfDay() const {
         return static_cast<float>(mHour * 60 + mMinute) / (60 * 24);
     }
+
+private:
+    // https://stackoverflow.com/questions/707370/clean-efficient-algorithm-for-wrapping-integers-in-c
+    int wrap(int kX, int const kLowerBound, int const kUpperBound) {
+        int range_size = kUpperBound - kLowerBound + 1;
+
+        if (kX < kLowerBound)
+            kX += range_size * ((kLowerBound - kX) / range_size + 1);
+
+        return kLowerBound + (kX - kLowerBound) % range_size;
+    }
 };
 
 inline Time operator+(Time lhs, const Time& rhs) {
     lhs += rhs;
+    return lhs;
+}
+
+inline Time operator-(Time lhs, const Time& rhs) {
+    lhs -= rhs;
     return lhs;
 }
 

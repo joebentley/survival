@@ -78,6 +78,7 @@ void Game::loop() {
     screens[ScreenType::CRAFTING] = std::make_shared<CraftingScreen>(*pPlayer);
     screens[ScreenType::EQUIPMENT] = std::make_shared<EquipmentScreen>(*pPlayer);
     screens[ScreenType::HELP] = std::make_shared<HelpScreen>();
+    screens[ScreenType::DEBUG] = std::make_shared<DebugScreen>();
 
     bool initialMessage = true;
     std::vector<std::string> initialMessageLines({

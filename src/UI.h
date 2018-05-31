@@ -17,7 +17,8 @@ enum class ScreenType {
     INSPECTION,
     CRAFTING,
     EQUIPMENT,
-    HELP
+    HELP,
+    DEBUG
 };
 
 void showMessageBox(Font& font, const std::vector<std::string> &contents, int padding, int x, int y);
@@ -323,5 +324,38 @@ struct HelpScreen : Screen {
 
     void handleInput(SDL_KeyboardEvent &e) override;
     void render(Font &font) override;
+};
+
+struct DebugScreen : Screen {
+    DebugScreen() : Screen(false) {
+        mState = std::make_unique<ChoosingActionDebugScreenState>();
+        mState->onEntry(*this);
+    }
+
+    const std::vector<std::string> cDebugOptions = {
+        "1) Change time of day"
+    };
+
+    void enable() override {
+        mChoosingDebugAction = false;
+        Screen::enable();
+    }
+
+    void handleInput(SDL_KeyboardEvent &e) override;
+    void render(Font &font) override;
+
+    void setChoosingDebugAction(bool choosingDebugAction);
+    void setChoosingTimeOfDay(bool choosingTimeOfDay);
+    void setChosenTime(const Time &chosenTime);
+
+    void setStringPos(int stringPos);
+
+private:
+    std::unique_ptr<DebugScreenState> mState;
+    bool mChoosingDebugAction {false};
+    bool mChoosingTimeOfDay {false};
+    int mStringPos {0};
+
+    Time mChosenTime;
 };
 #endif // DIALOG_H_

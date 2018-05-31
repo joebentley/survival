@@ -627,3 +627,97 @@ ViewingDescriptionInspectionDialogState::handleInput(InspectionDialog &screen, S
 void ViewingDescriptionInspectionDialogState::onExit(InspectionDialog &screen) {
     screen.setViewingDescription(false);
 }
+
+void ChoosingActionDebugScreenState::onEntry(DebugScreen &screen) {
+    screen.setChoosingDebugAction(true);
+}
+
+std::unique_ptr<DebugScreenState>
+ChoosingActionDebugScreenState::handleInput(DebugScreen &screen, SDL_KeyboardEvent &e) {
+    switch (e.keysym.sym) {
+        case SDLK_ESCAPE:
+            screen.disable();
+            return nullptr;
+        case SDLK_1:
+            return std::make_unique<ChoosingTimeOfDayDebugScreenState>();
+    }
+
+    return nullptr;
+}
+
+void ChoosingActionDebugScreenState::onExit(DebugScreen &screen) {
+    screen.setChoosingDebugAction(false);
+}
+
+void ChoosingTimeOfDayDebugScreenState::onEntry(DebugScreen &screen) {
+    screen.setChoosingTimeOfDay(true);
+    mChosenTime = EntityManager::getInstance().getTimeOfDay();
+    screen.setChosenTime(mChosenTime);
+}
+
+std::unique_ptr<DebugScreenState>
+ChoosingTimeOfDayDebugScreenState::handleInput(DebugScreen &screen, SDL_KeyboardEvent &e) {
+    switch (e.keysym.sym) {
+        case SDLK_UP:
+        case SDLK_k:
+            switch (mStringPos) {
+                case 0:
+                    mChosenTime += Time(10, 0);
+                    break;
+                case 1:
+                    mChosenTime += Time(1, 0);
+                    break;
+                case 2:
+                    mChosenTime += Time(0, 10);
+                    break;
+                case 3:
+                    mChosenTime += Time(0, 1);
+                    break;
+            }
+            screen.setChosenTime(mChosenTime);
+            break;
+        case SDLK_DOWN:
+        case SDLK_j:
+            switch (mStringPos) {
+                case 0:
+                    mChosenTime -= Time(10, 0);
+                    break;
+                case 1:
+                    mChosenTime -= Time(1, 0);
+                    break;
+                case 2:
+                    mChosenTime -= Time(0, 10);
+                    break;
+                case 3:
+                    mChosenTime -= Time(0, 1);
+                    break;
+            }
+            screen.setChosenTime(mChosenTime);
+            break;
+        case SDLK_LEFT:
+        case SDLK_h:
+            --mStringPos;
+            if (mStringPos < 0)
+                mStringPos = 3;
+            screen.setStringPos(mStringPos);
+            break;
+        case SDLK_RIGHT:
+        case SDLK_l:
+            ++mStringPos;
+            if (mStringPos > 3)
+                mStringPos = 0;
+            screen.setStringPos(mStringPos);
+            break;
+        case SDLK_ESCAPE:
+            return std::make_unique<ChoosingActionDebugScreenState>();
+        case SDLK_RETURN:
+            EntityManager::getInstance().setTimeOfDay(mChosenTime);
+            return std::make_unique<ChoosingActionDebugScreenState>();
+    }
+    return nullptr;
+}
+
+void ChoosingTimeOfDayDebugScreenState::onExit(DebugScreen &screen) {
+    screen.setChoosingTimeOfDay(false);
+    screen.setStringPos(0);
+}

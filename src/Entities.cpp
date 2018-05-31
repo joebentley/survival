@@ -226,6 +226,9 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
 
         if (mod & KMOD_SHIFT && key == SDLK_SLASH)
             screens[ScreenType::HELP]->enable();
+
+        if (mod & KMOD_SHIFT && key == SDLK_d)
+            screens[ScreenType::DEBUG]->enable();
     }
 
     if (didAction)

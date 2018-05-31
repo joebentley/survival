@@ -12,6 +12,7 @@ struct LootingDialog;
 struct InspectionDialog;
 struct CraftingScreen;
 struct EquipmentScreen;
+struct DebugScreen;
 
 template<typename T>
 class UIState {
@@ -26,6 +27,7 @@ typedef UIState<LootingDialog> LootingDialogState;
 typedef UIState<InspectionDialog> InspectionDialogState;
 typedef UIState<CraftingScreen> CraftingScreenState;
 typedef UIState<EquipmentScreen> EquipmentScreenState;
+typedef UIState<DebugScreen> DebugScreenState;
 
 class ViewingInventoryState : public InventoryScreenState {
 public:
@@ -155,9 +157,26 @@ public:
     void onEntry(EquipmentScreen &screen) override;
     std::unique_ptr<EquipmentScreenState> handleInput(EquipmentScreen &screen, SDL_KeyboardEvent &e) override;
     void onExit(EquipmentScreen &screen) override;
+};
+
+class ChoosingActionDebugScreenState : public DebugScreenState {
+public:
+    void onEntry(DebugScreen &screen) override;
+    std::unique_ptr<DebugScreenState> handleInput(DebugScreen &screen, SDL_KeyboardEvent &e) override;
+    void onExit(DebugScreen &screen) override;
+};
+
+class ChoosingTimeOfDayDebugScreenState : public DebugScreenState {
+public:
+    void onEntry(DebugScreen &screen) override;
+    std::unique_ptr<DebugScreenState> handleInput(DebugScreen &screen, SDL_KeyboardEvent &e) override;
+    void onExit(DebugScreen &screen) override;
 
 private:
-//    int mChoosingEquipmentActionIndex {0};
+
+    int mStringPos {0};
+
+    Time mChosenTime;
 };
 
 #endif //SURVIVAL_STATE_H
