@@ -26,7 +26,7 @@ add_executable(${PROJECT_NAME}
 		src/World.cpp
 		src/World.h src/flags.h src/utils.h src/utils.cpp src/Recipe.cpp src/Recipe.h src/Time.h src/Game.h src/Game.cpp src/SDLManager.cpp src/SDLManager.h src/FontColor.cpp src/FontColor.h src/EntityBuilder.h src/UIState.cpp src/UIState.h src/Property.cpp src/Property.h src/Properties.h)
 
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_lambdas cxx_nullptr cxx_range_for cxx_strong_enums cxx_std_14)
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_lambdas cxx_nullptr cxx_range_for cxx_strong_enums cxx_std_17)
 
 if(NOT MSVC)
 	target_compile_options(${PROJECT_NAME} PRIVATE -Wall -pedantic)
@@ -59,13 +59,13 @@ else(MSVC)
 	target_link_libraries(${PROJECT_NAME} SDL2 SDL2_image)
 endif(MSVC)
 
-find_package(Boost REQUIRED)
-
-if(MSVC)
-	target_include_directories(${PROJECT_NAME} PRIVATE ${Boost_INCLUDE_DIR})
-else(MSVC)
-	target_include_directories(${PROJECT_NAME} PRIVATE Boost)
-endif(MSVC)
+#find_package(Boost REQUIRED)
+#
+#if(MSVC)
+#	target_include_directories(${PROJECT_NAME} PRIVATE ${Boost_INCLUDE_DIR})
+#else(MSVC)
+#	target_include_directories(${PROJECT_NAME} PRIVATE Boost)
+#endif(MSVC)
 
 if(MSVC)
 	target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX)

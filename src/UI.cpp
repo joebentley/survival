@@ -5,7 +5,7 @@
 
 #include <sstream>
 #include <algorithm>
-#include <boost/any.hpp>
+#include <any>
 
 std::string repeat(int n, const std::string &str) {
     std::ostringstream os;
@@ -84,7 +84,7 @@ void drawDescriptionScreen(Font& font, Entity& item) {
     {
         auto b = item.getProperty("Pickuppable");
         if (b != nullptr) {
-            int weight = boost::any_cast<int>(b->getValue());
+            int weight = std::any_cast<int>(b->getValue());
             font.drawText("It weighs " + std::to_string(weight) + (weight == 1 ? " pound" : " pounds"),
                     InventoryScreen::X_OFFSET, yOffset + y++);
         }
@@ -93,7 +93,7 @@ void drawDescriptionScreen(Font& font, Entity& item) {
     {
         auto b = item.getProperty("MeleeWeaponDamage");
         if (b != nullptr) {
-            int damage = boost::any_cast<int>(b->getValue());
+            int damage = std::any_cast<int>(b->getValue());
             font.drawText("It adds $[red]" + std::to_string(damage) + "$[white] to your damage roll",
                     InventoryScreen::X_OFFSET, yOffset + y++);
         }
@@ -102,7 +102,7 @@ void drawDescriptionScreen(Font& font, Entity& item) {
     {
         auto b = item.getProperty("AdditionalCarryWeight");
         if (b != nullptr) {
-            int carry = boost::any_cast<int>(b->getValue());
+            int carry = std::any_cast<int>(b->getValue());
             font.drawText("It adds an extra " + std::to_string(carry) + "lb to your max carry weight",
                     InventoryScreen::X_OFFSET, yOffset + y++);
         }
@@ -111,7 +111,7 @@ void drawDescriptionScreen(Font& font, Entity& item) {
     {
         auto equippable = item.getProperty("Equippable");
         if (equippable != nullptr) {
-            auto b = boost::any_cast<EquippableProperty::Equippable>(equippable->getValue());
+            auto b = std::any_cast<EquippableProperty::Equippable>(equippable->getValue());
             const auto &slots = b.getEquippableSlots();
             std::string slotsString;
 
@@ -138,7 +138,7 @@ void drawDescriptionScreen(Font& font, Entity& item) {
     {
         auto prop = item.getProperty("WaterContainer");
         if (prop != nullptr) {
-            auto waterContainer = boost::any_cast<WaterContainerProperty::WaterContainer>(prop->getValue());
+            auto waterContainer = std::any_cast<WaterContainerProperty::WaterContainer>(prop->getValue());
             int current = waterContainer.getAmount();
             font.drawText("It can hold $[cyan]" + std::to_string(waterContainer.getMaxCapacity()) + "$[white] drams of water." +
                           (current > 0 ? " It currently holds $[cyan]" + std::to_string(current) +
@@ -275,7 +275,7 @@ void LootingDialog::render(Font &font) {
 
     for (int i = 0; i < numItems; ++i) {
         auto item = mItemsToShow[i];
-        int weight = boost::any_cast<int>(item->getProperty("Pickuppable")->getValue());
+        int weight = std::any_cast<int>(item->getProperty("Pickuppable")->getValue());
 
         std::string weightString = std::to_string(weight);
         std::string string = item->mGraphic + " " + item->mName.substr(0, DIALOG_WIDTH - 6);
@@ -522,7 +522,7 @@ std::vector<Entity *> CraftingScreen::filterInventoryForChosenMaterials() {
         if (std::find(mCurrentlyChosenMaterials.begin(), mCurrentlyChosenMaterials.end(), a->mID) != mCurrentlyChosenMaterials.end())
             return false;
 
-        auto type = boost::any_cast<CraftingMaterialProperty::Data>(a->getProperty("CraftingMaterial")->getValue()).type;
+        auto type = std::any_cast<CraftingMaterialProperty::Data>(a->getProperty("CraftingMaterial")->getValue()).type;
         return rm.mRecipes[mChosenRecipe]->mIngredients[mChosenIngredient].mEntityType == type;
     });
 
@@ -680,7 +680,7 @@ void EquipmentScreen::render(Font &font) {
                 if (b != nullptr) {
                     lines[i] += " $[red]$(heart)$[white]" + std::to_string(mPlayer.mHitTimes)
                                 + "d" +
-                                std::to_string(mPlayer.mHitAmount + boost::any_cast<int>(b->getValue()));
+                                std::to_string(mPlayer.mHitAmount + std::any_cast<int>(b->getValue()));
                 }
             }
         }

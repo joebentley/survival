@@ -1,10 +1,10 @@
 #include "Property.h"
 
-void Property::setValue(boost::any value) {
-    mValue = value;
+void Property::setValue(std::any value) {
+    mValue = std::move(value);
 }
 
-boost::any &Property::getValue() {
+std::any &Property::getValue() {
     return mValue;
 }
 

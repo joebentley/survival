@@ -4,7 +4,7 @@
 
 #include <stdexcept>
 #include <cmath>
-#include <boost/any.hpp>
+#include <any>
 
 int gNumInitialisedEntities = 0;
 
@@ -62,7 +62,7 @@ int Entity::computeMaxDamage() const {
         auto b = a->getProperty("MeleeWeaponDamage");
 
         if (b != nullptr) {
-            return mHitAmount + boost::any_cast<int>(b->getValue());
+            return mHitAmount + std::any_cast<int>(b->getValue());
         }
     }
 
@@ -85,7 +85,7 @@ bool Entity::addToInventory(const std::string &ID) {
 
     auto b = item->getProperty("Pickuppable");
     if (b != nullptr) {
-        if (getCarryingWeight() + boost::any_cast<int>(b->getValue()) > getMaxCarryWeight())
+        if (getCarryingWeight() + std::any_cast<int>(b->getValue()) > getMaxCarryWeight())
             return false;
         item->setPos(mPos);
         mInventory.push_back(item->mID);
@@ -141,7 +141,7 @@ int Entity::getCarryingWeight() {
         auto item = EntityManager::getInstance().getEntityByID(ID);
         auto pickuppable = item->getProperty("Pickuppable");
         if (pickuppable != nullptr) {
-            totalWeight += boost::any_cast<int>(pickuppable->getValue());
+            totalWeight += std::any_cast<int>(pickuppable->getValue());
         }
     }
     return totalWeight;
@@ -197,7 +197,7 @@ const std::unordered_map<EquipmentSlot, std::string> &Entity::getEquipment() con
 bool Entity::equip(EquipmentSlot slot, Entity *entity) {
     auto equippable = entity->getProperty("Equippable");
     if (entity->hasProperty("Pickuppable") && equippable != nullptr) {
-        auto b = boost::any_cast<EquippableProperty::Equippable>(equippable->getValue());
+        auto b = std::any_cast<EquippableProperty::Equippable>(equippable->getValue());
         if (b.isEquippableInSlot(slot)) {
             // Make sure it is in the player inventory (and in turn the entity manager)
             if (!isInInventory(entity->mID))
@@ -254,7 +254,7 @@ std::vector<std::string> Entity::getInventoryItemsEquippableInSlot(EquipmentSlot
         auto e = EntityManager::getInstance().getEntityByID(ID);
         auto equippable = e->getProperty("Equippable");
         if (!e->mIsEquipped && equippable != nullptr) {
-            auto b = boost::any_cast<EquippableProperty::Equippable>(equippable->getValue());
+            auto b = std::any_cast<EquippableProperty::Equippable>(equippable->getValue());
             return b.isEquippableInSlot(slot);
         }
         return false;
@@ -294,7 +294,7 @@ int Entity::getMaxCarryWeight() const {
     if (a != nullptr) {
         auto b = a->getProperty("AdditionalCarryWeight");
         if (b != nullptr) {
-            return mMaxCarryWeight + boost::any_cast<int>(b->getValue());
+            return mMaxCarryWeight + std::any_cast<int>(b->getValue());
         }
     }
 
@@ -314,7 +314,7 @@ std::vector<std::string> Entity::filterInventoryForCraftingMaterials(const std::
         auto b = entity->getProperty("CraftingMaterial");
         if (b != nullptr) {
             if (std::find(materialTypes.cbegin(), materialTypes.cend(),
-                    boost::any_cast<CraftingMaterialProperty::Data>(b->getValue()).type) != materialTypes.cend()) {
+                    std::any_cast<CraftingMaterialProperty::Data>(b->getValue()).type) != materialTypes.cend()) {
                 return true;
             }
         }
@@ -536,7 +536,7 @@ std::vector<LightMapPoint> EntityManager::getLightSources(Point fontSize) const 
         const auto &entity = getEntityByID(a);
         auto b = entity->getProperty("LightEmitting");
         if (b != nullptr) {
-            auto light = boost::any_cast<LightEmittingProperty::Light>(b->getValue());
+            auto light = std::any_cast<LightEmittingProperty::Light>(b->getValue());
             if (light.isEnabled()) {
                 auto radius = fontSize.mY * light.getRadius();
                 auto point = fontSize * worldToScreen(entity->getPos()) + fontSize / 2;

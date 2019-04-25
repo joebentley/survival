@@ -2,6 +2,7 @@
 #include "World.h"
 
 #include <algorithm>
+#include <any>
 
 bool PlayerEntity::attack(const Point &attackPos) {
     auto entitiesInSquare = EntityManager::getInstance().getEntitiesAtPosFaster(attackPos);
@@ -396,7 +397,7 @@ void FireEntity::render(Font &font, Point currentWorldPos) {
     else
         mGraphic = "${black}$[orange]%";
 
-    boost::any_cast<LightEmittingProperty::Light>(getProperty("LightEmitting")->getValue())
+    std::any_cast<LightEmittingProperty::Light>(getProperty("LightEmitting")->getValue())
             .setRadius(static_cast<int>(std::round(6 * fireLevel)));
 
     Entity::render(font, currentWorldPos);

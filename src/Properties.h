@@ -16,7 +16,7 @@ public:
 class EquippableProperty : public Property {
 public:
     explicit EquippableProperty(std::vector<EquipmentSlot> equippableSlots)
-            : Property("Equippable", Equippable(equippableSlots)) {}
+            : Property("Equippable", Equippable(std::move(equippableSlots))) {}
     explicit EquippableProperty(EquipmentSlot equippableSlot)
             : Property("Equippable", Equippable(equippableSlot)) {}
 

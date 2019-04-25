@@ -1,7 +1,7 @@
 #ifndef SURVIVAL_PROPERTY_H
 #define SURVIVAL_PROPERTY_H
 
-#include <boost/any.hpp>
+#include <any>
 #include <string>
 #include <set>
 
@@ -22,15 +22,15 @@ private:
 
 class Property {
 public:
-    Property(std::string propertyName, boost::any value) : mPropertyName(std::move(propertyName)), mValue(std::move(value)) {}
+    Property(std::string propertyName, std::any value) : mPropertyName(std::move(propertyName)), mValue(std::move(value)) {}
 
     std::string getName() const;
-    void setValue(boost::any value);
-    boost::any &getValue();
+    void setValue(std::any value);
+    std::any &getValue();
 
 private:
     std::string mPropertyName;
-    boost::any mValue;
+    std::any mValue;
 };
 
 
