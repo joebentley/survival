@@ -25,11 +25,13 @@ struct Entity;
 struct Behaviour {
     Behaviour(std::string ID, Entity& parent) : mID(std::move(ID)), mParent(parent) {}
 
+    virtual ~Behaviour() = default;
+
     std::string mID;
     Entity& mParent;
 
     virtual void tick() {};
-    virtual void handle(Uint32 signal) {};
+    virtual void handle(Uint32 /*signal*/) {};
 
     virtual bool isEnabled() const {
         return mEnabled;
@@ -60,7 +62,7 @@ EquipmentSlot &operator++(EquipmentSlot &slot);
 
 EquipmentSlot &operator--(EquipmentSlot &slot);
 
-const std::vector<EquipmentSlot> EQUIPMENT_SLOTS {
+const std::vector<EquipmentSlot> EQUIPMENT_SLOTS { // NOLINT(cert-err58-cpp)
     EquipmentSlot::HEAD, EquipmentSlot::TORSO, EquipmentSlot::LEGS,
     EquipmentSlot::RIGHT_HAND, EquipmentSlot::LEFT_HAND, EquipmentSlot::FEET,
     EquipmentSlot::BACK
@@ -111,6 +113,8 @@ struct Entity {
     Entity(std::string ID, std::string name, std::string graphic)
             : Entity(std::move(ID), std::move(name), std::move(graphic), 1, 1, 0, 1, 2, 100) {}
 
+    virtual ~Entity() = default;
+
     float mHp;
     float mMaxHp;
     float mRegenPerTick;
@@ -150,7 +154,7 @@ struct Entity {
     size_t getInventorySize() const;
     bool isInventoryEmpty() const;
     std::vector<Entity *> getInventory() const;
-    bool isInInventory(std::string ID) const;
+    bool isInInventory(const std::string &ID) const;
 
     /// Filter inventory for crafting material of type `materialType` returning a vector of ID strings
     /// \param materialType type of material to filter for
@@ -193,17 +197,17 @@ struct Entity {
     /// \return shared_ptr to entity in slot
     Entity * getEquipmentEntity(EquipmentSlot slot) const;
     bool equip(EquipmentSlot slot, Entity *entity);
-    bool equip(EquipmentSlot slot, std::string ID);
+    bool equip(EquipmentSlot slot, const std::string &ID);
     bool unequip(Entity *entity);
-    bool unequip(std::string ID);
+    bool unequip(const std::string &ID);
     bool unequip(EquipmentSlot slot);
     std::vector<std::string> getInventoryItemsEquippableInSlot(EquipmentSlot slot) const;
     bool hasEquippedInSlot(EquipmentSlot slot) const;
-    bool hasEquipped(std::string ID) const;
-    EquipmentSlot getEquipmentSlotByID(std::string ID) const;
+    bool hasEquipped(const std::string &ID) const;
+    EquipmentSlot getEquipmentSlotByID(const std::string &ID) const;
 
-    bool hasProperty(std::string propertyName) const;
-    Property * getProperty(std::string propertyName) const;
+    bool hasProperty(const std::string &propertyName) const;
+    Property * getProperty(const std::string &propertyName) const;
 
     void addProperty(std::unique_ptr<Property> property);
 
@@ -235,6 +239,7 @@ public:
     }
 
     EntityManager() = default;
+    // Singleton
     EntityManager(const EntityManager&) = delete;
     void operator=(const EntityManager&) = delete;
 

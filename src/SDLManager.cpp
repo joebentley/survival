@@ -5,12 +5,12 @@ int SDLManager::initialize(Uint32 SDLInitFlags, Uint32 SDLImageInitFlags) {
     if (SDL_Init(SDLInitFlags) < 0) {
         std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
         return -1;
-    } else if (IMG_Init(SDLImageInitFlags) != SDLImageInitFlags) {
+    } else if (IMG_Init(SDLImageInitFlags) != (int)SDLImageInitFlags) {
         std::cerr << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << std::endl;
         return -1;
     } else {
         mWindow = SDL_CreateWindow("Survival",
-                SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, // NOLINT(hicpp-signed-bitwise)
                 WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
 
         if (mWindow == nullptr) {

@@ -162,7 +162,7 @@ std::vector<Entity *> Entity::getInventory() const {
     return output;
 }
 
-bool Entity::isInInventory(std::string ID) const {
+bool Entity::isInInventory(const std::string &ID) const {
     return std::find(mInventory.cbegin(), mInventory.cend(), ID) != mInventory.cend();
 }
 
@@ -211,7 +211,7 @@ bool Entity::equip(EquipmentSlot slot, Entity *entity) {
     return false;
 }
 
-bool Entity::equip(EquipmentSlot slot, std::string ID) {
+bool Entity::equip(EquipmentSlot slot, const std::string &ID) {
     return equip(slot, EntityManager::getInstance().getEntityByID(ID));
 }
 
@@ -219,7 +219,7 @@ bool Entity::unequip(Entity *entity) {
     return unequip(entity->mID);
 }
 
-bool Entity::unequip(std::string ID) {
+bool Entity::unequip(const std::string &ID) {
     auto a = std::find_if(mEquipment.cbegin(), mEquipment.cend(), [ID] (auto b) { return b.second == ID; });
 
     if (a == mEquipment.cend())
@@ -271,11 +271,11 @@ bool Entity::hasEquippedInSlot(EquipmentSlot slot) const {
     return !mEquipment.at(slot).empty();
 }
 
-bool Entity::hasEquipped(std::string ID) const {
+bool Entity::hasEquipped(const std::string &ID) const {
     return std::find_if(mEquipment.cbegin(), mEquipment.cend(), [ID] (auto &a) { return a.second == ID; }) != mEquipment.cend();
 }
 
-EquipmentSlot Entity::getEquipmentSlotByID(std::string ID) const {
+EquipmentSlot Entity::getEquipmentSlotByID(const std::string &ID) const {
     auto a = std::find_if(mEquipment.cbegin(), mEquipment.cend(), [ID] (auto &a) { return a.second == ID; });
 
     if (a == mEquipment.cend())
@@ -324,14 +324,14 @@ std::vector<std::string> Entity::filterInventoryForCraftingMaterials(const std::
     return materialIDs;
 }
 
-bool Entity::hasProperty(std::string propertyName) const {
+bool Entity::hasProperty(const std::string &propertyName) const {
     if (!PropertiesManager::getInstance().isPropertyRegistered(propertyName))
         throw std::out_of_range("Property " + propertyName + " not registered into the list of known properties!");
 
     return mProperties.find(propertyName) != mProperties.cend();
 }
 
-Property *Entity::getProperty(std::string propertyName) const {
+Property *Entity::getProperty(const std::string &propertyName) const {
     if (!PropertiesManager::getInstance().isPropertyRegistered(propertyName))
         throw std::out_of_range("Property " + propertyName + " not registered into the list of known properties!");
 
@@ -364,7 +364,7 @@ void EntityManager::broadcast(Uint32 signal) {
 #define UNMANAGED_ENTITIES_ERROR_MESSAGE "Warning! The number of initialised entities is not equal to the number of entities in the entity manager!"
 
 void EntityManager::initialize() {
-    if (gNumInitialisedEntities != mEntities.size())
+    if ((size_t)gNumInitialisedEntities != mEntities.size())
         std::cerr << UNMANAGED_ENTITIES_ERROR_MESSAGE << std::endl;
 
     recomputeCurrentEntitiesOnScreenAndSurroundingScreens(getEntityByID("Player")->getWorldPos());
@@ -375,7 +375,7 @@ void EntityManager::tick() {
 
     mTimeOfDay += mTimePerTick;
 
-    if (gNumInitialisedEntities != mEntities.size())
+    if ((size_t)gNumInitialisedEntities != mEntities.size())
         std::cerr << UNMANAGED_ENTITIES_ERROR_MESSAGE << std::endl;
 
     // Only update entities in this screen and surrounding screens

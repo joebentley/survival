@@ -23,7 +23,7 @@
 const int CHAR_HEIGHT = 12; // 20; // 12;
 const int CHAR_WIDTH = 10; // 20; // 8;
 const int NUM_PER_ROW = 16;
-const std::string CHARS =
+const std::string CHARS = // NOLINT(cert-err58-cpp)
     "space dwarf dwarf2 heart diamond club spade circle emptycircle ring emptyring male female note1 note2 gem "
     "sloperight slopeleft updown alert pagemark sectionmark thickbottom updown2 up down right left boxbottomleft leftright slopeup slopedown "
     "space2 ! \" # $ % & ' ( ) * + , - . / "
@@ -59,7 +59,7 @@ public:
                   std::istream_iterator<std::string>(),
                   std::back_inserter(words));
         
-        for (int i = 0; i < words.size(); ++i) {
+        for (unsigned long i = 0; i < words.size(); ++i) {
             int x = i % numPerRow;
             int y = i / numPerRow;
 

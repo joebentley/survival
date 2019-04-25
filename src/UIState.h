@@ -17,6 +17,8 @@ struct DebugScreen;
 template<typename T>
 class UIState {
 public:
+    virtual ~UIState() = default;
+
     virtual void onEntry(T &screen) = 0;
     virtual std::unique_ptr<UIState<T>> handleInput(T &screen, SDL_KeyboardEvent &e) = 0;
     virtual void onExit(T &screen) = 0;
@@ -94,7 +96,7 @@ class ChoosingRecipeCraftingScreenState : public CraftingScreenState {
 public:
     void onEntry(CraftingScreen &screen) override;
     std::unique_ptr<CraftingScreenState> handleInput(CraftingScreen &screen, SDL_KeyboardEvent &e) override;
-    void onExit(CraftingScreen &screen) override {};
+    void onExit(CraftingScreen& /*screen*/) override {};
 
 private:
     int mChosenRecipe {0};
@@ -104,7 +106,7 @@ class ChoosingIngredientCraftingScreenState : public CraftingScreenState {
 public:
     void onEntry(CraftingScreen &screen) override;
     std::unique_ptr<CraftingScreenState> handleInput(CraftingScreen &screen, SDL_KeyboardEvent &e) override;
-    void onExit(CraftingScreen &screen) override {};
+    void onExit(CraftingScreen& /*screen*/) override {};
 
 private:
     int mChosenIngredient {0};
@@ -114,7 +116,7 @@ class ChoosingMaterialCraftingScreenState : public CraftingScreenState {
 public:
     void onEntry(CraftingScreen &screen) override;
     std::unique_ptr<CraftingScreenState> handleInput(CraftingScreen &screen, SDL_KeyboardEvent &e) override;
-    void onExit(CraftingScreen &screen) override {};
+    void onExit(CraftingScreen& /*screen*/) override {};
 
 private:
     int mChosenMaterial {0};

@@ -43,7 +43,7 @@ int Font::drawText(const std::string &text, int x0, int y, Color fColor, Color b
 {
     int x = x0;
 
-    for (int i = 0; i < text.size(); ++i) {
+    for (std::string::size_type i = 0; i < text.size(); ++i) {
         // parse extended token
         if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '(') {
             ++i;
@@ -82,7 +82,7 @@ int Font::drawText(const std::string &text, int x0, int y, int alpha) {
     Color bColor = Color(0, 0, 0, 0);
     int x = x0;
 
-    for (int i = 0; i < text.size(); ++i) {
+    for (std::string::size_type i = 0; i < text.size(); ++i) {
         // parse extended token
         if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '(') {
             ++i;
@@ -154,7 +154,7 @@ int Font::drawText(const std::string &text, int x0, int y, Color bColor) {
     Color fColor = Color(0xFF, 0xFF, 0xFF);
     int x = x0;
 
-    for (int i = 0; i < text.size(); ++i) {
+    for (std::string::size_type i = 0; i < text.size(); ++i) {
         // parse extended token
         if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '(') {
             ++i;
@@ -220,13 +220,13 @@ int Font::getCellHeight() const {
 }
 
 Point Font::getCellSize() const {
-    return Point(mCellWidth, mCellHeight);
+    return {mCellWidth, mCellHeight};
 }
 
 int getFontStringLength(const std::string& text)
 {
     int characters = 0;
-    for (int i = 0; i < text.length(); ++i) {
+    for (std::string::size_type i = 0; i < text.length(); ++i) {
         if (i + 2 < text.size() && text[i] == '$' && text[i + 1] == '(') {
             ++i;
             while (text[++i] != ')');

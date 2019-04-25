@@ -74,7 +74,7 @@ void drawDescriptionScreen(Font& font, Entity& item) {
     font.drawText(item.mShortDesc, InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 2);
 
     auto words = wordWrap(item.mLongDesc, InventoryScreen::WORD_WRAP_COLUMN);
-    for (int i = 0; i < words.size(); ++i) {
+    for (std::vector<std::string>::size_type i = 0; i < words.size(); ++i) {
         font.drawText(words[i], InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + i);
     }
 
@@ -112,7 +112,7 @@ void drawDescriptionScreen(Font& font, Entity& item) {
         auto equippable = item.getProperty("Equippable");
         if (equippable != nullptr) {
             auto b = boost::any_cast<EquippableProperty::Equippable>(equippable->getValue());
-            auto slots = b.getEquippableSlots();
+            const auto &slots = b.getEquippableSlots();
             std::string slotsString;
 
             for (auto slot = slots.cbegin(); slot != slots.cend(); ++slot) {
@@ -167,7 +167,7 @@ void InventoryScreen::render(Font &font) {
 
     font.draw("right", X_OFFSET - 1, mChosenIndex + Y_OFFSET);
 
-    for (int i = 0; i < mPlayer.getInventorySize(); ++i) {
+    for (size_t i = 0; i < mPlayer.getInventorySize(); ++i) {
         auto item = mPlayer.getInventoryItem(i);
         std::string displayString = item->mGraphic + " " + item->mName;
 
@@ -469,21 +469,21 @@ void CraftingScreen::render(Font &font) {
     const int xOffset = 3;
     const int yOffset = 3;
 
-    for (int i = 0; i < rm.mRecipes.size(); ++i) {
+    for (std::vector<std::shared_ptr<Recipe>>::size_type i = 0; i < rm.mRecipes.size(); ++i) {
         auto recipe = *rm.mRecipes.at(i);
         Color bColor = FontColor::getColor("black");
 
-        if (i == mChosenRecipe)
+        if (i == (size_t)mChosenRecipe)
             bColor = FontColor::getColor("blue");
 
         font.drawText(recipe.mNameOfProduct, xOffset, yOffset + i, FontColor::getColor("white"), bColor);
     }
 
     auto &ingredients = rm.mRecipes[mChosenRecipe]->mIngredients;
-    for (int i = 0; i < ingredients.size() + 1; ++i) {
+    for (std::vector<Recipe::Ingredient>::size_type i = 0; i < ingredients.size() + 1; ++i) {
         Color bColor = FontColor::getColor("black");
 
-        if ((mLayer == CraftingLayer::INGREDIENT || mLayer == CraftingLayer::MATERIAL) && i == mChosenIngredient)
+        if ((mLayer == CraftingLayer::INGREDIENT || mLayer == CraftingLayer::MATERIAL) && i == (size_t)mChosenIngredient)
             bColor = FontColor::getColor("blue");
 
         if (i != ingredients.size()) {
@@ -506,11 +506,11 @@ void CraftingScreen::render(Font &font) {
     if (mLayer == CraftingLayer::INGREDIENT || mLayer == CraftingLayer::MATERIAL) {
         std::vector<Entity *> inventoryMaterials = filterInventoryForChosenMaterials();
 
-        for (int i = 0; i < inventoryMaterials.size(); ++i) {
+        for (std::vector<Entity *>::size_type i = 0; i < inventoryMaterials.size(); ++i) {
             Color bColor;
             auto &material = inventoryMaterials.at(i);
 
-            if (mLayer == CraftingLayer::MATERIAL && i == mChosenMaterial) {
+            if (mLayer == CraftingLayer::MATERIAL && i == (size_t)mChosenMaterial) {
                 bColor = FontColor::getColor("blue");
                 font.drawText(material->mGraphic + " " + material->mName, xOffset + 24, yOffset + i, bColor);
             } else
@@ -678,11 +678,11 @@ void EquipmentScreen::render(Font &font) {
         auto equippableIDs = mPlayer.getInventoryItemsEquippableInSlot(mChosenSlot);
         std::vector<std::string> lines;
 
-        for (int i = 0; i < equippableIDs.size(); ++i) {
+        for (std::vector<std::string>::size_type i = 0; i < equippableIDs.size(); ++i) {
             auto ID = equippableIDs[i];
             auto entity = EntityManager::getInstance().getEntityByID(ID);
 
-            lines.emplace_back((i == mChoosingNewEquipmentIndex ? "$(right)" : " ") + entity->mGraphic + " " + entity->mName);
+            lines.emplace_back((i == (size_t)mChoosingNewEquipmentIndex ? "$(right)" : " ") + entity->mGraphic + " " + entity->mName);
 
             if (mChosenSlot == EquipmentSlot::RIGHT_HAND) {
                 auto b = entity->getProperty("MeleeWeaponDamage");
@@ -743,7 +743,7 @@ void EquipmentScreen::setChoosingNewEquipmentIndex(int choosingNewEquipmentIndex
 
 void NotificationMessageRenderer::queueMessage(const std::string &message) {
     mMessagesToBeRendered.push_back(message);
-    if (mMessagesToBeRendered.size() > cMaxOnScreen)
+    if (mMessagesToBeRendered.size() > (size_t)cMaxOnScreen)
         mMessagesToBeRendered.pop_front();
     mAllMessages.push_back(message);
 }

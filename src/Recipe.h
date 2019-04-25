@@ -37,6 +37,8 @@ struct Recipe {
     Recipe(const Recipe &other) = default;
 
     virtual void produce() {};
+
+    virtual ~Recipe() = default;
 };
 
 struct FireRecipe : Recipe {

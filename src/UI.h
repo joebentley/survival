@@ -90,6 +90,8 @@ private:
 struct Screen {
     explicit Screen(bool shouldRenderWorld) : mShouldRenderWorld(shouldRenderWorld) {}
 
+    virtual ~Screen() = default;
+
     virtual void enable() {
         mEnabled = true;
     }

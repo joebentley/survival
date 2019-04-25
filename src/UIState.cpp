@@ -2,7 +2,7 @@
 #include "UI.h"
 #include <boost/any.hpp>
 
-void ViewingInventoryState::onEntry(InventoryScreen &screen) {}
+void ViewingInventoryState::onEntry(InventoryScreen &/*screen*/) {}
 
 std::unique_ptr<InventoryScreenState>
 ViewingInventoryState::handleInput(InventoryScreen &screen, SDL_KeyboardEvent &e) {
@@ -16,7 +16,7 @@ ViewingInventoryState::handleInput(InventoryScreen &screen, SDL_KeyboardEvent &e
             break;
         case SDLK_j:
             if (!player.isInventoryEmpty()) {
-                if (mChosenIndex < (player.getInventorySize() - 1))
+                if ((size_t)mChosenIndex < (player.getInventorySize() - 1))
                     mChosenIndex++;
                 else
                     mChosenIndex = 0;
@@ -40,7 +40,7 @@ ViewingInventoryState::handleInput(InventoryScreen &screen, SDL_KeyboardEvent &e
 
                 player.dropItem(mChosenIndex);
 
-                if (player.getInventorySize() - 1 < mChosenIndex) {
+                if (player.getInventorySize() - 1 < (size_t)mChosenIndex) {
                     mChosenIndex--;
                     screen.setChosenIndex(mChosenIndex);
                 }
@@ -54,7 +54,7 @@ ViewingInventoryState::handleInput(InventoryScreen &screen, SDL_KeyboardEvent &e
                     player.addHunger(boost::any_cast<float>(eatable->getValue()));
                     player.removeFromInventory(mChosenIndex);
                     item->destroy();
-                    if (player.getInventorySize() - 1 < mChosenIndex) {
+                    if (player.getInventorySize() - 1 < (size_t)mChosenIndex) {
                         mChosenIndex--;
                         screen.setChosenIndex(mChosenIndex);
                     }
@@ -66,7 +66,7 @@ ViewingInventoryState::handleInput(InventoryScreen &screen, SDL_KeyboardEvent &e
                 auto item = player.getInventoryItem(mChosenIndex);
                 if (item->hasBehaviour("ApplyableBehaviour")) {
                     dynamic_cast<ApplyableBehaviour&>(*(*item).getBehaviourByID("ApplyableBehaviour")).apply();
-                    if (player.getInventorySize() - 1 < mChosenIndex) {
+                    if (player.getInventorySize() - 1 < (size_t)mChosenIndex) {
                         mChosenIndex--;
                         screen.setChosenIndex(mChosenIndex);
                     }
@@ -82,14 +82,14 @@ ViewingInventoryState::handleInput(InventoryScreen &screen, SDL_KeyboardEvent &e
     return nullptr;
 }
 
-void ViewingInventoryState::onExit(InventoryScreen &screen) {
+void ViewingInventoryState::onExit(InventoryScreen &/*screen*/) {
 }
 
 void ViewingDescriptionInventoryState::onEntry(InventoryScreen &screen) {
     screen.setViewingDescription(true);
 }
 
-std::unique_ptr<InventoryScreenState> ViewingDescriptionInventoryState::handleInput(InventoryScreen &screen,
+std::unique_ptr<InventoryScreenState> ViewingDescriptionInventoryState::handleInput(InventoryScreen &/*screen*/,
                                                                                     SDL_KeyboardEvent &e)
 {
     switch (e.keysym.sym) {
@@ -119,7 +119,7 @@ ViewingLootingDialogState::handleInput(LootingDialog &screen, SDL_KeyboardEvent 
             return std::make_unique<ViewingDescriptionLootingDialogState>();
         case SDLK_j:
             if (!screen.getItemsToShow().empty()) {
-                if (mChosenIndex < (screen.getItemsToShow().size() - 1))
+                if ((size_t)mChosenIndex < (screen.getItemsToShow().size() - 1))
                     mChosenIndex++;
                 else
                     mChosenIndex = 0;
@@ -155,7 +155,7 @@ ViewingLootingDialogState::handleInput(LootingDialog &screen, SDL_KeyboardEvent 
     return nullptr;
 }
 
-void ViewingLootingDialogState::onExit(LootingDialog &screen) {
+void ViewingLootingDialogState::onExit(LootingDialog &/*screen*/) {
 }
 
 void ViewingDescriptionLootingDialogState::onEntry(LootingDialog &screen) {
@@ -163,7 +163,7 @@ void ViewingDescriptionLootingDialogState::onEntry(LootingDialog &screen) {
 }
 
 std::unique_ptr<LootingDialogState>
-ViewingDescriptionLootingDialogState::handleInput(LootingDialog &screen, SDL_KeyboardEvent &e)
+ViewingDescriptionLootingDialogState::handleInput(LootingDialog &/*screen*/, SDL_KeyboardEvent &e)
 {
     switch (e.keysym.sym) {
         case SDLK_ESCAPE:
@@ -182,7 +182,7 @@ void ShowingTooMuchWeightMessageLootingDialogState::onEntry(LootingDialog &scree
 }
 
 std::unique_ptr<LootingDialogState>
-ShowingTooMuchWeightMessageLootingDialogState::handleInput(LootingDialog &screen, SDL_KeyboardEvent &e)
+ShowingTooMuchWeightMessageLootingDialogState::handleInput(LootingDialog &/*screen*/, SDL_KeyboardEvent &e)
 {
     switch (e.keysym.sym) {
         case SDLK_RETURN:
@@ -212,7 +212,7 @@ ChoosingRecipeCraftingScreenState::handleInput(CraftingScreen &screen, SDL_Keybo
             screen.disable();
             return nullptr;
         case SDLK_j:
-            if (mChosenRecipe == rm.mRecipes.size() - 1)
+            if ((size_t)mChosenRecipe == rm.mRecipes.size() - 1)
                 mChosenRecipe = 0;
             else
                 mChosenRecipe++;
@@ -254,7 +254,7 @@ ChoosingIngredientCraftingScreenState::handleInput(CraftingScreen &screen, SDL_K
             screen.disable();
             break;
         case SDLK_j:
-            if (mChosenIngredient == rm.mRecipes[screen.getChosenRecipe()]->mIngredients.size())
+            if ((size_t)mChosenIngredient == rm.mRecipes[screen.getChosenRecipe()]->mIngredients.size())
                 mChosenIngredient = 0;
             else
                 mChosenIngredient++;
@@ -272,7 +272,7 @@ ChoosingIngredientCraftingScreenState::handleInput(CraftingScreen &screen, SDL_K
         case SDLK_l:
         case SDLK_RETURN: {
             auto &currentRecipe = screen.getCurrentRecipe();
-            if (mChosenIngredient == currentRecipe->mIngredients.size()) {
+            if ((size_t)mChosenIngredient == currentRecipe->mIngredients.size()) {
                 if (screen.currentRecipeSatisfied()) {
                     if (rm.mRecipes[screen.getChosenRecipe()]->mGoesIntoInventory ||
                         screen.isHaveChosenPositionInWorld()) {
@@ -294,7 +294,7 @@ ChoosingIngredientCraftingScreenState::handleInput(CraftingScreen &screen, SDL_K
         case SDLK_BACKSPACE:
             screen.setChosenMaterial(0);
 //            mLayer = CraftingLayer::RECIPE;
-            screen.getCurrentRecipe().release();
+            screen.getCurrentRecipe().release(); // NOLINT(bugprone-unused-return-value)
             screen.getCurrentlyChosenMaterials().clear();
             return std::make_unique<ChoosingRecipeCraftingScreenState>();
     }
@@ -315,7 +315,7 @@ ChoosingMaterialCraftingScreenState::handleInput(CraftingScreen &screen, SDL_Key
             break;
         case SDLK_j: {
             auto inventoryMaterials = screen.filterInventoryForChosenMaterials();
-            if (mChosenMaterial == inventoryMaterials.size() - 1)
+            if ((size_t)mChosenMaterial == inventoryMaterials.size() - 1)
                 mChosenMaterial = 0;
             else
                 mChosenMaterial++;
@@ -444,7 +444,7 @@ ChoosingSlotEquipmentScreenState::handleInput(EquipmentScreen &screen, SDL_Keybo
     return nullptr;
 }
 
-void ChoosingSlotEquipmentScreenState::onExit(EquipmentScreen &screen) {}
+void ChoosingSlotEquipmentScreenState::onExit(EquipmentScreen &/*screen*/) {}
 
 void ChoosingNewEquipmentScreenState::onEntry(EquipmentScreen &screen) {
     screen.setChoosingNewEquipment(true);
@@ -457,7 +457,7 @@ ChoosingNewEquipmentScreenState::handleInput(EquipmentScreen &screen, SDL_Keyboa
             return std::make_unique<ChoosingSlotEquipmentScreenState>();
         case SDLK_j: {
             auto equippableIDs = screen.getPlayer().getInventoryItemsEquippableInSlot(screen.getChosenSlot());
-            if (mChoosingNewEquipmentIndex == equippableIDs.size() - 1)
+            if ((size_t)mChoosingNewEquipmentIndex == equippableIDs.size() - 1)
                 mChoosingNewEquipmentIndex = 0;
             else
                 ++mChoosingNewEquipmentIndex;
@@ -519,7 +519,7 @@ void ChoosingActionEquipmentScreenState::onExit(EquipmentScreen &screen) {
     screen.setChoosingEquipmentActionIndex(0);
 }
 
-void ChoosingPositionInspectionDialogState::onEntry(InspectionDialog &screen) {}
+void ChoosingPositionInspectionDialogState::onEntry(InspectionDialog &/*screen*/) {}
 
 std::unique_ptr<InspectionDialogState>
 ChoosingPositionInspectionDialogState::handleInput(InspectionDialog &screen, SDL_KeyboardEvent &e) {
@@ -558,7 +558,7 @@ ChoosingPositionInspectionDialogState::handleInput(InspectionDialog &screen, SDL
         case SDLK_EQUALS:
             if (screen.isSelectingFromMultipleOptions()) {
                 const auto &currentEntities = EntityManager::getInstance().getEntitiesAtPosFaster(mChosenPoint);
-                if (mChosenIndex == currentEntities.size() - 1)
+                if ((size_t)mChosenIndex == currentEntities.size() - 1)
                     mChosenIndex = 0;
                 else
                     mChosenIndex++;
@@ -581,7 +581,7 @@ ChoosingPositionInspectionDialogState::handleInput(InspectionDialog &screen, SDL
             break;
     }
 
-    if (e.keysym.mod & KMOD_SHIFT)
+    if (e.keysym.mod & KMOD_SHIFT) // NOLINT(hicpp-signed-bitwise)
         posOffset *= 5;
 
     mChosenPoint = clipToScreenEdge(screen, mChosenPoint + posOffset);
@@ -591,7 +591,7 @@ ChoosingPositionInspectionDialogState::handleInput(InspectionDialog &screen, SDL
     return nullptr;
 }
 
-void ChoosingPositionInspectionDialogState::onExit(InspectionDialog &screen) {
+void ChoosingPositionInspectionDialogState::onExit(InspectionDialog &/*screen*/) {
 
 }
 
@@ -615,7 +615,7 @@ void ViewingDescriptionInspectionDialogState::onEntry(InspectionDialog &screen) 
 }
 
 std::unique_ptr<InspectionDialogState>
-ViewingDescriptionInspectionDialogState::handleInput(InspectionDialog &screen, SDL_KeyboardEvent &e) {
+ViewingDescriptionInspectionDialogState::handleInput(InspectionDialog &/*screen*/, SDL_KeyboardEvent &e) {
     switch (e.keysym.sym) {
         case SDLK_ESCAPE:
             return std::make_unique<ChoosingPositionInspectionDialogState>();

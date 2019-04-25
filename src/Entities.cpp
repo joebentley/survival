@@ -190,7 +190,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
             if (!enemiesInSpace.empty()
                 && ((enemiesInSpace[0]->getBehaviourByID("HostilityBehaviour") != nullptr
                      && enemiesInSpace[0]->getBehaviourByID("HostilityBehaviour")->isEnabled())
-                    || (mod & KMOD_SHIFT)
+                    || (mod & KMOD_SHIFT) // NOLINT(hicpp-signed-bitwise)
                     || attacking)) {
                 attack(newPos);
             } else {
@@ -224,10 +224,10 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
         if (key == SDLK_m)
             screens[ScreenType::NOTIFICATION]->enable();
 
-        if (mod & KMOD_SHIFT && key == SDLK_SLASH)
+        if (mod & KMOD_SHIFT && key == SDLK_SLASH) // NOLINT(hicpp-signed-bitwise)
             screens[ScreenType::HELP]->enable();
 
-        if (mod & KMOD_SHIFT && key == SDLK_d)
+        if (mod & KMOD_SHIFT && key == SDLK_d) // NOLINT(hicpp-signed-bitwise)
             screens[ScreenType::DEBUG]->enable();
     }
 
@@ -266,7 +266,7 @@ void PlayerEntity::addHunger(float hungerRestoration) {
     hunger = std::min(hunger + hungerRestoration, 1.0f);
 }
 
-void StatusUIEntity::render(Font &font, Point currentWorldPos) {
+void StatusUIEntity::render(Font &font, Point /*currentWorldPos*/) {
     std::string colorStr;
     float hpPercent = player.mHp / player.mMaxHp;
 
@@ -431,7 +431,7 @@ bool FireEntity::RekindleBehaviour::handleInput(SDL_KeyboardEvent &e) {
                 const auto &player = EntityManager::getInstance().getEntityByID("Player");
                 const auto &entities = player->filterInventoryForCraftingMaterials(std::vector<std::string> {"grass", "wood"});
 
-                if (choosingItemIndex == entities.size() - 1)
+                if ((size_t)choosingItemIndex == entities.size() - 1)
                     choosingItemIndex = 0;
                 else
                     ++choosingItemIndex;
@@ -473,7 +473,7 @@ bool FireEntity::RekindleBehaviour::handleInput(SDL_KeyboardEvent &e) {
     return true;
 }
 
-void FireEntity::RekindleBehaviour::render(Font &font) {
+void FireEntity::RekindleBehaviour::render(Font &/*font*/) {
     MessageBoxRenderer::getInstance().queueMessageBoxCentered("$(right)Rekindle", 1);
 
     if (choosingItemToUse) {
@@ -487,9 +487,9 @@ void FireEntity::RekindleBehaviour::render(Font &font) {
 
         std::vector<std::string> displayStrings;
 
-        for (int i = 0; i < entities.size(); ++i) {
+        for (std::vector<std::string>::size_type i = 0; i < entities.size(); ++i) {
             const auto &entity = EntityManager::getInstance().getEntityByID(entities[i]);
-            displayStrings.emplace_back((i == choosingItemIndex ? "$(right)" : " ") + entity->mGraphic + " " + entity->mName);
+            displayStrings.emplace_back((i == (size_t)choosingItemIndex ? "$(right)" : " ") + entity->mGraphic + " " + entity->mName);
         }
 
         MessageBoxRenderer::getInstance().queueMessageBoxCentered(displayStrings, 1);
