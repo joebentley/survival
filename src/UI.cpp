@@ -143,7 +143,7 @@ void drawDescriptionScreen(Font& font, Entity& item) {
             font.drawText("It can hold $[cyan]" + std::to_string(waterContainer.getMaxCapacity()) + "$[white] drams of water." +
                           (current > 0 ? " It currently holds $[cyan]" + std::to_string(current) +
                                          "$[white] drams of water." : ""),
-                    InventoryScreen::X_OFFSET, yOffset + y++);
+                    InventoryScreen::X_OFFSET, yOffset + y + 1);
         }
     }
 
@@ -233,7 +233,7 @@ void LootingDialog::showItemsToLoot(std::vector<Entity *> items) {
 void LootingDialog::showItemsToLoot(std::vector<Entity *> items, Entity *entityToTransferFrom)
 {
     mItemsToShow = std::move(items);
-    this->mEntityToTransferFrom = std::move(entityToTransferFrom);
+    mEntityToTransferFrom = entityToTransferFrom;
     mEnabled = true;
 }
 
@@ -245,10 +245,7 @@ void LootingDialog::handleInput(SDL_KeyboardEvent &e) {
         mState->onEntry(*this);
     }
 
-    if (mViewingDescription)
-        mShouldRenderWorld = false;
-    else
-        mShouldRenderWorld = true;
+    mShouldRenderWorld = !mViewingDescription;
 }
 
 void LootingDialog::render(Font &font) {
@@ -324,7 +321,7 @@ Entity *LootingDialog::getEntityToTransferFrom() const {
 }
 
 
-void InspectionDialog:: handleInput(SDL_KeyboardEvent &e) {
+void InspectionDialog::handleInput(SDL_KeyboardEvent &e) {
     auto newState = mState->handleInput(*this, e);
     if (newState != nullptr) {
         mState->onExit(*this);
@@ -332,10 +329,7 @@ void InspectionDialog:: handleInput(SDL_KeyboardEvent &e) {
         mState->onEntry(*this);
     }
 
-    if (mViewingDescription)
-        mShouldRenderWorld = false;
-    else
-        mShouldRenderWorld = true;
+    mShouldRenderWorld = !mViewingDescription;
 }
 
 void InspectionDialog::render(Font &font) {
@@ -443,10 +437,7 @@ void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
         mState->onEntry(*this);
     }
 
-    if (mChoosingPositionInWorld)
-        mShouldRenderWorld = true;
-    else
-        mShouldRenderWorld = false;
+    mShouldRenderWorld = !mChoosingPositionInWorld;
 }
 
 void CraftingScreen::render(Font &font) {
@@ -793,7 +784,7 @@ void NotificationMessageScreen::render(Font &font) {
 }
 
 void HelpScreen::handleInput(SDL_KeyboardEvent &e) {
-    if (e.keysym.sym == SDLK_ESCAPE || (e.keysym.sym == SDLK_SLASH && e.keysym.mod & KMOD_SHIFT))
+    if (e.keysym.sym == SDLK_ESCAPE || (e.keysym.sym == SDLK_SLASH && e.keysym.mod & KMOD_SHIFT)) // NOLINT(hicpp-signed-bitwise)
         disable();
 }
 

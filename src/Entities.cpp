@@ -181,6 +181,9 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
                 case SDLK_n:
                     posOffset = Point(1, 1);
                     break;
+                default:
+                    posOffset = Point(0, 0);
+                    break;
             }
 
             auto newPos = getPos() + posOffset;
