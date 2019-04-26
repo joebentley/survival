@@ -1,10 +1,10 @@
 #include "Recipe.h"
 
 RecipeManager::RecipeManager() {
-    mRecipes.emplace_back(std::make_shared<FireRecipe>());
-    mRecipes.emplace_back(std::make_shared<BandageRecipe>());
-    mRecipes.emplace_back(std::make_shared<TorchRecipe>());
-    mRecipes.emplace_back(std::make_shared<BagRecipe>());
+    mRecipes.emplace_back(std::make_unique<FireRecipe>());
+    mRecipes.emplace_back(std::make_unique<BandageRecipe>());
+    mRecipes.emplace_back(std::make_unique<TorchRecipe>());
+    mRecipes.emplace_back(std::make_unique<BagRecipe>());
 }
 
 int FireRecipe::numProduced = 0;

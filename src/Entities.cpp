@@ -54,7 +54,7 @@ void PlayerEntity::tick() {
     Entity::tick();
 }
 
-void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_map<ScreenType, std::shared_ptr<Screen>> &screens)
+void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_map<ScreenType, std::unique_ptr<Screen>> &screens)
 {
     auto key = e.keysym.sym;
     auto mod = e.keysym.mod;

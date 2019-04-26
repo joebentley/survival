@@ -8,8 +8,7 @@
 
 struct Recipe;
 struct RecipeManager {
-    // TODO change to unique_ptr
-    std::vector<std::shared_ptr<Recipe>> mRecipes;
+    std::vector<std::unique_ptr<Recipe>> mRecipes;
 
     static RecipeManager& getInstance() {
         static RecipeManager instance;

@@ -68,17 +68,17 @@ void Game::loop() {
     manager.initialize();
     manager.setTimeOfDay(Time(6, 0));
 
-    // TODO change to unique_ptr
-    std::unordered_map<ScreenType, std::shared_ptr<Screen>> screens;
 
-    screens[ScreenType::NOTIFICATION] = std::make_shared<NotificationMessageScreen>();
-    screens[ScreenType::INVENTORY] = std::make_shared<InventoryScreen>(*pPlayer);
-    screens[ScreenType::LOOTING] = std::make_shared<LootingDialog>(*pPlayer);
-    screens[ScreenType::INSPECTION] = std::make_shared<InspectionDialog>(*pPlayer);
-    screens[ScreenType::CRAFTING] = std::make_shared<CraftingScreen>(*pPlayer);
-    screens[ScreenType::EQUIPMENT] = std::make_shared<EquipmentScreen>(*pPlayer);
-    screens[ScreenType::HELP] = std::make_shared<HelpScreen>();
-    screens[ScreenType::DEBUG] = std::make_shared<DebugScreen>();
+    std::unordered_map<ScreenType, std::unique_ptr<Screen>> screens;
+
+    screens[ScreenType::NOTIFICATION] = std::make_unique<NotificationMessageScreen>();
+    screens[ScreenType::INVENTORY] = std::make_unique<InventoryScreen>(*pPlayer);
+    screens[ScreenType::LOOTING] = std::make_unique<LootingDialog>(*pPlayer);
+    screens[ScreenType::INSPECTION] = std::make_unique<InspectionDialog>(*pPlayer);
+    screens[ScreenType::CRAFTING] = std::make_unique<CraftingScreen>(*pPlayer);
+    screens[ScreenType::EQUIPMENT] = std::make_unique<EquipmentScreen>(*pPlayer);
+    screens[ScreenType::HELP] = std::make_unique<HelpScreen>();
+    screens[ScreenType::DEBUG] = std::make_unique<DebugScreen>();
 
     bool initialMessage = true;
     std::vector<std::string> initialMessageLines({
@@ -105,7 +105,7 @@ void Game::loop() {
                 initialMessage = false;
             else if (!initialMessage && e.type == SDL_KEYDOWN) {
                 bool screenEnabled = false;
-                for (auto screen : screens) {
+                for (auto &screen : screens) {
                     if (screen.second->isEnabled()) {
                         screen.second->handleInput(e.key);
                         screenEnabled = true;
@@ -123,11 +123,11 @@ void Game::loop() {
         SDL_RenderClear(renderer);
 
         bool shouldRenderWorld = true;
-        std::shared_ptr<Screen> screenToRender = nullptr;
-        for (auto screen : screens) {
+        Screen *screenToRender = nullptr;
+        for (auto &screen : screens) {
             if (screen.second->isEnabled()) {
                 shouldRenderWorld = screen.second->shouldRenderWorld();
-                screenToRender = screen.second;
+                screenToRender = screen.second.get();
                 break;
             }
         }

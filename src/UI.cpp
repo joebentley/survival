@@ -437,7 +437,7 @@ void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
         mState->onEntry(*this);
     }
 
-    mShouldRenderWorld = !mChoosingPositionInWorld;
+    mShouldRenderWorld = mChoosingPositionInWorld;
 }
 
 void CraftingScreen::render(Font &font) {
@@ -550,7 +550,7 @@ void CraftingScreen::reset() {
 }
 
 void CraftingScreen::buildItem(Point pos) {
-    auto recipe = RecipeManager::getInstance().mRecipes[mChosenRecipe];
+    auto &recipe = RecipeManager::getInstance().mRecipes[mChosenRecipe];
 
     if (!recipe->mGoesIntoInventory) {
         recipe->mPointIfNotGoingIntoInventory = pos;

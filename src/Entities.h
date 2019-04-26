@@ -25,7 +25,7 @@ struct PlayerEntity : Entity {
 
     bool attack(const Point& attackPos);
     void tick() override;
-    void handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_map<ScreenType, std::shared_ptr<Screen>> &screens);
+    void handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_map<ScreenType, std::unique_ptr<Screen>> &screens);
     void render(Font &font, Point currentWorldPos) override;
     bool addToInventory(const std::string &ID) override;
 
