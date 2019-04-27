@@ -3,6 +3,7 @@
 
 #include "Entity.h"
 
+// TODO: do these need to handle raw pointers at all?
 namespace EntityBuilder {
     template<typename T>
     void makeEntityAndAddToInventory(Entity *entityToAddTo) {

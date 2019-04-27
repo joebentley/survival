@@ -12,15 +12,18 @@ bool PlayerEntity::attack(const Point &attackPos) {
     }
 
     auto enemy = entitiesInSquare[0];
+    // roll and damage the enemy
     int damage = rollDamage();
     enemy->mHp -= damage;
 
+    // send hit notification message
     NotificationMessageRenderer::getInstance().queueMessage(
             "$(dwarf) hit " + enemy->mGraphic + " " + enemy->mName + "$[white] with $[red]$(heart)$[white]" + std::to_string(mHitTimes) +
             "d" + std::to_string(mHitAmount) + " for " + std::to_string(damage));
 
     // TODO: Add AV
     // TODO: Add avoidance
+    // force enemy to start attacking player
     if (enemy->getBehaviourByID("WanderBehaviour") != nullptr)
         enemy->getBehaviourByID("WanderBehaviour")->disable();
     if (enemy->getBehaviourByID("AttachmentBehaviour") != nullptr)
@@ -30,9 +33,11 @@ bool PlayerEntity::attack(const Point &attackPos) {
     if (enemy->getBehaviourByID("ChaseAndAttackBehaviour") != nullptr)
         enemy->getBehaviourByID("ChaseAndAttackBehaviour")->enable();
 
+    // set the player's attack target to the enemy
     auto& ui = dynamic_cast<StatusUIEntity&>(*EntityManager::getInstance().getEntityByID("StatusUI"));
     ui.setAttackTarget(enemy->mID);
 
+    // if the enemy died, delete the enemy and stop attacking
     if (enemy->mHp <= 0) {
         ui.clearAttackTarget();
         EntityManager::getInstance().queueForDeletion(enemy->mID);

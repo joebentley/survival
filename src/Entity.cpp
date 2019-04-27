@@ -166,10 +166,6 @@ bool Entity::isInInventory(const std::string &ID) const {
     return std::find(mInventory.cbegin(), mInventory.cend(), ID) != mInventory.cend();
 }
 
-Point Entity::getPos() const {
-    return mPos;
-}
-
 bool Entity::moveTo(Point p) {
     auto entities = EntityManager::getInstance().getEntitiesAtPosFaster(p);
 

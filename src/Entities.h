@@ -9,11 +9,17 @@
 struct Screen;
 enum class ScreenType;
 
+/// A special entity with ID "Player"
 struct PlayerEntity : Entity {
+    /// 1 is full, <0.3 is starving
     float hunger;
-    float hungerRate; // hunger per tick
-    float hungerDamageRate; // hp loss per tick while starving
-    bool attacking {false}; // whether or not player is attacking something
+    /// how much hunger should decrease per tick
+    float hungerRate;
+    /// hp loss per tick while starving
+    float hungerDamageRate;
+    /// whether or not player is attacking something
+    bool attacking {false};
+    /// whether or not showing "too much weight message" on screen
     bool showingTooMuchWeightMessage {false};
 
     explicit PlayerEntity()
@@ -23,12 +29,18 @@ struct PlayerEntity : Entity {
         mRenderingLayer = -1;
     }
 
+    /// Try to attack the entity at attackPos
     bool attack(const Point& attackPos);
+    /// Tick entity, taking hunger into account
     void tick() override;
+    /// Handle most of the ingame interaction
     void handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_map<ScreenType, std::unique_ptr<Screen>> &screens);
+    /// Same as usual render except can show a "too much weight" message box, and offload additional rendering to "mEntityInteractingWith"
     void render(Font &font, Point currentWorldPos) override;
+    /// Overrides usual entity addToInventory but displays a nice notification
     bool addToInventory(const std::string &ID) override;
 
+    /// Add hunger, not exceeding 1.0f
     void addHunger(float hunger);
 
 private:
@@ -140,7 +152,7 @@ struct AppleEntity : EatableEntity {
 
 struct BananaEntity : EatableEntity {
     const std::string SHORT_DESC = "A yellow fruit found in the jungle.";
-    const std::string LONG_DESC = "This fruit was discovered in [redacted]. They were brought west by Arab conquerors in 327 B.C.";
+    const std::string LONG_DESC = "This fruit was discovered in . They were brought west by Arab conquerors in 327 B.C.";
 
     explicit BananaEntity(std::string ID = "")
             : EatableEntity(std::move(ID), "Banana", "$[yellow]b", 0.5)
