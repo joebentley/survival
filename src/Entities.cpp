@@ -550,6 +550,9 @@ BuildingWallEntity::BuildingWallEntity(const Point &pos, const std::vector<std::
         for (char character : line) {
             if (character == '+') {
                 walls.insert(Point(x, y));
+            } else if (character == 'd') {
+                auto door = std::make_unique<DoorEntity>(pos + Point(x, y));
+                EntityManager::getInstance().addEntity(std::move(door));
             }
 
             x++;
@@ -669,4 +672,23 @@ bool BuildingWallEntity::collide(const Point &pos) {
     Point wallPos = pos - mPos;
     // check if this point is in mWalls
     return mWalls.find(wallPos) != mWalls.cend();
+}
+
+void DoorEntity::render(Font& font, Point currentWorldPos) {
+    // Only draw if the entity is on the current world screen
+    if (isOnScreen(currentWorldPos)) {
+        std::string c = mIsOpen ? "." : "+";
+        font.draw(c, worldToScreen(mPos), FontColor::getColor("white"), FontColor::getColor("black"));
+    }
+}
+
+bool DoorEntity::collide(const Point &pos) {
+    // TODO: fix this
+    std::cout << mIsOpen << ", " << pos.to_string() << ", " << mPos.to_string() << std::endl;
+    // Open the door if we walk into it and it's currently shut
+    if (!mIsOpen && pos == mPos) {
+        this->open();
+        return true;
+    }
+    return false;
 }

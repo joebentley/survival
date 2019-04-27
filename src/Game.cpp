@@ -68,13 +68,13 @@ void Game::loop() {
     // Add an example building
     std::vector<std::string> walls = {
             "++++++++++++",
+            "+          +",
+            "+     +    +",
+            "+ +++++++d++",
             "+     +    +",
             "+     +    +",
-            "+ +++++++ ++",
             "+     +    +",
-            "+     +    +",
-            "+     +    +",
-            "+++ ++++++++"
+            "+++d++++++++"
     };
     auto building = std::make_unique<BuildingWallEntity>(playerPos + Point(10, -10), walls);
     manager.addEntity(std::move(building));

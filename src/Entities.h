@@ -345,9 +345,9 @@ struct BuildingWallEntity : Entity {
     /// \param layout vector of strings, each line being a row of the building. Each cross 'x' becomes a wall of the building
     explicit BuildingWallEntity(const Point &pos, const std::vector<std::string> &layout);
 
-    /// Overrides
-    /// \param font
-    /// \param currentWorldPos
+    /// Overrides rendering to display the correct tile for each WallType
+    /// \param font the font to render on
+    /// \param currentWorldPos the current world position
     void render(Font& font, Point currentWorldPos) override;
 
     /// Overrides collision detection to take the numerous walls into account
@@ -376,6 +376,29 @@ private:
     /// Take a set of points and populate mWalls with the correct WallTypes
     /// \param points the set of points that represent the building
     void generateWallsFromPoints(const std::unordered_set<Point> &points);
+};
+
+
+/// Represents a door that can be opened or closed
+struct DoorEntity : Entity {
+    explicit DoorEntity(const Point &pos) : Entity("", "Door", "") { mPos = pos; mRenderingLayer = -1; }
+
+    /// Overrides rendering to display whether the door is open or closed
+    /// \param font the font to render on
+    /// \param currentWorldPos the current world position
+    void render(Font& font, Point currentWorldPos) override;
+
+    /// Overrides collision detection to open the door
+    /// \param pos position to check if colliding
+    /// \return whether or not collision occurred
+    bool collide(const Point &pos) override;
+
+    void open() { mIsOpen = true; }
+    void close() { mIsOpen = false; }
+    bool isOpen() { return mIsOpen; }
+
+private:
+    bool mIsOpen {false};
 };
 
 //endregion
