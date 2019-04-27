@@ -68,7 +68,7 @@ void Game::loop() {
     // Add an example building
     std::vector<std::string> walls = {
             "++++++++++++",
-            "+          +",
+            "+     +    +",
             "+     +    +",
             "+ +++++++ ++",
             "+     +    +",
