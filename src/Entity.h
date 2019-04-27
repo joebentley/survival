@@ -198,6 +198,10 @@ struct Entity {
     /// \param currentWorldPos the current screen grid coordinates on the world grid
     virtual void render(Font& font, Point currentWorldPos);
 
+    /// Handle collision with `pos`, returning true if collision occurred.
+    /// Default interpretation is whether `pos == this->getPos()`
+    virtual bool collide(const Point &pos);
+
     /// Add entity with ID to inventory
     virtual bool addToInventory(const std::string &ID);
     /// Remove entity with given ID from inventory
@@ -233,7 +237,7 @@ struct Entity {
     int getCarryingWeight();
 
     /// Set position of the entity to (x, y)
-    void setPos(int x, int y) { mPos = Point(x, y); }
+    void setPos(int x, int y) { setPos(Point(x, y)); }
     /// Set position of the entity to p
     void setPos(Point p) { mPos = p; }
     /// Get entity position
@@ -394,6 +398,13 @@ public:
     /// \param pos position to look around
     /// \return vector of pointers to entities surrounding pos
     std::vector<Entity *> getEntitiesSurroundingFaster(const Point& pos) const;
+
+    /// Union of mCurrentlyOnScreen and mInSurroundingScreens
+    /// \return vector of pointers to entities
+    std::vector<Entity *> getEntitiesOnScreenAndSurroundingScreens() const;
+
+    /// Call collision(pos) for all entities in current and surrounding screens
+    std::vector<Entity *> doCollisions(const Point& pos);
 
     /// Is entity with ID registered in the manager?
     bool isEntityInManager(const std::string &ID);

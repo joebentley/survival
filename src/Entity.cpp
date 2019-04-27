@@ -49,6 +49,10 @@ void Entity::render(Font& font, Point currentWorldPos) {
     }
 }
 
+bool Entity::collide(const Point &pos) {
+    return mPos == pos;
+}
+
 Behaviour *Entity::getBehaviourByID(const std::string &ID) const {
     if (mBehaviours.find(ID) == mBehaviours.cend())
         return nullptr;
@@ -167,19 +171,20 @@ bool Entity::isInInventory(const std::string &ID) const {
 }
 
 bool Entity::moveTo(Point p) {
-    auto entities = EntityManager::getInstance().getEntitiesAtPosFaster(p);
+    auto &em = EntityManager::getInstance();
+    std::vector<Entity*> entities = em.doCollisions(p);
 
-    // Check if there is a solid object in space
-    if (std::find_if(entities.cbegin(), entities.cend(), [] (auto &a) { return a->mIsSolid; }) == entities.cend()) {
-        auto oldWorldPos = getWorldPos();
+    // Check that there were no collisions in the space
+    if (entities.empty()) {
+        Point oldWorldPos = getWorldPos();
         setPos(p);
         // Check if we moved to a new world coordinate, if so update the current entities on screen
         if (oldWorldPos != getWorldPos())
-            EntityManager::getInstance().recomputeCurrentEntitiesOnScreenAndSurroundingScreens();
+            em.recomputeCurrentEntitiesOnScreenAndSurroundingScreens();
 
-        // Move all items held by entity
-        for (const auto &ID : mInventory)
-            EntityManager::getInstance().getEntityByID(ID)->setPos(p);
+        // Also move all items held by entity
+        for (const std::string &ID : mInventory)
+            em.getEntityByID(ID)->setPos(p);
 
         return true;
     }
@@ -466,6 +471,33 @@ std::vector<Entity *> EntityManager::getEntitiesSurroundingFaster(const Point &p
     return entitiesSurrounding;
 }
 
+std::vector<Entity *> EntityManager::getEntitiesOnScreenAndSurroundingScreens() const {
+    std::vector<Entity *> entities;
+    for (const auto& ID : mCurrentlyOnScreen) {
+        entities.push_back(getEntityByID(ID));
+    }
+    for (const auto& ID : mInSurroundingScreens) {
+        entities.push_back(getEntityByID(ID));
+    }
+    return entities;
+}
+
+std::vector<Entity *> EntityManager::doCollisions(const Point& pos) {
+    std::vector<Entity *> collidingEntities;
+    for (const auto& ID : mCurrentlyOnScreen) {
+        Entity *e = getEntityByID(ID);
+        // execute the entity's collision, which returns true if a collision occurred
+        if (e->collide(pos))
+            collidingEntities.push_back(e);
+    }
+    for (const auto& ID : mInSurroundingScreens) {
+        Entity *e = getEntityByID(ID);
+        if (e->collide(pos))
+            collidingEntities.push_back(e);
+    }
+    return collidingEntities;
+}
+
 void EntityManager::cleanup() {
     while (!mToBeDeleted.empty()) {
         eraseByID(mToBeDeleted.front());
@@ -485,8 +517,9 @@ void EntityManager::eraseByID(const std::string &ID) {
 
 void EntityManager::reorderEntities() {
     mToRender.clear();
+    // Make pairs of entity IDs with their rendering layers
     std::transform(mCurrentlyOnScreen.cbegin(), mCurrentlyOnScreen.cend(), std::back_inserter(mToRender),
-            [this] (auto &a) -> auto { return std::make_pair(a, getEntityByID(a)->mRenderingLayer); });
+            [this] (const std::string &ID) -> auto { return std::make_pair(ID, getEntityByID(ID)->mRenderingLayer); });
     std::sort(mToRender.begin(), mToRender.end(), [](auto &a, auto &b) { return a.second > b.second; });
 }
 

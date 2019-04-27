@@ -192,17 +192,23 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
                     break;
             }
 
-            auto newPos = getPos() + posOffset;
+            Point newPos = getPos() + posOffset;
 
-            auto enemiesInSpace = EntityManager::getInstance().getEntitiesAtPosFaster(mPos + posOffset);
-            // TODO: what if more than one enemy in space?
-            if (!enemiesInSpace.empty()
-                && ((enemiesInSpace[0]->getBehaviourByID("HostilityBehaviour") != nullptr
-                     && enemiesInSpace[0]->getBehaviourByID("HostilityBehaviour")->isEnabled())
-                    || (mod & KMOD_SHIFT) // NOLINT(hicpp-signed-bitwise)
-                    || attacking)) {
-                attack(newPos);
+            std::vector<Entity*> entitiesInSpace = EntityManager::getInstance().getEntitiesAtPosFaster(newPos);
+
+            if (!entitiesInSpace.empty()) {
+                // TODO: what if more than one enemy in space?
+                Entity *entity = entitiesInSpace[0];
+
+                // Check whether or not to attack
+                if ((entity->getBehaviourByID("HostilityBehaviour") != nullptr && entity->getBehaviourByID("HostilityBehaviour")->isEnabled())
+                    || (mod & KMOD_SHIFT) // force attack // NOLINT(hicpp-signed-bitwise)
+                    || attacking) // already attacking
+                {
+                    attack(newPos);
+                }
             } else {
+                // Try to move into the new space
                 if (!moveTo(newPos))
                     return; // Don't tick if didn't move
             }
