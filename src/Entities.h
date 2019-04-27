@@ -6,6 +6,8 @@
 #include "UI.h"
 #include "Properties.h"
 
+#include <unordered_set>
+
 struct Screen;
 enum class ScreenType;
 
@@ -306,6 +308,18 @@ struct WaterskinEntity : Entity {
         addProperty(std::make_unique<WaterContainerProperty>());
         addProperty(std::make_unique<PickuppableProperty>(1));
     }
+};
+
+// Building entities
+
+struct BuildingWallEntity : Entity {
+    explicit BuildingWallEntity(const Point &pos, const std::vector<std::string> &layout);
+
+    void render(Font& font, Point currentWorldPos) override;
+    bool collide(const Point &pos) override;
+
+private:
+    std::unordered_set<Point> mWalls;
 };
 
 // UI entities

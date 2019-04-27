@@ -35,18 +35,20 @@ void Entity::render(Font& font, Point currentWorldPos) {
     if (!mShouldRender)
         return;
 
+    Point screenPos = worldToScreen(mPos);
+
+    // Only draw if the entity is on the current world screen
+    if (isOnScreen(currentWorldPos)) {
+        font.drawText(mGraphic, screenPos.mX, screenPos.mY);
+    }
+}
+
+bool Entity::isOnScreen(const Point &currentWorldPos) {
     int currentWorldX = currentWorldPos.mX;
     int currentWorldY = currentWorldPos.mY;
 
-    // Only draw if the entity is on the current world screen
-    if (
-        mPos.mX >= SCREEN_WIDTH * currentWorldX && mPos.mX < SCREEN_WIDTH * (currentWorldX + 1) &&
-        mPos.mY >= SCREEN_HEIGHT * currentWorldY && mPos.mY < SCREEN_HEIGHT * (currentWorldY + 1)
-    )
-    {
-        font.drawText(mGraphic, this->mPos.mX - SCREEN_WIDTH * currentWorldX,
-                               this->mPos.mY - SCREEN_HEIGHT * currentWorldY);
-    }
+    return mPos.mX >= SCREEN_WIDTH * currentWorldX && mPos.mX < SCREEN_WIDTH * (currentWorldX + 1) &&
+           mPos.mY >= SCREEN_HEIGHT * currentWorldY && mPos.mY < SCREEN_HEIGHT * (currentWorldY + 1);
 }
 
 bool Entity::collide(const Point &pos) {

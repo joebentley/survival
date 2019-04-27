@@ -65,6 +65,20 @@ void Game::loop() {
     EntityBuilder::makeEntityAndAddToInventory<TwigEntity>(pPlayer);
     EntityBuilder::makeEntityAndAddToInventory<TwigEntity>(pPlayer);
 
+    // Add an example building
+    std::vector<std::string> walls = {
+            "++++++++++++",
+            "+          +",
+            "+     +    +",
+            "+ +++++++ ++",
+            "+     +    +",
+            "+     +    +",
+            "+     +    +",
+            "+++ ++++++++"
+    };
+    auto building = std::make_unique<BuildingWallEntity>(playerPos + Point(10, -10), walls);
+    manager.addEntity(std::move(building));
+
     manager.initialize();
     manager.setTimeOfDay(Time(6, 0));
 

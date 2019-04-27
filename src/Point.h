@@ -115,6 +115,7 @@ namespace std
 		{
 			// Is this good enough?
 			return (p.mY << 16) ^ p.mX;
+//            return std::hash<std::string>{}(p.to_string());
 		}
 	};
 }

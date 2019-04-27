@@ -193,10 +193,14 @@ struct Entity {
     virtual void emit(uint32_t signal);
 
     /// Render the entity to the screen using font, taking current world position into account
-    ///
     /// \param font to render using
     /// \param currentWorldPos the current screen grid coordinates on the world grid
     virtual void render(Font& font, Point currentWorldPos);
+
+    /// Tests whether the entity is on the current world screen
+    /// \param currentWorldPos the current world position of the player (or camera?)
+    /// \return whether or not is on screen
+    bool isOnScreen(const Point &currentWorldPos);
 
     /// Handle collision with `pos`, returning true if collision occurred.
     /// Default interpretation is whether `pos == this->getPos()`

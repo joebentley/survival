@@ -534,3 +534,41 @@ void GlowbugEntity::render(Font &font, Point currentWorldPos) {
 
     Entity::render(font, currentWorldPos);
 }
+
+BuildingWallEntity::BuildingWallEntity(const Point &pos, const std::vector<std::string> &layout) : Entity("", "Wall", "") {
+    this->setPos(pos);
+
+    int x = 0;
+    int y = 0;
+    for (const std::string &line : layout) {
+        for (char character : line) {
+            if (character == '+') {
+                mWalls.insert(Point(x, y));
+            }
+
+            x++;
+        }
+        x = 0;
+        y++;
+    }
+
+    mRenderingLayer = -1; // render on top
+}
+
+void BuildingWallEntity::render(Font& font, Point currentWorldPos) {
+    for (const Point &wallPos : mWalls) {
+        Point screenPos = worldToScreen(mPos + wallPos);
+
+        // Only draw if the entity is on the current world screen
+        if (isOnScreen(currentWorldPos)) {
+            font.draw("+", screenPos, FontColor::getColor("white"), FontColor::getColor("black"));
+        }
+    }
+}
+
+bool BuildingWallEntity::collide(const Point &pos) {
+    // the grid position on our BuildingWallEntity's "blueprints" (i.e. mWalls)
+    Point wallPos = pos - mPos;
+    // check if this point is in mWalls
+    return mWalls.find(wallPos) != mWalls.cend();
+}
