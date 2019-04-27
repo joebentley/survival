@@ -7,12 +7,18 @@
 #include <string>
 #include <unordered_map>
 
+/// Number of characters of screen width
 #define SCREEN_WIDTH 70
+/// Number of characters of screen height
 #define SCREEN_HEIGHT 35
 
+/// Convert point in world coordinates to screen coordinates
 Point worldToScreen(Point worldSpacePoint);
+
+/// Convert coordinates in world grid to absolute world coordinates
 Point worldPosToWorld(Point worldPos);
 
+/// This class basically just handles the randomization and drawing of the floor tiles
 struct World {
 	std::unordered_map<Point, std::string> mFloor;
 
