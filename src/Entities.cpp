@@ -111,6 +111,8 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
                 return a->mID != "Player" && !a->isInventoryEmpty();
             });
 
+            // TODO: chests are broken right now (no way to open)!
+
             if (!entitiesWithInventories.empty()) {
                 // TODO: what if multiple chests are present?
                 auto entity = entitiesWithInventories[0];
@@ -562,7 +564,7 @@ BuildingWallEntity::BuildingWallEntity(const Point &pos, const std::vector<std::
     mRenderingLayer = -1; // render on top
 }
 
-/// To neatly check if a set of Points has a given Point
+/// To neatly check if a set of Points has a given Point. There's probably a better way but this works fine
 struct SetHas {
     explicit SetHas(std::unordered_set<Point> points) : points(std::move(points)) {}
 

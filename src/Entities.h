@@ -50,7 +50,7 @@ private:
     std::string mEntityInteractingWith;
 };
 
-// AI entities
+//region AI entities
 
 struct CatEntity : Entity {
     explicit CatEntity(std::string ID = "")
@@ -93,7 +93,9 @@ struct GlowbugEntity : Entity {
     void render(Font &font, Point currentWorldPos) override;
 };
 
-// Base item entities
+//endregion
+
+//region Base item entities
 
 struct EatableEntity : Entity {
     EatableEntity(std::string ID, std::string name, std::string graphic, float hungerRestoration)
@@ -103,7 +105,9 @@ struct EatableEntity : Entity {
     }
 };
 
-// Regrowing entities (bushes, trees, etc.)
+//endregion
+
+//region Regrowing entities (bushes, trees, etc.)
 
 struct BerryEntity;
 struct BushEntity : Entity {
@@ -129,7 +133,9 @@ struct GrassEntity : Entity {
     void render(Font& font, Point currentWorldPos) override;
 };
 
-// Food items
+//endregion
+
+//region Food items
 
 struct CorpseEntity : EatableEntity {
     CorpseEntity(std::string ID, float hungerRestoration, const std::string& corpseOf, int weight)
@@ -178,7 +184,9 @@ struct BerryEntity : EatableEntity {
     }
 };
 
-// Healing items
+//endregion
+
+//region Healing items
 
 struct BandageEntity : Entity {
     const std::string SHORT_DESC = "A rudimentary bandage made of grass";
@@ -192,7 +200,9 @@ struct BandageEntity : Entity {
     }
 };
 
-// Materials
+//endregion
+
+//region Materials
 
 struct TwigEntity : Entity {
     const std::string SHORT_DESC = "A thin, brittle twig";
@@ -225,7 +235,9 @@ struct GrassTuftEntity : Entity {
     }
 };
 
-// Misc entities
+//endregion
+
+//region Misc entities
 
 struct FireEntity : Entity {
     struct RekindleBehaviour : InteractableBehaviour {
@@ -300,7 +312,9 @@ struct WaterEntity : Entity {
     }
 };
 
-// Water containers
+//endregion
+
+//region Water containers
 
 struct WaterskinEntity : Entity {
     explicit WaterskinEntity() : Entity("", "Waterskin", "$[brown]$(male)")
@@ -310,7 +324,9 @@ struct WaterskinEntity : Entity {
     }
 };
 
-// Building entities
+//endregion
+
+//region Building entities
 
 /// Generates a set of walls for a building from a layout string.
 /// The walls and corners are automatically detected to use the corresponding double-thickness pipe characters.
@@ -362,7 +378,9 @@ private:
     void generateWallsFromPoints(const std::unordered_set<Point> &points);
 };
 
-// UI entities
+//endregion
+
+//region UI entities
 
 class StatusUIEntity : public Entity {
     const int FORCE_TICK_DISPLAY_LENGTH {100};
@@ -398,5 +416,7 @@ public:
     }
 //    void showLootedItemNotification(std::string itemString);
 };
+
+//endregion
 
 #endif // ENTITIES_H_
