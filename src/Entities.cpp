@@ -537,6 +537,18 @@ void GlowbugEntity::render(Font &font, Point currentWorldPos) {
     Entity::render(font, currentWorldPos);
 }
 
+void BunnyEntity::render(Font &font, Point currentWorldPos) {
+    static int i = 0;
+    i++;
+
+    mGraphic = i > 30 ? "$(bunny1)" : "$(bunny2)";
+
+    if (i > 60)
+        i = 0;
+
+    Entity::render(font, currentWorldPos);
+};
+
 BuildingWallEntity::BuildingWallEntity(const Point &pos, const std::vector<std::string> &layout) : Entity("", "Wall", "") {
     this->setPos(pos);
 
@@ -684,7 +696,7 @@ void DoorEntity::render(Font& font, Point currentWorldPos) {
 
 bool DoorEntity::collide(const Point &pos) {
     // TODO: fix this
-    std::cout << mIsOpen << ", " << pos.to_string() << ", " << mPos.to_string() << std::endl;
+//    std::cout << mIsOpen << ", " << pos.to_string() << ", " << mPos.to_string() << std::endl;
     // Open the door if we walk into it and it's currently shut
     if (!mIsOpen && pos == mPos) {
         this->open();

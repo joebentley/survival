@@ -41,7 +41,8 @@ const std::string CHARS = // NOLINT(cert-err58-cpp)
     "p14 p15 p16 p17 p18 p19 p20 p21 p22 p23 p24 p25 p26 p27 p28 p29 "
     "p30 p31 p32 p33 p34 p35 p36 p37 p38 p39 p40 p41 p42 p43 p44 p45 "
     "alpha beta Gamma Pi Sigma sigma mu tau Phi theta Omega delta inf ninf in intersect "
-    "equiv pm gteq lteq upperint lowerint div approx degree cdot hyphen sqrt endquote power2 block space3";
+    "equiv pm gteq lteq upperint lowerint div approx degree cdot hyphen sqrt endquote power2 block space3 "
+    "bunny1 bunny2";
 
 
 /// This class describes a bitmap font texture coupled with an SDL_Renderer, allowing the drawing of complex colored text

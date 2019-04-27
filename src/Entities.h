@@ -93,6 +93,14 @@ struct GlowbugEntity : Entity {
     void render(Font &font, Point currentWorldPos) override;
 };
 
+struct BunnyEntity : Entity {
+    explicit BunnyEntity() : Entity("", "Bunny", "$(bunny1)", 10.0f, 10.0f, 0.05f) {
+        addBehaviour(std::make_unique<WanderAttachBehaviour>(*this, 0.5, 0.5, 0.1));
+    }
+
+    void render(Font &font, Point currentWorldPos) override;
+};
+
 //endregion
 
 //region Base item entities
