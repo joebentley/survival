@@ -191,8 +191,12 @@ struct InteractableBehaviour : Behaviour {
     explicit InteractableBehaviour(Entity &parent)
             : Behaviour("InteractableBehaviour", parent) {}
 
-    virtual bool handleInput(SDL_KeyboardEvent &e) = 0;
-    virtual void render(Font &font) = 0;
+    /// Handle input from the player entity. If it returns false then the interaction with the player will end.
+    /// \param e the raw SDL keyboard event
+    /// \return if false, end the current interaction
+    virtual bool handleInput(SDL_KeyboardEvent &) { return false; }
+
+    virtual void render(Font &) {}
 };
 
 #endif // BEHAVIOURS_H_

@@ -72,6 +72,7 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
         return;
     }
 
+    // Keep interacting with the entity, bypass other interactions
     if (interactingWithEntity) {
         auto entity = EntityManager::getInstance().getEntityByID(mEntityInteractingWith);
         auto b = entity->getBehaviourByID("InteractableBehaviour");
@@ -94,6 +95,12 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
                 if (b != nullptr) {
                     interactingWithEntity = true;
                     mEntityInteractingWith = entity->mID;
+
+                    // perform an initial interaction
+                    if (!dynamic_cast<InteractableBehaviour&>(*b).handleInput(e)) {
+                        mEntityInteractingWith.clear();
+                        interactingWithEntity = false;
+                    }
                 }
             }
         }
@@ -686,6 +693,32 @@ bool BuildingWallEntity::collide(const Point &pos) {
     // check if this point is in mWalls
     return mWalls.find(wallPos) != mWalls.cend();
 }
+
+DoorEntity::DoorEntity(const Point &pos) : Entity("", "Door", "") {
+    mPos = pos;
+    mRenderingLayer = 0;
+
+    auto interactable = std::make_unique<DoorOpenAndCloseBehaviour>(*this);
+    addBehaviour(std::move(interactable));
+}
+
+bool DoorEntity::DoorOpenAndCloseBehaviour::handleInput(SDL_KeyboardEvent &) {
+    std::string message;
+    auto &parent = dynamic_cast<DoorEntity&>(mParent);
+
+    if (parent.isOpen()) {
+        message = "You closed the door";
+        parent.close();
+    } else {
+        message = "You opened the door";
+        parent.open();
+    }
+
+    NotificationMessageRenderer::getInstance().queueMessage(message);
+
+    return false;
+}
+
 
 void DoorEntity::render(Font& font, Point currentWorldPos) {
     // Change graphic depending on whether door open or closed

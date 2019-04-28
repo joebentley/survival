@@ -321,6 +321,7 @@ struct HelpScreen : Screen {
         "Crafting: c",
         "Message log: m",
         "Inspect: semicolon (;)",
+        "Interact: space",
         "This screen: ?"
     };
 
