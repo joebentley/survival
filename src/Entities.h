@@ -389,7 +389,7 @@ private:
 
 /// Represents a door that can be opened or closed
 struct DoorEntity : Entity {
-    explicit DoorEntity(const Point &pos) : Entity("", "Door", "") { mPos = pos; mRenderingLayer = -1; }
+    explicit DoorEntity(const Point &pos) : Entity("", "Door", "") { mPos = pos; mRenderingLayer = 0; }
 
     /// Overrides rendering to display whether the door is open or closed
     /// \param font the font to render on

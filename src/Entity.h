@@ -206,6 +206,9 @@ struct Entity {
     /// Default interpretation is whether `pos == this->getPos()`
     virtual bool collide(const Point &pos);
 
+    /// Handles collision but is also given a reference to the entity that is colliding
+    virtual bool collide(const Point &, Entity &) { return false; }
+
     /// Add entity with ID to inventory
     virtual bool addToInventory(const std::string &ID);
     /// Remove entity with given ID from inventory
@@ -408,7 +411,10 @@ public:
     std::vector<Entity *> getEntitiesOnScreenAndSurroundingScreens() const;
 
     /// Call collision(pos) for all entities in current and surrounding screens
-    std::vector<Entity *> doCollisions(const Point& pos);
+    /// \param pos the new position of the entity that is trying to move
+    /// \param entity a reference to the entity that is trying to move
+    /// \return vector of pointers to all entities that collided
+    std::vector<Entity *> doCollisions(const Point& pos, Entity &entity);
 
     /// Is entity with ID registered in the manager?
     bool isEntityInManager(const std::string &ID);

@@ -208,12 +208,13 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
                     || attacking) // already attacking
                 {
                     attack(newPos);
+                    didAction = true;
                 }
-            } else {
-                // Try to move into the new space
-                if (!moveTo(newPos))
-                    return; // Don't tick if didn't move
             }
+
+            // Try to move into the new space if we didn't attack
+            if (!didAction && !moveTo(newPos))
+                return; // Don't tick if didn't move
 
             didAction = true;
         }
@@ -687,16 +688,12 @@ bool BuildingWallEntity::collide(const Point &pos) {
 }
 
 void DoorEntity::render(Font& font, Point currentWorldPos) {
-    // Only draw if the entity is on the current world screen
-    if (isOnScreen(currentWorldPos)) {
-        std::string c = mIsOpen ? "." : "+";
-        font.draw(c, worldToScreen(mPos), FontColor::getColor("white"), FontColor::getColor("black"));
-    }
+    // Change graphic depending on whether door open or closed
+    mGraphic = std::string("$[white]${black}") + std::string(mIsOpen ? "." : "+");
+    Entity::render(font, currentWorldPos);
 }
 
 bool DoorEntity::collide(const Point &pos) {
-    // TODO: fix this
-//    std::cout << mIsOpen << ", " << pos.to_string() << ", " << mPos.to_string() << std::endl;
     // Open the door if we walk into it and it's currently shut
     if (!mIsOpen && pos == mPos) {
         this->open();

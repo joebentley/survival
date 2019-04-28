@@ -52,7 +52,7 @@ bool Entity::isOnScreen(const Point &currentWorldPos) {
 }
 
 bool Entity::collide(const Point &pos) {
-    return mPos == pos;
+    return mIsSolid && mPos == pos;
 }
 
 Behaviour *Entity::getBehaviourByID(const std::string &ID) const {
@@ -174,7 +174,7 @@ bool Entity::isInInventory(const std::string &ID) const {
 
 bool Entity::moveTo(Point p) {
     auto &em = EntityManager::getInstance();
-    std::vector<Entity*> entities = em.doCollisions(p);
+    std::vector<Entity*> entities = em.doCollisions(p, *this);
 
     // Check that there were no collisions in the space
     if (entities.empty()) {
@@ -484,17 +484,17 @@ std::vector<Entity *> EntityManager::getEntitiesOnScreenAndSurroundingScreens() 
     return entities;
 }
 
-std::vector<Entity *> EntityManager::doCollisions(const Point& pos) {
+std::vector<Entity *> EntityManager::doCollisions(const Point& pos, Entity &entity) {
     std::vector<Entity *> collidingEntities;
     for (const auto& ID : mCurrentlyOnScreen) {
         Entity *e = getEntityByID(ID);
         // execute the entity's collision, which returns true if a collision occurred
-        if (e->collide(pos))
+        if (e->collide(pos) || e->collide(pos, entity))
             collidingEntities.push_back(e);
     }
     for (const auto& ID : mInSurroundingScreens) {
         Entity *e = getEntityByID(ID);
-        if (e->collide(pos))
+        if (e->collide(pos) || e->collide(pos, entity))
             collidingEntities.push_back(e);
     }
     return collidingEntities;
