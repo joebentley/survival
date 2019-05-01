@@ -440,6 +440,7 @@ public:
             : Entity("StatusUI", "", ""), player(player)
     {
         mRenderingLayer = 1; // Keep on background
+        mCanBeAttacked = false;
     }
 
     void render(Font &font, Point currentWorldPos) override;

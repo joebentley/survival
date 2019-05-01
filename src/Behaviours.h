@@ -196,6 +196,7 @@ struct InteractableBehaviour : Behaviour {
     /// \return if false, end the current interaction
     virtual bool handleInput(SDL_KeyboardEvent &) { return false; }
 
+    /// Allows custom rendering to be done by the behaviour if required
     virtual void render(Font &) {}
 };
 

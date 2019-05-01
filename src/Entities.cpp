@@ -210,9 +210,14 @@ void PlayerEntity::handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_
                 Entity *entity = entitiesInSpace[0];
 
                 // Check whether or not to attack
-                if ((entity->getBehaviourByID("HostilityBehaviour") != nullptr && entity->getBehaviourByID("HostilityBehaviour")->isEnabled())
-                    || (mod & KMOD_SHIFT) // force attack // NOLINT(hicpp-signed-bitwise)
-                    || attacking) // already attacking
+                if (
+                        entity->canBeAttacked()
+                            && (
+                                    (entity->getBehaviourByID("HostilityBehaviour") != nullptr && entity->getBehaviourByID("HostilityBehaviour")->isEnabled())
+                                 || (mod & KMOD_SHIFT) // force attack // NOLINT(hicpp-signed-bitwise)
+                                 || attacking // already attacking
+                               )
+                   )
                 {
                     attack(newPos);
                     didAction = true;
@@ -584,7 +589,11 @@ BuildingWallEntity::BuildingWallEntity(const Point &pos, const std::vector<std::
     // generate the correct wall tile types
     generateWallsFromPoints(walls);
 
-    mRenderingLayer = -1; // render on top
+    // render on top
+    mRenderingLayer = -1;
+
+    // should not be able to attack the wall
+    mCanBeAttacked = true;
 }
 
 /// To neatly check if a set of Points has a given Point. There's probably a better way but this works fine

@@ -311,6 +311,10 @@ struct Entity {
     /// Move the given property to the entity
     void addProperty(std::unique_ptr<Property> property);
 
+    bool canBeAttacked() const {
+        return mCanBeAttacked;
+    }
+
 protected:
     /// Map of behaviour IDs to unique pointers owning those Behaviours
     std::unordered_map<std::string, std::unique_ptr<Behaviour>> mBehaviours;
@@ -324,6 +328,8 @@ protected:
     std::unordered_map<EquipmentSlot, std::string> mEquipment;
     /// Maximum carry weight of entity
     int mMaxCarryWeight;
+    /// Whether or not the entity can be attacked
+    bool mCanBeAttacked = true;
 };
 
 /// Singleton class that manages all entities in the game
