@@ -18,18 +18,28 @@ Point worldToScreen(Point worldSpacePoint);
 /// Convert coordinates in world grid to absolute world coordinates
 Point worldPosToWorld(Point worldPos);
 
-/// This class basically just handles the randomization and drawing of the floor tiles
+/// This class handles the randomization and drawing of the floor tiles,
+/// as well as the random generation of all entities in the game
 struct World {
+    /// Each point in the world has a random floor tile glyph
 	std::unordered_map<Point, std::string> mFloor;
 
     void render(Font &font, int worldX, int worldY) {
 		render(font, Point(worldX, worldY));
     }
+    /// Render the floor tiles at the given world coordinates
+    /// \param font the font to render onto
+    /// \param worldPos the coordinates on the world grid (each point is a screen)
     void render(Font &font, Point worldPos);
 
+    /// Randomize the screens in each of the eight directions around the screen given by the world coordinates `worldPos`
+    /// as well as the screen at `worldPos`
 	void randomizeScreensAround(Point worldPos);
+
+	/// Randomize the floor tiles and generate entities for the screen at the world coordinates given by `worldPos`
 	void randomizeScreen(Point worldPos);
 private:
+    /// Keep track of which screens we've generated already
 	std::vector<Point> mGeneratedScreens;
 };
 

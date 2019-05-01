@@ -26,6 +26,7 @@ void World::randomizeScreensAround(Point pos)
 
 	for (const auto &point : pointsIncludingSurrounding)
 	{
+	    // if this screen has not already been generated
 		if (std::find(mGeneratedScreens.cbegin(), mGeneratedScreens.cend(), point) == mGeneratedScreens.cend())
 			randomizeScreen(point);
 	}
@@ -35,13 +36,16 @@ void World::randomizeScreen(Point worldPos)
 {
     auto &manager = EntityManager::getInstance();
 
+    // keep track of the fact we've generated this screen
 	mGeneratedScreens.push_back(worldPos);
 
+	// The top-left origin of the screen in world coordinates
 	Point p0 = worldPosToWorld(worldPos);
+
 	// On first pass generate floor tiles
     FOR_EACH_SCREEN_POINT
 	{
-        auto p = p0 + Point(x, y);
+        Point p = p0 + Point(x, y);
         // Generate background tile
         switch (rand() % 4) {
             case 0:
@@ -59,74 +63,68 @@ void World::randomizeScreen(Point worldPos)
         }
     }
 
-    // Choose random points from which to originate pools of water
+    /// Generate random pools
     const int numPools = rand() % 3;
 	std::vector<Point> poolOriginCoords;
-	for (auto i = 0; i < numPools; ++i)
+	poolOriginCoords.reserve(numPools);
+
+    // Choose random points from which to originate pools of water
+	for (int i = 0; i < numPools; ++i)
 	    poolOriginCoords.emplace_back(p0 + Point(rand() % SCREEN_WIDTH, rand() % SCREEN_HEIGHT));
 
 	// Set of tiles that will have water in (used set to avoid duplicates)
     std::unordered_set<Point> currentWaterTiles;
-    for (auto poolOrigin : poolOriginCoords)
+    for (Point poolOrigin : poolOriginCoords)
         currentWaterTiles.emplace(poolOrigin);
 
-    // Generate water pools scaling probability on manhattan distance from pool
+    // Generate water pools scaling probability on manhattan distance from pool origin
     FOR_EACH_SCREEN_POINT
     {
-        auto p = p0 + Point(x, y);
+        Point p = p0 + Point(x, y);
 
-        for (auto poolOrigin : poolOriginCoords)
+        for (Point poolOrigin : poolOriginCoords)
             if (randDouble() < std::exp(-std::pow(p.manhattanDistanceTo(poolOrigin) / 2.5, 2)))
                 currentWaterTiles.emplace(p);
     }
 
-    // Add all the generated water tiles
-    for (auto p : currentWaterTiles) {
+    // Add all the generated water tiles as entities
+    for (Point p : currentWaterTiles) {
         auto water = std::make_unique<WaterEntity>();
         water->setPos(p);
         manager.addEntity(std::move(water));
     }
 
-    // Finally place entities
+    /// Place other random entities
     FOR_EACH_SCREEN_POINT
     {
-        auto p = p0 + Point(x, y);
+        Point p = p0 + Point(x, y);
         // Random chance of creating a bush
         if (randDouble() < 0.002) {
             auto bush = std::make_unique<BushEntity>();
             bush->setPos(p);
             manager.addEntity(std::move(bush));
-            continue; // Don't put two on same square
         }
-
         // Random chance of creating a twig
-        if (randDouble() < 0.002) {
+        else if (randDouble() < 0.002) {
             auto twig = std::make_unique<TwigEntity>();
             twig->setPos(p);
             manager.addEntity(std::move(twig));
-            continue;
         }
-
         // Random chance of creating grass
-        if (randDouble() < 0.002) {
+        else if (randDouble() < 0.002) {
             auto grass = std::make_unique<GrassEntity>();
             grass->setPos(p);
             manager.addEntity(std::move(grass));
-            continue;
         }
-
-        if (randDouble() < 0.0005) {
+        else if (randDouble() < 0.0005) {
             auto bug = std::make_unique<GlowbugEntity>();
             bug->setPos(p);
             manager.addEntity(std::move(bug));
-            continue;
         }
-
-        if (randDouble() < 0.00025) {
+        else if (randDouble() < 0.0001) {
             auto wolf = std::make_unique<WolfEntity>();
             wolf->setPos(p);
             manager.addEntity(std::move(wolf));
-            continue;
         }
 	}
 }
