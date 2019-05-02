@@ -5,7 +5,8 @@
 #include "World.h"
 
 Texture::~Texture() {
-    SDL_DestroyTexture(mTexture);
+    if (mTexture != nullptr)
+        SDL_DestroyTexture(mTexture);
 }
 
 void Texture::render(SDL_Rect *src, SDL_Rect *dst) {
@@ -56,7 +57,8 @@ int Texture::getHeight() const {
 }
 
 LightMapTexture::~LightMapTexture() {
-    SDL_DestroyTexture(mNightFadeTexture);
+    if (mNightFadeTexture != nullptr)
+        SDL_DestroyTexture(mNightFadeTexture);
 }
 
 LightMapTexture::LightMapTexture(SDL_Renderer *renderer) : Texture(renderer) {
