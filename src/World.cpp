@@ -126,6 +126,11 @@ void World::randomizeScreen(Point worldPos)
             wolf->setPos(p);
             manager.addEntity(std::move(wolf));
         }
+        else if (randDouble() < 0.001) {
+            auto bunny = std::make_unique<BunnyEntity>();
+            bunny->setPos(p);
+            manager.addEntity(std::move(bunny));
+        }
 	}
 }
 

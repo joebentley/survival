@@ -80,9 +80,6 @@ void Game::loop() {
     auto building = std::make_unique<BuildingWallEntity>(playerPos + Point(10, -10), walls);
     manager.addEntity(std::move(building));
 
-    auto bunny = EntityBuilder::makeEntity<BunnyEntity>();
-    bunny->setPos(playerPos + Point(2, -10));
-
     manager.initialize();
     manager.setTimeOfDay(Time(6, 0));
 
