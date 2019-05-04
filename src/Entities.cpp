@@ -593,7 +593,7 @@ BuildingWallEntity::BuildingWallEntity(const Point &pos, const std::vector<std::
     mRenderingLayer = -1;
 
     // should not be able to attack the wall
-    mCanBeAttacked = true;
+    mCanBeAttacked = false;
 }
 
 /// To neatly check if a set of Points has a given Point. There's probably a better way but this works fine
