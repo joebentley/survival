@@ -356,6 +356,7 @@
 		592723B7227F13A000F94408 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = HANLGP74MP;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -369,6 +370,7 @@
 		592723B8227F13A000F94408 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = HANLGP74MP;
 				FRAMEWORK_SEARCH_PATHS = (

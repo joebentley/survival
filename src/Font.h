@@ -76,8 +76,8 @@ public:
 
         // Generate the map of character coordinate tuple pairs
         for (unsigned long i = 0; i < words.size(); ++i) {
-            int x = i % numPerRow;
-            int y = i / numPerRow;
+            int x = (int)i % numPerRow;
+            int y = (int)i / numPerRow;
 
             this->characters[words[i]] = std::make_tuple(x, y);
         }

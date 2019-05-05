@@ -75,7 +75,7 @@ void drawDescriptionScreen(Font& font, Entity& item) {
 
     auto words = wordWrap(item.mLongDesc, InventoryScreen::WORD_WRAP_COLUMN);
     for (std::vector<std::string>::size_type i = 0; i < words.size(); ++i) {
-        font.drawText(words[i], InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + i);
+        font.drawText(words[i], InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 4 + (int)i);
     }
 
     int y = 2;
@@ -168,13 +168,13 @@ void InventoryScreen::render(Font &font) {
     font.draw("right", X_OFFSET - 1, mChosenIndex + Y_OFFSET);
 
     for (size_t i = 0; i < mPlayer.getInventorySize(); ++i) {
-        auto item = mPlayer.getInventoryItem(i);
+        auto item = mPlayer.getInventoryItem((int)i);
         std::string displayString = item->mGraphic + " " + item->mName;
 
-        font.drawText(displayString, X_OFFSET, i + Y_OFFSET);
+        font.drawText(displayString, X_OFFSET, (int)i + Y_OFFSET);
         if (mPlayer.hasEquipped(item->mID))
             font.drawText("(" + slotToString(mPlayer.getEquipmentSlotByID(item->mID)) + ")",
-                    X_OFFSET + getFontStringLength(displayString) + 2, i + Y_OFFSET);
+                    X_OFFSET + getFontStringLength(displayString) + 2, (int)i + Y_OFFSET);
     }
 
     std::string colorStr;
@@ -467,7 +467,7 @@ void CraftingScreen::render(Font &font) {
         if (i == (size_t)mChosenRecipe)
             bColor = FontColor::getColor("blue");
 
-        font.drawText(recipe.mNameOfProduct, xOffset, yOffset + i, FontColor::getColor("white"), bColor);
+        font.drawText(recipe.mNameOfProduct, xOffset, yOffset + (int)i, FontColor::getColor("white"), bColor);
     }
 
     auto &ingredients = rm.mRecipes[mChosenRecipe]->mIngredients;
@@ -482,7 +482,7 @@ void CraftingScreen::render(Font &font) {
             if (mCurrentRecipe != nullptr)
                 ingredient = mCurrentRecipe->mIngredients[i];
 
-            font.drawText(std::to_string(ingredient.mQuantity) + "x " + ingredient.mEntityType, xOffset + 14, yOffset + i,
+            font.drawText(std::to_string(ingredient.mQuantity) + "x " + ingredient.mEntityType, xOffset + 14, yOffset + (int)i,
                     FontColor::getColor("white"), bColor);
         } else {
             Color fColor = FontColor::getColor("grey");
@@ -490,7 +490,7 @@ void CraftingScreen::render(Font &font) {
             if (currentRecipeSatisfied())
                 fColor = FontColor::getColor("white");
 
-            font.drawText("Construct", xOffset + 14, yOffset + i, fColor, bColor);
+            font.drawText("Construct", xOffset + 14, yOffset + (int)i, fColor, bColor);
         }
     }
 
@@ -503,9 +503,9 @@ void CraftingScreen::render(Font &font) {
 
             if (mLayer == CraftingLayer::MATERIAL && i == (size_t)mChosenMaterial) {
                 bColor = FontColor::getColor("blue");
-                font.drawText(material->mGraphic + " " + material->mName, xOffset + 24, yOffset + i, bColor);
+                font.drawText(material->mGraphic + " " + material->mName, xOffset + 24, yOffset + (int)i, bColor);
             } else
-                font.drawText(material->mGraphic + " " + material->mName, xOffset + 24, yOffset + i);
+                font.drawText(material->mGraphic + " " + material->mName, xOffset + 24, yOffset + (int)i);
         }
     }
 }

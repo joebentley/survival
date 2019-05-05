@@ -47,7 +47,7 @@ int Font::drawText(const std::string &text, int x0, int y, Color fColor, Color b
         // parse extended token
         if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '(') {
             ++i;
-            int begin = i + 1;
+            int begin = (int)i + 1;
             while (text[++i] != ')');
 
             if (this->draw(text.substr(begin, i - begin), x, y, fColor, bColor) == -1)
@@ -86,7 +86,7 @@ int Font::drawText(const std::string &text, int x0, int y, int alpha) {
         // parse extended token
         if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '(') {
             ++i;
-            int begin = i + 1;
+            int begin = (int)i + 1;
             while (text[++i] != ')');
 
             if (this->draw(text.substr(begin, i - begin), x, y, fColor, bColor) == -1)
@@ -98,7 +98,7 @@ int Font::drawText(const std::string &text, int x0, int y, int alpha) {
         // parse foreground color
         if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '[') {
             ++i;
-            int begin = i + 1;
+            int begin = (int)i + 1;
             while (text[++i] != ']');
 
             std::string fontStr = text.substr(begin, i - begin);
@@ -116,7 +116,7 @@ int Font::drawText(const std::string &text, int x0, int y, int alpha) {
         // parse background color
         if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '{') {
             ++i;
-            int begin = i + 1;
+            int begin = (int)i + 1;
             while (text[++i] != '}');
 
             std::string fontStr = text.substr(begin, i - begin);
@@ -158,7 +158,7 @@ int Font::drawText(const std::string &text, int x0, int y, Color bColor) {
         // parse extended token
         if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '(') {
             ++i;
-            int begin = i + 1;
+            int begin = (int)i + 1;
             while (text[++i] != ')');
 
             if (this->draw(text.substr(begin, i - begin), x, y, fColor, bColor) == -1)
@@ -170,7 +170,7 @@ int Font::drawText(const std::string &text, int x0, int y, Color bColor) {
         // parse foreground color
         if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '[') {
             ++i;
-            int begin = i + 1;
+            int begin = (int)i + 1;
             while (text[++i] != ']');
 
             std::string fontStr = text.substr(begin, i - begin);
