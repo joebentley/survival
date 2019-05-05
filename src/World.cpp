@@ -131,6 +131,11 @@ void World::randomizeScreen(Point worldPos)
             bunny->setPos(p);
             manager.addEntity(std::move(bunny));
         }
+        else if (randDouble() < 0.001) {
+            auto hole = std::make_unique<BunnyHoleEntity>();
+            hole->setPos(p);
+            manager.addEntity(std::move(hole));
+        }
 	}
 }
 

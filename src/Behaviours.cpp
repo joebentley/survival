@@ -1,6 +1,7 @@
 #include "Behaviours.h"
 #include "Entities.h"
 #include "World.h"
+#include "settings.h"
 #include <cstdlib>
 #include <iostream>
 
@@ -160,4 +161,22 @@ void HostilityBehaviour::tick() {
         NotificationMessageRenderer::getInstance().queueMessage("${black}The $[red]" + mParent.mName + " $[white]went $[red]feral!");
         chaseAndAttack->enable();
     }
+}
+
+void SeekHomeBehaviour::tick() {
+    if (homeTargetID.empty() && randDouble() < homeAttachmentProbability) {
+        // nb: this is only the entities on the screens surrounding the player
+        std::vector<Entity *> entities = EntityManager::getInstance().getEntitiesOnScreenAndSurroundingScreens();
+
+        // filter for home entities that have the specified name and are in range
+        entities.erase(std::remove_if(entities.begin(), entities.end(), [this](Entity *entity) {
+            return entity->mName == homeName && entity->getPos().distanceTo(mParent.getPos()) < range;
+        }), entities.end());
+
+        // pick one of these home entities at random to set as target
+        homeTargetID = entities[rand() % entities.size()]->mID;
+    }
+
+    if (DEBUG)
+        NotificationMessageRenderer::getInstance().queueMessage(mParent.mGraphic + " (" + mParent.mID + ") chose home " + homeName + " (" + homeTargetID + ")");
 }

@@ -372,7 +372,7 @@ public:
     /// printing a warning if they are not equal. Then calls recomputeCurrentEntitiesOnScreenAndSurroundingScreens with the
     /// player's world position
     void initialize();
-    /// cleanup() and then advance the game time, then tick all entities on this screen or the surrounding screens
+    /// cleanup() and then advance the game time, then tick all entities on this screen or the surrounding screens (relative to the player)
     void tick();
     /// Remove the entities in mToBeDeleted
     void cleanup();
