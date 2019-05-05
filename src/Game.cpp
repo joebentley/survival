@@ -4,6 +4,7 @@
 #include "Entity.h"
 #include "Entities.h"
 #include "EntityBuilder.h"
+#include "settings.h"
 #include <deque>
 
 int Game::init() {
@@ -82,7 +83,6 @@ void Game::loop() {
 
     manager.initialize();
     manager.setTimeOfDay(Time(6, 0));
-
 
     std::unordered_map<ScreenType, std::unique_ptr<Screen>> screens;
 

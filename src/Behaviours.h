@@ -91,10 +91,13 @@ struct SeekHomeBehaviour : Behaviour {
     float range;
     /// Probability to choose a home to start going towards
     float homeAttachmentProbability;
+    /// Probability to leave the home
+    float homeFlightProbability;
 
-    explicit SeekHomeBehaviour(Entity& parent, std::string homeName, float range, float homeAttachmentProbability = 0.1)
+    explicit SeekHomeBehaviour(Entity& parent, std::string homeName, float range = 20, float homeAttachmentProbability = 0.1,
+                               float homeFlightProbability = 0.1)
         : Behaviour("SeekHomeBehaviour", parent), homeName(std::move(homeName)), range(range),
-            homeAttachmentProbability(homeAttachmentProbability) {}
+            homeAttachmentProbability(homeAttachmentProbability), homeFlightProbability(homeFlightProbability) {}
 
     void tick() override;
 

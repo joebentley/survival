@@ -137,6 +137,26 @@ bool Entity::hasBehaviour(const std::string &ID) const {
     return mBehaviours.find(ID) != mBehaviours.end();
 }
 
+void Entity::disableWanderBehaviours() {
+    // Disable wandering and wanderattach
+    auto b = getBehaviourByID("WanderBehaviour");
+    if (b != nullptr)
+        b->disable();
+    b = getBehaviourByID("WanderAttachBehaviour");
+    if (b != nullptr)
+        b->disable();
+}
+
+void Entity::enableWanderBehaviours() {
+    // Enable wandering and wanderattach
+    auto b = getBehaviourByID("WanderBehaviour");
+    if (b != nullptr)
+        b->enable();
+    b = getBehaviourByID("WanderAttachBehaviour");
+    if (b != nullptr)
+        b->enable();
+}
+
 void Entity::destroy() {
     EntityManager::getInstance().eraseByID(mID);
 }

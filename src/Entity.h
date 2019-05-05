@@ -259,7 +259,9 @@ struct Entity {
     /// Get maximum carry weight considering whether a back item is equipped with property "AdditionalCarryWeight"
     int getMaxCarryWeight() const;
 
-    /// Attempt to move to Point P. Will not move to the point if there is a solid entity in the way
+    /// Attempt to move to Point p, also moving the entity's inventory, and recomputing the current screen's entities if it
+    /// changes screen coords (TODO: do we need to do this if it's not the player's movement?).
+    /// Will not move to the point if there is a solid entity in the way
     /// \param p Point to move to
     /// \return Whether or not the movement was performed
     bool moveTo(Point p);
@@ -268,7 +270,12 @@ struct Entity {
     Behaviour * getBehaviourByID(const std::string &ID) const;
     /// Does entity have behaviour with given ID?
     bool hasBehaviour(const std::string& ID) const;
-
+    /// Disable any Wander and WanderAttach behaviours
+    void disableWanderBehaviours();
+    /// Enable any Wander and WanderAttach behaviours
+    void enableWanderBehaviours();
+    // TODO: function to disable (and enable) behaviours with given IDs
+    
     /// Compute max damage considering whether an item with property "MeleeWeaponDamage" is equipped in right hand
     int computeMaxDamage() const;
     /// Calculate a random damage roll

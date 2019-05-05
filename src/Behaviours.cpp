@@ -149,13 +149,7 @@ void HostilityBehaviour::tick() {
     if (chaseAndAttack != nullptr && !chaseAndAttack->isEnabled() && player != nullptr &&
         randDouble() < hostility && mParent.getPos().distanceTo(player->getPos()) < range)
     {
-        // Disable wandering and wanderattach
-        auto b = mParent.getBehaviourByID("WanderBehaviour");
-        if (b != nullptr)
-            b->disable();
-        b = mParent.getBehaviourByID("WanderAttachBehaviour");
-        if (b != nullptr)
-            b->disable();
+        mParent.disableWanderBehaviours();
 
         // Send a notification notifying the player they're engaged in attack
         NotificationMessageRenderer::getInstance().queueMessage("${black}The $[red]" + mParent.mName + " $[white]went $[red]feral!");
@@ -170,13 +164,50 @@ void SeekHomeBehaviour::tick() {
 
         // filter for home entities that have the specified name and are in range
         entities.erase(std::remove_if(entities.begin(), entities.end(), [this](Entity *entity) {
-            return entity->mName == homeName && entity->getPos().distanceTo(mParent.getPos()) < range;
+            return !(entity->mName == homeName && entity->getPos().distanceTo(mParent.getPos()) < range);
         }), entities.end());
 
         // pick one of these home entities at random to set as target
-        homeTargetID = entities[rand() % entities.size()]->mID;
+        if (!entities.empty()) {
+            homeTargetID = entities[rand() % entities.size()]->mID;
+        
+            if (_DEBUG)
+                NotificationMessageRenderer::getInstance().queueMessage(
+                    mParent.mGraphic + " (" + mParent.mID + ") chose home " + homeName + " (" + homeTargetID + ")");
+        }
     }
-
-    if (DEBUG)
-        NotificationMessageRenderer::getInstance().queueMessage(mParent.mGraphic + " (" + mParent.mID + ") chose home " + homeName + " (" + homeTargetID + ")");
+    
+    if (!homeTargetID.empty()) {
+        mParent.disableWanderBehaviours();
+        
+        // move towards the chosen home entity
+        Entity *homeTarget = EntityManager::getInstance().getEntityByID(homeTargetID);
+        Point targetPos = homeTarget->getPos();
+        
+        // if we are at the target home, stop moving towards it
+        if (targetPos == mParent.getPos()) {
+            // random chance to leave home
+            if (randDouble() < homeFlightProbability) {
+                homeTargetID.clear();
+                mParent.enableWanderBehaviours();
+            }
+        
+            return;
+        }
+        
+        Point posOffset;
+        
+        if (targetPos.mX > mParent.getPos().mX) {
+            posOffset.mX = 1;
+        } else if (targetPos.mX < mParent.getPos().mX) {
+            posOffset.mX = -1;
+        }
+        if (targetPos.mY > mParent.getPos().mY) {
+            posOffset.mY = 1;
+        } else if (targetPos.mY < mParent.getPos().mY) {
+            posOffset.mY = -1;
+        }
+        
+        mParent.moveTo(mParent.getPos() + posOffset);
+    }
 }
