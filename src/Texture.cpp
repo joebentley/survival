@@ -1,5 +1,11 @@
 #include <algorithm>
-#include <SDL2/SDL_image.h>
+
+#ifdef XCODE
+#include <SDL2_image/SDL_image.h>
+#else
+#include <SDL2_/SDL_image.h>
+#endif
+
 #include "Texture.h"
 #include "SDLManager.h"
 #include "World.h"

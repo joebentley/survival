@@ -5,7 +5,7 @@
 #include "Entity.h"
 #include "utils.h"
 
-// AI behaviours
+//region AI behaviours
 
 /// This behaviour causes the parent entity to wander aimlessly in every direction
 struct WanderBehaviour : Behaviour {
@@ -39,7 +39,7 @@ struct AttachmentBehaviour : Behaviour {
     void tick() override;
 };
 
-/// Combination of a WanderBehaviour and AttachBehaviour, with a random probability to
+/// Combination of a WanderBehaviour and AttachBehaviour, with a random probability to go from wander to attach
 struct WanderAttachBehaviour : Behaviour {
     WanderBehaviour wander;
     AttachmentBehaviour attach;
@@ -83,6 +83,25 @@ struct WanderAttachBehaviour : Behaviour {
     }
 };
 
+/// Seek out a Home entity (identified by given name) if nearby and hole up within it
+struct SeekHomeBehaviour : Behaviour {
+    /// Name of home entities to go to
+    std::string homeName;
+    /// Range within which to start moving to the home entity
+    float range;
+    /// Probability to choose a home to start going towards
+    float homeAttachmentProbability;
+
+    explicit SeekHomeBehaviour(Entity& parent, std::string homeName, float range, float homeAttachmentProbability = 0.1)
+        : Behaviour("SeekHomeBehaviour", parent), homeName(std::move(homeName)), range(range),
+            homeAttachmentProbability(homeAttachmentProbability) {}
+
+    void tick() override;
+
+private:
+    /// ID of current home target
+    std::string homeTargetID;
+};
 
 /// Chase and attack the entity with ID "Player". If parent has a "WanderBehaviour" then that will enable after attacking,
 /// if it has a "WanderAttachBehaviour" it will wander but not attach anymore, if it has "HostilityBehaviour" then re-enable that,
@@ -126,7 +145,9 @@ struct HostilityBehaviour : Behaviour {
     void tick() override;
 };
 
-// Behaviours for items
+//endregion
+
+//region Behaviours for items
 
 // TODO: This should be a property, but difficult due to virtual methods
 /// Abstract base class to represent behaviours that have an apply method, for example items that can be used
@@ -183,7 +204,9 @@ public:
     }
 };
 
-// Misc behaviours
+//endregion
+
+//region Misc behaviours
 
 // TODO: This should be a property, but difficult due to virtual methods
 /// Represents an entity that can be interacted with by the player, and can hijack input handling and rendering
@@ -199,5 +222,7 @@ struct InteractableBehaviour : Behaviour {
     /// Allows custom rendering to be done by the behaviour if required
     virtual void render(Font &) {}
 };
+
+//endregion
 
 #endif // BEHAVIOURS_H_
