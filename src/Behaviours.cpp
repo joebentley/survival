@@ -186,7 +186,9 @@ void SeekHomeBehaviour::tick() {
         
         // if we are at the target home, stop moving towards it
         if (targetPos == mParent.getPos()) {
-            // random chance to leave home
+            isInHome = true;
+            
+            // random chance to leave the home and start wandering again
             if (randDouble() < homeFlightProbability) {
                 homeTargetID.clear();
                 mParent.enableWanderBehaviours();
@@ -194,6 +196,8 @@ void SeekHomeBehaviour::tick() {
         
             return;
         }
+        
+        isInHome = false;
         
         Point posOffset;
         

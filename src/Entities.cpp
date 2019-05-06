@@ -551,6 +551,7 @@ void GlowbugEntity::render(Font &font, Point currentWorldPos) {
 }
 
 void BunnyEntity::render(Font &font, Point currentWorldPos) {
+    // animate the bunny's sprite
     static int i = 0;
     i++;
 
@@ -559,8 +560,22 @@ void BunnyEntity::render(Font &font, Point currentWorldPos) {
     if (i > 60)
         i = 0;
 
+    // if in a home right now, don't render the bunny
+    if (isInHome())
+        return;
+    
     Entity::render(font, currentWorldPos);
 };
+
+bool BunnyEntity::isInHome() const {
+    auto b = getBehaviourByID("SeekHomeBehaviour");
+    
+    if (b != nullptr) {
+        return dynamic_cast<SeekHomeBehaviour*>(b)->isInHome;
+    }
+    
+    return false;
+}
 
 BuildingWallEntity::BuildingWallEntity(const Point &pos, const std::vector<std::string> &layout) : Entity("", "Wall", "") {
     this->setPos(pos);

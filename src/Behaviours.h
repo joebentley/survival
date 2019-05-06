@@ -84,6 +84,7 @@ struct WanderAttachBehaviour : Behaviour {
 };
 
 /// Seek out a Home entity (identified by given name) if nearby and hole up within it
+/// with chance of leaving the home again
 struct SeekHomeBehaviour : Behaviour {
     /// Name of home entities to go to
     std::string homeName;
@@ -93,6 +94,8 @@ struct SeekHomeBehaviour : Behaviour {
     float homeAttachmentProbability;
     /// Probability to leave the home
     float homeFlightProbability;
+    /// Whether or not is currently in home
+    bool isInHome {false};
 
     explicit SeekHomeBehaviour(Entity& parent, std::string homeName, float range = 20, float homeAttachmentProbability = 0.1,
                                float homeFlightProbability = 0.1)
@@ -101,6 +104,8 @@ struct SeekHomeBehaviour : Behaviour {
 
     void tick() override;
 
+    const std::string &getHomeID() const { return homeTargetID; }
+    
 private:
     /// ID of current home target
     std::string homeTargetID;

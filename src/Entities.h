@@ -100,6 +100,8 @@ struct BunnyEntity : Entity {
     }
 
     void render(Font &font, Point currentWorldPos) override;
+    
+    bool isInHome() const;
 };
 
 struct BunnyHoleEntity : Entity {
