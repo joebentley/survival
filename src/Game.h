@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <iostream>
 #include "SDLManager.h"
+#include "Entities.h"
 
 const int MAX_FRAME_RATE = 30;
 
@@ -18,6 +19,8 @@ private:
 
     SDLManager mSDLManager;
     std::unique_ptr<Texture> mFontTexture {nullptr};
+    
+    PlayerEntity *player;
 };
 
 #endif //SURVIVAL_GAME_H

@@ -182,6 +182,12 @@ void SeekHomeBehaviour::tick() {
         
         // move towards the chosen home entity
         Entity *homeTarget = EntityManager::getInstance().getEntityByID(homeTargetID);
+        if (homeTarget == nullptr) {
+            homeTargetID.clear();
+            mParent.enableWanderBehaviours();
+            return;
+        }
+        
         Point targetPos = homeTarget->getPos();
         
         // if we are at the target home, stop moving towards it

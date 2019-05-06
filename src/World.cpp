@@ -10,6 +10,7 @@
 
 void World::render(Font &font, const Point worldPos)
 {
+    // If we haven't generated this screen, randomize this (and the screens around it)
 	if (std::find(mGeneratedScreens.cbegin(), mGeneratedScreens.cend(), worldPos) == mGeneratedScreens.cend())
 		randomizeScreensAround(worldPos);
 
@@ -26,7 +27,7 @@ void World::randomizeScreensAround(Point pos)
 
 	for (const auto &point : pointsIncludingSurrounding)
 	{
-	    // if this screen has not already been generated
+	    // if this screen has not already been generated, generate it
 		if (std::find(mGeneratedScreens.cbegin(), mGeneratedScreens.cend(), point) == mGeneratedScreens.cend())
 			randomizeScreen(point);
 	}

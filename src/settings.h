@@ -5,6 +5,6 @@
 #ifndef SURVIVAL_SETTINGS_H
 #define SURVIVAL_SETTINGS_H
 
-#define _DEBUG true
+#define _DEBUG false
 
 #endif //SURVIVAL_SETTINGS_H

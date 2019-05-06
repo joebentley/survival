@@ -34,11 +34,11 @@ void Game::loop() {
     auto &manager = EntityManager::getInstance();
 
     // TODO clean up all this initialisation stuff
-    auto pPlayer = EntityBuilder::makeEntity<PlayerEntity>();
+    player = EntityBuilder::makeEntity<PlayerEntity>();
     // Place player in center of world
     // TODO: Fix bug that occurs at (0,0)
-    pPlayer->setPos(SCREEN_WIDTH * 1000 + SCREEN_WIDTH / 2, SCREEN_HEIGHT * 1000 + SCREEN_HEIGHT / 2);
-    auto playerPos = pPlayer->getPos();
+    player->setPos(SCREEN_WIDTH * 1000 + SCREEN_WIDTH / 2, SCREEN_HEIGHT * 1000 + SCREEN_HEIGHT / 2);
+    auto playerPos = player->getPos();
 
     EntityBuilder::makeEntity<CatEntity>()->setPos(playerPos.mX - 10, playerPos.mY - 10);
 
@@ -56,16 +56,16 @@ void Game::loop() {
 
     EntityBuilder::makeEntityAndAddToInventory<AppleEntity>(pChest);
 
-    auto statusUI = std::make_unique<StatusUIEntity>(dynamic_cast<PlayerEntity&>(*pPlayer));
+    auto statusUI = std::make_unique<StatusUIEntity>(dynamic_cast<PlayerEntity&>(*player));
     auto pStatusUI = statusUI.get();
     manager.addEntity(std::move(statusUI));
 
-    EntityBuilder::makeEntityAndAddToInventory<WaterskinEntity>(pPlayer);
-    EntityBuilder::makeEntityAndAddToInventory<GrassTuftEntity>(pPlayer);
-    EntityBuilder::makeEntityAndAddToInventory<GrassTuftEntity>(pPlayer);
-    EntityBuilder::makeEntityAndAddToInventory<TwigEntity>(pPlayer);
-    EntityBuilder::makeEntityAndAddToInventory<TwigEntity>(pPlayer);
-    EntityBuilder::makeEntityAndAddToInventory<TwigEntity>(pPlayer);
+    EntityBuilder::makeEntityAndAddToInventory<WaterskinEntity>(player);
+    EntityBuilder::makeEntityAndAddToInventory<GrassTuftEntity>(player);
+    EntityBuilder::makeEntityAndAddToInventory<GrassTuftEntity>(player);
+    EntityBuilder::makeEntityAndAddToInventory<TwigEntity>(player);
+    EntityBuilder::makeEntityAndAddToInventory<TwigEntity>(player);
+    EntityBuilder::makeEntityAndAddToInventory<TwigEntity>(player);
 
     // Add an example building
     std::vector<std::string> walls = {
@@ -87,11 +87,11 @@ void Game::loop() {
     std::unordered_map<ScreenType, std::unique_ptr<Screen>> screens;
 
     screens[ScreenType::NOTIFICATION] = std::make_unique<NotificationMessageScreen>();
-    screens[ScreenType::INVENTORY] = std::make_unique<InventoryScreen>(*pPlayer);
-    screens[ScreenType::LOOTING] = std::make_unique<LootingDialog>(*pPlayer);
-    screens[ScreenType::INSPECTION] = std::make_unique<InspectionDialog>(*pPlayer);
-    screens[ScreenType::CRAFTING] = std::make_unique<CraftingScreen>(*pPlayer);
-    screens[ScreenType::EQUIPMENT] = std::make_unique<EquipmentScreen>(*pPlayer);
+    screens[ScreenType::INVENTORY] = std::make_unique<InventoryScreen>(*player);
+    screens[ScreenType::LOOTING] = std::make_unique<LootingDialog>(*player);
+    screens[ScreenType::INSPECTION] = std::make_unique<InspectionDialog>(*player);
+    screens[ScreenType::CRAFTING] = std::make_unique<CraftingScreen>(*player);
+    screens[ScreenType::EQUIPMENT] = std::make_unique<EquipmentScreen>(*player);
     screens[ScreenType::HELP] = std::make_unique<HelpScreen>();
     screens[ScreenType::DEBUG] = std::make_unique<DebugScreen>();
 
@@ -128,7 +128,7 @@ void Game::loop() {
                     }
                 }
                 if (!screenEnabled)
-                    dynamic_cast<PlayerEntity &>(*pPlayer).handleInput(e.key, quit, screens);
+                    dynamic_cast<PlayerEntity &>(*player).handleInput(e.key, quit, screens);
             }
         }
 
@@ -148,19 +148,19 @@ void Game::loop() {
         }
 
         if (shouldRenderWorld) {
-            world.render(font, pPlayer->getWorldPos());
-            manager.render(font, pPlayer->getWorldPos(), lightMapTexture);
+            world.render(font, player->getWorldPos());
+            manager.render(font, player->getWorldPos(), lightMapTexture);
         }
 
         // Always render status and notification UI
-        pStatusUI->render(font, pPlayer->getWorldPos());
+        pStatusUI->render(font, player->getWorldPos());
         NotificationMessageRenderer::getInstance().render(font);
 
         if (screenToRender != nullptr) {
             screenToRender->render(font);
         }
 
-        if (pPlayer->mHp <= 0) {
+        if (player->mHp <= 0) {
             MessageBoxRenderer::getInstance().queueMessageBoxCentered(
                     std::vector<std::string> {"$[red]You died!", "", "Press return to quit"}, 1);
         }
