@@ -84,16 +84,7 @@ void Game::loop() {
     manager.initialize();
     manager.setTimeOfDay(Time(6, 0));
 
-    std::unordered_map<ScreenType, std::unique_ptr<Screen>> screens;
-
-    screens[ScreenType::NOTIFICATION] = std::make_unique<NotificationMessageScreen>();
-    screens[ScreenType::INVENTORY] = std::make_unique<InventoryScreen>(*player);
-    screens[ScreenType::LOOTING] = std::make_unique<LootingDialog>(*player);
-    screens[ScreenType::INSPECTION] = std::make_unique<InspectionDialog>(*player);
-    screens[ScreenType::CRAFTING] = std::make_unique<CraftingScreen>(*player);
-    screens[ScreenType::EQUIPMENT] = std::make_unique<EquipmentScreen>(*player);
-    screens[ScreenType::HELP] = std::make_unique<HelpScreen>();
-    screens[ScreenType::DEBUG] = std::make_unique<DebugScreen>();
+    Screens screens(*player);
 
     bool initialMessage = true;
     std::vector<std::string> initialMessageLines({
@@ -120,7 +111,7 @@ void Game::loop() {
                 initialMessage = false;
             else if (!initialMessage && e.type == SDL_KEYDOWN) {
                 bool screenEnabled = false;
-                for (auto &screen : screens) {
+                for (auto &screen : screens.getScreens()) {
                     if (screen.second->isEnabled()) {
                         screen.second->handleInput(e.key);
                         screenEnabled = true;
@@ -128,7 +119,7 @@ void Game::loop() {
                     }
                 }
                 if (!screenEnabled)
-                    dynamic_cast<PlayerEntity &>(*player).handleInput(e.key, quit, screens);
+                    dynamic_cast<PlayerEntity &>(*player).handleInput(e.key, quit, screens.getScreens());
             }
         }
 
@@ -139,7 +130,7 @@ void Game::loop() {
 
         bool shouldRenderWorld = true;
         Screen *screenToRender = nullptr;
-        for (auto &screen : screens) {
+        for (auto &screen : screens.getScreens()) {
             if (screen.second->isEnabled()) {
                 shouldRenderWorld = screen.second->shouldRenderWorld();
                 screenToRender = screen.second.get();
