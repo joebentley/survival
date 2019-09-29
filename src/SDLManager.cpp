@@ -17,7 +17,8 @@ int SDLManager::initialize(Uint32 SDLInitFlags, Uint32 SDLImageInitFlags) {
             std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
             return -1;
         } else {
-            mRenderer = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED);
+            // SDL_RENDERER_HARDWARE has become slow when using SDL_RenderFillRect
+            mRenderer = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_SOFTWARE);
 
             if (mRenderer == nullptr) {
                 std::cerr << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
