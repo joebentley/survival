@@ -10,7 +10,7 @@
 #include <SDL2_image/SDL_image.h>
 #include <SDL2/SDL.h>
 #else
-#include <SDL2/SDL_image.h>
+#include <SDL_image.h>
 #include <SDL2/SDL.h>
 #endif
 

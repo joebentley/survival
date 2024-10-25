@@ -3,7 +3,7 @@
 #ifdef XCODE
 #include <SDL2_image/SDL_image.h>
 #else
-#include <SDL2_/SDL_image.h>
+#include <SDL_image.h>
 #endif
 
 #include "Texture.h"

@@ -7,3 +7,5 @@ cmake-build-debug
 .vs
 build
 survival-xcode/survival-xcode.xcodeproj/project.xcworkspace
+vendored
+.DS_Store
