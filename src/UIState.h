@@ -1,7 +1,7 @@
 #ifndef SURVIVAL_STATE_H
 #define SURVIVAL_STATE_H
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <memory>
 #include "Point.h"
 #include "Entity.h"

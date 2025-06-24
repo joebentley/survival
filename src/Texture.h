@@ -1,11 +1,7 @@
 #ifndef TEXTURE_H_
 #define TEXTURE_H_
 
-#ifdef _MSC_VER
 #include <SDL.h>
-#else
-#include <SDL2/SDL.h>
-#endif
 
 #include <string>
 #include <vector>

@@ -1,11 +1,7 @@
 #ifndef SURVIVAL_FONTCOLOR_H
 #define SURVIVAL_FONTCOLOR_H
 
-#ifdef _MSC_VER
 #include <SDL.h>
-#else
-#include <SDL2/SDL.h>
-#endif
 
 #include <string>
 #include <unordered_map>
