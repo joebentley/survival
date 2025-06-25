@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(survival)
+project(survival VERSION 0.0.1)
 
 add_executable(${PROJECT_NAME}
         src/Behaviours.cpp
@@ -18,8 +18,6 @@ add_executable(${PROJECT_NAME}
 		src/Texture.h
 		src/World.cpp
 		src/World.h src/flags.h src/utils.h src/utils.cpp src/Recipe.cpp src/Recipe.h src/Time.h src/Game.h src/Game.cpp src/SDLManager.cpp src/SDLManager.h src/FontColor.cpp src/FontColor.h src/EntityBuilder.h src/UIState.cpp src/UIState.h src/Property.cpp src/Property.h src/Properties.h src/settings.h)
-
-file(COPY resources DESTINATION .)
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_lambdas cxx_nullptr cxx_range_for cxx_strong_enums cxx_std_17)
 
@@ -52,3 +50,13 @@ endif()
 # Link to the actual SDL2 library. SDL2::SDL2 is the shared SDL library, SDL2::SDL2-static is the static SDL libarary.
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2)
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2_image::SDL2_image)
+
+# Create the output dir and copy the resources folder into it
+set(output_dir ${CMAKE_CURRENT_BINARY_DIR}/survival-${CMAKE_PROJECT_VERSION})
+file(MAKE_DIRECTORY ${output_dir})
+file(COPY resources DESTINATION ${output_dir})
+
+# After build, copy binary into output dir
+add_custom_command(TARGET survival POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:survival> ${output_dir}
+)
