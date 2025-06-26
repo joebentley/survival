@@ -32,10 +32,29 @@ jobs:
 
     - name: Copy libs and fixup loader paths
       run: |
-        cp /opt/homebrew/opt/sdl2/lib/libSDL2-2.0.0.dylib /Users/runner/work/survival/survival/build/survival-*/
-        cp /opt/homebrew/opt/sdl2_image/lib/libSDL2_image-2.0.0.dylib /Users/runner/work/survival/survival/build/survival-*/
-        install_name_tool -change /opt/homebrew/opt/sdl2/lib/libSDL2-2.0.0.dylib @executable_path/libSDL2-2.0.0.dylib /Users/runner/work/survival/survival/build/survival-*/survival
-        install_name_tool -change /opt/homebrew/opt/sdl2_image/lib/libSDL2_image-2.0.0.dylib @executable_path/libSDL2_image-2.0.0.dylib /Users/runner/work/survival/survival/build/survival-*/survival
+        output_dir=/Users/runner/work/survival/survival/build/survival-*/
+        cp /opt/homebrew/opt/sdl2/lib/libSDL2-2.0.0.dylib             $output_dir
+        cp /opt/homebrew/opt/sdl2_image/lib/libSDL2_image-2.0.0.dylib $output_dir
+        cp /opt/homebrew/opt/libpng/lib/libpng16.16.dylib             $output_dir
+        cp /opt/homebrew/opt/jpeg-xl/lib/libjxl.0.11.dylib            $output_dir
+        cp /opt/homebrew/opt/jpeg-turbo/lib/libjpeg.8.dylib           $output_dir
+        cp /opt/homebrew/opt/libtiff/lib/libtiff.6.dylib              $output_dir
+        cp /opt/homebrew/opt/libavif/lib/libavif.16.dylib             $output_dir
+        cp /opt/homebrew/opt/webp/lib/libwebpdemux.2.dylib            $output_dir
+        cp /opt/homebrew/opt/webp/lib/libwebp.7.dylib                 $output_dir
+        
+        
+        install_name_tool -change /opt/homebrew/opt/sdl2/lib/libSDL2-2.0.0.dylib   @loader_path/libSDL2-2.0.0.dylib  $output_dir/libSDL2_image-2.0.0.dylib           
+        install_name_tool -change /opt/homebrew/opt/libpng/lib/libpng16.16.dylib   @loader_path/libpng16.16.dylib    $output_dir/libSDL2_image-2.0.0.dylib         
+        install_name_tool -change /opt/homebrew/opt/jpeg-xl/lib/libjxl.0.11.dylib  @loader_path/libjxl.0.11.dylib    $output_dir/libSDL2_image-2.0.0.dylib         
+        install_name_tool -change /opt/homebrew/opt/jpeg-turbo/lib/libjpeg.8.dylib @loader_path/libjpeg.8.dylib      $output_dir/libSDL2_image-2.0.0.dylib       
+        install_name_tool -change /opt/homebrew/opt/libtiff/lib/libtiff.6.dylib    @loader_path/libtiff.6.dylib      $output_dir/libSDL2_image-2.0.0.dylib       
+        install_name_tool -change /opt/homebrew/opt/libavif/lib/libavif.16.dylib   @loader_path/libavif.16.dylib     $output_dir/libSDL2_image-2.0.0.dylib         
+        install_name_tool -change /opt/homebrew/opt/webp/lib/libwebpdemux.2.dylib  @loader_path/libwebpdemux.2.dylib $output_dir/libSDL2_image-2.0.0.dylib             
+        install_name_tool -change /opt/homebrew/opt/webp/lib/libwebp.7.dylib       @loader_path/libwebp.7.dylib      $output_dir/libSDL2_image-2.0.0.dylib       
+        
+        install_name_tool -change /opt/homebrew/opt/sdl2/lib/libSDL2-2.0.0.dylib @executable_path/libSDL2-2.0.0.dylib $output_dir/survival
+        install_name_tool -change /opt/homebrew/opt/sdl2_image/lib/libSDL2_image-2.0.0.dylib @executable_path/libSDL2_image-2.0.0.dylib $output_dir/survival
 
     - name: Upload executable
       uses: actions/upload-artifact@v4
