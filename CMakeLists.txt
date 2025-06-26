@@ -55,6 +55,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE SDL2_image::SDL2_image)
 set(output_dir ${CMAKE_CURRENT_BINARY_DIR}/survival-${CMAKE_PROJECT_VERSION})
 file(MAKE_DIRECTORY ${output_dir})
 file(COPY resources DESTINATION ${output_dir})
+file(COPY unquarantine.sh DESTINATION ${output_dir})
 
 # After build, copy binary into output dir
 add_custom_command(TARGET survival POST_BUILD
