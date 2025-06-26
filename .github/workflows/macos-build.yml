@@ -30,6 +30,13 @@ jobs:
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
+    - name: Copy libs and fixup loader paths
+      run: |
+        cp /opt/homebrew/opt/sdl2/lib/libSDL2-2.0.0.dylib /Users/runner/work/survival/survival/build/survival-*/
+        cp /opt/homebrew/opt/sdl2_image/lib/libSDL2_image-2.0.0.dylib /Users/runner/work/survival/survival/build/survival-*/
+        install_name_tool -change /opt/homebrew/opt/sdl2/lib/libSDL2-2.0.0.dylib libSDL2-2.0.0.dylib /Users/runner/work/survival/survival/build/survival-*/survival
+        install_name_tool -change /opt/homebrew/opt/sdl2_image/lib/libSDL2_image-2.0.0.dylib libSDL2_image-2.0.0.dylib /Users/runner/work/survival/survival/build/survival-*/survival
+
     - name: Upload executable
       uses: actions/upload-artifact@v4
       with:
