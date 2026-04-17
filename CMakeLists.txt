@@ -1,23 +1,24 @@
 cmake_minimum_required(VERSION 3.10)
 project(survival VERSION 0.0.1)
 
-add_executable(${PROJECT_NAME}
-        src/Behaviours.cpp
-        src/Behaviours.h
-        src/UI.cpp
-        src/UI.h
-		src/Entities.cpp
-		src/Entities.h
-		src/Entity.cpp
-		src/Entity.h
-		src/Font.cpp
-		src/Font.h
-		src/Point.h
-        src/survival.cpp
-		src/Texture.cpp
-		src/Texture.h
-		src/World.cpp
-		src/World.h src/flags.h src/utils.h src/utils.cpp src/Recipe.cpp src/Recipe.h src/Time.h src/Game.h src/Game.cpp src/SDLManager.cpp src/SDLManager.h src/FontColor.cpp src/FontColor.h src/EntityBuilder.h src/UIState.cpp src/UIState.h src/Property.cpp src/Property.h src/Properties.h src/settings.h)
+add_executable(
+	${PROJECT_NAME}
+	src/Behaviours.cpp
+	src/UI.cpp
+	src/Entities.cpp
+	src/Entity.cpp
+	src/Font.cpp
+	src/survival.cpp
+	src/Texture.cpp
+	src/World.cpp
+	src/utils.cpp
+	src/Recipe.cpp
+	src/Game.cpp
+	src/SDLManager.cpp
+	src/FontColor.cpp
+	src/UIState.cpp
+	src/Property.cpp
+)
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_lambdas cxx_nullptr cxx_range_for cxx_strong_enums cxx_std_17)
 
