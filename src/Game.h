@@ -13,12 +13,13 @@ const int MAX_FRAME_RATE = 30;
 class Game {
   public:
     Game();
-    void run();
+
+    void iterate();
+    bool processEvent(SDL_Event *e);
 
   private:
-    void loop();
-
     std::unique_ptr<Texture> makeFontTexture();
+    PlayerEntity *makePlayer();
 
     SDLManager mSDLManager;
     LightMapTexture m_lightMapTexture;
@@ -26,6 +27,17 @@ class Game {
     Font m_font;
     World m_world;
     PlayerEntity *m_player;
+    Screens m_screens;
+
+    StatusUIEntity *m_pStatusUI;
+
+    std::vector<std::string> m_initialMessageLines;
+
+    std::deque<float> m_frameTimes;
+    float m_totalTime = 0;
+    float m_fps = 60;
+
+    bool m_initialMessage = true;
 };
 
 #endif // SURVIVAL_GAME_H
