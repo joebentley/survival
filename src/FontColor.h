@@ -1,7 +1,7 @@
 #ifndef SURVIVAL_FONTCOLOR_H
 #define SURVIVAL_FONTCOLOR_H
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include <string>
 #include <unordered_map>
@@ -26,11 +26,11 @@ struct Color {
 };
 
 namespace FontColor {
-    /// Get the rgba color corresponding to the string, will raise exception if not found
-    Color getColor(const std::string& colorStr);
-    /// Return the rgba string to color map
-    std::unordered_map<std::string, Color> &getColorMap();
-}
+/// Get the rgba color corresponding to the string, will raise exception if not
+/// found
+Color getColor(const std::string &colorStr);
+/// Return the rgba string to color map
+std::unordered_map<std::string, Color> &getColorMap();
+} // namespace FontColor
 
-
-#endif //SURVIVAL_FONTCOLOR_H
+#endif // SURVIVAL_FONTCOLOR_H

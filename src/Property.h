@@ -2,36 +2,36 @@
 #define SURVIVAL_PROPERTY_H
 
 #include <any>
-#include <string>
 #include <set>
+#include <string>
 
 class PropertiesManager {
-public:
-    static PropertiesManager& getInstance();
+  public:
+    static PropertiesManager &getInstance();
 
     PropertiesManager() = default;
-    PropertiesManager(const PropertiesManager&) = delete;
-    void operator=(const PropertiesManager&) = delete;
+    PropertiesManager(const PropertiesManager &) = delete;
+    void operator=(const PropertiesManager &) = delete;
 
     void registerPropertyName(std::string propertyName);
     bool isPropertyRegistered(const std::string &propertyName) const;
 
-private:
+  private:
     std::set<std::string> mPropertyNamesRegistered;
 };
 
 class Property {
-public:
-    Property(std::string propertyName, std::any value) : mPropertyName(std::move(propertyName)), mValue(std::move(value)) {}
+  public:
+    Property(std::string propertyName, std::any value)
+        : mPropertyName(std::move(propertyName)), mValue(std::move(value)) {}
 
     std::string getName() const;
     void setValue(std::any value);
     std::any &getValue();
 
-private:
+  private:
     std::string mPropertyName;
     std::any mValue;
 };
 
-
-#endif //SURVIVAL_PROPERTY_H
+#endif // SURVIVAL_PROPERTY_H

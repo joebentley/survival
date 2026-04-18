@@ -2,36 +2,27 @@
 #ifndef DIALOG_H_
 #define DIALOG_H_
 
-#include <SDL.h>
-#include <string>
-#include <ctime>
-#include "Font.h"
 #include "Entities.h"
+#include "Font.h"
 #include "Recipe.h"
 #include "UIState.h"
+#include <SDL3/SDL.h>
+#include <ctime>
+#include <string>
 
-enum class ScreenType {
-    NOTIFICATION,
-    INVENTORY,
-    LOOTING,
-    INSPECTION,
-    CRAFTING,
-    EQUIPMENT,
-    HELP,
-    DEBUG
-};
+enum class ScreenType { NOTIFICATION, INVENTORY, LOOTING, INSPECTION, CRAFTING, EQUIPMENT, HELP, DEBUG };
 
-void showMessageBox(Font& font, const std::vector<std::string> &contents, int padding, int x, int y);
+void showMessageBox(Font &font, const std::vector<std::string> &contents, int padding, int x, int y);
 
 struct MessageBoxRenderer {
-    static MessageBoxRenderer& getInstance() {
+    static MessageBoxRenderer &getInstance() {
         static MessageBoxRenderer instance;
         return instance;
     }
 
     MessageBoxRenderer() = default;
-    MessageBoxRenderer(const MessageBoxRenderer&) = delete;
-    void operator=(const MessageBoxRenderer&) = delete;
+    MessageBoxRenderer(const MessageBoxRenderer &) = delete;
+    void operator=(const MessageBoxRenderer &) = delete;
 
     void queueMessageBox(const std::vector<std::string> &contents, int padding, int x, int y);
     inline void queueMessageBox(const std::vector<std::string> &contents, int x, int y) {
@@ -46,7 +37,7 @@ struct MessageBoxRenderer {
     }
     void render(Font &font);
 
-private:
+  private:
     struct MessageBoxData {
         std::vector<std::string> mContents;
         int mPadding;
@@ -58,33 +49,29 @@ private:
 };
 
 struct NotificationMessageRenderer {
-    static NotificationMessageRenderer& getInstance() {
+    static NotificationMessageRenderer &getInstance() {
         static NotificationMessageRenderer instance;
         return instance;
     }
 
-    NotificationMessageRenderer() {
-        previousTime = clock();
-    }
+    NotificationMessageRenderer() { previousTime = clock(); }
 
-    NotificationMessageRenderer(const NotificationMessageRenderer&) = delete;
-    void operator=(const NotificationMessageRenderer&) = delete;
+    NotificationMessageRenderer(const NotificationMessageRenderer &) = delete;
+    void operator=(const NotificationMessageRenderer &) = delete;
 
     void queueMessage(const std::string &message);
     void render(Font &font);
 
-    std::deque<std::string> getMessages() const {
-        return mAllMessages;
-    }
+    std::deque<std::string> getMessages() const { return mAllMessages; }
 
-private:
-    const int cMaxOnScreen {6};
-    const int cInitialYPos {SCREEN_HEIGHT - 2};
-    const float cAlphaDecayPerSec {1};
+  private:
+    const int cMaxOnScreen{6};
+    const int cInitialYPos{SCREEN_HEIGHT - 2};
+    const float cAlphaDecayPerSec{1};
     std::deque<std::string> mMessagesToBeRendered;
     std::deque<std::string> mAllMessages;
-    float mAlpha {1};
-    clock_t previousTime {0};
+    float mAlpha{1};
+    clock_t previousTime{0};
 };
 
 struct Screen {
@@ -92,23 +79,15 @@ struct Screen {
 
     virtual ~Screen() = default;
 
-    virtual void enable() {
-        mEnabled = true;
-    }
-    virtual void disable() {
-        mEnabled = false;
-    }
-    bool isEnabled() const {
-        return mEnabled;
-    }
-    bool shouldRenderWorld() const {
-        return mShouldRenderWorld;
-    }
+    virtual void enable() { mEnabled = true; }
+    virtual void disable() { mEnabled = false; }
+    bool isEnabled() const { return mEnabled; }
+    bool shouldRenderWorld() const { return mShouldRenderWorld; }
     virtual void handleInput(SDL_KeyboardEvent &e) = 0;
     virtual void render(Font &font) = 0;
 
-protected:
-    bool mEnabled {false};
+  protected:
+    bool mEnabled{false};
     bool mShouldRenderWorld;
 };
 
@@ -116,7 +95,7 @@ struct NotificationMessageScreen : Screen {
     NotificationMessageScreen() : Screen(false) {}
 
     void handleInput(SDL_KeyboardEvent &e) override;
-    void render(Font& font) override;
+    void render(Font &font) override;
 };
 
 struct PlayerEntity;
@@ -130,7 +109,7 @@ struct InventoryScreen : Screen {
     explicit InventoryScreen(PlayerEntity &player) : Screen(false), mPlayer(player) {}
 
     void handleInput(SDL_KeyboardEvent &e) override;
-    void render(Font& font) override;
+    void render(Font &font) override;
 
     void enable() override {
         mChosenIndex = 0;
@@ -144,11 +123,11 @@ struct InventoryScreen : Screen {
 
     void setViewingDescription(bool viewingDescription);
 
-private:
+  private:
     PlayerEntity &mPlayer;
-    int mChosenIndex {0};
-    bool mViewingDescription {false};
-    std::unique_ptr<InventoryScreenState> mState {std::make_unique<ViewingInventoryState>()};
+    int mChosenIndex{0};
+    bool mViewingDescription{false};
+    std::unique_ptr<InventoryScreenState> mState{std::make_unique<ViewingInventoryState>()};
 };
 
 struct LootingDialog : Screen {
@@ -158,7 +137,7 @@ struct LootingDialog : Screen {
     void showItemsToLoot(std::vector<Entity *> items, Entity *entityToTransferFrom);
 
     void handleInput(SDL_KeyboardEvent &e) override;
-    void render(Font& font) override;
+    void render(Font &font) override;
 
     void setViewingDescription(bool viewingDescription);
 
@@ -168,27 +147,27 @@ struct LootingDialog : Screen {
     void setChosenIndex(int chosenIndex);
 
     PlayerEntity &getPlayer() const;
-    std::vector<Entity *> & getItemsToShow();
+    std::vector<Entity *> &getItemsToShow();
     Entity *getEntityToTransferFrom() const;
 
-private:
+  private:
     const int DIALOG_WIDTH = 30;
 
-    bool mViewingDescription {false};
-    bool mShowingTooMuchWeightMessage {false};
+    bool mViewingDescription{false};
+    bool mShowingTooMuchWeightMessage{false};
     PlayerEntity &mPlayer;
     std::vector<Entity *> mItemsToShow;
-    int mChosenIndex {0};
-    Entity *mEntityToTransferFrom {nullptr};
+    int mChosenIndex{0};
+    Entity *mEntityToTransferFrom{nullptr};
 
-    std::unique_ptr<LootingDialogState> mState {std::make_unique<ViewingLootingDialogState>()};
+    std::unique_ptr<LootingDialogState> mState{std::make_unique<ViewingLootingDialogState>()};
 };
 
 struct InspectionDialog : Screen {
     explicit InspectionDialog(PlayerEntity &player) : Screen(true), mPlayer(player) {}
 
     void handleInput(SDL_KeyboardEvent &e) override;
-    void render(Font& font) override;
+    void render(Font &font) override;
 
     void enableAtPoint(Point initialPoint) {
         mChosenPoint = initialPoint;
@@ -205,15 +184,15 @@ struct InspectionDialog : Screen {
 
     void setChosenIndex(int chosenIndex);
 
-private:
+  private:
     PlayerEntity &mPlayer;
     Point mChosenPoint;
-    bool mSelectingFromMultipleOptions {false};
-    int mChosenIndex {0};
-    bool mViewingDescription {false};
-    bool mThereIsAnEntity {false};
+    bool mSelectingFromMultipleOptions{false};
+    int mChosenIndex{0};
+    bool mViewingDescription{false};
+    bool mThereIsAnEntity{false};
 
-    std::unique_ptr<InspectionDialogState> mState {std::make_unique<ChoosingPositionInspectionDialogState>()};
+    std::unique_ptr<InspectionDialogState> mState{std::make_unique<ChoosingPositionInspectionDialogState>()};
 };
 
 struct Recipe;
@@ -229,11 +208,7 @@ struct CraftingScreen : Screen {
 
     void enable() override;
 
-    enum class CraftingLayer {
-        RECIPE,
-        INGREDIENT,
-        MATERIAL
-    };
+    enum class CraftingLayer { RECIPE, INGREDIENT, MATERIAL };
 
     int getChosenRecipe() const;
     void setChosenRecipe(int chosenRecipe);
@@ -246,32 +221,33 @@ struct CraftingScreen : Screen {
     void setCouldNotBuildAtPosition(bool couldNotBuildAtPosition);
 
     PlayerEntity &getPlayer() const;
-    std::vector<std::string> & getCurrentlyChosenMaterials();
+    std::vector<std::string> &getCurrentlyChosenMaterials();
 
     void setCurrentRecipe(std::unique_ptr<Recipe> currentRecipe);
     std::unique_ptr<Recipe> &getCurrentRecipe();
 
-    /// Filter inventory items for items that are of the currently chosen material type and are not in currentlyChosenMaterials
+    /// Filter inventory items for items that are of the currently chosen material type and are not in
+    /// currentlyChosenMaterials
     /// \return vector of shared pointers to the inventory items as described above
     std::vector<Entity *> filterInventoryForChosenMaterials();
     bool currentRecipeSatisfied();
     void buildItem(Point pos);
 
-private:
-    int mChosenRecipe {0};
-    int mChosenIngredient {0};
-    int mChosenMaterial {0};
+  private:
+    int mChosenRecipe{0};
+    int mChosenIngredient{0};
+    int mChosenMaterial{0};
     PlayerEntity &mPlayer;
-    CraftingLayer mLayer {CraftingLayer::RECIPE};
-    std::unique_ptr<Recipe> mCurrentRecipe {nullptr};
+    CraftingLayer mLayer{CraftingLayer::RECIPE};
+    std::unique_ptr<Recipe> mCurrentRecipe{nullptr};
 
-    bool mChoosingPositionInWorld {false};
-    bool mHaveChosenPositionInWorld {false};
-    bool mCouldNotBuildAtPosition {false};
+    bool mChoosingPositionInWorld{false};
+    bool mHaveChosenPositionInWorld{false};
+    bool mCouldNotBuildAtPosition{false};
 
     std::vector<std::string> mCurrentlyChosenMaterials;
 
-    std::unique_ptr<CraftingScreenState> mState {std::make_unique<ChoosingRecipeCraftingScreenState>()};
+    std::unique_ptr<CraftingScreenState> mState{std::make_unique<ChoosingRecipeCraftingScreenState>()};
 };
 
 struct EquipmentScreen : Screen {
@@ -296,34 +272,32 @@ struct EquipmentScreen : Screen {
     void setChoosingNewEquipment(bool choosingNewEquipment);
     void setChoosingNewEquipmentIndex(int choosingNewEquipmentIndex);
 
-private:
+  private:
     PlayerEntity &mPlayer;
-    EquipmentSlot mChosenSlot {EquipmentSlot::HEAD};
-    bool mChoosingEquipmentAction {false};
-    int mChoosingEquipmentActionIndex {0};
-    bool mChoosingNewEquipment {false};
-    int mChoosingNewEquipmentIndex {0};
+    EquipmentSlot mChosenSlot{EquipmentSlot::HEAD};
+    bool mChoosingEquipmentAction{false};
+    int mChoosingEquipmentActionIndex{0};
+    bool mChoosingNewEquipment{false};
+    int mChoosingNewEquipmentIndex{0};
 
-    std::unique_ptr<EquipmentScreenState> mState {std::make_unique<ChoosingSlotEquipmentScreenState>()};
+    std::unique_ptr<EquipmentScreenState> mState{std::make_unique<ChoosingSlotEquipmentScreenState>()};
 };
 
 struct HelpScreen : Screen {
     HelpScreen() : Screen(false) {}
 
-    const std::vector<std::string> cDisplayLines = {
-        "Diagonal movement: y u b n",
-        "Cardinal movement: h j k l",
-        "Get item: g",
-        "Wait 1 tick: period (.)",
-        "Force attack: shift + direction",
-        "Inventory: i",
-        "Equipment: e",
-        "Crafting: c",
-        "Message log: m",
-        "Inspect: semicolon (;)",
-        "Interact: space",
-        "This screen: ?"
-    };
+    const std::vector<std::string> cDisplayLines = {"Diagonal movement: y u b n",
+                                                    "Cardinal movement: h j k l",
+                                                    "Get item: g",
+                                                    "Wait 1 tick: period (.)",
+                                                    "Force attack: shift + direction",
+                                                    "Inventory: i",
+                                                    "Equipment: e",
+                                                    "Crafting: c",
+                                                    "Message log: m",
+                                                    "Inspect: semicolon (;)",
+                                                    "Interact: space",
+                                                    "This screen: ?"};
 
     void handleInput(SDL_KeyboardEvent &e) override;
     void render(Font &font) override;
@@ -335,9 +309,7 @@ struct DebugScreen : Screen {
         mState->onEntry(*this);
     }
 
-    const std::vector<std::string> cDebugOptions = {
-        "1) Change time of day"
-    };
+    const std::vector<std::string> cDebugOptions = {"1) Change time of day"};
 
     void enable() override {
         mChoosingDebugAction = false;
@@ -353,11 +325,11 @@ struct DebugScreen : Screen {
 
     void setStringPos(int stringPos);
 
-private:
+  private:
     std::unique_ptr<DebugScreenState> mState;
-    bool mChoosingDebugAction {false};
-    bool mChoosingTimeOfDay {false};
-    int mStringPos {0};
+    bool mChoosingDebugAction{false};
+    bool mChoosingTimeOfDay{false};
+    int mStringPos{0};
 
     Time mChosenTime;
 };
@@ -374,12 +346,11 @@ struct Screens {
         mScreens[ScreenType::HELP] = std::make_unique<HelpScreen>();
         mScreens[ScreenType::DEBUG] = std::make_unique<DebugScreen>();
     }
-    
+
     /// Return a direct reference to the underlying screens
-    std::unordered_map<ScreenType, std::unique_ptr<Screen>> &getScreens() {
-        return mScreens;
-    }
-private:
+    std::unordered_map<ScreenType, std::unique_ptr<Screen>> &getScreens() { return mScreens; }
+
+  private:
     std::unordered_map<ScreenType, std::unique_ptr<Screen>> mScreens;
 };
 

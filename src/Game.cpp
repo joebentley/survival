@@ -1,22 +1,21 @@
 #include "Game.h"
-#include "utils.h"
-#include "Font.h"
-#include "Entity.h"
 #include "Entities.h"
+#include "Entity.h"
 #include "EntityBuilder.h"
+#include "Font.h"
 #include "settings.h"
+#include "utils.h"
 #include <deque>
 
 int Game::init() {
     srand(static_cast<unsigned int>(time(NULL)));
 
-    Uint32 imgFlags = IMG_INIT_PNG | IMG_INIT_JPG;
-    return mSDLManager.initialize(SDL_INIT_VIDEO, imgFlags);
+    return mSDLManager.initialize(SDL_INIT_VIDEO);
 }
 
 void Game::run() {
     mFontTexture = std::make_unique<Texture>(mSDLManager.getRenderer());
-//    mFontTexture->loadFromFile("resources/curses_800x600.bmp");
+    //    mFontTexture->loadFromFile("resources/curses_800x600.bmp");
     mFontTexture->loadFromFile("resources/cursesV2_800x600.bmp");
 
     loop();
@@ -56,7 +55,7 @@ void Game::loop() {
 
     EntityBuilder::makeEntityAndAddToInventory<AppleEntity>(pChest);
 
-    auto statusUI = std::make_unique<StatusUIEntity>(dynamic_cast<PlayerEntity&>(*player));
+    auto statusUI = std::make_unique<StatusUIEntity>(dynamic_cast<PlayerEntity &>(*player));
     auto pStatusUI = statusUI.get();
     manager.addEntity(std::move(statusUI));
 
@@ -68,16 +67,8 @@ void Game::loop() {
     EntityBuilder::makeEntityAndAddToInventory<TwigEntity>(player);
 
     // Add an example building
-    std::vector<std::string> walls = {
-            "++++++++++++",
-            "+          +",
-            "+     +    +",
-            "+ +++++++d++",
-            "+     +    +",
-            "+     +    +",
-            "+     +    +",
-            "+++d++++++++"
-    };
+    std::vector<std::string> walls = {"++++++++++++", "+          +", "+     +    +", "+ +++++++d++",
+                                      "+     +    +", "+     +    +", "+     +    +", "+++d++++++++"};
     auto building = std::make_unique<BuildingWallEntity>(playerPos + Point(10, -10), walls);
     manager.addEntity(std::move(building));
 
@@ -87,11 +78,8 @@ void Game::loop() {
     Screens screens(*player);
 
     bool initialMessage = true;
-    std::vector<std::string> initialMessageLines({
-            "Welcome to the game",
-            "? for help (once you've closed this)",
-            "return to start"
-    });
+    std::vector<std::string> initialMessageLines(
+        {"Welcome to the game", "? for help (once you've closed this)", "return to start"});
 
     bool quit = false;
     SDL_Event e;
@@ -105,11 +93,11 @@ void Game::loop() {
 
         // TODO: Fix random slow input frames
         while (SDL_PollEvent(&e) != 0) {
-            if (e.type == SDL_QUIT)
+            if (e.type == SDL_EVENT_QUIT)
                 quit = true;
-            else if (initialMessage && e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_RETURN)
+            else if (initialMessage && e.type == SDL_EVENT_KEY_DOWN && e.key.key == SDLK_RETURN)
                 initialMessage = false;
-            else if (!initialMessage && e.type == SDL_KEYDOWN) {
+            else if (!initialMessage && e.type == SDL_EVENT_KEY_DOWN) {
                 bool screenEnabled = false;
                 for (auto &screen : screens.getScreens()) {
                     if (screen.second->isEnabled()) {
@@ -153,7 +141,7 @@ void Game::loop() {
 
         if (player->mHp <= 0) {
             MessageBoxRenderer::getInstance().queueMessageBoxCentered(
-                    std::vector<std::string> {"$[red]You died!", "", "Press return to quit"}, 1);
+                std::vector<std::string>{"$[red]You died!", "", "Press return to quit"}, 1);
         }
 
         if (initialMessage)
@@ -168,7 +156,7 @@ void Game::loop() {
         // Cap framerate
         auto frameTimeBeforeCap = endTime();
 
-        auto secondsTooFastBy = 1.0/MAX_FRAME_RATE - frameTimeBeforeCap;
+        auto secondsTooFastBy = 1.0 / MAX_FRAME_RATE - frameTimeBeforeCap;
         if (secondsTooFastBy > 0) {
             SDL_Delay(static_cast<Uint32>(secondsTooFastBy * 1000));
         }

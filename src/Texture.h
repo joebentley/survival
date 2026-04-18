@@ -1,18 +1,19 @@
 #ifndef TEXTURE_H_
 #define TEXTURE_H_
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
+#include "FontColor.h"
+#include "Point.h"
 #include <string>
 #include <vector>
-#include "Point.h"
-#include "FontColor.h"
 
 /// Handles an SDL texture, and releases it when it goes out of scope
 class Texture {
-public:
+  public:
     /// Construct a new texture object that can be allocated using `loadFromFile`
-    /// \param renderer the SDL_Renderer instance that the texture should render onto
+    /// \param renderer the SDL_Renderer instance that the texture should render
+    /// onto
     explicit Texture(SDL_Renderer *renderer) : mRenderer(renderer) {}
 
     // Delete copy constructor and copy assignment
@@ -29,30 +30,27 @@ public:
 
     /// Render the texture onto the SDL_Renderer given by mRenderer
     /// \param src a rectangle representing the section of the texture to render
-    /// \param dst a rectangle representing where and with what size to render the texture on the renderer
-    void render(SDL_Rect *src, SDL_Rect *dst);
+    /// \param dst a rectangle representing where and with what size to render the
+    /// texture on the renderer
+    void render(SDL_FRect *src, SDL_FRect *dst);
 
     /// Return the underlying texture
     SDL_Texture *getTexture() const;
     /// Return the pixel format of the texture
-    Uint32 getFormat() const;
-    /// Return the access rights? of the texture
-    int getAccess() const;
+    SDL_PixelFormat getFormat() const;
     /// Return the width in pixels
     int getWidth() const;
     /// Return the height in pixels
     int getHeight() const;
-protected:
-    SDL_Renderer *mRenderer {nullptr};
-    SDL_Texture *mTexture {nullptr};
-    Uint32 mFormat {0};
-    int mAccess {0};
-    int mWidth {0};
-    int mHeight {0};
+
+  protected:
+    SDL_Renderer *mRenderer{nullptr};
+    SDL_Texture *mTexture{nullptr};
 };
 
 struct Color;
-/// Represents a light point to be rendered with a given point, light radius, and color
+/// Represents a light point to be rendered with a given point, light radius,
+/// and color
 struct LightMapPoint {
     LightMapPoint(Point p, int radius, Color color) : mPoint(p), mRadius(radius), mColor(color) {}
     LightMapPoint(Point p, int radius) : mPoint(p), mRadius(radius), mColor(FontColor::getColor("white")) {}
@@ -65,7 +63,7 @@ struct LightMapPoint {
 
 /// Represents a texture used to render the light point
 class LightMapTexture : Texture {
-public:
+  public:
     /// Loads and allocates the light map texture for drawing onto the renderer
     explicit LightMapTexture(SDL_Renderer *renderer);
 
@@ -75,12 +73,14 @@ public:
 
     ~LightMapTexture() override;
 
-    /// Renderer all the points given to the screen with backgroundAlpha representing the overall day night cycle
+    /// Renderer all the points given to the screen with backgroundAlpha
+    /// representing the overall day night cycle
     /// \param points the light points on the screen
     /// \param backgroundAlpha the alpha value of the overall background fog
     void render(std::vector<LightMapPoint> points, Uint8 backgroundAlpha);
-private:
-    SDL_Texture *mNightFadeTexture {nullptr};
+
+  private:
+    SDL_Texture *mNightFadeTexture{nullptr};
 };
 
 #endif // TEXTURE_H_

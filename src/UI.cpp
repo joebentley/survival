@@ -1,27 +1,27 @@
 #include "UI.h"
-#include "utils.h"
 #include "Behaviours.h"
 #include "World.h"
+#include "utils.h"
 
-#include <sstream>
 #include <algorithm>
 #include <any>
+#include <sstream>
 
 std::string repeat(int n, const std::string &str) {
     std::ostringstream os;
-    for(int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)
         os << str;
     return os.str();
 }
 
 void MessageBoxRenderer::queueMessageBox(const std::vector<std::string> &contents, int padding, int x, int y) {
-    mRenderingQueue.push_back(MessageBoxData {contents, padding, x, y});
+    mRenderingQueue.push_back(MessageBoxData{contents, padding, x, y});
 }
 
 void MessageBoxRenderer::queueMessageBoxCentered(const std::vector<std::string> &contents, int padding) {
     std::vector<int> lineLengths;
     std::transform(contents.cbegin(), contents.cend(), std::back_inserter(lineLengths),
-            [] (const auto &a) { return getFontStringLength(a); });
+                   [](const auto &a) { return getFontStringLength(a); });
     const int maxLength = *std::max_element(lineLengths.cbegin(), lineLengths.cend());
     const int width = maxLength + 2 * padding;
     const int height = static_cast<int>(contents.size()) + 2 * padding;
@@ -58,18 +58,19 @@ void showMessageBox(Font &font, const std::vector<std::string> &contents, int pa
     for (const auto &line : contents) {
         int paddingLength = maxNumChars - getFontStringLength(line);
         font.drawText("${black}$(p8)" + std::string((unsigned long)padding, ' ') + line +
-                      std::string((unsigned long)paddingLength, ' ') +
-                      "${black}$[white]" + std::string((unsigned long)padding, ' ') + "$(p8)", x, ++y);
+                          std::string((unsigned long)paddingLength, ' ') + "${black}$[white]" +
+                          std::string((unsigned long)padding, ' ') + "$(p8)",
+                      x, ++y);
     }
 
     for (int i = 0; i < padding; ++i) {
         font.drawText("${black}$(p8)" + std::string((unsigned long)innerBoxWidth, ' ') + "$(p8)", x, ++y);
     }
 
-    font.drawText("${black}$(p22)" + repeat(innerBoxWidth, "$(p27)") + "$(p10)", x, y+1);
+    font.drawText("${black}$(p22)" + repeat(innerBoxWidth, "$(p27)") + "$(p10)", x, y + 1);
 }
 
-void drawDescriptionScreen(Font& font, Entity& item) {
+void drawDescriptionScreen(Font &font, Entity &item) {
     font.drawText(item.mGraphic + " " + item.mName, InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET);
     font.drawText(item.mShortDesc, InventoryScreen::X_OFFSET, InventoryScreen::Y_OFFSET + 2);
 
@@ -86,7 +87,7 @@ void drawDescriptionScreen(Font& font, Entity& item) {
         if (b != nullptr) {
             int weight = std::any_cast<int>(b->getValue());
             font.drawText("It weighs " + std::to_string(weight) + (weight == 1 ? " pound" : " pounds"),
-                    InventoryScreen::X_OFFSET, yOffset + y++);
+                          InventoryScreen::X_OFFSET, yOffset + y++);
         }
     }
 
@@ -95,7 +96,7 @@ void drawDescriptionScreen(Font& font, Entity& item) {
         if (b != nullptr) {
             int damage = std::any_cast<int>(b->getValue());
             font.drawText("It adds $[red]" + std::to_string(damage) + "$[white] to your damage roll",
-                    InventoryScreen::X_OFFSET, yOffset + y++);
+                          InventoryScreen::X_OFFSET, yOffset + y++);
         }
     }
 
@@ -104,7 +105,7 @@ void drawDescriptionScreen(Font& font, Entity& item) {
         if (b != nullptr) {
             int carry = std::any_cast<int>(b->getValue());
             font.drawText("It adds an extra " + std::to_string(carry) + "lb to your max carry weight",
-                    InventoryScreen::X_OFFSET, yOffset + y++);
+                          InventoryScreen::X_OFFSET, yOffset + y++);
         }
     }
 
@@ -121,8 +122,7 @@ void drawDescriptionScreen(Font& font, Entity& item) {
                     slotsString += ", ";
             }
 
-            font.drawText("Can be equipped in: " + slotsString,
-                    InventoryScreen::X_OFFSET, yOffset + y++);
+            font.drawText("Can be equipped in: " + slotsString, InventoryScreen::X_OFFSET, yOffset + y++);
         }
     }
 
@@ -131,7 +131,7 @@ void drawDescriptionScreen(Font& font, Entity& item) {
         if (b != nullptr) {
             float healing = dynamic_cast<HealingItemBehaviour &>(*b).healingAmount;
             font.drawText("${white}$[red]+${black}$[white] Can be used to heal for " + std::to_string(healing),
-                    InventoryScreen::X_OFFSET, yOffset + y++);
+                          InventoryScreen::X_OFFSET, yOffset + y++);
         }
     }
 
@@ -140,10 +140,11 @@ void drawDescriptionScreen(Font& font, Entity& item) {
         if (prop != nullptr) {
             auto waterContainer = std::any_cast<WaterContainerProperty::WaterContainer>(prop->getValue());
             int current = waterContainer.getAmount();
-            font.drawText("It can hold $[cyan]" + std::to_string(waterContainer.getMaxCapacity()) + "$[white] drams of water." +
-                          (current > 0 ? " It currently holds $[cyan]" + std::to_string(current) +
-                                         "$[white] drams of water." : ""),
-                    InventoryScreen::X_OFFSET, yOffset + y + 1);
+            font.drawText(
+                "It can hold $[cyan]" + std::to_string(waterContainer.getMaxCapacity()) + "$[white] drams of water." +
+                    (current > 0 ? " It currently holds $[cyan]" + std::to_string(current) + "$[white] drams of water."
+                                 : ""),
+                InventoryScreen::X_OFFSET, yOffset + y + 1);
         }
     }
 
@@ -174,7 +175,7 @@ void InventoryScreen::render(Font &font) {
         font.drawText(displayString, X_OFFSET, (int)i + Y_OFFSET);
         if (mPlayer.hasEquipped(item->mID))
             font.drawText("(" + slotToString(mPlayer.getEquipmentSlotByID(item->mID)) + ")",
-                    X_OFFSET + getFontStringLength(displayString) + 2, (int)i + Y_OFFSET);
+                          X_OFFSET + getFontStringLength(displayString) + 2, (int)i + Y_OFFSET);
     }
 
     std::string colorStr;
@@ -187,8 +188,9 @@ void InventoryScreen::render(Font &font) {
     else
         colorStr = "$[red]";
 
-    font.drawText("${black}" + colorStr + "hp " + std::to_string((int)ceil(mPlayer.mHp))
-                  + "/" + std::to_string((int)ceil(mPlayer.mMaxHp)), SCREEN_WIDTH - X_STATUS_OFFSET, 1);
+    font.drawText("${black}" + colorStr + "hp " + std::to_string((int)ceil(mPlayer.mHp)) + "/" +
+                      std::to_string((int)ceil(mPlayer.mMaxHp)),
+                  SCREEN_WIDTH - X_STATUS_OFFSET, 1);
 
     if (mPlayer.hunger > 0.7)
         font.drawText("${black}$[green]sated", SCREEN_WIDTH - X_STATUS_OFFSET, 2);
@@ -197,7 +199,8 @@ void InventoryScreen::render(Font &font) {
     else
         font.drawText("${black}$[red]starving", SCREEN_WIDTH - X_STATUS_OFFSET, 2);
 
-    font.drawText("${black}" + std::to_string(mPlayer.getCarryingWeight()) + "/" + std::to_string(mPlayer.getMaxCarryWeight()) + "lb",
+    font.drawText("${black}" + std::to_string(mPlayer.getCarryingWeight()) + "/" +
+                      std::to_string(mPlayer.getMaxCarryWeight()) + "lb",
                   SCREEN_WIDTH - X_STATUS_OFFSET, 4);
 
     std::string helpString;
@@ -209,29 +212,20 @@ void InventoryScreen::render(Font &font) {
     font.drawText(helpString + "d-drop  return-view desc  esc-exit inv", 1, SCREEN_HEIGHT - 2);
 }
 
-PlayerEntity &InventoryScreen::getPlayer() const {
-    return mPlayer;
-}
+PlayerEntity &InventoryScreen::getPlayer() const { return mPlayer; }
 
-int InventoryScreen::getChosenIndex() const {
-    return mChosenIndex;
-}
+int InventoryScreen::getChosenIndex() const { return mChosenIndex; }
 
-void InventoryScreen::setChosenIndex(int chosenIndex) {
-    mChosenIndex = chosenIndex;
-}
+void InventoryScreen::setChosenIndex(int chosenIndex) { mChosenIndex = chosenIndex; }
 
-void InventoryScreen::setViewingDescription(bool viewingDescription) {
-    mViewingDescription = viewingDescription;
-}
+void InventoryScreen::setViewingDescription(bool viewingDescription) { mViewingDescription = viewingDescription; }
 
 void LootingDialog::showItemsToLoot(std::vector<Entity *> items) {
     mItemsToShow = std::move(items);
     mEnabled = true;
 }
 
-void LootingDialog::showItemsToLoot(std::vector<Entity *> items, Entity *entityToTransferFrom)
-{
+void LootingDialog::showItemsToLoot(std::vector<Entity *> items, Entity *entityToTransferFrom) {
     mItemsToShow = std::move(items);
     mEntityToTransferFrom = entityToTransferFrom;
     mEnabled = true;
@@ -250,7 +244,7 @@ void LootingDialog::handleInput(SDL_KeyboardEvent &e) {
 
 void LootingDialog::render(Font &font) {
     if (mShowingTooMuchWeightMessage) {
-        const std::string& displayString = "You cannot carry that much!";
+        const std::string &displayString = "You cannot carry that much!";
         MessageBoxRenderer::getInstance().queueMessageBoxCentered(displayString, 1);
     }
 
@@ -271,7 +265,7 @@ void LootingDialog::render(Font &font) {
     const int y = 10;
 
     font.drawText("${black}$(p23)" + repeat(DIALOG_WIDTH + 4, "$(p27)") + "$(p9)", x, y);
-    font.drawText("${black}$(p8)" + std::string(DIALOG_WIDTH + 4, ' ') + "$(p8)", x, y+1);
+    font.drawText("${black}$(p8)" + std::string(DIALOG_WIDTH + 4, ' ') + "$(p8)", x, y + 1);
 
     for (int i = 0; i < numItems; ++i) {
         auto item = mItemsToShow[i];
@@ -279,47 +273,36 @@ void LootingDialog::render(Font &font) {
 
         std::string weightString = std::to_string(weight);
         std::string string = item->mGraphic + " " + item->mName.substr(0, DIALOG_WIDTH - 6);
-        string += std::string(DIALOG_WIDTH - getFontStringLength(string) - 3 - weightString.size() + 1, ' ') + "$[white]" + weightString + " lb";
+        string += std::string(DIALOG_WIDTH - getFontStringLength(string) - 3 - weightString.size() + 1, ' ') +
+                  "$[white]" + weightString + " lb";
 
-        font.drawText("${black}$(p8)  " + string + "${black} $[white]$(p8)", x, y+2+i);
+        font.drawText("${black}$(p8)  " + string + "${black} $[white]$(p8)", x, y + 2 + i);
     }
 
     font.draw("right", x + 2, y + 2 + mChosenIndex);
 
-    font.drawText("${black}$(p8)" + std::string(DIALOG_WIDTH + 4, ' ') + "$(p8)", x, y+numItems+2);
+    font.drawText("${black}$(p8)" + std::string(DIALOG_WIDTH + 4, ' ') + "$(p8)", x, y + numItems + 2);
     std::string string = "g-loot  esc-quit  return-desc";
-    font.drawText("${black}$(p8)  " + string + std::string(DIALOG_WIDTH - string.size() + 2, ' ') + "$(p8)", x, y+numItems+3);
-    font.drawText("${black}$(p22)" + repeat(DIALOG_WIDTH + 4, "$(p27)") + "$(p10)", x, y+numItems+4);
+    font.drawText("${black}$(p8)  " + string + std::string(DIALOG_WIDTH - string.size() + 2, ' ') + "$(p8)", x,
+                  y + numItems + 3);
+    font.drawText("${black}$(p22)" + repeat(DIALOG_WIDTH + 4, "$(p27)") + "$(p10)", x, y + numItems + 4);
 }
 
-void LootingDialog::setViewingDescription(bool viewingDescription) {
-    mViewingDescription = viewingDescription;
-}
+void LootingDialog::setViewingDescription(bool viewingDescription) { mViewingDescription = viewingDescription; }
 
 void LootingDialog::setShowingTooMuchWeightMessage(bool showingTooMuchWeightMessage) {
     mShowingTooMuchWeightMessage = showingTooMuchWeightMessage;
 }
 
-int LootingDialog::getChosenIndex() const {
-    return mChosenIndex;
-}
+int LootingDialog::getChosenIndex() const { return mChosenIndex; }
 
-void LootingDialog::setChosenIndex(int chosenIndex) {
-    mChosenIndex = chosenIndex;
-}
+void LootingDialog::setChosenIndex(int chosenIndex) { mChosenIndex = chosenIndex; }
 
-PlayerEntity &LootingDialog::getPlayer() const {
-    return mPlayer;
-}
+PlayerEntity &LootingDialog::getPlayer() const { return mPlayer; }
 
-std::vector<Entity *> & LootingDialog::getItemsToShow() {
-    return mItemsToShow;
-}
+std::vector<Entity *> &LootingDialog::getItemsToShow() { return mItemsToShow; }
 
-Entity *LootingDialog::getEntityToTransferFrom() const {
-    return mEntityToTransferFrom;
-}
-
+Entity *LootingDialog::getEntityToTransferFrom() const { return mEntityToTransferFrom; }
 
 void InspectionDialog::handleInput(SDL_KeyboardEvent &e) {
     auto newState = mState->handleInput(*this, e);
@@ -337,7 +320,7 @@ void InspectionDialog::render(Font &font) {
     std::vector<Entity *> entitiesAtPoint;
 
     std::copy_if(entitiesAtPointBefore.cbegin(), entitiesAtPointBefore.cend(), std::back_inserter(entitiesAtPoint),
-    [] (auto &a) { return !a->mIsInAnInventory; });
+                 [](auto &a) { return !a->mIsInAnInventory; });
 
     if (mViewingDescription) {
         drawDescriptionScreen(font, *entitiesAtPoint[mChosenIndex]);
@@ -355,7 +338,7 @@ void InspectionDialog::render(Font &font) {
 
         lines.emplace_back(" You see");
         std::transform(entitiesAtPoint.cbegin(), entitiesAtPoint.cend(), std::back_inserter(lines),
-                       [] (auto &a) -> std::string { return " " + a->mGraphic + " " + a->mName; });
+                       [](auto &a) -> std::string { return " " + a->mGraphic + " " + a->mName; });
 
         lines.emplace_back("");
         lines.emplace_back(" (-)-$(up) (=)-$(down) return-desc");
@@ -401,33 +384,19 @@ void InspectionDialog::render(Font &font) {
         mThereIsAnEntity = false;
 }
 
-PlayerEntity &InspectionDialog::getPlayer() {
-    return mPlayer;
-}
+PlayerEntity &InspectionDialog::getPlayer() { return mPlayer; }
 
-const Point &InspectionDialog::getChosenPoint() const {
-    return mChosenPoint;
-}
+const Point &InspectionDialog::getChosenPoint() const { return mChosenPoint; }
 
-void InspectionDialog::setChosenPoint(const Point &chosenPoint) {
-    mChosenPoint = chosenPoint;
-}
+void InspectionDialog::setChosenPoint(const Point &chosenPoint) { mChosenPoint = chosenPoint; }
 
-bool InspectionDialog::isThereAnEntity() const {
-    return mThereIsAnEntity;
-}
+bool InspectionDialog::isThereAnEntity() const { return mThereIsAnEntity; }
 
-void InspectionDialog::setViewingDescription(bool viewingDescription) {
-    mViewingDescription = viewingDescription;
-}
+void InspectionDialog::setViewingDescription(bool viewingDescription) { mViewingDescription = viewingDescription; }
 
-bool InspectionDialog::isSelectingFromMultipleOptions() const {
-    return mSelectingFromMultipleOptions;
-}
+bool InspectionDialog::isSelectingFromMultipleOptions() const { return mSelectingFromMultipleOptions; }
 
-void InspectionDialog::setChosenIndex(int chosenIndex) {
-    mChosenIndex = chosenIndex;
-}
+void InspectionDialog::setChosenIndex(int chosenIndex) { mChosenIndex = chosenIndex; }
 
 void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {
     auto newState = mState->handleInput(*this, e);
@@ -474,7 +443,8 @@ void CraftingScreen::render(Font &font) {
     for (std::vector<Recipe::Ingredient>::size_type i = 0; i < ingredients.size() + 1; ++i) {
         Color bColor = FontColor::getColor("black");
 
-        if ((mLayer == CraftingLayer::INGREDIENT || mLayer == CraftingLayer::MATERIAL) && i == (size_t)mChosenIngredient)
+        if ((mLayer == CraftingLayer::INGREDIENT || mLayer == CraftingLayer::MATERIAL) &&
+            i == (size_t)mChosenIngredient)
             bColor = FontColor::getColor("blue");
 
         if (i != ingredients.size()) {
@@ -482,8 +452,8 @@ void CraftingScreen::render(Font &font) {
             if (mCurrentRecipe != nullptr)
                 ingredient = mCurrentRecipe->mIngredients[i];
 
-            font.drawText(std::to_string(ingredient.mQuantity) + "x " + ingredient.mEntityType, xOffset + 14, yOffset + (int)i,
-                    FontColor::getColor("white"), bColor);
+            font.drawText(std::to_string(ingredient.mQuantity) + "x " + ingredient.mEntityType, xOffset + 14,
+                          yOffset + (int)i, FontColor::getColor("white"), bColor);
         } else {
             Color fColor = FontColor::getColor("grey");
 
@@ -515,11 +485,11 @@ std::vector<Entity *> CraftingScreen::filterInventoryForChosenMaterials() {
 
     std::vector<Entity *> inventoryMaterials;
     auto inventory = mPlayer.getInventory();
-    std::copy_if(inventory.cbegin(), inventory.cend(), std::back_inserter(inventoryMaterials),
-    [this, &rm] (auto &a) {
+    std::copy_if(inventory.cbegin(), inventory.cend(), std::back_inserter(inventoryMaterials), [this, &rm](auto &a) {
         if (!a->hasProperty("CraftingMaterial"))
             return false;
-        if (std::find(mCurrentlyChosenMaterials.begin(), mCurrentlyChosenMaterials.end(), a->mID) != mCurrentlyChosenMaterials.end())
+        if (std::find(mCurrentlyChosenMaterials.begin(), mCurrentlyChosenMaterials.end(), a->mID) !=
+            mCurrentlyChosenMaterials.end())
             return false;
 
         auto type = std::any_cast<CraftingMaterialProperty::Data>(a->getProperty("CraftingMaterial")->getValue()).type;
@@ -532,7 +502,7 @@ std::vector<Entity *> CraftingScreen::filterInventoryForChosenMaterials() {
 bool CraftingScreen::currentRecipeSatisfied() {
     return (mCurrentRecipe != nullptr &&
             std::all_of(mCurrentRecipe->mIngredients.begin(), mCurrentRecipe->mIngredients.end(),
-                    [] (auto &a) { return a.mQuantity == 0; }));
+                        [](auto &a) { return a.mQuantity == 0; }));
 }
 
 void CraftingScreen::reset() {
@@ -572,57 +542,37 @@ void CraftingScreen::enable() {
     reset();
 }
 
-int CraftingScreen::getChosenRecipe() const {
-    return mChosenRecipe;
-}
+int CraftingScreen::getChosenRecipe() const { return mChosenRecipe; }
 
-void CraftingScreen::setChosenRecipe(int chosenRecipe) {
-    mChosenRecipe = chosenRecipe;
-}
+void CraftingScreen::setChosenRecipe(int chosenRecipe) { mChosenRecipe = chosenRecipe; }
 
-int CraftingScreen::getChosenIngredient() const {
-    return mChosenIngredient;
-}
+int CraftingScreen::getChosenIngredient() const { return mChosenIngredient; }
 
-void CraftingScreen::setChosenIngredient(int chosenIngredient) {
-    mChosenIngredient = chosenIngredient;
-}
+void CraftingScreen::setChosenIngredient(int chosenIngredient) { mChosenIngredient = chosenIngredient; }
 
-void CraftingScreen::setChosenMaterial(int chosenMaterial) {
-    mChosenMaterial = chosenMaterial;
-}
+void CraftingScreen::setChosenMaterial(int chosenMaterial) { mChosenMaterial = chosenMaterial; }
 
-void CraftingScreen::setLayer(CraftingScreen::CraftingLayer layer) {
-    mLayer = layer;
-}
+void CraftingScreen::setLayer(CraftingScreen::CraftingLayer layer) { mLayer = layer; }
 
 void CraftingScreen::setChoosingPositionInWorld(bool choosingPositionInWorld) {
     mChoosingPositionInWorld = choosingPositionInWorld;
 }
 
-bool CraftingScreen::isHaveChosenPositionInWorld() const {
-    return mHaveChosenPositionInWorld;
-}
+bool CraftingScreen::isHaveChosenPositionInWorld() const { return mHaveChosenPositionInWorld; }
 
 void CraftingScreen::setCouldNotBuildAtPosition(bool couldNotBuildAtPosition) {
     mCouldNotBuildAtPosition = couldNotBuildAtPosition;
 }
 
-PlayerEntity &CraftingScreen::getPlayer() const {
-    return mPlayer;
-}
+PlayerEntity &CraftingScreen::getPlayer() const { return mPlayer; }
 
-std::vector<std::string> & CraftingScreen::getCurrentlyChosenMaterials() {
-    return mCurrentlyChosenMaterials;
-}
+std::vector<std::string> &CraftingScreen::getCurrentlyChosenMaterials() { return mCurrentlyChosenMaterials; }
 
 void CraftingScreen::setCurrentRecipe(std::unique_ptr<Recipe> currentRecipe) {
     mCurrentRecipe = std::move(currentRecipe);
 }
 
-std::unique_ptr<Recipe> &CraftingScreen::getCurrentRecipe() {
-    return mCurrentRecipe;
-}
+std::unique_ptr<Recipe> &CraftingScreen::getCurrentRecipe() { return mCurrentRecipe; }
 
 void EquipmentScreen::handleInput(SDL_KeyboardEvent &e) {
     // TODO: this repeated code should be abstracted out
@@ -646,10 +596,11 @@ void EquipmentScreen::render(Font &font) {
         if (!currentlyEquipped.empty()) {
             auto e = EntityManager::getInstance().getEntityByID(currentlyEquipped);
             font.drawText(e->mGraphic + " " + e->mName +
-                          (slot == EquipmentSlot::RIGHT_HAND ?
-                           " $[red]$(heart)$[white]" + std::to_string(mPlayer.mHitTimes)
-                           + "d" + std::to_string(mPlayer.computeMaxDamage()) : "")
-                    , 20, y);
+                              (slot == EquipmentSlot::RIGHT_HAND
+                                   ? " $[red]$(heart)$[white]" + std::to_string(mPlayer.mHitTimes) + "d" +
+                                         std::to_string(mPlayer.computeMaxDamage())
+                                   : ""),
+                          20, y);
         }
 
         font.drawText(slotToString(slot), 6, y++, bColor);
@@ -673,13 +624,13 @@ void EquipmentScreen::render(Font &font) {
             auto ID = equippableIDs[i];
             auto entity = EntityManager::getInstance().getEntityByID(ID);
 
-            lines.emplace_back((i == (size_t)mChoosingNewEquipmentIndex ? "$(right)" : " ") + entity->mGraphic + " " + entity->mName);
+            lines.emplace_back((i == (size_t)mChoosingNewEquipmentIndex ? "$(right)" : " ") + entity->mGraphic + " " +
+                               entity->mName);
 
             if (mChosenSlot == EquipmentSlot::RIGHT_HAND) {
                 auto b = entity->getProperty("MeleeWeaponDamage");
                 if (b != nullptr) {
-                    lines[i] += " $[red]$(heart)$[white]" + std::to_string(mPlayer.mHitTimes)
-                                + "d" +
+                    lines[i] += " $[red]$(heart)$[white]" + std::to_string(mPlayer.mHitTimes) + "d" +
                                 std::to_string(mPlayer.mHitAmount + std::any_cast<int>(b->getValue()));
                 }
             }
@@ -704,17 +655,11 @@ void EquipmentScreen::reset() {
     mChoosingEquipmentActionIndex = 0;
 }
 
-EquipmentSlot EquipmentScreen::getChosenSlot() const {
-    return mChosenSlot;
-}
+EquipmentSlot EquipmentScreen::getChosenSlot() const { return mChosenSlot; }
 
-void EquipmentScreen::setChosenSlot(EquipmentSlot chosenSlot) {
-    mChosenSlot = chosenSlot;
-}
+void EquipmentScreen::setChosenSlot(EquipmentSlot chosenSlot) { mChosenSlot = chosenSlot; }
 
-PlayerEntity &EquipmentScreen::getPlayer() {
-    return mPlayer;
-}
+PlayerEntity &EquipmentScreen::getPlayer() { return mPlayer; }
 
 void EquipmentScreen::setChoosingEquipmentAction(bool choosingEquipmentAction) {
     mChoosingEquipmentAction = choosingEquipmentAction;
@@ -745,7 +690,7 @@ void NotificationMessageRenderer::render(Font &font) {
     auto front = mMessagesToBeRendered.cbegin();
     for (int i = 0; front != mMessagesToBeRendered.cend() && i < cMaxOnScreen; ++i, ++front) {
         font.drawText(*front, 4, cInitialYPos - static_cast<int>(mMessagesToBeRendered.size()) + i,
-                i == 0 ? static_cast<int>(0xFF * mAlpha) : -1);
+                      i == 0 ? static_cast<int>(0xFF * mAlpha) : -1);
 
         if (i == 0) // TODO: why is alpha decay slower when in a menu?
             mAlpha -= cAlphaDecayPerSec * static_cast<float>(currentTime - previousTime) / CLOCKS_PER_SEC;
@@ -760,11 +705,11 @@ void NotificationMessageRenderer::render(Font &font) {
 }
 
 void NotificationMessageScreen::handleInput(SDL_KeyboardEvent &e) {
-    switch (e.keysym.sym) {
-        case SDLK_ESCAPE:
-        case SDLK_m:
-            mEnabled = false;
-            break;
+    switch (e.key) {
+    case SDLK_ESCAPE:
+    case SDLK_M:
+        mEnabled = false;
+        break;
     }
 }
 
@@ -784,7 +729,7 @@ void NotificationMessageScreen::render(Font &font) {
 }
 
 void HelpScreen::handleInput(SDL_KeyboardEvent &e) {
-    if (e.keysym.sym == SDLK_ESCAPE || (e.keysym.sym == SDLK_SLASH && e.keysym.mod & KMOD_SHIFT)) // NOLINT(hicpp-signed-bitwise)
+    if (e.key == SDLK_ESCAPE || (e.key == SDLK_SLASH && e.mod & SDL_KMOD_SHIFT))
         disable();
 }
 
@@ -825,18 +770,10 @@ void DebugScreen::render(Font &font) {
     }
 }
 
-void DebugScreen::setChoosingDebugAction(bool choosingDebugAction) {
-    mChoosingDebugAction = choosingDebugAction;
-}
+void DebugScreen::setChoosingDebugAction(bool choosingDebugAction) { mChoosingDebugAction = choosingDebugAction; }
 
-void DebugScreen::setChoosingTimeOfDay(bool choosingTimeOfDay) {
-    mChoosingTimeOfDay = choosingTimeOfDay;
-}
+void DebugScreen::setChoosingTimeOfDay(bool choosingTimeOfDay) { mChoosingTimeOfDay = choosingTimeOfDay; }
 
-void DebugScreen::setChosenTime(const Time &chosenTime) {
-    mChosenTime = chosenTime;
-}
+void DebugScreen::setChosenTime(const Time &chosenTime) { mChosenTime = chosenTime; }
 
-void DebugScreen::setStringPos(int stringPos) {
-    mStringPos = stringPos;
-}
+void DebugScreen::setStringPos(int stringPos) { mStringPos = stringPos; }

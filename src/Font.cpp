@@ -8,13 +8,12 @@ void Font::setFontColor(Color c) {
     SDL_SetTextureAlphaMod(mTexture.getTexture(), c.a);
 }
 
-int Font::draw(const std::string &character, int x, int y, Color fColor, Color bColor)
-{
+int Font::draw(const std::string &character, int x, int y, Color fColor, Color bColor) {
     std::tuple<int, int> position;
 
     try {
         position = characters.at(character);
-    } catch (const std::out_of_range& oor) {
+    } catch (const std::out_of_range &oor) {
         std::cerr << "Out of range error: " << oor.what() << std::endl;
         std::cerr << "Invalid rendering token: " << character << std::endl;
         return -1;
@@ -25,8 +24,18 @@ int Font::draw(const std::string &character, int x, int y, Color fColor, Color b
     int cellX = std::get<0>(position);
     int cellY = std::get<1>(position);
 
-    SDL_Rect srcRect = { cellX * mCellWidth, cellY * mCellHeight, mCellWidth, mCellHeight };
-    SDL_Rect destRect = { x * mCellWidth, y * mCellHeight, mCellWidth, mCellHeight };
+    SDL_FRect srcRect = {
+        static_cast<float>(cellX * mCellWidth),
+        static_cast<float>(cellY * mCellHeight),
+        static_cast<float>(mCellWidth),
+        static_cast<float>(mCellHeight),
+    };
+    SDL_FRect destRect = {
+        static_cast<float>(x * mCellWidth),
+        static_cast<float>(y * mCellHeight),
+        static_cast<float>(mCellWidth),
+        static_cast<float>(mCellHeight),
+    };
 
     SDL_SetRenderDrawColor(mRenderer, bColor.r, bColor.g, bColor.b, bColor.a);
     SDL_RenderFillRect(mRenderer, &destRect);
@@ -35,12 +44,9 @@ int Font::draw(const std::string &character, int x, int y, Color fColor, Color b
     return 0;
 }
 
-int Font::drawText(const std::string &text, int x0, int y) {
-    return drawText(text, x0, y, -1);
-}
+int Font::drawText(const std::string &text, int x0, int y) { return drawText(text, x0, y, -1); }
 
-int Font::drawText(const std::string &text, int x0, int y, Color fColor, Color bColor)
-{
+int Font::drawText(const std::string &text, int x0, int y, Color fColor, Color bColor) {
     int x = x0;
 
     for (std::string::size_type i = 0; i < text.size(); ++i) {
@@ -48,7 +54,8 @@ int Font::drawText(const std::string &text, int x0, int y, Color fColor, Color b
         if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '(') {
             ++i;
             int begin = (int)i + 1;
-            while (text[++i] != ')');
+            while (text[++i] != ')')
+                ;
 
             if (this->draw(text.substr(begin, i - begin), x, y, fColor, bColor) == -1)
                 return -1;
@@ -87,7 +94,8 @@ int Font::drawText(const std::string &text, int x0, int y, int alpha) {
         if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '(') {
             ++i;
             int begin = (int)i + 1;
-            while (text[++i] != ')');
+            while (text[++i] != ')')
+                ;
 
             if (this->draw(text.substr(begin, i - begin), x, y, fColor, bColor) == -1)
                 return -1;
@@ -99,7 +107,8 @@ int Font::drawText(const std::string &text, int x0, int y, int alpha) {
         if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '[') {
             ++i;
             int begin = (int)i + 1;
-            while (text[++i] != ']');
+            while (text[++i] != ']')
+                ;
 
             std::string fontStr = text.substr(begin, i - begin);
             if (FontColor::getColorMap().find(fontStr) == FontColor::getColorMap().end()) {
@@ -117,7 +126,8 @@ int Font::drawText(const std::string &text, int x0, int y, int alpha) {
         if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '{') {
             ++i;
             int begin = (int)i + 1;
-            while (text[++i] != '}');
+            while (text[++i] != '}')
+                ;
 
             std::string fontStr = text.substr(begin, i - begin);
             if (FontColor::getColorMap().find(fontStr) == FontColor::getColorMap().end()) {
@@ -159,7 +169,8 @@ int Font::drawText(const std::string &text, int x0, int y, Color bColor) {
         if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '(') {
             ++i;
             int begin = (int)i + 1;
-            while (text[++i] != ')');
+            while (text[++i] != ')')
+                ;
 
             if (this->draw(text.substr(begin, i - begin), x, y, fColor, bColor) == -1)
                 return -1;
@@ -171,7 +182,8 @@ int Font::drawText(const std::string &text, int x0, int y, Color bColor) {
         if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '[') {
             ++i;
             int begin = (int)i + 1;
-            while (text[++i] != ']');
+            while (text[++i] != ']')
+                ;
 
             std::string fontStr = text.substr(begin, i - begin);
             if (FontColor::getColorMap().find(fontStr) == FontColor::getColorMap().end()) {
@@ -186,7 +198,8 @@ int Font::drawText(const std::string &text, int x0, int y, Color bColor) {
         // ignore background color
         if (i + 1 < text.size() && text[i] == '$' && text[i + 1] == '{') {
             ++i;
-            while (text[++i] != '}');
+            while (text[++i] != '}')
+                ;
             continue;
         }
 
@@ -211,36 +224,32 @@ int Font::drawText(const std::string &text, int x0, int y, Color bColor) {
     return 0;
 }
 
-int Font::getCellWidth() const {
-    return mCellWidth;
-}
+int Font::getCellWidth() const { return mCellWidth; }
 
-int Font::getCellHeight() const {
-    return mCellHeight;
-}
+int Font::getCellHeight() const { return mCellHeight; }
 
-Point Font::getCellSize() const {
-    return {mCellWidth, mCellHeight};
-}
+Point Font::getCellSize() const { return {mCellWidth, mCellHeight}; }
 
-int getFontStringLength(const std::string& text)
-{
+int getFontStringLength(const std::string &text) {
     int characters = 0;
     for (std::string::size_type i = 0; i < text.length(); ++i) {
         if (i + 2 < text.size() && text[i] == '$' && text[i + 1] == '(') {
             ++i;
-            while (text[++i] != ')');
+            while (text[++i] != ')')
+                ;
             characters++;
             continue;
         }
         if (i + 2 < text.size() && text[i] == '$' && text[i + 1] == '[') {
             ++i;
-            while (text[++i] != ']');
+            while (text[++i] != ']')
+                ;
             continue;
         }
         if (i + 2 < text.size() && text[i] == '$' && text[i + 1] == '{') {
             ++i;
-            while (text[++i] != '}');
+            while (text[++i] != '}')
+                ;
             continue;
         }
         if (i + 1 < text.size() && text[i] == '\\' && text[i + 1] != '\\') {
