@@ -151,7 +151,7 @@ void Game::iterate() {
 std::unique_ptr<Texture> Game::makeFontTexture() {
     auto fontTexture = std::make_unique<Texture>(mSDLManager.getRenderer());
     //    mFontTexture->loadFromFile("resources/curses_800x600.bmp");
-    fontTexture->loadFromFile("resources/cursesV2_800x600.bmp");
+    fontTexture->loadFromFile(std::string(SDL_GetBasePath()) + "resources/cursesV2_800x600.bmp");
     return fontTexture;
 }
 

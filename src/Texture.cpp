@@ -48,7 +48,7 @@ LightMapTexture::~LightMapTexture() {
 }
 
 LightMapTexture::LightMapTexture(SDL_Renderer *renderer) : Texture(renderer) {
-    loadFromFile("resources/light.png");
+    loadFromFile(std::string(SDL_GetBasePath()) + "/resources/light.png");
     mNightFadeTexture =
         SDL_CreateTexture(mRenderer, getFormat(), SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
     SDL_SetTextureBlendMode(mNightFadeTexture, SDL_BLENDMODE_MOD);
