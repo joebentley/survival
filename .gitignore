@@ -9,3 +9,4 @@ build
 survival-xcode/survival-xcode.xcodeproj/project.xcworkspace
 vendored
 .DS_Store
+build-emscripten

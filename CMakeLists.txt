@@ -20,8 +20,6 @@ add_executable(
 	src/Property.cpp
 )
 
-set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
-
 find_package(SDL3 CONFIG QUIET)
 
 if(NOT SDL3_FOUND)
@@ -55,13 +53,23 @@ endif()
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL3_image::SDL3_image)
 
-# Create the output dir and copy the resources folder into it
-set(output_dir ${CMAKE_CURRENT_BINARY_DIR}/survival-${CMAKE_PROJECT_VERSION})
-file(MAKE_DIRECTORY ${output_dir})
-file(COPY resources DESTINATION ${output_dir})
-file(COPY unquarantine.sh DESTINATION ${output_dir})
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 
-# After build, copy binary into output dir
-add_custom_command(TARGET survival POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:survival> ${output_dir}
-)
+option(Emscripten "Build for Emscripten" OFF)
+
+if(${Emscripten})
+    message("Setting up for Emscsripten")
+    set(CMAKE_EXECUTABLE_SUFFIX ".html")
+    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "--preload-file ../resources/light.png@resources/light.png --preload-file ../resources/cursesV2_800x600.bmp@resources/cursesV2_800x600.bmp")
+else()
+    # Create the output dir and copy the resources folder into it
+    set(output_dir ${CMAKE_CURRENT_BINARY_DIR}/survival-${CMAKE_PROJECT_VERSION})
+    file(MAKE_DIRECTORY ${output_dir})
+    file(COPY resources DESTINATION ${output_dir})
+    file(COPY unquarantine.sh DESTINATION ${output_dir})
+
+    # After build, copy binary into output dir
+    add_custom_command(TARGET survival POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:survival> ${output_dir}
+    )
+endif()
