@@ -29,6 +29,9 @@ class Game {
     PlayerEntity *m_player;
     Screens m_screens;
 
+    SDL_Texture *m_renderTexture;
+    int m_windowWidth = WINDOW_WIDTH, m_windowHeight = WINDOW_HEIGHT;
+
     StatusUIEntity *m_pStatusUI;
 
     std::vector<std::string> m_initialMessageLines;

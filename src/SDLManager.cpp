@@ -12,7 +12,7 @@ SDLManager::SDLManager(Uint32 SDLInitFlags) {
         SDL_Quit();
     }
 
-    mWindow = SDL_CreateWindow("Survival", WINDOW_WIDTH, WINDOW_HEIGHT, 0);
+    mWindow = SDL_CreateWindow("Survival", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE);
 
     if (mWindow == nullptr) {
         SDL_Log("Window could not be created! SDL_Error: %s", SDL_GetError());

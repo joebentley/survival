@@ -15,6 +15,9 @@ Game::Game()
     SDL_Renderer *renderer = mSDLManager.getRenderer();
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
+    m_renderTexture =
+        SDL_CreateTexture(renderer, SDL_PIXELFORMAT_BGRA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+
     auto &manager = EntityManager::getInstance();
 
     auto playerPos = m_player->getPos();
@@ -59,7 +62,10 @@ Game::Game()
 bool Game::processEvent(SDL_Event *e) {
     if (e->type == SDL_EVENT_QUIT)
         return true;
-    else if (m_initialMessage && e->type == SDL_EVENT_KEY_DOWN && e->key.key == SDLK_RETURN)
+    else if (e->type == SDL_EVENT_WINDOW_RESIZED) {
+        m_windowWidth = e->window.data1;
+        m_windowHeight = e->window.data2;
+    } else if (m_initialMessage && e->type == SDL_EVENT_KEY_DOWN && e->key.key == SDLK_RETURN)
         m_initialMessage = false;
     else if (!m_initialMessage && e->type == SDL_EVENT_KEY_DOWN) {
         bool screenEnabled = false;
@@ -85,6 +91,7 @@ void Game::iterate() {
     beginTime();
 
     auto renderer = mSDLManager.getRenderer();
+    SDL_SetRenderTarget(renderer, m_renderTexture);
 
     auto &manager = EntityManager::getInstance();
     manager.cleanup();
@@ -126,6 +133,9 @@ void Game::iterate() {
     MessageBoxRenderer::getInstance().render(m_font);
 
     m_font.drawText(std::to_string(m_fps), SCREEN_WIDTH - 5, SCREEN_HEIGHT - 1);
+
+    SDL_SetRenderTarget(renderer, nullptr);
+    SDL_RenderTexture(renderer, m_renderTexture, nullptr, nullptr);
 
     SDL_RenderPresent(renderer);
 
