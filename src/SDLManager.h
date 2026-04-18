@@ -12,9 +12,8 @@ const int WINDOW_HEIGHT = CHAR_HEIGHT * SCREEN_HEIGHT;
 
 class SDLManager {
   public:
+    SDLManager(Uint32 SDLInitFlags);
     ~SDLManager();
-
-    int initialize(Uint32 SDLInitFlags);
 
     SDL_Window *getWindow() const;
     SDL_Renderer *getRenderer() const;

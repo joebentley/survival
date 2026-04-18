@@ -2,42 +2,30 @@
 #include "Entities.h"
 #include "Entity.h"
 #include "EntityBuilder.h"
-#include "Font.h"
 #include "settings.h"
 #include "utils.h"
 #include <deque>
 
-int Game::init() {
+Game::Game()
+    : mSDLManager(SDL_INIT_VIDEO), m_lightMapTexture(mSDLManager.getRenderer()), mFontTexture(makeFontTexture()),
+      m_font(*mFontTexture, CHAR_WIDTH, CHAR_HEIGHT, NUM_PER_ROW, CHARS, mSDLManager.getRenderer()) {
     srand(static_cast<unsigned int>(time(NULL)));
-
-    return mSDLManager.initialize(SDL_INIT_VIDEO);
 }
 
-void Game::run() {
-    mFontTexture = std::make_unique<Texture>(mSDLManager.getRenderer());
-    //    mFontTexture->loadFromFile("resources/curses_800x600.bmp");
-    mFontTexture->loadFromFile("resources/cursesV2_800x600.bmp");
-
-    loop();
-}
+void Game::run() { loop(); }
 
 void Game::loop() {
     SDL_Renderer *renderer = mSDLManager.getRenderer();
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
-    LightMapTexture lightMapTexture(renderer);
-
-    Font font(*mFontTexture, CHAR_WIDTH, CHAR_HEIGHT, NUM_PER_ROW, CHARS, renderer);
-
-    World world;
     auto &manager = EntityManager::getInstance();
 
     // TODO clean up all this initialisation stuff
-    player = EntityBuilder::makeEntity<PlayerEntity>();
+    m_player = EntityBuilder::makeEntity<PlayerEntity>();
     // Place player in center of world
     // TODO: Fix bug that occurs at (0,0)
-    player->setPos(SCREEN_WIDTH * 1000 + SCREEN_WIDTH / 2, SCREEN_HEIGHT * 1000 + SCREEN_HEIGHT / 2);
-    auto playerPos = player->getPos();
+    m_player->setPos(SCREEN_WIDTH * 1000 + SCREEN_WIDTH / 2, SCREEN_HEIGHT * 1000 + SCREEN_HEIGHT / 2);
+    auto playerPos = m_player->getPos();
 
     EntityBuilder::makeEntity<CatEntity>()->setPos(playerPos.mX - 10, playerPos.mY - 10);
 
@@ -55,16 +43,16 @@ void Game::loop() {
 
     EntityBuilder::makeEntityAndAddToInventory<AppleEntity>(pChest);
 
-    auto statusUI = std::make_unique<StatusUIEntity>(dynamic_cast<PlayerEntity &>(*player));
+    auto statusUI = std::make_unique<StatusUIEntity>(dynamic_cast<PlayerEntity &>(*m_player));
     auto pStatusUI = statusUI.get();
     manager.addEntity(std::move(statusUI));
 
-    EntityBuilder::makeEntityAndAddToInventory<WaterskinEntity>(player);
-    EntityBuilder::makeEntityAndAddToInventory<GrassTuftEntity>(player);
-    EntityBuilder::makeEntityAndAddToInventory<GrassTuftEntity>(player);
-    EntityBuilder::makeEntityAndAddToInventory<TwigEntity>(player);
-    EntityBuilder::makeEntityAndAddToInventory<TwigEntity>(player);
-    EntityBuilder::makeEntityAndAddToInventory<TwigEntity>(player);
+    EntityBuilder::makeEntityAndAddToInventory<WaterskinEntity>(m_player);
+    EntityBuilder::makeEntityAndAddToInventory<GrassTuftEntity>(m_player);
+    EntityBuilder::makeEntityAndAddToInventory<GrassTuftEntity>(m_player);
+    EntityBuilder::makeEntityAndAddToInventory<TwigEntity>(m_player);
+    EntityBuilder::makeEntityAndAddToInventory<TwigEntity>(m_player);
+    EntityBuilder::makeEntityAndAddToInventory<TwigEntity>(m_player);
 
     // Add an example building
     std::vector<std::string> walls = {"++++++++++++", "+          +", "+     +    +", "+ +++++++d++",
@@ -75,7 +63,7 @@ void Game::loop() {
     manager.initialize();
     manager.setTimeOfDay(Time(6, 0));
 
-    Screens screens(*player);
+    Screens screens(*m_player);
 
     bool initialMessage = true;
     std::vector<std::string> initialMessageLines(
@@ -107,7 +95,7 @@ void Game::loop() {
                     }
                 }
                 if (!screenEnabled)
-                    dynamic_cast<PlayerEntity &>(*player).handleInput(e.key, quit, screens.getScreens());
+                    dynamic_cast<PlayerEntity &>(*m_player).handleInput(e.key, quit, screens.getScreens());
             }
         }
 
@@ -127,19 +115,19 @@ void Game::loop() {
         }
 
         if (shouldRenderWorld) {
-            world.render(font, player->getWorldPos());
-            manager.render(font, player->getWorldPos(), lightMapTexture);
+            m_world.render(m_font, m_player->getWorldPos());
+            manager.render(m_font, m_player->getWorldPos(), m_lightMapTexture);
         }
 
         // Always render status and notification UI
-        pStatusUI->render(font, player->getWorldPos());
-        NotificationMessageRenderer::getInstance().render(font);
+        pStatusUI->render(m_font, m_player->getWorldPos());
+        NotificationMessageRenderer::getInstance().render(m_font);
 
         if (screenToRender != nullptr) {
-            screenToRender->render(font);
+            screenToRender->render(m_font);
         }
 
-        if (player->mHp <= 0) {
+        if (m_player->mHp <= 0) {
             MessageBoxRenderer::getInstance().queueMessageBoxCentered(
                 std::vector<std::string>{"$[red]You died!", "", "Press return to quit"}, 1);
         }
@@ -147,9 +135,9 @@ void Game::loop() {
         if (initialMessage)
             MessageBoxRenderer::getInstance().queueMessageBoxCentered(initialMessageLines, 1);
 
-        MessageBoxRenderer::getInstance().render(font);
+        MessageBoxRenderer::getInstance().render(m_font);
 
-        font.drawText(std::to_string(fps), SCREEN_WIDTH - 5, SCREEN_HEIGHT - 1);
+        m_font.drawText(std::to_string(fps), SCREEN_WIDTH - 5, SCREEN_HEIGHT - 1);
 
         SDL_RenderPresent(renderer);
 
@@ -171,4 +159,11 @@ void Game::loop() {
 
         fps = frameTimes.size() / totalTime;
     }
+}
+
+std::unique_ptr<Texture> Game::makeFontTexture() {
+    auto fontTexture = std::make_unique<Texture>(mSDLManager.getRenderer());
+    //    mFontTexture->loadFromFile("resources/curses_800x600.bmp");
+    fontTexture->loadFromFile("resources/cursesV2_800x600.bmp");
+    return fontTexture;
 }
