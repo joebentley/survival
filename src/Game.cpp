@@ -13,10 +13,10 @@ Game::Game()
       m_initialMessageLines({"Welcome to the game", "? for help (once you've closed this)", "return to start"}) {
     srand(static_cast<unsigned int>(time(NULL)));
     SDL_Renderer *renderer = mSDLManager.getRenderer();
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
     m_renderTexture =
         SDL_CreateTexture(renderer, SDL_PIXELFORMAT_BGRA32, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+    SDL_SetTextureBlendMode(m_renderTexture, SDL_BLENDMODE_BLEND);
 
     auto &manager = EntityManager::getInstance();
 

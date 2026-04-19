@@ -56,6 +56,7 @@ LightMapTexture::LightMapTexture(SDL_Renderer *renderer) : Texture(renderer) {
 }
 
 void LightMapTexture::render(std::vector<LightMapPoint> points, Uint8 backgroundAlpha) {
+    auto oldRenderTarget = SDL_GetRenderTarget(mRenderer);
     SDL_SetRenderTarget(mRenderer, mNightFadeTexture);
     SDL_SetRenderDrawColor(mRenderer, backgroundAlpha, backgroundAlpha, backgroundAlpha, 0xFF);
     SDL_RenderFillRect(mRenderer, nullptr);
@@ -71,6 +72,6 @@ void LightMapTexture::render(std::vector<LightMapPoint> points, Uint8 background
         Texture::render(nullptr, &rect);
     }
 
-    SDL_SetRenderTarget(mRenderer, nullptr);
+    SDL_SetRenderTarget(mRenderer, oldRenderTarget);
     SDL_RenderTexture(mRenderer, mNightFadeTexture, nullptr, nullptr);
 }
