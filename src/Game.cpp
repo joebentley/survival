@@ -59,6 +59,8 @@ Game::Game()
     manager.setTimeOfDay(Time(6, 0));
 }
 
+Game::~Game() { SDL_DestroyTexture(m_renderTexture); }
+
 bool Game::processEvent(SDL_Event *e) {
     if (e->type == SDL_EVENT_QUIT)
         return true;

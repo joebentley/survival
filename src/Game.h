@@ -13,6 +13,7 @@ const int MAX_FRAME_RATE = 30;
 class Game {
   public:
     Game();
+    ~Game();
 
     void iterate();
     bool processEvent(SDL_Event *e);
