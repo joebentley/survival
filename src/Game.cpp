@@ -64,7 +64,11 @@ Game::~Game() { SDL_DestroyTexture(m_renderTexture); }
 bool Game::processEvent(SDL_Event *e) {
     if (e->type == SDL_EVENT_QUIT)
         return true;
-    else if (m_initialMessage && e->type == SDL_EVENT_KEY_DOWN && e->key.key == SDLK_RETURN)
+    else if (e->type == SDL_EVENT_KEY_DOWN && e->key.mod & SDL_KMOD_CTRL && e->key.key == SDLK_EQUALS) {
+        mSDLManager.rescaleWindow(1.1);
+    } else if (e->type == SDL_EVENT_KEY_DOWN && e->key.mod & SDL_KMOD_CTRL && e->key.key == SDLK_MINUS) {
+        mSDLManager.rescaleWindow(0.9);
+    } else if (m_initialMessage && e->type == SDL_EVENT_KEY_DOWN && e->key.key == SDLK_RETURN)
         m_initialMessage = false;
     else if (!m_initialMessage && e->type == SDL_EVENT_KEY_DOWN) {
         bool screenEnabled = false;

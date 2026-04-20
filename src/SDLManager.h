@@ -18,6 +18,8 @@ class SDLManager {
     SDL_Window *getWindow() const;
     SDL_Renderer *getRenderer() const;
 
+    void rescaleWindow(float scale);
+
   private:
     SDL_Window *mWindow{nullptr};
     SDL_Renderer *mRenderer{nullptr};
