@@ -11,6 +11,19 @@
       margin: 0;
       padding: none;
       background-color: black;
+      color: whitesmoke;
+      font-family: 'Courier New', Courier, monospace;
+    }
+
+    .column {
+      width: 700px;
+      margin: auto;
+      margin-top: 2rem;
+    }
+
+    .controls-list {
+      list-style-type: none;
+      font-size: 11pt;
     }
 
     .emscripten {
@@ -39,6 +52,23 @@
 <body>
   <div class="emscripten_border">
     <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+  </div>
+  <div class="column">
+    <ul class="controls-list">
+      <li>Diagonal movement: y u b n</li>
+      <li>Cardinal movement: h j k l</li>
+      <li>Get item: g</li>
+      <li>Wait 1 tick: period (.)</li>
+      <li>Force attack: shift + direction</li>
+      <li>Inventory: i</li>
+      <li>Equipment: e</li>
+      <li>Crafting: c</li>
+      <li>Message log: m</li>
+      <li>Inspect: semicolon (;)</li>
+      <li>Interact: space</li>
+      <li>Increase window size: ctrl +</li>
+      <li>Decrease window size: ctrl -</li>
+    </ul>
   </div>
   <script async type="text/javascript" src="survival.js"></script>
 </body>
