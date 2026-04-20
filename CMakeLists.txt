@@ -61,7 +61,10 @@ if(${Emscripten})
     message("Setting up for Emscsripten")
     set(CMAKE_EXECUTABLE_SUFFIX ".js")
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "--preload-file ../resources/light.png@resources/light.png --preload-file ../resources/cursesV2_800x600.bmp@resources/cursesV2_800x600.bmp")
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND cp "${CMAKE_SOURCE_DIR}/emscripten-template.html" "${CMAKE_CURRENT_BINARY_DIR}/index.html")
+
+    add_custom_target(index.html ALL
+        COMMAND cp "${CMAKE_SOURCE_DIR}/emscripten-template.html" "${CMAKE_CURRENT_BINARY_DIR}/index.html"
+    )
 else()
     file(COPY resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endif()
