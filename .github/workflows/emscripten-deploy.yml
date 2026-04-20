@@ -38,7 +38,7 @@ jobs:
           cd build
           emcmake cmake -GNinja -DEmscripten=ON ..
           emmake ninja
-          cp survival.html ../_site/index.html
+          cp index.html ../_site
           cp survival.js ../_site
           cp survival.wasm ../_site
           cp survival.data ../_site
