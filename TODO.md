@@ -5,7 +5,8 @@
 - [ ] In-game debug mode (entity spawning, disabling hunger, god mode, time of day)
 - [ ] Zombies and monsters at night (Minecraft)
 - [ ] More weapons, armor, food, etc.
-- [ ] Need to make my own index.html to load the js rather than using Emscripten default
+- [ ] Add list of controls on index.html
+- [x] Need to make my own index.html to load the js rather than using Emscripten default
 
 ## Epic: Biomes
 - [ ] Desert
@@ -31,4 +32,4 @@
 
 ## Known issues
 - [ ] If player is holding torch and changes screen, they are invisible until they move away from the border
-- [ ] Need to be able to resize the game
+- [x] Need to be able to resize the game
