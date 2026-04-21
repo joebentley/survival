@@ -135,7 +135,7 @@ void Game::iterate() {
 
     MessageBoxRenderer::getInstance().render(m_font);
 
-    m_font.drawText(std::to_string(m_fps), SCREEN_WIDTH - 5, SCREEN_HEIGHT - 1);
+    m_font.drawText(std::to_string(m_fps), World::SCREEN_WIDTH - 5, World::SCREEN_HEIGHT - 1);
 
     SDL_SetRenderTarget(renderer, nullptr);
     SDL_RenderTexture(renderer, m_renderTexture, nullptr, nullptr);
@@ -172,6 +172,7 @@ PlayerEntity *Game::makePlayer() {
     auto player = EntityBuilder::makeEntity<PlayerEntity>();
     // Place player in center of world
     // TODO: Fix bug that occurs at (0,0)
-    player->setPos(SCREEN_WIDTH * 1000 + SCREEN_WIDTH / 2, SCREEN_HEIGHT * 1000 + SCREEN_HEIGHT / 2);
+    player->setPos(World::SCREEN_WIDTH * 1000 + World::SCREEN_WIDTH / 2,
+                   World::SCREEN_HEIGHT * 1000 + World::SCREEN_HEIGHT / 2);
     return player;
 }

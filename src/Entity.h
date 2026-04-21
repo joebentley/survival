@@ -236,7 +236,7 @@ struct Entity {
     /// Get entity position
     Point getPos() const { return mPos; }
     /// Get entity position on the world coordinate grid
-    Point getWorldPos() const { return {this->mPos.mX / SCREEN_WIDTH, this->mPos.mY / SCREEN_HEIGHT}; }
+    Point getWorldPos() const { return {this->mPos.mX / World::SCREEN_WIDTH, this->mPos.mY / World::SCREEN_HEIGHT}; }
 
     /// Get maximum carry weight considering whether a back item is equipped with property "AdditionalCarryWeight"
     int getMaxCarryWeight() const;

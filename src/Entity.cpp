@@ -45,8 +45,8 @@ bool Entity::isOnScreen(const Point &currentWorldPos) {
     int currentWorldX = currentWorldPos.mX;
     int currentWorldY = currentWorldPos.mY;
 
-    return mPos.mX >= SCREEN_WIDTH * currentWorldX && mPos.mX < SCREEN_WIDTH * (currentWorldX + 1) &&
-           mPos.mY >= SCREEN_HEIGHT * currentWorldY && mPos.mY < SCREEN_HEIGHT * (currentWorldY + 1);
+    return mPos.mX >= World::SCREEN_WIDTH * currentWorldX && mPos.mX < World::SCREEN_WIDTH * (currentWorldX + 1) &&
+           mPos.mY >= World::SCREEN_HEIGHT * currentWorldY && mPos.mY < World::SCREEN_HEIGHT * (currentWorldY + 1);
 }
 
 bool Entity::collide(const Point &pos) { return mIsSolid && mPos == pos; }

@@ -7,8 +7,8 @@
 #include "World.h"
 #include <memory>
 
-const int WINDOW_WIDTH = CHAR_WIDTH * SCREEN_WIDTH;
-const int WINDOW_HEIGHT = CHAR_HEIGHT * SCREEN_HEIGHT;
+const int WINDOW_WIDTH = CHAR_WIDTH * World::SCREEN_WIDTH;
+const int WINDOW_HEIGHT = CHAR_HEIGHT * World::SCREEN_HEIGHT;
 
 class SDLManager {
   public:

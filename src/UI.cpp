@@ -26,7 +26,7 @@ void MessageBoxRenderer::queueMessageBoxCentered(const std::vector<std::string> 
     const int width = maxLength + 2 * padding;
     const int height = static_cast<int>(contents.size()) + 2 * padding;
 
-    queueMessageBox(contents, padding, (SCREEN_WIDTH - width) / 2, (SCREEN_HEIGHT - height) / 2);
+    queueMessageBox(contents, padding, (World::SCREEN_WIDTH - width) / 2, (World::SCREEN_HEIGHT - height) / 2);
 }
 
 void MessageBoxRenderer::render(Font &font) {
@@ -148,7 +148,7 @@ void drawDescriptionScreen(Font &font, Entity &item) {
         }
     }
 
-    font.drawText("esc-back", 1, SCREEN_HEIGHT - 2);
+    font.drawText("esc-back", 1, World::SCREEN_HEIGHT - 2);
 }
 
 void InventoryScreen::handleInput(SDL_KeyboardEvent &e) {
@@ -190,18 +190,18 @@ void InventoryScreen::render(Font &font) {
 
     font.drawText("${black}" + colorStr + "hp " + std::to_string((int)ceil(mPlayer.mHp)) + "/" +
                       std::to_string((int)ceil(mPlayer.mMaxHp)),
-                  SCREEN_WIDTH - X_STATUS_OFFSET, 1);
+                  World::SCREEN_WIDTH - X_STATUS_OFFSET, 1);
 
     if (mPlayer.hunger > 0.7)
-        font.drawText("${black}$[green]sated", SCREEN_WIDTH - X_STATUS_OFFSET, 2);
+        font.drawText("${black}$[green]sated", World::SCREEN_WIDTH - X_STATUS_OFFSET, 2);
     else if (mPlayer.hunger > 0.3)
-        font.drawText("${black}$[yellow]hungry", SCREEN_WIDTH - X_STATUS_OFFSET, 2);
+        font.drawText("${black}$[yellow]hungry", World::SCREEN_WIDTH - X_STATUS_OFFSET, 2);
     else
-        font.drawText("${black}$[red]starving", SCREEN_WIDTH - X_STATUS_OFFSET, 2);
+        font.drawText("${black}$[red]starving", World::SCREEN_WIDTH - X_STATUS_OFFSET, 2);
 
     font.drawText("${black}" + std::to_string(mPlayer.getCarryingWeight()) + "/" +
                       std::to_string(mPlayer.getMaxCarryWeight()) + "lb",
-                  SCREEN_WIDTH - X_STATUS_OFFSET, 4);
+                  World::SCREEN_WIDTH - X_STATUS_OFFSET, 4);
 
     std::string helpString;
     auto item = mPlayer.getInventoryItem(mChosenIndex);
@@ -209,7 +209,7 @@ void InventoryScreen::render(Font &font) {
         helpString += "e-eat  ";
     if (item->hasBehaviour("ApplyableBehaviour"))
         helpString += "a-apply  ";
-    font.drawText(helpString + "d-drop  return-view desc  esc-exit inv", 1, SCREEN_HEIGHT - 2);
+    font.drawText(helpString + "d-drop  return-view desc  esc-exit inv", 1, World::SCREEN_HEIGHT - 2);
 }
 
 PlayerEntity &InventoryScreen::getPlayer() const { return mPlayer; }
@@ -261,7 +261,7 @@ void LootingDialog::render(Font &font) {
         return;
     }
 
-    const int x = SCREEN_WIDTH / 2 - (DIALOG_WIDTH + 4) / 2;
+    const int x = World::SCREEN_WIDTH / 2 - (DIALOG_WIDTH + 4) / 2;
     const int y = 10;
 
     font.drawText("${black}$(p23)" + repeat(DIALOG_WIDTH + 4, "$(p27)") + "$(p9)", x, y);
@@ -330,7 +330,7 @@ void InspectionDialog::render(Font &font) {
     const auto &chosenPointScreen = World::worldToScreen(mChosenPoint);
     font.drawText("${black}$[yellow]X", chosenPointScreen);
 
-    int xPosWindow = chosenPointScreen.mX >= SCREEN_WIDTH / 2 ? 2 : SCREEN_WIDTH / 2 + 1;
+    int xPosWindow = chosenPointScreen.mX >= World::SCREEN_WIDTH / 2 ? 2 : World::SCREEN_WIDTH / 2 + 1;
 
     if (entitiesAtPoint.size() > 1) {
         mSelectingFromMultipleOptions = true;
@@ -358,17 +358,17 @@ void InspectionDialog::render(Font &font) {
 
         if (!entity.mShortDesc.empty()) {
             lines.emplace_back("");
-            auto descLines = wordWrap(entity.mShortDesc, SCREEN_WIDTH / 2 - 5);
+            auto descLines = wordWrap(entity.mShortDesc, World::SCREEN_WIDTH / 2 - 5);
             std::copy(descLines.begin(), descLines.end(), std::back_inserter(lines));
         }
 
         if (!entity.mLongDesc.empty()) {
             lines.emplace_back("");
-            auto descLines = wordWrap(entity.mLongDesc, SCREEN_WIDTH / 2 - 5);
+            auto descLines = wordWrap(entity.mLongDesc, World::SCREEN_WIDTH / 2 - 5);
             std::copy(descLines.begin(), descLines.end(), std::back_inserter(lines));
         }
 
-        const int cappedNumLines = SCREEN_HEIGHT - 20;
+        const int cappedNumLines = World::SCREEN_HEIGHT - 20;
         std::vector<std::string> linesCapped = lines;
         if (lines.size() > cappedNumLines) {
             linesCapped = std::vector<std::string>(lines.begin(), lines.begin() + cappedNumLines);
@@ -414,8 +414,8 @@ void CraftingScreen::render(Font &font) {
         auto player = EntityManager::getInstance().getEntityByID("Player");
 
         int y = 0;
-        if (World::worldToScreen(player->getPos()).mY < SCREEN_HEIGHT / 2)
-            y = SCREEN_HEIGHT - 1;
+        if (World::worldToScreen(player->getPos()).mY < World::SCREEN_HEIGHT / 2)
+            y = World::SCREEN_HEIGHT - 1;
 
         std::string message = "Choose direction to place object";
         if (mCouldNotBuildAtPosition)
@@ -716,11 +716,11 @@ void NotificationMessageScreen::handleInput(SDL_KeyboardEvent &e) {
 void NotificationMessageScreen::render(Font &font) {
     auto messages = NotificationMessageRenderer::getInstance().getMessages();
 
-    const int numMessagesToShow = SCREEN_HEIGHT - 4;
+    const int numMessagesToShow = World::SCREEN_HEIGHT - 4;
     const int xOffset = 4;
 
     font.drawText("Message history", xOffset, 1);
-    font.drawText("m or esc to exit", SCREEN_WIDTH - 20, 1);
+    font.drawText("m or esc to exit", World::SCREEN_WIDTH - 20, 1);
 
     auto front = messages.crbegin();
     for (int i = 0; front != messages.crend() && i < numMessagesToShow; ++i, ++front) {

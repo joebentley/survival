@@ -6,8 +6,8 @@
 #include <unordered_set>
 
 #define FOR_EACH_SCREEN_POINT                                                                                          \
-    for (auto x = 0; x < SCREEN_WIDTH; ++x)                                                                            \
-        for (auto y = 0; y < SCREEN_HEIGHT; ++y)
+    for (auto x = 0; x < World::SCREEN_WIDTH; ++x)                                                                     \
+        for (auto y = 0; y < World::SCREEN_HEIGHT; ++y)
 
 void World::render(Font &font, const Point worldPos) {
     // If we haven't generated this screen, randomize this (and the screens around it)

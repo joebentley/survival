@@ -7,14 +7,14 @@
 #include <string>
 #include <unordered_map>
 
-/// Number of characters of screen width
-#define SCREEN_WIDTH 70
-/// Number of characters of screen height
-#define SCREEN_HEIGHT 35
-
 /// This class handles the randomization and drawing of the floor tiles,
 /// as well as the random generation of all entities in the game
 struct World {
+    /// Number of characters of screen width
+    static const int SCREEN_WIDTH = 70;
+    /// Number of characters of screen height
+    static const int SCREEN_HEIGHT = 35;
+
     /// Each point in the world has a random floor tile glyph
     std::unordered_map<Point, std::string> mFloor;
 

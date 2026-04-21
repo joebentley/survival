@@ -303,28 +303,28 @@ void StatusUIEntity::render(Font &font, Point /*currentWorldPos*/) {
 
     font.drawText("${black}" + colorStr + "hp " + std::to_string((int)ceil(player.mHp)) + "/" +
                       std::to_string((int)ceil(player.mMaxHp)),
-                  SCREEN_WIDTH - X_OFFSET, 1);
+                  World::SCREEN_WIDTH - X_OFFSET, 1);
 
     if (player.hunger > 0.7)
-        font.drawText("${black}$[green]sated", SCREEN_WIDTH - X_OFFSET, 2);
+        font.drawText("${black}$[green]sated", World::SCREEN_WIDTH - X_OFFSET, 2);
     else if (player.hunger > 0.3)
-        font.drawText("${black}$[yellow]hungry", SCREEN_WIDTH - X_OFFSET, 2);
+        font.drawText("${black}$[yellow]hungry", World::SCREEN_WIDTH - X_OFFSET, 2);
     else
-        font.drawText("${black}$[red]starving", SCREEN_WIDTH - X_OFFSET, 2);
+        font.drawText("${black}$[red]starving", World::SCREEN_WIDTH - X_OFFSET, 2);
 
     font.drawText("$[red]$(heart)$[white]" + std::to_string(player.mHitTimes) + "d" +
                       std::to_string(player.computeMaxDamage()),
-                  SCREEN_WIDTH - X_OFFSET, 3);
+                  World::SCREEN_WIDTH - X_OFFSET, 3);
 
     font.drawText("${black}" + std::to_string(player.getCarryingWeight()) + "/" +
                       std::to_string(player.getMaxCarryWeight()) + "lb",
-                  SCREEN_WIDTH - X_OFFSET, 4);
+                  World::SCREEN_WIDTH - X_OFFSET, 4);
 
     if (forceTickDisplayTimer-- > 0) {
         font.drawText(
             "Waited " + std::to_string(ticksWaitedDuringAnimation) + " tick" +
                 (ticksWaitedDuringAnimation > 1 ? "s" : "") + "...",
-            SCREEN_WIDTH - X_OFFSET - 8, SCREEN_HEIGHT - 2,
+            World::SCREEN_WIDTH - X_OFFSET - 8, World::SCREEN_HEIGHT - 2,
             Color(0xFF, 0xFF, 0xFF,
                   static_cast<Uint8>(static_cast<float>(forceTickDisplayTimer) / FORCE_TICK_DISPLAY_LENGTH * 0xFF)),
             Color::getColor("transparent"));
@@ -347,14 +347,14 @@ void StatusUIEntity::render(Font &font, Point /*currentWorldPos*/) {
         else
             enemyhpString += "$[red]near death";
 
-        font.drawText(enemyhpString, SCREEN_WIDTH - X_OFFSET - 2, 6);
+        font.drawText(enemyhpString, World::SCREEN_WIDTH - X_OFFSET - 2, 6);
     }
 
     // Drop attack target after 10 turns of inactivity
     if (attackTargetTimer == 0)
         mAttackTargetID.clear();
 
-    font.drawText(EntityManager::getInstance().getTimeOfDay().toWordString(), SCREEN_WIDTH - X_OFFSET, 8);
+    font.drawText(EntityManager::getInstance().getTimeOfDay().toWordString(), World::SCREEN_WIDTH - X_OFFSET, 8);
 }
 
 void StatusUIEntity::emit(uint32_t signal) {

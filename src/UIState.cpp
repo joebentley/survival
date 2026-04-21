@@ -570,16 +570,16 @@ void ChoosingPositionInspectionDialogState::onExit(InspectionDialog & /*screen*/
 
 inline Point ChoosingPositionInspectionDialogState::clipToScreenEdge(InspectionDialog &screen, const Point &p) const {
     auto worldPos = screen.getPlayer().getWorldPos();
-    auto point = p - Point(SCREEN_WIDTH, SCREEN_HEIGHT) * worldPos;
+    auto point = p - Point(World::SCREEN_WIDTH, World::SCREEN_HEIGHT) * worldPos;
     Point returnPoint(p);
     if (point.mX < 0)
-        returnPoint.mX = worldPos.mX * SCREEN_WIDTH;
-    else if (point.mX > SCREEN_WIDTH - 1)
-        returnPoint.mX = (worldPos.mX + 1) * SCREEN_WIDTH - 1;
+        returnPoint.mX = worldPos.mX * World::SCREEN_WIDTH;
+    else if (point.mX > World::SCREEN_WIDTH - 1)
+        returnPoint.mX = (worldPos.mX + 1) * World::SCREEN_WIDTH - 1;
     if (point.mY < 0)
-        returnPoint.mY = worldPos.mY * SCREEN_HEIGHT;
-    else if (point.mY > SCREEN_HEIGHT - 1)
-        returnPoint.mY = (worldPos.mY + 1) * SCREEN_HEIGHT - 1;
+        returnPoint.mY = worldPos.mY * World::SCREEN_HEIGHT;
+    else if (point.mY > World::SCREEN_HEIGHT - 1)
+        returnPoint.mY = (worldPos.mY + 1) * World::SCREEN_HEIGHT - 1;
     return returnPoint;
 }
 
