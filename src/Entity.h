@@ -2,21 +2,22 @@
 #ifndef ENTITY_H_
 #define ENTITY_H_
 
-#include <vector>
-#include <queue>
-#include <string>
+#include "Font.h"
+#include "LightMapTexture.h"
+#include "Point.h"
+#include "Property.h"
+#include "Texture.h"
+#include "Time.h"
+#include "World.h"
+#include "flags.h"
 #include <cstdio>
 #include <iostream>
 #include <memory>
-#include <unordered_map>
+#include <queue>
 #include <stdexcept>
-#include "Font.h"
-#include "World.h"
-#include "Point.h"
-#include "flags.h"
-#include "Time.h"
-#include "Texture.h"
-#include "Property.h"
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 /// Tracks the number of initialised entities in the game
 extern int gNumInitialisedEntities;
@@ -26,47 +27,34 @@ struct Entity;
 /// Describes a behaviour that can be attached to an Entity and can update on each tick of the game loop
 struct Behaviour {
     /// Construct a new behaviour with given ID and reference to parent (which is stored in the Behaviour)
-    Behaviour(std::string ID, Entity& parent) : mID(std::move(ID)), mParent(parent) {}
+    Behaviour(std::string ID, Entity &parent) : mID(std::move(ID)), mParent(parent) {}
 
     virtual ~Behaviour() = default;
 
     /// Unique ID for the behaviour
     std::string mID;
     /// Mutable reference to the parent
-    Entity& mParent;
+    Entity &mParent;
 
     /// Called each engine tick, called by the parent entity
     virtual void tick() {};
 
     /// Handle a specific int signal, not really used right now
-    virtual void handle(Uint32 /*signal*/) {};
+    virtual void handle(Uint32 /*signal*/){};
 
     /// Is the Behaviour enabled? Can override in subclasses
-    virtual bool isEnabled() const {
-        return mEnabled;
-    }
+    virtual bool isEnabled() const { return mEnabled; }
 
-    void enable() {
-        mEnabled = true;
-    }
+    void enable() { mEnabled = true; }
 
-    void disable() {
-        mEnabled = false;
-    }
-protected:
-    bool mEnabled {true};
+    void disable() { mEnabled = false; }
+
+  protected:
+    bool mEnabled{true};
 };
 
 /// Describes the different slots that equipment can be equipped in
-enum class EquipmentSlot {
-    HEAD,
-    TORSO,
-    LEGS,
-    RIGHT_HAND,
-    LEFT_HAND,
-    FEET,
-    BACK
-};
+enum class EquipmentSlot { HEAD, TORSO, LEGS, RIGHT_HAND, LEFT_HAND, FEET, BACK };
 
 /// Get next equipment slot
 EquipmentSlot &operator++(EquipmentSlot &slot);
@@ -74,11 +62,10 @@ EquipmentSlot &operator++(EquipmentSlot &slot);
 EquipmentSlot &operator--(EquipmentSlot &slot);
 
 /// Vector of all possible equipment slots (for iteration)
-const std::vector<EquipmentSlot> EQUIPMENT_SLOTS { // NOLINT(cert-err58-cpp)
-    EquipmentSlot::HEAD, EquipmentSlot::TORSO, EquipmentSlot::LEGS,
-    EquipmentSlot::RIGHT_HAND, EquipmentSlot::LEFT_HAND, EquipmentSlot::FEET,
-    EquipmentSlot::BACK
-};
+const std::vector<EquipmentSlot> EQUIPMENT_SLOTS{
+    // NOLINT(cert-err58-cpp)
+    EquipmentSlot::HEAD,      EquipmentSlot::TORSO, EquipmentSlot::LEGS, EquipmentSlot::RIGHT_HAND,
+    EquipmentSlot::LEFT_HAND, EquipmentSlot::FEET,  EquipmentSlot::BACK};
 
 /// Convert equipment slot to string
 inline std::string slotToString(EquipmentSlot slot) {
@@ -99,7 +86,6 @@ inline std::string slotToString(EquipmentSlot slot) {
     return "";
 }
 
-
 class EntityManager;
 /// Base entity class for all entities in the game (including player)
 struct Entity {
@@ -113,11 +99,11 @@ struct Entity {
     /// \param hitTimes how many times should entity hit per attack
     /// \param hitAmount how much base damage (without considering weapon) should the attack do
     /// \param maxCarryWeight maximum carry weight of entity
-    Entity(std::string ID, std::string name, std::string graphic,
-           float hp, float maxhp, float regenPerTick, int hitTimes, int hitAmount, int maxCarryWeight)
-            : mHp(hp), mMaxHp(maxhp), mRegenPerTick(regenPerTick), mHitTimes(hitTimes), mHitAmount(hitAmount), mID(std::move(ID)),
-              mName(std::move(name)), mGraphic(std::move(graphic)), mPos(0, 0), mMaxCarryWeight(maxCarryWeight)
-    {
+    Entity(std::string ID, std::string name, std::string graphic, float hp, float maxhp, float regenPerTick,
+           int hitTimes, int hitAmount, int maxCarryWeight)
+        : mHp(hp), mMaxHp(maxhp), mRegenPerTick(regenPerTick), mHitTimes(hitTimes), mHitAmount(hitAmount),
+          mID(std::move(ID)), mName(std::move(name)), mGraphic(std::move(graphic)), mPos(0, 0),
+          mMaxCarryWeight(maxCarryWeight) {
         // If we specify an empty string generate a random ID
         if (this->mID.empty())
             this->mID = std::to_string(rand());
@@ -142,43 +128,43 @@ struct Entity {
     /// \param maxhp maximum hp allowed for the entity
     /// \param regenPerTick amount of hp to regen per tick
     Entity(std::string ID, std::string name, std::string graphic, float hp, float maxhp, float regenPerTick)
-            : Entity(std::move(ID), std::move(name), std::move(graphic), hp, maxhp, regenPerTick, 1, 2, 100) {}
+        : Entity(std::move(ID), std::move(name), std::move(graphic), hp, maxhp, regenPerTick, 1, 2, 100) {}
 
     /// Initialize an entity with health 1, max health 1, 0 regen per tick, hits once for damage 2, has max carry 100
     /// \param ID ID of the entity
     /// \param name descriptive name
     /// \param graphic fontstring to use when rendering
     Entity(std::string ID, std::string name, std::string graphic)
-            : Entity(std::move(ID), std::move(name), std::move(graphic), 1, 1, 0, 1, 2, 100) {}
+        : Entity(std::move(ID), std::move(name), std::move(graphic), 1, 1, 0, 1, 2, 100) {}
 
     virtual ~Entity() = default;
 
-    float mHp; /// Current hp of the entity
-    float mMaxHp; /// Maximum hp of the entity
+    float mHp;           /// Current hp of the entity
+    float mMaxHp;        /// Maximum hp of the entity
     float mRegenPerTick; /// How much hp to regen per tick
-    int mHitTimes; /// How many times should entity hit per attack
-    int mHitAmount; /// How much base damage (without considering weapon) should the attack do
+    int mHitTimes;       /// How many times should entity hit per attack
+    int mHitAmount;      /// How much base damage (without considering weapon) should the attack do
 
     // TODO: next few should certainly be encapsulated
-    bool mShouldRender {true}; /// Should we render the entity?
-    bool mIsInAnInventory {false}; /// Is the entity currently in an inventory?
-    bool mIsEquipped {false}; /// Is the entity currently requipped?
-    bool mIsSolid {false}; /// If true, cannot be walked on
+    bool mShouldRender{true};     /// Should we render the entity?
+    bool mIsInAnInventory{false}; /// Is the entity currently in an inventory?
+    bool mIsEquipped{false};      /// Is the entity currently requipped?
+    bool mIsSolid{false};         /// If true, cannot be walked on
 
-    bool mSkipLootingDialog {false}; /// automatically pick up first item in inventory when looting
+    bool mSkipLootingDialog{false}; /// automatically pick up first item in inventory when looting
 
     std::string mID; /// Unique ID for entity
 
-    float mQuality {1}; /// Quality as a crafting product
+    float mQuality{1}; /// Quality as a crafting product
 
     std::string mName; /// Descriptive name
     // TODO: virtual getter for mShortDesc, change based on quality?
     std::string mShortDesc; /// Short one-line description
-    std::string mLongDesc; /// Long paragraph description
+    std::string mLongDesc;  /// Long paragraph description
 
     std::string mGraphic; /// ASCII graphic text (see Font.h and Font.cpp for text formatting "mini-language")
 
-    int mRenderingLayer {0}; /// Sets render order of the entity
+    int mRenderingLayer{0}; /// Sets render order of the entity
 
     /// Move the behaviour to the entities vector of behaviours
     virtual void addBehaviour(std::unique_ptr<Behaviour> behaviour);
@@ -195,7 +181,7 @@ struct Entity {
     /// Render the entity to the screen using font, taking current world position into account
     /// \param font to render using
     /// \param currentWorldPos the current screen grid coordinates on the world grid
-    virtual void render(Font& font, Point currentWorldPos);
+    virtual void render(Font &font, Point currentWorldPos);
 
     /// Tests whether the entity is on the current world screen
     /// \param currentWorldPos the current world position of the player (or camera?)
@@ -218,7 +204,7 @@ struct Entity {
     /// Drop entity with given inventory position onto the floor
     void dropItem(int inventoryIndex);
     /// Return pointer to the inventory item at given index
-    Entity * getInventoryItem(int inventoryIndex) const;
+    Entity *getInventoryItem(int inventoryIndex) const;
     /// Get the unique ID of the inventory item at given index
     std::string getInventoryItemID(int inventoryIndex) const;
     /// Get number of items in inventory
@@ -248,34 +234,30 @@ struct Entity {
     /// Set position of the entity to p
     void setPos(Point p) { mPos = p; }
     /// Get entity position
-    Point getPos() const {
-        return mPos;
-    }
+    Point getPos() const { return mPos; }
     /// Get entity position on the world coordinate grid
-    Point getWorldPos() const {
-        return { this->mPos.mX / SCREEN_WIDTH, this->mPos.mY / SCREEN_HEIGHT };
-    }
+    Point getWorldPos() const { return {this->mPos.mX / SCREEN_WIDTH, this->mPos.mY / SCREEN_HEIGHT}; }
 
     /// Get maximum carry weight considering whether a back item is equipped with property "AdditionalCarryWeight"
     int getMaxCarryWeight() const;
 
-    /// Attempt to move to Point p, also moving the entity's inventory, and recomputing the current screen's entities if it
-    /// changes screen coords (TODO: do we need to do this if it's not the player's movement?).
-    /// Will not move to the point if there is a solid entity in the way
+    /// Attempt to move to Point p, also moving the entity's inventory, and recomputing the current screen's entities if
+    /// it changes screen coords (TODO: do we need to do this if it's not the player's movement?). Will not move to the
+    /// point if there is a solid entity in the way
     /// \param p Point to move to
     /// \return Whether or not the movement was performed
     bool moveTo(Point p);
 
     /// Get behaviour with given ID
-    Behaviour * getBehaviourByID(const std::string &ID) const;
+    Behaviour *getBehaviourByID(const std::string &ID) const;
     /// Does entity have behaviour with given ID?
-    bool hasBehaviour(const std::string& ID) const;
+    bool hasBehaviour(const std::string &ID) const;
     /// Disable any Wander and WanderAttach behaviours
     void disableWanderBehaviours();
     /// Enable any Wander and WanderAttach behaviours
     void enableWanderBehaviours();
     // TODO: function to disable (and enable) behaviours with given IDs
-    
+
     /// Compute max damage considering whether an item with property "MeleeWeaponDamage" is equipped in right hand
     int computeMaxDamage() const;
     /// Calculate a random damage roll
@@ -291,7 +273,7 @@ struct Entity {
     /// Return pointer to entity in slot, returning nullptr if no entity in slot
     /// \param slot EquipmentSlot to look in
     /// \return pointer to entity in slot
-    Entity * getEquipmentEntity(EquipmentSlot slot) const;
+    Entity *getEquipmentEntity(EquipmentSlot slot) const;
     /// Equip given entity in slot, returning true if successful
     bool equip(EquipmentSlot slot, Entity *entity);
     /// Equip entity with ID in slot, returning true if successful
@@ -314,15 +296,13 @@ struct Entity {
     /// Does the entity have the given property?
     bool hasProperty(const std::string &propertyName) const;
     /// Return a pointer to the property object with propertyName
-    Property * getProperty(const std::string &propertyName) const;
+    Property *getProperty(const std::string &propertyName) const;
     /// Move the given property to the entity
     void addProperty(std::unique_ptr<Property> property);
 
-    bool canBeAttacked() const {
-        return mCanBeAttacked;
-    }
+    bool canBeAttacked() const { return mCanBeAttacked; }
 
-protected:
+  protected:
     /// Map of behaviour IDs to unique pointers owning those Behaviours
     std::unordered_map<std::string, std::unique_ptr<Behaviour>> mBehaviours;
     /// Map of property IDs to unique pointers owning those Properties
@@ -355,31 +335,35 @@ class EntityManager {
     /// Current time of day the game
     Time mTimeOfDay;
     /// Amount of time to increment per game tick
-    Time mTimePerTick { 0, 2 };
+    Time mTimePerTick{0, 2};
 
-    /// Generate mToRender from the entities given by mCurrentlyOnScreen in the order given by their mRenderingLayer fields
+    /// Generate mToRender from the entities given by mCurrentlyOnScreen in the order given by their mRenderingLayer
+    /// fields
     void reorderEntities();
-public:
+
+  public:
     /// Get the singleton instance
-    static EntityManager& getInstance() {
+    static EntityManager &getInstance() {
         static EntityManager instance;
         return instance;
     }
 
     EntityManager() = default;
     // Singleton, so delete copy constructor and copy assignment operator
-    EntityManager(const EntityManager&) = delete;
-    void operator=(const EntityManager&) = delete;
+    EntityManager(const EntityManager &) = delete;
+    void operator=(const EntityManager &) = delete;
 
-    /// Move the entity to be managed by the EntityManager, throwing an std::invalid_argument exception if entity with ID is already present
+    /// Move the entity to be managed by the EntityManager, throwing an std::invalid_argument exception if entity with
+    /// ID is already present
     void addEntity(std::unique_ptr<Entity> entity);
     /// Broadcast the signal to all entities, which emit them to all behaviours
     void broadcast(uint32_t signal);
-    /// Checks if the number of entities in the entity manager equals the count of the number of entities initialized so far,
-    /// printing a warning if they are not equal. Then calls recomputeCurrentEntitiesOnScreenAndSurroundingScreens with the
-    /// player's world position
+    /// Checks if the number of entities in the entity manager equals the count of the number of entities initialized so
+    /// far, printing a warning if they are not equal. Then calls recomputeCurrentEntitiesOnScreenAndSurroundingScreens
+    /// with the player's world position
     void initialize();
-    /// cleanup() and then advance the game time, then tick all entities on this screen or the surrounding screens (relative to the player)
+    /// cleanup() and then advance the game time, then tick all entities on this screen or the surrounding screens
+    /// (relative to the player)
     void tick();
     /// Remove the entities in mToBeDeleted
     void cleanup();
@@ -392,11 +376,11 @@ public:
     void render(Font &font, LightMapTexture &lightMapTexture);
 
     /// Get pointer to entity with ID, nullptr if it doesn't exist
-    Entity * getEntityByID(const std::string &ID) const;
+    Entity *getEntityByID(const std::string &ID) const;
     /// Queue entity with ID for deletion on next cleanup()
     void queueForDeletion(const std::string &ID);
-    /// Erase the entity with ID, also --gNumInitialisedEntities, and calls recomputeCurrentEntitiesOnScreenAndSurroundingScreens
-    /// with the player's world position
+    /// Erase the entity with ID, also --gNumInitialisedEntities, and calls
+    /// recomputeCurrentEntitiesOnScreenAndSurroundingScreens with the player's world position
     void eraseByID(const std::string &ID);
 
     /// Find entities at point `pos` WARNING SLOW (reads every entity in world)
@@ -412,12 +396,12 @@ public:
     /// Find entities surrounding point `pos` WARNING SLOW (reads every entity)
     /// \param pos position to look around
     /// \return vector of pointers to entities surrounding pos
-    std::vector<Entity *> getEntitiesSurrounding(const Point& pos) const;
+    std::vector<Entity *> getEntitiesSurrounding(const Point &pos) const;
 
     /// Find entities surrounding point `pos` searching only entities on the surrounding screens of player
     /// \param pos position to look around
     /// \return vector of pointers to entities surrounding pos
-    std::vector<Entity *> getEntitiesSurroundingFaster(const Point& pos) const;
+    std::vector<Entity *> getEntitiesSurroundingFaster(const Point &pos) const;
 
     /// Union of mCurrentlyOnScreen and mInSurroundingScreens
     /// \return vector of pointers to entities
@@ -427,12 +411,13 @@ public:
     /// \param pos the new position of the entity that is trying to move
     /// \param entity a reference to the entity that is trying to move
     /// \return vector of pointers to all entities that collided
-    std::vector<Entity *> doCollisions(const Point& pos, Entity &entity);
+    std::vector<Entity *> doCollisions(const Point &pos, Entity &entity);
 
     /// Is entity with ID registered in the manager?
     bool isEntityInManager(const std::string &ID);
 
-    /// Should be called every time the player changes screen. Recomputes current entities on this screen and surrounding screens
+    /// Should be called every time the player changes screen. Recomputes current entities on this screen and
+    /// surrounding screens
     /// \param currentWorldPos current position in world space
     void recomputeCurrentEntitiesOnScreenAndSurroundingScreens(Point currentWorldPos);
 

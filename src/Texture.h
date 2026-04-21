@@ -48,39 +48,4 @@ class Texture {
     SDL_Texture *mTexture{nullptr};
 };
 
-struct Color;
-/// Represents a light point to be rendered with a given point, light radius,
-/// and color
-struct LightMapPoint {
-    LightMapPoint(Point p, int radius, Color color) : mPoint(p), mRadius(radius), mColor(color) {}
-    LightMapPoint(Point p, int radius) : mPoint(p), mRadius(radius), mColor(FontColor::getColor("white")) {}
-    LightMapPoint() : mPoint(Point(0, 0)), mRadius(0), mColor(FontColor::getColor("white")) {}
-
-    Point mPoint;
-    int mRadius;
-    struct Color mColor;
-};
-
-/// Represents a texture used to render the light point
-class LightMapTexture : Texture {
-  public:
-    /// Loads and allocates the light map texture for drawing onto the renderer
-    explicit LightMapTexture(SDL_Renderer *renderer);
-
-    // Delete copy constructor and copy assignment
-    explicit LightMapTexture(const LightMapTexture &) = delete;
-    LightMapTexture &operator=(const LightMapTexture &) = delete;
-
-    ~LightMapTexture() override;
-
-    /// Renderer all the points given to the screen with backgroundAlpha
-    /// representing the overall day night cycle
-    /// \param points the light points on the screen
-    /// \param backgroundAlpha the alpha value of the overall background fog
-    void render(std::vector<LightMapPoint> points, Uint8 backgroundAlpha);
-
-  private:
-    SDL_Texture *mNightFadeTexture{nullptr};
-};
-
 #endif // TEXTURE_H_

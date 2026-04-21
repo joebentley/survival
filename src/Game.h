@@ -3,6 +3,7 @@
 
 #include "Entities.h"
 #include "Font.h"
+#include "LightMapTexture.h"
 #include "SDLManager.h"
 #include <cstdlib>
 #include <ctime>

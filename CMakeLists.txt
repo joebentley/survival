@@ -10,6 +10,7 @@ add_executable(
 	src/Font.cpp
 	src/survival.cpp
 	src/Texture.cpp
+    src/LightMapTexture.cpp
 	src/World.cpp
 	src/utils.cpp
 	src/Recipe.cpp
