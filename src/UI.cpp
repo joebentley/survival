@@ -327,7 +327,7 @@ void InspectionDialog::render(Font &font) {
         return;
     }
 
-    const auto &chosenPointScreen = worldToScreen(mChosenPoint);
+    const auto &chosenPointScreen = World::worldToScreen(mChosenPoint);
     font.drawText("${black}$[yellow]X", chosenPointScreen);
 
     int xPosWindow = chosenPointScreen.mX >= SCREEN_WIDTH / 2 ? 2 : SCREEN_WIDTH / 2 + 1;
@@ -414,7 +414,7 @@ void CraftingScreen::render(Font &font) {
         auto player = EntityManager::getInstance().getEntityByID("Player");
 
         int y = 0;
-        if (worldToScreen(player->getPos()).mY < SCREEN_HEIGHT / 2)
+        if (World::worldToScreen(player->getPos()).mY < SCREEN_HEIGHT / 2)
             y = SCREEN_HEIGHT - 1;
 
         std::string message = "Choose direction to place object";

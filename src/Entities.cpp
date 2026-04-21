@@ -663,7 +663,7 @@ void BuildingWallEntity::render(Font &font, Point currentWorldPos) {
         // draw each wall tile
         for (const auto &pair : mWalls) {
             Point wallPos = pair.first;
-            Point screenPos = worldToScreen(mPos + wallPos);
+            Point screenPos = World::worldToScreen(mPos + wallPos);
             WallType wallType = pair.second;
 
             std::string c; // the character we will draw

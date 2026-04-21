@@ -138,8 +138,8 @@ void World::randomizeScreen(Point worldPos) {
     }
 }
 
-Point worldToScreen(Point worldSpacePoint) {
+Point World::worldToScreen(Point worldSpacePoint) {
     return {worldSpacePoint.mX % SCREEN_WIDTH, worldSpacePoint.mY % SCREEN_HEIGHT};
 }
 
-Point worldPosToWorld(Point worldPos) { return {worldPos.mX * SCREEN_WIDTH, worldPos.mY * SCREEN_HEIGHT}; }
+Point World::worldPosToWorld(Point worldPos) { return {worldPos.mX * SCREEN_WIDTH, worldPos.mY * SCREEN_HEIGHT}; }

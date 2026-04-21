@@ -2,15 +2,13 @@
 #include "Behaviours.h"
 #include "Properties.h"
 
-#include <stdexcept>
-#include <cmath>
 #include <any>
+#include <cmath>
+#include <stdexcept>
 
 int gNumInitialisedEntities = 0;
 
-void Entity::addBehaviour(std::unique_ptr<Behaviour> behaviour) {
-    mBehaviours[behaviour->mID] = std::move(behaviour);
-}
+void Entity::addBehaviour(std::unique_ptr<Behaviour> behaviour) { mBehaviours[behaviour->mID] = std::move(behaviour); }
 
 void Entity::tick() {
     if (mHp < mMaxHp)
@@ -19,23 +17,23 @@ void Entity::tick() {
     if (mHp > mMaxHp)
         mHp = mMaxHp;
 
-    for (auto& behaviour : mBehaviours) {
+    for (auto &behaviour : mBehaviours) {
         if (behaviour.second->isEnabled())
             behaviour.second->tick();
     }
 }
 
 void Entity::emit(Uint32 signal) {
-    for (auto& behaviour : mBehaviours) {
+    for (auto &behaviour : mBehaviours) {
         behaviour.second->handle(signal);
     }
 }
 
-void Entity::render(Font& font, Point currentWorldPos) {
+void Entity::render(Font &font, Point currentWorldPos) {
     if (!mShouldRender)
         return;
 
-    Point screenPos = worldToScreen(mPos);
+    Point screenPos = World::worldToScreen(mPos);
 
     // Only draw if the entity is on the current world screen
     if (isOnScreen(currentWorldPos)) {
@@ -51,16 +49,13 @@ bool Entity::isOnScreen(const Point &currentWorldPos) {
            mPos.mY >= SCREEN_HEIGHT * currentWorldY && mPos.mY < SCREEN_HEIGHT * (currentWorldY + 1);
 }
 
-bool Entity::collide(const Point &pos) {
-    return mIsSolid && mPos == pos;
-}
+bool Entity::collide(const Point &pos) { return mIsSolid && mPos == pos; }
 
 Behaviour *Entity::getBehaviourByID(const std::string &ID) const {
     if (mBehaviours.find(ID) == mBehaviours.cend())
         return nullptr;
     return mBehaviours.at(ID).get();
 }
-
 
 int Entity::computeMaxDamage() const {
     if (hasEquippedInSlot(EquipmentSlot::RIGHT_HAND)) {
@@ -107,9 +102,7 @@ void Entity::removeFromInventory(const std::string &ID) {
     mInventory.erase(std::remove(mInventory.begin(), mInventory.end(), ID), mInventory.end());
 }
 
-void Entity::removeFromInventory(int inventoryIndex) {
-    mInventory.erase(mInventory.begin() + inventoryIndex);
-}
+void Entity::removeFromInventory(int inventoryIndex) { mInventory.erase(mInventory.begin() + inventoryIndex); }
 
 void Entity::dropItem(int inventoryIndex) {
     auto item = EntityManager::getInstance().getEntityByID(mInventory[inventoryIndex]);
@@ -124,18 +117,11 @@ Entity *Entity::getInventoryItem(int inventoryIndex) const {
     return EntityManager::getInstance().getEntityByID(mInventory[inventoryIndex]);
 }
 
+size_t Entity::getInventorySize() const { return mInventory.size(); }
 
-size_t Entity::getInventorySize() const {
-    return mInventory.size();
-}
+bool Entity::isInventoryEmpty() const { return mInventory.empty(); }
 
-bool Entity::isInventoryEmpty() const {
-    return mInventory.empty();
-}
-
-bool Entity::hasBehaviour(const std::string &ID) const {
-    return mBehaviours.find(ID) != mBehaviours.end();
-}
+bool Entity::hasBehaviour(const std::string &ID) const { return mBehaviours.find(ID) != mBehaviours.end(); }
 
 void Entity::disableWanderBehaviours() {
     // Disable wandering and wanderattach
@@ -157,13 +143,11 @@ void Entity::enableWanderBehaviours() {
         b->enable();
 }
 
-void Entity::destroy() {
-    EntityManager::getInstance().eraseByID(mID);
-}
+void Entity::destroy() { EntityManager::getInstance().eraseByID(mID); }
 
 int Entity::getCarryingWeight() {
     int totalWeight = 0;
-    for (const auto& ID : mInventory) {
+    for (const auto &ID : mInventory) {
         auto item = EntityManager::getInstance().getEntityByID(ID);
         auto pickuppable = item->getProperty("Pickuppable");
         if (pickuppable != nullptr) {
@@ -173,17 +157,13 @@ int Entity::getCarryingWeight() {
     return totalWeight;
 }
 
-void Entity::addHealth(float health) {
-    this->mHp = std::min(this->mHp + health, mMaxHp);
-}
+void Entity::addHealth(float health) { this->mHp = std::min(this->mHp + health, mMaxHp); }
 
 std::vector<Entity *> Entity::getInventory() const {
     std::vector<Entity *> output;
 
     std::transform(mInventory.cbegin(), mInventory.cend(), std::back_inserter(output),
-    [] (auto &a) -> Entity * {
-        return EntityManager::getInstance().getEntityByID(a);
-    });
+                   [](auto &a) -> Entity * { return EntityManager::getInstance().getEntityByID(a); });
 
     return output;
 }
@@ -194,7 +174,7 @@ bool Entity::isInInventory(const std::string &ID) const {
 
 bool Entity::moveTo(Point p) {
     auto &em = EntityManager::getInstance();
-    std::vector<Entity*> entities = em.doCollisions(p, *this);
+    std::vector<Entity *> entities = em.doCollisions(p, *this);
 
     // Check that there were no collisions in the space
     if (entities.empty()) {
@@ -213,9 +193,7 @@ bool Entity::moveTo(Point p) {
     return false;
 }
 
-const std::unordered_map<EquipmentSlot, std::string> &Entity::getEquipment() const {
-    return mEquipment;
-}
+const std::unordered_map<EquipmentSlot, std::string> &Entity::getEquipment() const { return mEquipment; }
 
 bool Entity::equip(EquipmentSlot slot, Entity *entity) {
     auto equippable = entity->getProperty("Equippable");
@@ -238,12 +216,10 @@ bool Entity::equip(EquipmentSlot slot, const std::string &ID) {
     return equip(slot, EntityManager::getInstance().getEntityByID(ID));
 }
 
-bool Entity::unequip(Entity *entity) {
-    return unequip(entity->mID);
-}
+bool Entity::unequip(Entity *entity) { return unequip(entity->mID); }
 
 bool Entity::unequip(const std::string &ID) {
-    auto a = std::find_if(mEquipment.cbegin(), mEquipment.cend(), [ID] (auto b) { return b.second == ID; });
+    auto a = std::find_if(mEquipment.cbegin(), mEquipment.cend(), [ID](auto b) { return b.second == ID; });
 
     if (a == mEquipment.cend())
         return false;
@@ -272,8 +248,7 @@ Entity *Entity::getEquipmentEntity(EquipmentSlot slot) const {
 std::vector<std::string> Entity::getInventoryItemsEquippableInSlot(EquipmentSlot slot) const {
     std::vector<std::string> IDs;
 
-    std::copy_if(mInventory.cbegin(), mInventory.cend(), std::back_inserter(IDs), [slot] (auto &ID)
-    {
+    std::copy_if(mInventory.cbegin(), mInventory.cend(), std::back_inserter(IDs), [slot](auto &ID) {
         auto e = EntityManager::getInstance().getEntityByID(ID);
         auto equippable = e->getProperty("Equippable");
         if (!e->mIsEquipped && equippable != nullptr) {
@@ -286,20 +261,17 @@ std::vector<std::string> Entity::getInventoryItemsEquippableInSlot(EquipmentSlot
     return IDs;
 }
 
-std::string Entity::getEquipmentID(EquipmentSlot slot) const {
-    return mEquipment.at(slot);
-}
+std::string Entity::getEquipmentID(EquipmentSlot slot) const { return mEquipment.at(slot); }
 
-bool Entity::hasEquippedInSlot(EquipmentSlot slot) const {
-    return !mEquipment.at(slot).empty();
-}
+bool Entity::hasEquippedInSlot(EquipmentSlot slot) const { return !mEquipment.at(slot).empty(); }
 
 bool Entity::hasEquipped(const std::string &ID) const {
-    return std::find_if(mEquipment.cbegin(), mEquipment.cend(), [ID] (auto &a) { return a.second == ID; }) != mEquipment.cend();
+    return std::find_if(mEquipment.cbegin(), mEquipment.cend(), [ID](auto &a) { return a.second == ID; }) !=
+           mEquipment.cend();
 }
 
 EquipmentSlot Entity::getEquipmentSlotByID(const std::string &ID) const {
-    auto a = std::find_if(mEquipment.cbegin(), mEquipment.cend(), [ID] (auto &a) { return a.second == ID; });
+    auto a = std::find_if(mEquipment.cbegin(), mEquipment.cend(), [ID](auto &a) { return a.second == ID; });
 
     if (a == mEquipment.cend())
         throw std::out_of_range("Nothing equipped with ID: " + ID);
@@ -307,9 +279,7 @@ EquipmentSlot Entity::getEquipmentSlotByID(const std::string &ID) const {
     return a->first;
 }
 
-std::string Entity::getInventoryItemID(int inventoryIndex) const {
-    return mInventory[inventoryIndex];
-}
+std::string Entity::getInventoryItemID(int inventoryIndex) const { return mInventory[inventoryIndex]; }
 
 int Entity::getMaxCarryWeight() const {
     auto a = getEquipmentEntity(EquipmentSlot::BACK);
@@ -325,24 +295,26 @@ int Entity::getMaxCarryWeight() const {
 }
 
 inline std::vector<std::string> Entity::filterInventoryForCraftingMaterial(std::string materialType) const {
-    return filterInventoryForCraftingMaterials(std::vector<std::string> {std::move(materialType)});
+    return filterInventoryForCraftingMaterials(std::vector<std::string>{std::move(materialType)});
 }
 
-std::vector<std::string> Entity::filterInventoryForCraftingMaterials(const std::vector<std::string> &materialTypes) const {
+std::vector<std::string>
+Entity::filterInventoryForCraftingMaterials(const std::vector<std::string> &materialTypes) const {
     std::vector<std::string> materialIDs;
 
     std::copy_if(mInventory.cbegin(), mInventory.cend(), std::back_inserter(materialIDs),
-    [materialTypes] (const auto &ID) {
-        auto entity = EntityManager::getInstance().getEntityByID(ID);
-        auto b = entity->getProperty("CraftingMaterial");
-        if (b != nullptr) {
-            if (std::find(materialTypes.cbegin(), materialTypes.cend(),
-                    std::any_cast<CraftingMaterialProperty::Data>(b->getValue()).type) != materialTypes.cend()) {
-                return true;
-            }
-        }
-        return false;
-    });
+                 [materialTypes](const auto &ID) {
+                     auto entity = EntityManager::getInstance().getEntityByID(ID);
+                     auto b = entity->getProperty("CraftingMaterial");
+                     if (b != nullptr) {
+                         if (std::find(materialTypes.cbegin(), materialTypes.cend(),
+                                       std::any_cast<CraftingMaterialProperty::Data>(b->getValue()).type) !=
+                             materialTypes.cend()) {
+                             return true;
+                         }
+                     }
+                     return false;
+                 });
 
     return materialIDs;
 }
@@ -363,9 +335,7 @@ Property *Entity::getProperty(const std::string &propertyName) const {
     return mProperties.at(propertyName).get();
 }
 
-void Entity::addProperty(std::unique_ptr<Property> property) {
-    mProperties[property->getName()] = std::move(property);
-}
+void Entity::addProperty(std::unique_ptr<Property> property) { mProperties[property->getName()] = std::move(property); }
 
 void EntityManager::addEntity(std::unique_ptr<Entity> entity) {
     if (getEntityByID(entity->mID) != nullptr)
@@ -379,12 +349,13 @@ void EntityManager::addEntity(std::unique_ptr<Entity> entity) {
 }
 
 void EntityManager::broadcast(Uint32 signal) {
-    for (const auto& entity : mEntities) {
+    for (const auto &entity : mEntities) {
         entity.second->emit(signal);
     }
 }
 
-#define UNMANAGED_ENTITIES_ERROR_MESSAGE "Warning! The number of initialised entities is not equal to the number of entities in the entity manager!"
+#define UNMANAGED_ENTITIES_ERROR_MESSAGE                                                                               \
+    "Warning! The number of initialised entities is not equal to the number of entities in the entity manager!"
 
 void EntityManager::initialize() {
     if ((size_t)gNumInitialisedEntities != mEntities.size())
@@ -403,14 +374,14 @@ void EntityManager::tick() {
 
     // Only update entities in this screen and surrounding screens
     // TODO: add special type of entity that always keeps updated e.g. the player's farm
-    for (const auto& ID : mCurrentlyOnScreen)
+    for (const auto &ID : mCurrentlyOnScreen)
         getEntityByID(ID)->tick();
-    for (const auto& ID : mInSurroundingScreens)
+    for (const auto &ID : mInSurroundingScreens)
         getEntityByID(ID)->tick();
 }
 
 void EntityManager::render(Font &font, Point currentWorldPos, LightMapTexture &lightMapTexture) {
-    for (const auto& a : mToRender) {
+    for (const auto &a : mToRender) {
         getEntityByID(a.first)->render(font, currentWorldPos);
     }
 
@@ -438,7 +409,7 @@ Entity *EntityManager::getEntityByID(const std::string &ID) const {
 std::vector<Entity *> EntityManager::getEntitiesAtPos(const Point &pos) const {
     std::vector<Entity *> entitiesAtPos;
 
-    for (const auto& entity : mEntities) {
+    for (const auto &entity : mEntities) {
         if (entity.second->getPos() == pos)
             entitiesAtPos.push_back(entity.second.get());
     }
@@ -450,11 +421,11 @@ std::vector<Entity *> EntityManager::getEntitiesAtPosFaster(const Point &pos) co
     std::vector<Entity *> entitiesAtPos;
 
     // TODO: remove ugly double loop
-    for (const auto& ID : mInSurroundingScreens) {
+    for (const auto &ID : mInSurroundingScreens) {
         if (getEntityByID(ID)->getPos() == pos)
             entitiesAtPos.push_back(getEntityByID(ID));
     }
-    for (const auto& ID : mCurrentlyOnScreen) {
+    for (const auto &ID : mCurrentlyOnScreen) {
         if (getEntityByID(ID)->getPos() == pos)
             entitiesAtPos.push_back(getEntityByID(ID));
     }
@@ -464,11 +435,13 @@ std::vector<Entity *> EntityManager::getEntitiesAtPosFaster(const Point &pos) co
 
 std::vector<Entity *> EntityManager::getEntitiesSurrounding(const Point &pos) const {
     std::vector<Entity *> entitiesSurrounding;
-    const std::vector<Point> surroundingPoints { pos + Point(-1, 0), pos + Point(1, 0), pos + Point(0, -1), pos + Point(0, 1),
-                                                 pos + Point(-1, -1), pos + Point(-1, 1), pos + Point(1, -1), pos + Point(1, 1)};
+    const std::vector<Point> surroundingPoints{pos + Point(-1, 0), pos + Point(1, 0),   pos + Point(0, -1),
+                                               pos + Point(0, 1),  pos + Point(-1, -1), pos + Point(-1, 1),
+                                               pos + Point(1, -1), pos + Point(1, 1)};
 
-    for (const auto& entity : mEntities) {
-        if (std::find(surroundingPoints.cbegin(), surroundingPoints.cend(), entity.second->getPos()) != surroundingPoints.cend())
+    for (const auto &entity : mEntities) {
+        if (std::find(surroundingPoints.cbegin(), surroundingPoints.cend(), entity.second->getPos()) !=
+            surroundingPoints.cend())
             entitiesSurrounding.emplace_back(entity.second.get());
     }
 
@@ -477,16 +450,19 @@ std::vector<Entity *> EntityManager::getEntitiesSurrounding(const Point &pos) co
 
 std::vector<Entity *> EntityManager::getEntitiesSurroundingFaster(const Point &pos) const {
     std::vector<Entity *> entitiesSurrounding;
-    const std::vector<Point> surroundingPoints { pos + Point(-1, 0), pos + Point(1, 0), pos + Point(0, -1), pos + Point(0, 1),
-                                                 pos + Point(-1, -1), pos + Point(-1, 1), pos + Point(1, -1), pos + Point(1, 1)};
+    const std::vector<Point> surroundingPoints{pos + Point(-1, 0), pos + Point(1, 0),   pos + Point(0, -1),
+                                               pos + Point(0, 1),  pos + Point(-1, -1), pos + Point(-1, 1),
+                                               pos + Point(1, -1), pos + Point(1, 1)};
 
     // TODO: remove ugly double loop
-    for (const auto& ID : mInSurroundingScreens) {
-        if (std::find(surroundingPoints.cbegin(), surroundingPoints.cend(), getEntityByID(ID)->getPos()) != surroundingPoints.cend())
+    for (const auto &ID : mInSurroundingScreens) {
+        if (std::find(surroundingPoints.cbegin(), surroundingPoints.cend(), getEntityByID(ID)->getPos()) !=
+            surroundingPoints.cend())
             entitiesSurrounding.emplace_back(getEntityByID(ID));
     }
-    for (const auto& ID : mCurrentlyOnScreen) {
-        if (std::find(surroundingPoints.cbegin(), surroundingPoints.cend(), getEntityByID(ID)->getPos()) != surroundingPoints.cend())
+    for (const auto &ID : mCurrentlyOnScreen) {
+        if (std::find(surroundingPoints.cbegin(), surroundingPoints.cend(), getEntityByID(ID)->getPos()) !=
+            surroundingPoints.cend())
             entitiesSurrounding.emplace_back(getEntityByID(ID));
     }
 
@@ -495,24 +471,24 @@ std::vector<Entity *> EntityManager::getEntitiesSurroundingFaster(const Point &p
 
 std::vector<Entity *> EntityManager::getEntitiesOnScreenAndSurroundingScreens() const {
     std::vector<Entity *> entities;
-    for (const auto& ID : mCurrentlyOnScreen) {
+    for (const auto &ID : mCurrentlyOnScreen) {
         entities.push_back(getEntityByID(ID));
     }
-    for (const auto& ID : mInSurroundingScreens) {
+    for (const auto &ID : mInSurroundingScreens) {
         entities.push_back(getEntityByID(ID));
     }
     return entities;
 }
 
-std::vector<Entity *> EntityManager::doCollisions(const Point& pos, Entity &entity) {
+std::vector<Entity *> EntityManager::doCollisions(const Point &pos, Entity &entity) {
     std::vector<Entity *> collidingEntities;
-    for (const auto& ID : mCurrentlyOnScreen) {
+    for (const auto &ID : mCurrentlyOnScreen) {
         Entity *e = getEntityByID(ID);
         // execute the entity's collision, which returns true if a collision occurred
         if (e->collide(pos) || e->collide(pos, entity))
             collidingEntities.push_back(e);
     }
-    for (const auto& ID : mInSurroundingScreens) {
+    for (const auto &ID : mInSurroundingScreens) {
         Entity *e = getEntityByID(ID);
         if (e->collide(pos) || e->collide(pos, entity))
             collidingEntities.push_back(e);
@@ -527,9 +503,7 @@ void EntityManager::cleanup() {
     }
 }
 
-void EntityManager::queueForDeletion(const std::string &ID) {
-    mToBeDeleted.push(ID);
-}
+void EntityManager::queueForDeletion(const std::string &ID) { mToBeDeleted.push(ID); }
 
 void EntityManager::eraseByID(const std::string &ID) {
     mEntities.erase(ID);
@@ -540,14 +514,13 @@ void EntityManager::eraseByID(const std::string &ID) {
 void EntityManager::reorderEntities() {
     mToRender.clear();
     // Make pairs of entity IDs with their rendering layers
-    std::transform(mCurrentlyOnScreen.cbegin(), mCurrentlyOnScreen.cend(), std::back_inserter(mToRender),
-            [this] (const std::string &ID) -> auto { return std::make_pair(ID, getEntityByID(ID)->mRenderingLayer); });
+    std::transform(
+        mCurrentlyOnScreen.cbegin(), mCurrentlyOnScreen.cend(), std::back_inserter(mToRender),
+        [this](const std::string &ID) -> auto { return std::make_pair(ID, getEntityByID(ID)->mRenderingLayer); });
     std::sort(mToRender.begin(), mToRender.end(), [](auto &a, auto &b) { return a.second > b.second; });
 }
 
-bool EntityManager::isEntityInManager(const std::string &ID) {
-    return mEntities.find(ID) != mEntities.end();
-}
+bool EntityManager::isEntityInManager(const std::string &ID) { return mEntities.find(ID) != mEntities.end(); }
 
 // TODO should split this into two separate functions for current entities on screen and for surrounding screens
 // player should call both current screen and surrounding screens, but other entity should only call current screen
@@ -564,21 +537,13 @@ void EntityManager::recomputeCurrentEntitiesOnScreenAndSurroundingScreens(Point 
     reorderEntities();
 }
 
-const Time &EntityManager::getTimeOfDay() const {
-    return mTimeOfDay;
-}
+const Time &EntityManager::getTimeOfDay() const { return mTimeOfDay; }
 
-void EntityManager::setTimeOfDay(const Time &timeOfDay) {
-    EntityManager::mTimeOfDay = timeOfDay;
-}
+void EntityManager::setTimeOfDay(const Time &timeOfDay) { EntityManager::mTimeOfDay = timeOfDay; }
 
-const Time &EntityManager::getTimePerTick() const {
-    return mTimePerTick;
-}
+const Time &EntityManager::getTimePerTick() const { return mTimePerTick; }
 
-void EntityManager::setTimePerTick(const Time &timePerTick) {
-    EntityManager::mTimePerTick = timePerTick;
-}
+void EntityManager::setTimePerTick(const Time &timePerTick) { EntityManager::mTimePerTick = timePerTick; }
 
 std::vector<LightMapPoint> EntityManager::getLightSources(Point fontSize) const {
     std::vector<LightMapPoint> points;
@@ -590,7 +555,7 @@ std::vector<LightMapPoint> EntityManager::getLightSources(Point fontSize) const 
             auto light = std::any_cast<LightEmittingProperty::Light>(b->getValue());
             if (light.isEnabled()) {
                 auto radius = fontSize.mY * light.getRadius();
-                auto point = fontSize * worldToScreen(entity->getPos()) + fontSize / 2;
+                auto point = fontSize * World::worldToScreen(entity->getPos()) + fontSize / 2;
                 points.emplace_back(LightMapPoint(point, radius, light.getColor()));
             }
         }
@@ -602,7 +567,6 @@ std::vector<LightMapPoint> EntityManager::getLightSources(Point fontSize) const 
 void EntityManager::recomputeCurrentEntitiesOnScreenAndSurroundingScreens() {
     recomputeCurrentEntitiesOnScreenAndSurroundingScreens(getEntityByID("Player")->getWorldPos());
 }
-
 
 EquipmentSlot &operator++(EquipmentSlot &slot) {
     if (slot == EquipmentSlot::BACK) {
