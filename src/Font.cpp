@@ -111,11 +111,11 @@ int Font::drawText(const std::string &text, int x0, int y, int alpha) {
                 ;
 
             std::string fontStr = text.substr(begin, i - begin);
-            if (FontColor::getColorMap().find(fontStr) == FontColor::getColorMap().end()) {
+            if (Color::getColorMap().find(fontStr) == Color::getColorMap().end()) {
                 std::cerr << "Invalid foreground font color: " << fontStr << std::endl;
                 return -1;
             }
-            fColor = FontColor::getColorMap()[fontStr];
+            fColor = Color::getColorMap()[fontStr];
             if (alpha != -1)
                 fColor.a = (Uint8)alpha;
 
@@ -130,11 +130,11 @@ int Font::drawText(const std::string &text, int x0, int y, int alpha) {
                 ;
 
             std::string fontStr = text.substr(begin, i - begin);
-            if (FontColor::getColorMap().find(fontStr) == FontColor::getColorMap().end()) {
+            if (Color::getColorMap().find(fontStr) == Color::getColorMap().end()) {
                 std::cerr << "Invalid background font color: " << fontStr << std::endl;
                 return -1;
             }
-            bColor = FontColor::getColorMap()[fontStr];
+            bColor = Color::getColorMap()[fontStr];
 
             continue;
         }
@@ -186,11 +186,11 @@ int Font::drawText(const std::string &text, int x0, int y, Color bColor) {
                 ;
 
             std::string fontStr = text.substr(begin, i - begin);
-            if (FontColor::getColorMap().find(fontStr) == FontColor::getColorMap().end()) {
+            if (Color::getColorMap().find(fontStr) == Color::getColorMap().end()) {
                 std::cerr << "Invalid foreground font color: " << fontStr << std::endl;
                 return -1;
             }
-            fColor = FontColor::getColorMap()[fontStr];
+            fColor = Color::getColorMap()[fontStr];
 
             continue;
         }

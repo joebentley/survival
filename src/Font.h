@@ -2,7 +2,7 @@
 #ifndef FONT_H_
 #define FONT_H_
 
-#include "FontColor.h"
+#include "Color.h"
 #include "Point.h"
 #include "Texture.h"
 

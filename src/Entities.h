@@ -1,10 +1,10 @@
 #ifndef ENTITIES_H_
 #define ENTITIES_H_
 
-#include "Entity.h"
 #include "Behaviours.h"
-#include "UI.h"
+#include "Entity.h"
 #include "Properties.h"
+#include "UI.h"
 
 #include <unordered_set>
 
@@ -20,24 +20,25 @@ struct PlayerEntity : Entity {
     /// hp loss per tick while starving
     float hungerDamageRate;
     /// whether or not player is attacking something
-    bool attacking {false};
+    bool attacking{false};
     /// whether or not showing "too much weight message" on screen
-    bool showingTooMuchWeightMessage {false};
+    bool showingTooMuchWeightMessage{false};
 
     explicit PlayerEntity()
-            : Entity("Player", "You, the player", "$[white]$(dwarf)", 10.0f, 10.0f, 0.1f, 1, 4, 100),
-              hunger(1), hungerRate(0.005f), hungerDamageRate(0.15f)
-    {
+        : Entity("Player", "You, the player", "$[white]$(dwarf)", 10.0f, 10.0f, 0.1f, 1, 4, 100), hunger(1),
+          hungerRate(0.005f), hungerDamageRate(0.15f) {
         mRenderingLayer = -1;
     }
 
     /// Try to attack the entity at attackPos
-    bool attack(const Point& attackPos);
+    bool attack(const Point &attackPos);
     /// Tick entity, taking hunger into account
     void tick() override;
     /// Handle most of the ingame interaction
-    void handleInput(SDL_KeyboardEvent &e, bool &quit, std::unordered_map<ScreenType, std::unique_ptr<Screen>> &screens);
-    /// Same as usual render except can show a "too much weight" message box, and offload additional rendering to "mEntityInteractingWith"
+    void handleInput(SDL_KeyboardEvent &e, bool &quit,
+                     std::unordered_map<ScreenType, std::unique_ptr<Screen>> &screens);
+    /// Same as usual render except can show a "too much weight" message box, and offload additional rendering to
+    /// "mEntityInteractingWith"
     void render(Font &font, Point currentWorldPos) override;
     /// Overrides usual entity addToInventory but displays a nice notification
     bool addToInventory(const std::string &ID) override;
@@ -45,17 +46,16 @@ struct PlayerEntity : Entity {
     /// Add hunger, not exceeding 1.0f
     void addHunger(float hunger);
 
-private:
-    bool interactingWithEntity {false};
+  private:
+    bool interactingWithEntity{false};
     std::string mEntityInteractingWith;
 };
 
-//region AI entities
+// region AI entities
 
 struct CatEntity : Entity {
     explicit CatEntity(std::string ID = "")
-            : Entity(std::move(ID), "Cat", "$[yellow]c", 10.0f, 10.0f, 0.05f, 1, 2, 100)
-    {
+        : Entity(std::move(ID), "Cat", "$[yellow]c", 10.0f, 10.0f, 0.05f, 1, 2, 100) {
         auto wanderAttach = std::make_unique<WanderAttachBehaviour>(*this, 0.5f, 0.7f, 0.05f);
         auto chaseAndAttack = std::make_unique<ChaseAndAttackBehaviour>(*this, 0.8f, 0.1f, 8.0f, 8.0f, 0.9f);
         chaseAndAttack->disable();
@@ -68,8 +68,7 @@ struct CatEntity : Entity {
 
 struct WolfEntity : Entity {
     explicit WolfEntity(std::string ID = "")
-            : Entity(std::move(ID), "Wolf", "${black}$[red]W", 20.0f, 20.0f, 0.05f, 1, 4, 100)
-    {
+        : Entity(std::move(ID), "Wolf", "${black}$[red]W", 20.0f, 20.0f, 0.05f, 1, 4, 100) {
         addBehaviour(std::make_unique<WanderBehaviour>(*this));
         auto chaseAndAttack = std::make_unique<ChaseAndAttackBehaviour>(*this, 0.8f, 0.05f, 8, 8, 0.9f);
         chaseAndAttack->disable();
@@ -83,11 +82,9 @@ struct WolfEntity : Entity {
 };
 
 struct GlowbugEntity : Entity {
-    explicit GlowbugEntity(std::string ID = "")
-            : Entity(std::move(ID), "Glowbug", "$[green]`", 10.0f, 10.0f, 0.05f)
-    {
+    explicit GlowbugEntity(std::string ID = "") : Entity(std::move(ID), "Glowbug", "$[green]`", 10.0f, 10.0f, 0.05f) {
         addBehaviour(std::make_unique<WanderBehaviour>(*this));
-        addProperty(std::make_unique<LightEmittingProperty>(this, 3, FontColor::getColor("green")));
+        addProperty(std::make_unique<LightEmittingProperty>(this, 3, Color::getColor("green")));
     }
 
     void render(Font &font, Point currentWorldPos) override;
@@ -100,7 +97,7 @@ struct BunnyEntity : Entity {
     }
 
     void render(Font &font, Point currentWorldPos) override;
-    
+
     bool isInHome() const;
 };
 
@@ -108,21 +105,20 @@ struct BunnyHoleEntity : Entity {
     explicit BunnyHoleEntity() : Entity("", "Bunny's House", "o") {}
 };
 
-//endregion
+// endregion
 
-//region Base item entities
+// region Base item entities
 
 struct EatableEntity : Entity {
     EatableEntity(std::string ID, std::string name, std::string graphic, float hungerRestoration)
-            : Entity(std::move(ID), std::move(name), std::move(graphic))
-    {
+        : Entity(std::move(ID), std::move(name), std::move(graphic)) {
         addProperty(std::make_unique<EatableProperty>(hungerRestoration));
     }
 };
 
-//endregion
+// endregion
 
-//region Regrowing entities (bushes, trees, etc.)
+// region Regrowing entities (bushes, trees, etc.)
 
 struct BerryEntity;
 struct BushEntity : Entity {
@@ -133,7 +129,7 @@ struct BushEntity : Entity {
 
     explicit BushEntity(std::string ID = "");
 
-    void render(Font& font, Point currentWorldPos) override;
+    void render(Font &font, Point currentWorldPos) override;
 };
 
 struct GrassTuftEntity;
@@ -145,17 +141,16 @@ struct GrassEntity : Entity {
 
     explicit GrassEntity(std::string ID = "");
 
-    void render(Font& font, Point currentWorldPos) override;
+    void render(Font &font, Point currentWorldPos) override;
 };
 
-//endregion
+// endregion
 
-//region Food items
+// region Food items
 
 struct CorpseEntity : EatableEntity {
-    CorpseEntity(std::string ID, float hungerRestoration, const std::string& corpseOf, int weight)
-            : EatableEntity(std::move(ID), "Corpse of " + corpseOf, "${black}$[red]x", hungerRestoration)
-    {
+    CorpseEntity(std::string ID, float hungerRestoration, const std::string &corpseOf, int weight)
+        : EatableEntity(std::move(ID), "Corpse of " + corpseOf, "${black}$[red]x", hungerRestoration) {
         addProperty(std::make_unique<PickuppableProperty>(weight));
     }
 };
@@ -164,9 +159,7 @@ struct AppleEntity : EatableEntity {
     const std::string SHORT_DESC = "A small, fist-sized fruit that is hopefully crispy and juicy";
     const std::string LONG_DESC = "This is a longer description of the apple";
 
-    explicit AppleEntity(std::string ID = "")
-            : EatableEntity(std::move(ID), "Apple", "$[green]a", 0.5)
-    {
+    explicit AppleEntity(std::string ID = "") : EatableEntity(std::move(ID), "Apple", "$[green]a", 0.5) {
         mShortDesc = SHORT_DESC;
         mLongDesc = LONG_DESC;
         addProperty(std::make_unique<PickuppableProperty>(1));
@@ -175,11 +168,10 @@ struct AppleEntity : EatableEntity {
 
 struct BananaEntity : EatableEntity {
     const std::string SHORT_DESC = "A yellow fruit found in the jungle.";
-    const std::string LONG_DESC = "This fruit was discovered in . They were brought west by Arab conquerors in 327 B.C.";
+    const std::string LONG_DESC =
+        "This fruit was discovered in . They were brought west by Arab conquerors in 327 B.C.";
 
-    explicit BananaEntity(std::string ID = "")
-            : EatableEntity(std::move(ID), "Banana", "$[yellow]b", 0.5)
-    {
+    explicit BananaEntity(std::string ID = "") : EatableEntity(std::move(ID), "Banana", "$[yellow]b", 0.5) {
         mShortDesc = SHORT_DESC;
         mLongDesc = LONG_DESC;
         addProperty(std::make_unique<PickuppableProperty>(1));
@@ -190,49 +182,43 @@ struct BerryEntity : EatableEntity {
     const std::string SHORT_DESC = "A purple berry";
     const std::string LONG_DESC = "";
 
-    explicit BerryEntity(std::string ID = "")
-    : EatableEntity(std::move(ID), "Berry", "$[purple]$(male)", 0.5)
-    {
+    explicit BerryEntity(std::string ID = "") : EatableEntity(std::move(ID), "Berry", "$[purple]$(male)", 0.5) {
         mShortDesc = SHORT_DESC;
         mLongDesc = LONG_DESC;
         addProperty(std::make_unique<PickuppableProperty>(1));
     }
 };
 
-//endregion
+// endregion
 
-//region Healing items
+// region Healing items
 
 struct BandageEntity : Entity {
     const std::string SHORT_DESC = "A rudimentary bandage made of grass";
 
-    explicit BandageEntity(std::string ID = "")
-            : Entity(std::move(ID), "Bandage", "$[white]~")
-    {
+    explicit BandageEntity(std::string ID = "") : Entity(std::move(ID), "Bandage", "$[white]~") {
         mShortDesc = SHORT_DESC;
         addProperty(std::make_unique<PickuppableProperty>(1));
         addBehaviour(std::make_unique<HealingItemBehaviour>(*this, 5));
     }
 };
 
-//endregion
+// endregion
 
-//region Materials
+// region Materials
 
 struct TwigEntity : Entity {
     const std::string SHORT_DESC = "A thin, brittle twig";
     const std::string LONG_DESC = "It looks very useful! Who knows where it came from...";
 
-    explicit TwigEntity(std::string ID = "")
-    : Entity(std::move(ID), "Twig", "${black}$[brown]/")
-    {
+    explicit TwigEntity(std::string ID = "") : Entity(std::move(ID), "Twig", "${black}$[brown]/") {
         mShortDesc = SHORT_DESC;
         mLongDesc = LONG_DESC;
         addProperty(std::make_unique<PickuppableProperty>(1));
         addProperty(std::make_unique<CraftingMaterialProperty>("wood", 1));
         addProperty(std::make_unique<EquippableProperty>(
-                std::vector<EquipmentSlot> {EquipmentSlot::LEFT_HAND, EquipmentSlot::RIGHT_HAND}));
-//        addBehaviour(std::make_unique<MeleeWeaponBehaviour>(*this, 1));
+            std::vector<EquipmentSlot>{EquipmentSlot::LEFT_HAND, EquipmentSlot::RIGHT_HAND}));
+        //        addBehaviour(std::make_unique<MeleeWeaponBehaviour>(*this, 1));
         addProperty(std::make_unique<MeleeWeaponDamageProperty>(1));
     }
 };
@@ -241,8 +227,7 @@ struct GrassTuftEntity : Entity {
     const std::string SHORT_DESC = "A tuft of dry grass";
     const std::string LONG_DESC = "A tuft of dry grass, very useful";
 
-    explicit GrassTuftEntity(std::string ID = "") : Entity(std::move(ID), "Tuft of grass", "$[grasshay]$(approx)")
-    {
+    explicit GrassTuftEntity(std::string ID = "") : Entity(std::move(ID), "Tuft of grass", "$[grasshay]$(approx)") {
         mShortDesc = SHORT_DESC;
         mLongDesc = LONG_DESC;
         addProperty(std::make_unique<PickuppableProperty>(1));
@@ -250,20 +235,20 @@ struct GrassTuftEntity : Entity {
     }
 };
 
-//endregion
+// endregion
 
-//region Misc entities
+// region Misc entities
 
 struct FireEntity : Entity {
     struct RekindleBehaviour : InteractableBehaviour {
-        explicit RekindleBehaviour(Entity& parent) : InteractableBehaviour(parent) {}
+        explicit RekindleBehaviour(Entity &parent) : InteractableBehaviour(parent) {}
 
         bool handleInput(SDL_KeyboardEvent &e) override;
         void render(Font &font) override;
 
-    private:
-        bool choosingItemToUse {false};
-        int choosingItemIndex {0};
+      private:
+        bool choosingItemToUse{false};
+        int choosingItemIndex{0};
     };
 
     explicit FireEntity(std::string ID = "") : Entity(std::move(ID), "Fire", "") {
@@ -275,7 +260,7 @@ struct FireEntity : Entity {
     void render(Font &font, Point currentWorldPos) override;
     void tick() override;
 
-    float fireLevel {1};
+    float fireLevel{1};
 };
 
 struct TorchEntity : Entity {
@@ -283,7 +268,7 @@ struct TorchEntity : Entity {
         addProperty(std::make_unique<PickuppableProperty>(1));
         addProperty(std::make_unique<LightEmittingProperty>(this, 4));
         addProperty(std::make_unique<EquippableProperty>(
-                std::vector<EquipmentSlot> {EquipmentSlot::LEFT_HAND, EquipmentSlot::RIGHT_HAND }));
+            std::vector<EquipmentSlot>{EquipmentSlot::LEFT_HAND, EquipmentSlot::RIGHT_HAND}));
 
         mShortDesc = "Can be equipped to produce light and some heat.";
     }
@@ -293,9 +278,7 @@ struct ChestEntity : Entity {
     const std::string SHORT_DESC = "A heavy wooden chest";
     const std::string LONG_DESC = "This chest is super heavy";
 
-    explicit ChestEntity(std::string ID = "")
-            : Entity(std::move(ID), "Chest", "${black}$[brown]$(accentAE)")
-    {
+    explicit ChestEntity(std::string ID = "") : Entity(std::move(ID), "Chest", "${black}$[brown]$(accentAE)") {
         mShortDesc = SHORT_DESC;
         mLongDesc = LONG_DESC;
 
@@ -304,9 +287,7 @@ struct ChestEntity : Entity {
 };
 
 struct BagEntity : Entity {
-    explicit BagEntity(std::string ID = "")
-            : Entity(std::move(ID), "Grass Bag", "$[green]$(Phi)")
-    {
+    explicit BagEntity(std::string ID = "") : Entity(std::move(ID), "Grass Bag", "$[green]$(Phi)") {
         mShortDesc = "This crude grass bag allows you to carry a few more items";
         addProperty(std::make_unique<PickuppableProperty>(1));
         addProperty(std::make_unique<EquippableProperty>(EquipmentSlot::BACK));
@@ -315,9 +296,7 @@ struct BagEntity : Entity {
 };
 
 struct WaterEntity : Entity {
-    explicit WaterEntity(std::string ID = "")
-            : Entity(std::move(ID), "Water", "")
-    {
+    explicit WaterEntity(std::string ID = "") : Entity(std::move(ID), "Water", "") {
         mRenderingLayer = 10;
 
         if (randDouble() > 0.5)
@@ -327,21 +306,20 @@ struct WaterEntity : Entity {
     }
 };
 
-//endregion
+// endregion
 
-//region Water containers
+// region Water containers
 
 struct WaterskinEntity : Entity {
-    explicit WaterskinEntity() : Entity("", "Waterskin", "$[brown]$(male)")
-    {
+    explicit WaterskinEntity() : Entity("", "Waterskin", "$[brown]$(male)") {
         addProperty(std::make_unique<WaterContainerProperty>());
         addProperty(std::make_unique<PickuppableProperty>(1));
     }
 };
 
-//endregion
+// endregion
 
-//region Building entities
+// region Building entities
 
 /// Generates a set of walls for a building from a layout string.
 /// The walls and corners are automatically detected to use the corresponding double-thickness pipe characters.
@@ -357,13 +335,14 @@ struct BuildingWallEntity : Entity {
     /// }
     /// would be a small hut with a door.
     /// \param pos world position of top left corner of building
-    /// \param layout vector of strings, each line being a row of the building. Each cross 'x' becomes a wall of the building
+    /// \param layout vector of strings, each line being a row of the building. Each cross 'x' becomes a wall of the
+    /// building
     explicit BuildingWallEntity(const Point &pos, const std::vector<std::string> &layout);
 
     /// Overrides rendering to display the correct tile for each WallType
     /// \param font the font to render on
     /// \param currentWorldPos the current world position
-    void render(Font& font, Point currentWorldPos) override;
+    void render(Font &font, Point currentWorldPos) override;
 
     /// Overrides collision detection to take the numerous walls into account
     /// \param pos position to check if colliding
@@ -385,14 +364,13 @@ struct BuildingWallEntity : Entity {
         T_RIGHT    // T junction with walls down, to right, and up
     };
 
-private:
+  private:
     std::unordered_map<Point, WallType> mWalls;
 
     /// Take a set of points and populate mWalls with the correct WallTypes
     /// \param points the set of points that represent the building
     void generateWallsFromPoints(const std::unordered_set<Point> &points);
 };
-
 
 /// Represents a door that can be opened or closed with spacebar
 struct DoorEntity : Entity {
@@ -401,7 +379,7 @@ struct DoorEntity : Entity {
     /// Overrides rendering to display whether the door is open or closed
     /// \param font the font to render on
     /// \param currentWorldPos the current world position
-    void render(Font& font, Point currentWorldPos) override;
+    void render(Font &font, Point currentWorldPos) override;
 
     /// Overrides collision detection to open the door
     /// \param pos position to check if colliding
@@ -419,33 +397,31 @@ struct DoorEntity : Entity {
         bool handleInput(SDL_KeyboardEvent &e) override;
     };
 
-private:
-    bool mIsOpen {false};
+  private:
+    bool mIsOpen{false};
 };
 
-//endregion
+// endregion
 
-//region UI entities
+// region UI entities
 
 class StatusUIEntity : public Entity {
-    const int FORCE_TICK_DISPLAY_LENGTH {100};
+    const int FORCE_TICK_DISPLAY_LENGTH{100};
 
-    PlayerEntity& player;
+    PlayerEntity &player;
 
-    int forceTickDisplayTimer {0};
-    int ticksWaitedDuringAnimation {1};
-    int attackTargetTimer {0};
+    int forceTickDisplayTimer{0};
+    int ticksWaitedDuringAnimation{1};
+    int attackTargetTimer{0};
 
     std::string mAttackTargetID;
     const int X_OFFSET = 10;
 
-public:
+  public:
     StatusUIEntity()
-            : StatusUIEntity(dynamic_cast<PlayerEntity&>(*EntityManager::getInstance().getEntityByID("Player"))) { }
+        : StatusUIEntity(dynamic_cast<PlayerEntity &>(*EntityManager::getInstance().getEntityByID("Player"))) {}
 
-    explicit StatusUIEntity(PlayerEntity& player)
-            : Entity("StatusUI", "", ""), player(player)
-    {
+    explicit StatusUIEntity(PlayerEntity &player) : Entity("StatusUI", "", ""), player(player) {
         mRenderingLayer = 1; // Keep on background
         mCanBeAttacked = false;
     }
@@ -457,12 +433,10 @@ public:
         mAttackTargetID = attackTargetID;
         attackTargetTimer = 10;
     }
-    void clearAttackTarget() {
-        mAttackTargetID.clear();
-    }
-//    void showLootedItemNotification(std::string itemString);
+    void clearAttackTarget() { mAttackTargetID.clear(); }
+    //    void showLootedItemNotification(std::string itemString);
 };
 
-//endregion
+// endregion
 
 #endif // ENTITIES_H_

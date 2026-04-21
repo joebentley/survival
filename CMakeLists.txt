@@ -16,7 +16,7 @@ add_executable(
 	src/Recipe.cpp
 	src/Game.cpp
 	src/SDLManager.cpp
-	src/FontColor.cpp
+	src/Color.cpp
 	src/UIState.cpp
 	src/Property.cpp
 )
