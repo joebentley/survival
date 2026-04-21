@@ -1,5 +1,4 @@
-#ifndef TEXTURE_H_
-#define TEXTURE_H_
+#pragma once
 
 #include <SDL3/SDL.h>
 
@@ -47,5 +46,3 @@ class Texture {
     SDL_Renderer *mRenderer{nullptr};
     SDL_Texture *mTexture{nullptr};
 };
-
-#endif // TEXTURE_H_
