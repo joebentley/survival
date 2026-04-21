@@ -130,10 +130,9 @@ class Font {
     int getCellHeight() const;
     /// Get cell dimensions as Point (w, h)
     Point getCellSize() const;
-};
 
-/// Get number of actual characters in the font string (disregarding $(), $[],
-/// ${})
-int getFontStringLength(const std::string &string);
+    /// Get number of actual characters in the font string (disregarding $(), $[], ${})
+    static int getFontStringLength(const std::string &string);
+};
 
 #endif // FONT_H_

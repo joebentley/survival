@@ -21,7 +21,7 @@ void MessageBoxRenderer::queueMessageBox(const std::vector<std::string> &content
 void MessageBoxRenderer::queueMessageBoxCentered(const std::vector<std::string> &contents, int padding) {
     std::vector<int> lineLengths;
     std::transform(contents.cbegin(), contents.cend(), std::back_inserter(lineLengths),
-                   [](const auto &a) { return getFontStringLength(a); });
+                   [](const auto &a) { return Font::getFontStringLength(a); });
     const int maxLength = *std::max_element(lineLengths.cbegin(), lineLengths.cend());
     const int width = maxLength + 2 * padding;
     const int height = static_cast<int>(contents.size()) + 2 * padding;
@@ -42,7 +42,7 @@ void showMessageBox(Font &font, const std::vector<std::string> &contents, int pa
     int maxNumChars = 0;
 
     for (const auto &string : contents) {
-        int length = getFontStringLength(string);
+        int length = Font::getFontStringLength(string);
         if (length > maxNumChars)
             maxNumChars = length;
     }
@@ -56,7 +56,7 @@ void showMessageBox(Font &font, const std::vector<std::string> &contents, int pa
     }
 
     for (const auto &line : contents) {
-        int paddingLength = maxNumChars - getFontStringLength(line);
+        int paddingLength = maxNumChars - Font::getFontStringLength(line);
         font.drawText("${black}$(p8)" + std::string((unsigned long)padding, ' ') + line +
                           std::string((unsigned long)paddingLength, ' ') + "${black}$[white]" +
                           std::string((unsigned long)padding, ' ') + "$(p8)",
@@ -175,7 +175,7 @@ void InventoryScreen::render(Font &font) {
         font.drawText(displayString, X_OFFSET, (int)i + Y_OFFSET);
         if (mPlayer.hasEquipped(item->mID))
             font.drawText("(" + slotToString(mPlayer.getEquipmentSlotByID(item->mID)) + ")",
-                          X_OFFSET + getFontStringLength(displayString) + 2, (int)i + Y_OFFSET);
+                          X_OFFSET + Font::getFontStringLength(displayString) + 2, (int)i + Y_OFFSET);
     }
 
     std::string colorStr;
@@ -273,7 +273,7 @@ void LootingDialog::render(Font &font) {
 
         std::string weightString = std::to_string(weight);
         std::string string = item->mGraphic + " " + item->mName.substr(0, DIALOG_WIDTH - 6);
-        string += std::string(DIALOG_WIDTH - getFontStringLength(string) - 3 - weightString.size() + 1, ' ') +
+        string += std::string(DIALOG_WIDTH - Font::getFontStringLength(string) - 3 - weightString.size() + 1, ' ') +
                   "$[white]" + weightString + " lb";
 
         font.drawText("${black}$(p8)  " + string + "${black} $[white]$(p8)", x, y + 2 + i);

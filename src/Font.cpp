@@ -230,7 +230,7 @@ int Font::getCellHeight() const { return mCellHeight; }
 
 Point Font::getCellSize() const { return {mCellWidth, mCellHeight}; }
 
-int getFontStringLength(const std::string &text) {
+int Font::getFontStringLength(const std::string &text) {
     int characters = 0;
     for (std::string::size_type i = 0; i < text.length(); ++i) {
         if (i + 2 < text.size() && text[i] == '$' && text[i + 1] == '(') {
