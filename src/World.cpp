@@ -1,6 +1,7 @@
 #include "World.h"
 #include "Entity/BunnyHoleEntity.h"
 #include "Entity/Entity.h"
+#include "Entity/EntityManager.h"
 #include "Entity/Items/Materials/TwigEntity.h"
 #include "Entity/NPCs/BunnyEntity.h"
 #include "Entity/NPCs/GlowbugEntity.h"

@@ -1,6 +1,5 @@
 #include "Entity.h"
-#include "../Behaviour.h"
-#include "../Behaviours.h"
+#include "../Behaviour/Behaviour.h"
 #include "../Properties.h"
 #include "EntityManager.h"
 

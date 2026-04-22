@@ -1,6 +1,6 @@
 #include "BushEntity.h"
 
-#include "../../Behaviours.h"
+#include "../../Behaviour/Item/KeepStockedBehaviour.h"
 #include "../Items/Food/BerryEntity.h"
 
 void BushEntity::render(Font &font, Point currentWorldPos) {

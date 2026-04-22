@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../../Behaviours.h"
+#include "../../Behaviour/AI/SeekHomeBehaviour.h"
+#include "../../Behaviour/AI/WanderAttachBehaviour.h"
 #include "../Entity.h"
 
 struct BunnyEntity : Entity {

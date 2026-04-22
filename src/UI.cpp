@@ -1,5 +1,5 @@
 #include "UI.h"
-#include "Behaviours.h"
+#include "Behaviour/Item/HealingItemBehaviour.h"
 #include "Entity/PlayerEntity.h"
 #include "Properties.h"
 #include "World.h"

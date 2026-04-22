@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../Behaviours.h"
+#include "../../Behaviour/InteractableBehaviour.h"
 #include "../Entity.h"
 
 /// Represents a door that can be opened or closed with spacebar

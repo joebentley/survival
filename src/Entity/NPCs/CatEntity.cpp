@@ -1,4 +1,5 @@
 #include "CatEntity.h"
+#include "../EntityManager.h"
 #include "../Items/Food/CorpseEntity.h"
 
 void CatEntity::destroy() {

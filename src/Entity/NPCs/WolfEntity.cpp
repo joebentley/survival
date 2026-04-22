@@ -1,4 +1,5 @@
 #include "WolfEntity.h"
+#include "../EntityManager.h"
 #include "../Items/Food/CorpseEntity.h"
 
 void WolfEntity::destroy() {

@@ -1,6 +1,6 @@
 #include "PlayerEntity.h"
 
-#include "../Behaviours.h"
+#include "../Behaviour/InteractableBehaviour.h"
 #include "../flags.h"
 #include "UI/StatusUIEntity.h"
 

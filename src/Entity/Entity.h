@@ -2,7 +2,7 @@
 #ifndef ENTITY_H_
 #define ENTITY_H_
 
-#include "../Behaviour.h"
+#include "../Behaviour/Behaviour.h"
 #include "../Font.h"
 #include "../LightMapTexture.h"
 #include "../Point.h"

@@ -1,5 +1,5 @@
 #include "GrassEntity.h"
-#include "../../Behaviours.h"
+#include "../../Behaviour/Item/KeepStockedBehaviour.h"
 #include "../Items/Materials/GrassTuftEntity.h"
 
 void GrassEntity::render(Font &font, Point currentWorldPos) {

@@ -3,7 +3,6 @@ project(survival VERSION 0.0.1)
 
 add_executable(
         ${PROJECT_NAME}
-        src/Behaviours.cpp
         src/UI.cpp
         src/Entity/Entity.cpp
         src/Font.cpp
@@ -54,11 +53,26 @@ add_executable(
         src/Entity/Building/DoorEntity.h
         src/Entity/UI/StatusUIEntity.cpp
         src/Entity/UI/StatusUIEntity.h
-        src/Behaviour.h
+        src/Behaviour/Behaviour.h
         src/Entity/EquipmentSlot.h
         src/Entity/EquipmentSlot.cpp
         src/Entity/EntityManager.cpp
         src/Entity/EntityManager.h
+        src/Behaviour/AI/WanderBehaviour.cpp
+        src/Behaviour/AI/WanderBehaviour.h
+        src/Behaviour/AI/AttachmentBehaviour.cpp
+        src/Behaviour/AI/AttachmentBehaviour.h
+        src/Behaviour/AI/WanderAttachBehaviour.h
+        src/Behaviour/AI/SeekHomeBehaviour.cpp
+        src/Behaviour/AI/SeekHomeBehaviour.h
+        src/Behaviour/AI/ChaseAndAttackBehaviour.cpp
+        src/Behaviour/AI/ChaseAndAttackBehaviour.h
+        src/Behaviour/AI/HostilityBehaviour.cpp
+        src/Behaviour/AI/HostilityBehaviour.h
+        src/Behaviour/Item/ApplyableBehaviour.h
+        src/Behaviour/Item/HealingItemBehaviour.h
+        src/Behaviour/Item/KeepStockedBehaviour.h
+        src/Behaviour/InteractableBehaviour.h
 )
 
 find_package(SDL3 CONFIG QUIET)

@@ -1,48 +1,50 @@
 #ifndef SURVIVAL_PROPERTIES_H
 #define SURVIVAL_PROPERTIES_H
 
+#include "Color.h"
+#include "Entity/Entity.h"
+#include "Entity/EquipmentSlot.h"
 #include "Property.h"
 
 class MeleeWeaponDamageProperty : public Property {
-public:
+  public:
     explicit MeleeWeaponDamageProperty(int damage) : Property("MeleeWeaponDamage", damage) {}
 };
 
 class PickuppableProperty : public Property {
-public:
+  public:
     explicit PickuppableProperty(int weight = 1) : Property("Pickuppable", weight) {}
 };
 
 class EquippableProperty : public Property {
-public:
+  public:
     explicit EquippableProperty(std::vector<EquipmentSlot> equippableSlots)
-            : Property("Equippable", Equippable(std::move(equippableSlots))) {}
-    explicit EquippableProperty(EquipmentSlot equippableSlot)
-            : Property("Equippable", Equippable(equippableSlot)) {}
+        : Property("Equippable", Equippable(std::move(equippableSlots))) {}
+    explicit EquippableProperty(EquipmentSlot equippableSlot) : Property("Equippable", Equippable(equippableSlot)) {}
 
     class Equippable {
-    public:
-        explicit Equippable(std::vector<EquipmentSlot> equippableSlots) : mEquippableSlots(std::move(equippableSlots)) {}
+      public:
+        explicit Equippable(std::vector<EquipmentSlot> equippableSlots)
+            : mEquippableSlots(std::move(equippableSlots)) {}
 
-        explicit Equippable(EquipmentSlot equippableSlot) : mEquippableSlots(std::vector<EquipmentSlot>(1, equippableSlot)) {}
+        explicit Equippable(EquipmentSlot equippableSlot)
+            : mEquippableSlots(std::vector<EquipmentSlot>(1, equippableSlot)) {}
 
-        const std::vector<EquipmentSlot> &getEquippableSlots() const {
-            return mEquippableSlots;
-        }
+        const std::vector<EquipmentSlot> &getEquippableSlots() const { return mEquippableSlots; }
 
         bool isEquippableInSlot(EquipmentSlot slot) const {
             return std::find(mEquippableSlots.cbegin(), mEquippableSlots.cend(), slot) != mEquippableSlots.cend();
         };
 
-    private:
+      private:
         std::vector<EquipmentSlot> mEquippableSlots;
     };
 };
 
 class CraftingMaterialProperty : public Property {
-public:
+  public:
     CraftingMaterialProperty(std::string materialType, float materialQuality)
-            : Property("CraftingMaterial", Data {std::move(materialType), materialQuality}) {}
+        : Property("CraftingMaterial", Data{std::move(materialType), materialQuality}) {}
 
     struct Data {
         std::string type;
@@ -51,46 +53,37 @@ public:
 };
 
 class AdditionalCarryWeightProperty : public Property {
-public:
+  public:
     explicit AdditionalCarryWeightProperty(int additionalCarryWeight)
-            : Property("AdditionalCarryWeight", additionalCarryWeight) {}
+        : Property("AdditionalCarryWeight", additionalCarryWeight) {}
 };
 
 class LightEmittingProperty : public Property {
-public:
+  public:
     LightEmittingProperty(Entity *parent, int radius, Color color)
-            : Property("LightEmitting", Light(parent, radius, color)) {}
+        : Property("LightEmitting", Light(parent, radius, color)) {}
 
-    LightEmittingProperty(Entity *parent, int radius)
-            : Property("LightEmitting", Light(parent, radius)) {}
+    LightEmittingProperty(Entity *parent, int radius) : Property("LightEmitting", Light(parent, radius)) {}
 
     class Light {
-    public:
+      public:
         Light(Entity *parent, int radius, Color color) : mParent(parent), mRadius(radius), mColor(color) {}
         Light(Entity *parent, int radius) : mParent(parent), mRadius(radius), mColor(Color{}) {}
 
-        int getRadius() const {
-            return mRadius;
-        }
+        int getRadius() const { return mRadius; }
 
-        void setRadius(int radius) {
-            mRadius = radius;
-        }
+        void setRadius(int radius) { mRadius = radius; }
 
         bool isEnabled() const {
             // Don't be enabled if just sitting in someone's inventory
             return !mParent->mIsInAnInventory || mParent->mIsEquipped;
         }
 
-        Color getColor() const {
-            return mColor;
-        }
+        Color getColor() const { return mColor; }
 
-        void setColor(Color color) {
-            mColor = color;
-        }
+        void setColor(Color color) { mColor = color; }
 
-    private:
+      private:
         Entity *mParent;
         int mRadius;
         Color mColor;
@@ -98,44 +91,32 @@ public:
 };
 
 class WaterContainerProperty : public Property {
-public:
-    explicit WaterContainerProperty(int maxCapacity = 64)
-            : Property("WaterContainer", WaterContainer(maxCapacity)) {}
+  public:
+    explicit WaterContainerProperty(int maxCapacity = 64) : Property("WaterContainer", WaterContainer(maxCapacity)) {}
 
     class WaterContainer {
-    public:
+      public:
         explicit WaterContainer(int maxCapacity = 64) : mMaxCapacity(maxCapacity) {}
 
-        int getMaxCapacity() const {
-            return mMaxCapacity;
-        }
+        int getMaxCapacity() const { return mMaxCapacity; }
 
-        void setMaxCapacity(int maxCapacity) {
-            mMaxCapacity = maxCapacity;
-        }
+        void setMaxCapacity(int maxCapacity) { mMaxCapacity = maxCapacity; }
 
-        int getAmount() const {
-            return mCurrentAmount;
-        }
+        int getAmount() const { return mCurrentAmount; }
 
-        void setAmount(int currentAmount) {
-            mCurrentAmount = currentAmount;
-        }
+        void setAmount(int currentAmount) { mCurrentAmount = currentAmount; }
 
-        void addAmount(int amount) {
-            mCurrentAmount = std::min(mMaxCapacity, mCurrentAmount + amount);
-        }
+        void addAmount(int amount) { mCurrentAmount = std::min(mMaxCapacity, mCurrentAmount + amount); }
 
-    private:
+      private:
         int mMaxCapacity;
         int mCurrentAmount{0};
     };
 };
 
 class EatableProperty : public Property {
-public:
-    explicit EatableProperty(float hungerRestoration)
-            : Property("Eatable", hungerRestoration) {}
+  public:
+    explicit EatableProperty(float hungerRestoration) : Property("Eatable", hungerRestoration) {}
 };
 
-#endif //SURVIVAL_PROPERTIES_H
+#endif // SURVIVAL_PROPERTIES_H

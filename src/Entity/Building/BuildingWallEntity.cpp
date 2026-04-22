@@ -1,4 +1,5 @@
 #include "BuildingWallEntity.h"
+#include "../EntityManager.h"
 #include "DoorEntity.h"
 
 BuildingWallEntity::BuildingWallEntity(const Point &pos, const std::vector<std::string> &layout)

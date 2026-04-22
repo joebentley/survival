@@ -1,5 +1,7 @@
 #include "FireEntity.h"
+
 #include "../UI.h"
+#include "EntityManager.h"
 
 void FireEntity::render(Font &font, Point currentWorldPos) {
     if (fireLevel < 0.1)

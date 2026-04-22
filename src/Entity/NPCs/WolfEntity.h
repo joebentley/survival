@@ -1,6 +1,8 @@
 #pragma once
 
-#include "../../Behaviours.h"
+#include "../../Behaviour/AI/ChaseAndAttackBehaviour.h"
+#include "../../Behaviour/AI/HostilityBehaviour.h"
+#include "../../Behaviour/AI/WanderBehaviour.h"
 #include "../Entity.h"
 
 struct WolfEntity : Entity {

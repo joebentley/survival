@@ -1,7 +1,8 @@
 #include "UIState.h"
+#include "Behaviour/Item/ApplyableBehaviour.h"
+#include "Entity/EntityManager.h"
 #include "UI.h"
 
-#include "Behaviours.h"
 #include "Entity/PlayerEntity.h"
 #include <any>
 
