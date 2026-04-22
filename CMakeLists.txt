@@ -55,6 +55,8 @@ add_executable(
         src/Entity/UI/StatusUIEntity.cpp
         src/Entity/UI/StatusUIEntity.h
         src/Behaviour.h
+        src/Entity/EquipmentSlot.h
+        src/Entity/EquipmentSlot.cpp
 )
 
 find_package(SDL3 CONFIG QUIET)
