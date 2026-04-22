@@ -1,8 +1,8 @@
 #ifndef BEHAVIOURS_H_
 #define BEHAVIOURS_H_
 
+#include "Entity/Entity.h"
 #include "Font.h"
-#include "Entity.h"
 #include "utils.h"
 
 //region AI behaviours

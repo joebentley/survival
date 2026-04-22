@@ -2,14 +2,14 @@
 #ifndef ENTITY_H_
 #define ENTITY_H_
 
-#include "Font.h"
-#include "LightMapTexture.h"
-#include "Point.h"
-#include "Property.h"
-#include "Texture.h"
-#include "Time.h"
-#include "World.h"
-#include "flags.h"
+#include "../Font.h"
+#include "../LightMapTexture.h"
+#include "../Point.h"
+#include "../Property.h"
+#include "../Texture.h"
+#include "../Time.h"
+#include "../World.h"
+#include "../flags.h"
 #include <cstdio>
 #include <iostream>
 #include <memory>

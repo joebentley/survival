@@ -1,6 +1,8 @@
 #include "UIState.h"
 #include "UI.h"
 
+#include "Behaviours.h"
+#include "Entity/PlayerEntity.h"
 #include <any>
 
 void ViewingInventoryState::onEntry(InventoryScreen & /*screen*/) {}

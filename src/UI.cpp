@@ -1,5 +1,7 @@
 #include "UI.h"
 #include "Behaviours.h"
+#include "Entity/PlayerEntity.h"
+#include "Properties.h"
 #include "World.h"
 #include "utils.h"
 

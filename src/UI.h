@@ -2,12 +2,10 @@
 #ifndef DIALOG_H_
 #define DIALOG_H_
 
-#include "Entities.h"
 #include "Font.h"
 #include "Recipe.h"
 #include "UIState.h"
 #include <SDL3/SDL.h>
-#include <ctime>
 #include <string>
 
 enum class ScreenType { NOTIFICATION, INVENTORY, LOOTING, INSPECTION, CRAFTING, EQUIPMENT, HELP, DEBUG };

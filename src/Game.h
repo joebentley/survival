@@ -1,13 +1,11 @@
 #ifndef SURVIVAL_GAME_H
 #define SURVIVAL_GAME_H
 
-#include "Entities.h"
+#include "Entity/UI/StatusUIEntity.h"
 #include "Font.h"
 #include "LightMapTexture.h"
 #include "SDLManager.h"
-#include <cstdlib>
-#include <ctime>
-#include <iostream>
+#include "UI.h"
 
 const int MAX_FRAME_RATE = 30;
 

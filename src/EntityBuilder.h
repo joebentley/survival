@@ -1,7 +1,7 @@
 #ifndef SURVIVAL_ENTITYBUILDER_H
 #define SURVIVAL_ENTITYBUILDER_H
 
-#include "Entity.h"
+#include "Entity/Entity.h"
 
 // TODO: do these need to handle raw pointers at all?
 namespace EntityBuilder {

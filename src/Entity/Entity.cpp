@@ -1,6 +1,6 @@
 #include "Entity.h"
-#include "Behaviours.h"
-#include "Properties.h"
+#include "../Behaviours.h"
+#include "../Properties.h"
 
 #include <any>
 #include <cmath>

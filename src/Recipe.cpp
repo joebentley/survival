@@ -1,5 +1,10 @@
 #include "Recipe.h"
 
+#include "Entity/FireEntity.h"
+#include "Entity/Items/BagEntity.h"
+#include "Entity/Items/Healing/BandageEntity.h"
+#include "Entity/Items/TorchEntity.h"
+
 RecipeManager::RecipeManager() {
     mRecipes.emplace_back(std::make_unique<FireRecipe>());
     mRecipes.emplace_back(std::make_unique<BandageRecipe>());

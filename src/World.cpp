@@ -1,8 +1,16 @@
 #include "World.h"
-#include "Entities.h"
+#include "Entity/BunnyHoleEntity.h"
+#include "Entity/Entity.h"
+#include "Entity/Items/Materials/TwigEntity.h"
+#include "Entity/NPCs/BunnyEntity.h"
+#include "Entity/NPCs/GlowbugEntity.h"
+#include "Entity/NPCs/WolfEntity.h"
+#include "Entity/Sources/BushEntity.h"
+#include "Entity/Sources/GrassEntity.h"
+#include "Entity/WaterEntity.h"
 #include "utils.h"
+
 #include <cmath>
-#include <cstdlib>
 #include <unordered_set>
 
 #define FOR_EACH_SCREEN_POINT                                                                                          \

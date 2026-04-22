@@ -1,9 +1,16 @@
 #include "Game.h"
-#include "Entities.h"
-#include "Entity.h"
+#include "Entity/Building/BuildingWallEntity.h"
+#include "Entity/ChestEntity.h"
+#include "Entity/Entity.h"
+#include "Entity/Items/Food/AppleEntity.h"
+#include "Entity/Items/Food/BananaEntity.h"
+#include "Entity/Items/Materials/GrassTuftEntity.h"
+#include "Entity/Items/Materials/TwigEntity.h"
+#include "Entity/Items/WaterskinEntity.h"
+#include "Entity/NPCs/CatEntity.h"
 #include "EntityBuilder.h"
-#include "settings.h"
 #include "utils.h"
+
 #include <deque>
 
 Game::Game()
