@@ -1,9 +1,11 @@
 #include "Entity.h"
+#include "../Behaviour.h"
 #include "../Behaviours.h"
 #include "../Properties.h"
 
 #include <any>
 #include <cmath>
+#include <iostream>
 #include <stdexcept>
 
 int gNumInitialisedEntities = 0;

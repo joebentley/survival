@@ -1,6 +1,7 @@
 #include "PlayerEntity.h"
 
 #include "../Behaviours.h"
+#include "../flags.h"
 #include "UI/StatusUIEntity.h"
 
 bool PlayerEntity::attack(const Point &attackPos) {

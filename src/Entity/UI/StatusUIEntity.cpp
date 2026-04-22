@@ -1,5 +1,7 @@
 #include "StatusUIEntity.h"
 
+#include "../../flags.h"
+
 void StatusUIEntity::render(Font &font, Point /*currentWorldPos*/) {
     std::string colorStr;
     float hpPercent = player.mHp / player.mMaxHp;
