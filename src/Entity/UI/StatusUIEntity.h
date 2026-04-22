@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../EntityManager.h"
 #include "../PlayerEntity.h"
 
 class StatusUIEntity : public Entity {

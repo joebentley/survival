@@ -57,6 +57,8 @@ add_executable(
         src/Behaviour.h
         src/Entity/EquipmentSlot.h
         src/Entity/EquipmentSlot.cpp
+        src/Entity/EntityManager.cpp
+        src/Entity/EntityManager.h
 )
 
 find_package(SDL3 CONFIG QUIET)

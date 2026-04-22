@@ -3,6 +3,7 @@
 
 #include "Behaviour.h"
 #include "Entity/Entity.h"
+#include "Entity/EntityManager.h"
 #include "Font.h"
 #include "utils.h"
 
