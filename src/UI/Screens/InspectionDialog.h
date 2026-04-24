@@ -1,6 +1,8 @@
 #pragma once
 
-#include "../../UIState.h"
+#include "../../Point.h"
+#include "../States/InspectionDialogState/ChoosingPositionInspectionDialogState.h"
+#include "../States/InspectionDialogState/InspectionDialogState.h"
 #include "Screen.h"
 
 struct PlayerEntity;

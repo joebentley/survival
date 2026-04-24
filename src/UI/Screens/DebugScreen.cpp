@@ -2,6 +2,7 @@
 
 #include "../../Font.h"
 #include "../MessageBoxRenderer.h"
+#include "../States/DebugScreenState/ChoosingActionDebugScreenState.h"
 
 DebugScreen::DebugScreen() : Screen(false) {
     mState = std::make_unique<ChoosingActionDebugScreenState>();

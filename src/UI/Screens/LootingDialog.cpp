@@ -1,9 +1,11 @@
 #include "LootingDialog.h"
 
+#include "../../Entity/Entity.h"
 #include "../../Font.h"
 #include "../../World.h"
 #include "../../utils.h"
 #include "../MessageBoxRenderer.h"
+#include <any>
 
 void LootingDialog::showItemsToLoot(std::vector<Entity *> items) {
     mItemsToShow = std::move(items);

@@ -14,7 +14,6 @@ add_executable(
         src/Game.cpp
         src/SDLManager.cpp
         src/Color.cpp
-        src/UIState.cpp
         src/Property.cpp
         src/Entity/PlayerEntity.cpp
         src/Entity/PlayerEntity.h
@@ -108,6 +107,45 @@ add_executable(
         src/Entity/Items/TorchEntity.cpp
         src/Entity/Items/WaterskinEntity.cpp
         src/LightMapPoint.cpp
+        src/UI/States/UIStateMacro.h
+        src/UI/States/InventoryScreenState/InventoryScreenState.h
+        src/UI/States/InventoryScreenState/ViewingInventoryState.cpp
+        src/UI/States/InventoryScreenState/ViewingInventoryState.h
+        src/UI/States/InventoryScreenState/ViewingDescriptionInventoryState.cpp
+        src/UI/States/InventoryScreenState/ViewingDescriptionInventoryState.h
+        src/UI/States/LootingDialogState/LootingDialogState.h
+        src/UI/States/LootingDialogState/ViewingLootingDialogState.cpp
+        src/UI/States/LootingDialogState/ViewingLootingDialogState.h
+        src/UI/States/LootingDialogState/ViewingDescriptionLootingDialogState.cpp
+        src/UI/States/LootingDialogState/ViewingDescriptionLootingDialogState.h
+        src/UI/States/LootingDialogState/ShowingTooMuchWeightMessageLootingDialogState.cpp
+        src/UI/States/LootingDialogState/ShowingTooMuchWeightMessageLootingDialogState.h
+        src/UI/States/InspectionDialogState/InspectionDialogSTate.h
+        src/UI/States/InspectionDialogState/ChoosingPositionInspectionDialogState.cpp
+        src/UI/States/InspectionDialogState/ChoosingPositionInspectionDialogState.h
+        src/UI/States/InspectionDialogState/ViewingDescriptionInspectionDialogState.cpp
+        src/UI/States/InspectionDialogState/ViewingDescriptionInspectionDialogState.h
+        src/UI/States/CraftingScreenState/CraftingScreenState.h
+        src/UI/States/CraftingScreenState/ChoosingRecipeCraftingScreenState.cpp
+        src/UI/States/CraftingScreenState/ChoosingRecipeCraftingScreenState.h
+        src/UI/States/CraftingScreenState/ChoosingIngredientCraftingScreenState.cpp
+        src/UI/States/CraftingScreenState/ChoosingIngredientCraftingScreenState.h
+        src/UI/States/CraftingScreenState/ChoosingMaterialCraftingScreenState.cpp
+        src/UI/States/CraftingScreenState/ChoosingMaterialCraftingScreenState.h
+        src/UI/States/CraftingScreenState/ChoosingBuildPositionCraftingScreenState.cpp
+        src/UI/States/CraftingScreenState/ChoosingBuildPositionCraftingScreenState.h
+        src/UI/States/EquipmentScreenState/EquipmentScreenState.h
+        src/UI/States/EquipmentScreenState/ChoosingSlotEquipmentScreenState.cpp
+        src/UI/States/EquipmentScreenState/ChoosingSlotEquipmentScreenState.h
+        src/UI/States/EquipmentScreenState/ChoosingNewEquipmentScreenState.cpp
+        src/UI/States/EquipmentScreenState/ChoosingNewEquipmentScreenState.h
+        src/UI/States/EquipmentScreenState/ChoosingActionEquipmentScreenState.cpp
+        src/UI/States/EquipmentScreenState/ChoosingActionEquipmentScreenState.h
+        src/UI/States/DebugScreenState/DebugScreenState.h
+        src/UI/States/DebugScreenState/ChoosingActionDebugScreenState.cpp
+        src/UI/States/DebugScreenState/ChoosingActionDebugScreenState.h
+        src/UI/States/DebugScreenState/ChoosingTimeOfDayDebugScreenState.cpp
+        src/UI/States/DebugScreenState/ChoosingTimeOfDayDebugScreenState.h
 )
 
 find_package(SDL3 CONFIG QUIET)

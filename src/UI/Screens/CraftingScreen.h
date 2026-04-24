@@ -1,7 +1,8 @@
 #pragma once
 
 #include "../../Recipe.h"
-#include "../../UIState.h"
+#include "../States/CraftingScreenState/ChoosingRecipeCraftingScreenState.h"
+#include "../States/CraftingScreenState/CraftingScreenState.h"
 #include "Screen.h"
 
 struct PlayerEntity;

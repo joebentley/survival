@@ -1,8 +1,12 @@
 #pragma once
 
-#include "../../UIState.h"
+#include "../States/LootingDialogState/LootingDialogState.h"
+#include "../States/LootingDialogState/ViewingLootingDialogState.h"
 #include "Screen.h"
 
+#include <vector>
+
+class LootingDialogState;
 struct PlayerEntity;
 struct LootingDialog : Screen {
     explicit LootingDialog(PlayerEntity &player) : Screen(true), mPlayer(player) {}

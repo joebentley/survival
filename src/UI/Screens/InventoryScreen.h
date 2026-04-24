@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../../UIState.h"
+#include "../../UI/States/InventoryScreenState/InventoryScreenState.h"
+#include "../../UI/States/InventoryScreenState/ViewingInventoryState.h"
 #include "Screen.h"
 
 struct PlayerEntity;

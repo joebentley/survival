@@ -1,8 +1,9 @@
 #pragma once
 
 #include "../../Time.h"
-#include "../../UIState.h"
+#include "../States/DebugScreenState/DebugScreenState.h"
 #include "Screen.h"
+#include <vector>
 
 struct DebugScreen : Screen {
     DebugScreen();

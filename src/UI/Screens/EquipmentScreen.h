@@ -1,7 +1,8 @@
 #pragma once
 
 #include "../../Entity/EquipmentSlot.h"
-#include "../../UIState.h"
+#include "../States/EquipmentScreenState/ChoosingSlotEquipmentScreenState.h"
+#include "../States/EquipmentScreenState/EquipmentScreenState.h"
 #include "Screen.h"
 
 struct PlayerEntity;
