@@ -2,7 +2,6 @@
 
 #include "../../Entity/Entity.h"
 #include "../../Entity/EntityManager.h"
-#include "../../UI.h"
 #include "../../utils.h"
 
 void SeekHomeBehaviour::tick() {

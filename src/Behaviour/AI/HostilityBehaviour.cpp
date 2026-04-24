@@ -1,7 +1,7 @@
 #include "HostilityBehaviour.h"
 
 #include "../../Entity/EntityManager.h"
-#include "../../UI.h"
+#include "../../UI/NotificationMessageRenderer.h"
 #include "../../utils.h"
 
 void HostilityBehaviour::tick() {

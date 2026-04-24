@@ -1,5 +1,5 @@
 #pragma once
-#include "../UI.h"
+#include "Entity.h"
 
 struct Screen;
 enum class ScreenType;

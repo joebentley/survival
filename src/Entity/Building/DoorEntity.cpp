@@ -1,6 +1,6 @@
 #include "DoorEntity.h"
 
-#include "../../UI.h"
+#include "../../UI/NotificationMessageRenderer.h"
 
 DoorEntity::DoorEntity(const Point &pos) : Entity("", "Door", "") {
     mPos = pos;

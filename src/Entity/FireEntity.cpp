@@ -1,6 +1,7 @@
 #include "FireEntity.h"
 
-#include "../UI.h"
+#include "../UI/MessageBoxRenderer.h"
+#include "../UI/NotificationMessageRenderer.h"
 #include "EntityManager.h"
 
 void FireEntity::render(Font &font, Point currentWorldPos) {

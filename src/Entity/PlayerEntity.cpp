@@ -1,6 +1,10 @@
 #include "PlayerEntity.h"
 
 #include "../Behaviour/InteractableBehaviour.h"
+#include "../UI/MessageBoxRenderer.h"
+#include "../UI/NotificationMessageRenderer.h"
+#include "../UI/Screens/Screen.h"
+#include "../UI/Screens/Screens.h"
 #include "../flags.h"
 #include "UI/StatusUIEntity.h"
 

@@ -1,6 +1,7 @@
 #include "AttachmentBehaviour.h"
 #include "../../Entity/EntityManager.h"
 #include "../../Entity/PlayerEntity.h"
+#include "../../UI/NotificationMessageRenderer.h"
 #include "../../utils.h"
 
 void AttachmentBehaviour::tick() {

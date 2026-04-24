@@ -3,7 +3,6 @@ project(survival VERSION 0.0.1)
 
 add_executable(
         ${PROJECT_NAME}
-        src/UI.cpp
         src/Entity/Entity.cpp
         src/Font.cpp
         src/survival.cpp
@@ -73,6 +72,29 @@ add_executable(
         src/Behaviour/Item/HealingItemBehaviour.h
         src/Behaviour/Item/KeepStockedBehaviour.h
         src/Behaviour/InteractableBehaviour.h
+        src/UI/MessageBoxRenderer.cpp
+        src/UI/MessageBoxRenderer.h
+        src/UI/Screens/Screen.cpp
+        src/UI/Screens/Screen.h
+        src/UI/NotificationMessageRenderer.cpp
+        src/UI/NotificationMessageRenderer.h
+        src/UI/Screens/NotificationMessageScreen.cpp
+        src/UI/Screens/NotificationMessageScreen.h
+        src/UI/Screens/InventoryScreen.cpp
+        src/UI/Screens/InventoryScreen.h
+        src/UI/Screens/LootingDialog.cpp
+        src/UI/Screens/LootingDialog.h
+        src/UI/Screens/InspectionDialog.cpp
+        src/UI/Screens/InspectionDialog.h
+        src/UI/Screens/CraftingScreen.cpp
+        src/UI/Screens/CraftingScreen.h
+        src/UI/Screens/EquipmentScreen.cpp
+        src/UI/Screens/EquipmentScreen.h
+        src/UI/Screens/HelpScreen.cpp
+        src/UI/Screens/HelpScreen.h
+        src/UI/Screens/DebugScreen.cpp
+        src/UI/Screens/DebugScreen.h
+        src/UI/Screens/Screens.h
 )
 
 find_package(SDL3 CONFIG QUIET)

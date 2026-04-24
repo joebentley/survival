@@ -5,7 +5,7 @@
 #include "Font.h"
 #include "LightMapTexture.h"
 #include "SDLManager.h"
-#include "UI.h"
+#include "UI/Screens/Screens.h"
 
 const int MAX_FRAME_RATE = 30;
 

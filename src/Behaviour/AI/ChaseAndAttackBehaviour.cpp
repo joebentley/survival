@@ -1,6 +1,7 @@
 #include "ChaseAndAttackBehaviour.h"
 
 #include "../../Entity/UI/StatusUIEntity.h"
+#include "../../UI/NotificationMessageRenderer.h"
 #include "HostilityBehaviour.h"
 #include "WanderAttachBehaviour.h"
 
