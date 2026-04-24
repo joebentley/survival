@@ -1,5 +1,6 @@
 #pragma once
-#include "../../Entity/Entity.h"
+
+#include "../Behaviour.h"
 #include <string>
 
 /// Seek out a Home entity (identified by given name) if nearby and hole up within it

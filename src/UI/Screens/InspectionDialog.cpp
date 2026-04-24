@@ -1,6 +1,8 @@
 #include "InspectionDialog.h"
 
 #include "../../Entity/EntityManager.h"
+#include "../../Font.h"
+#include "../../World.h"
 #include "../../utils.h"
 #include "../MessageBoxRenderer.h"
 

@@ -2,6 +2,7 @@
 
 #include "../../Entity/EntityManager.h"
 #include "../../Entity/PlayerEntity.h"
+#include "../../Font.h"
 #include "../../Properties.h"
 #include "../NotificationMessageRenderer.h"
 

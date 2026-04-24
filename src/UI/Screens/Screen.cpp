@@ -1,6 +1,8 @@
 #include "Screen.h"
 #include "../../Behaviour/Item/HealingItemBehaviour.h"
+#include "../../Font.h"
 #include "../../Properties.h"
+#include "../../World.h"
 #include "../../utils.h"
 #include "InventoryScreen.h"
 

@@ -6,6 +6,7 @@
 #include "../UI/Screens/Screen.h"
 #include "../UI/Screens/Screens.h"
 #include "../flags.h"
+#include "EntityManager.h"
 #include "UI/StatusUIEntity.h"
 
 bool PlayerEntity::attack(const Point &attackPos) {

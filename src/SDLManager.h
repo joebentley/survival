@@ -5,7 +5,6 @@
 
 #include "Font.h"
 #include "World.h"
-#include <memory>
 
 const int WINDOW_WIDTH = CHAR_WIDTH * World::SCREEN_WIDTH;
 const int WINDOW_HEIGHT = CHAR_HEIGHT * World::SCREEN_HEIGHT;

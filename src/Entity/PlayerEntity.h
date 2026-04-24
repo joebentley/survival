@@ -1,5 +1,6 @@
 #pragma once
 #include "Entity.h"
+#include <SDL3/SDL_events.h>
 
 struct Screen;
 enum class ScreenType;

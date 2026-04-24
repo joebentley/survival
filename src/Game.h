@@ -7,6 +7,8 @@
 #include "SDLManager.h"
 #include "UI/Screens/Screens.h"
 
+#include <deque>
+
 const int MAX_FRAME_RATE = 30;
 
 class Game {

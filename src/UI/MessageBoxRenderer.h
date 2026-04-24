@@ -1,7 +1,8 @@
 #pragma once
+#include <deque>
+#include <vector>
 
-#include "../Font.h"
-
+class Font;
 void showMessageBox(Font &font, const std::vector<std::string> &contents, int padding, int x, int y);
 
 struct MessageBoxRenderer {

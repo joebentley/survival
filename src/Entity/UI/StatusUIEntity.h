@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../EntityManager.h"
 #include "../PlayerEntity.h"
 
 class StatusUIEntity : public Entity {
@@ -16,8 +15,7 @@ class StatusUIEntity : public Entity {
     const int X_OFFSET = 10;
 
   public:
-    StatusUIEntity()
-        : StatusUIEntity(dynamic_cast<PlayerEntity &>(*EntityManager::getInstance().getEntityByID("Player"))) {}
+    StatusUIEntity();
 
     explicit StatusUIEntity(PlayerEntity &player) : Entity("StatusUI", "", ""), player(player) {
         mRenderingLayer = 1; // Keep on background

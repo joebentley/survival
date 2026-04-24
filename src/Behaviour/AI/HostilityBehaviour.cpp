@@ -4,6 +4,13 @@
 #include "../../UI/NotificationMessageRenderer.h"
 #include "../../utils.h"
 
+HostilityBehaviour::HostilityBehaviour(Entity &parent, float range, float hostility)
+    : Behaviour("HostilityBehaviour", parent), range(range), hostility(hostility) {
+    if (!parent.hasBehaviour("ChaseAndAttackBehaviour"))
+        throw std::invalid_argument("Error: HostilityBehaviour cannot be added to entity with ID " + parent.mID +
+                                    " as it does not have a ChaseAndAttackBehaviour");
+}
+
 void HostilityBehaviour::tick() {
     auto chaseAndAttack = mParent.getBehaviourByID("ChaseAndAttackBehaviour");
     auto player = EntityManager::getInstance().getEntityByID("Player");

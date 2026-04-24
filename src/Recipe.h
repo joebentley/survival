@@ -1,7 +1,8 @@
 #ifndef RECIPE_H_
 #define RECIPE_H_
 
-#include "Entity/Entity.h"
+#include "Point.h"
+
 #include <string>
 #include <vector>
 

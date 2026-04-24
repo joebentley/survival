@@ -2,11 +2,12 @@
 #ifndef WORLD_H_
 #define WORLD_H_
 
-#include "Font.h"
 #include "Point.h"
 #include <string>
 #include <unordered_map>
+#include <vector>
 
+class Font;
 /// This class handles the randomization and drawing of the floor tiles,
 /// as well as the random generation of all entities in the game
 struct World {
@@ -18,7 +19,7 @@ struct World {
     /// Each point in the world has a random floor tile glyph
     std::unordered_map<Point, std::string> mFloor;
 
-    void render(Font &font, int worldX, int worldY) { render(font, Point(worldX, worldY)); }
+    void render(Font &font, int worldX, int worldY);
     /// Render the floor tiles at the given world coordinates
     /// \param font the font to render onto
     /// \param worldPos the coordinates on the world grid (each point is a screen)

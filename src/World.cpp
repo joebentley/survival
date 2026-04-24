@@ -1,4 +1,5 @@
 #include "World.h"
+#include "Color.h"
 #include "Entity/BunnyHoleEntity.h"
 #include "Entity/Entity.h"
 #include "Entity/EntityManager.h"
@@ -9,6 +10,7 @@
 #include "Entity/Sources/BushEntity.h"
 #include "Entity/Sources/GrassEntity.h"
 #include "Entity/WaterEntity.h"
+#include "Font.h"
 #include "utils.h"
 
 #include <cmath>
@@ -17,6 +19,8 @@
 #define FOR_EACH_SCREEN_POINT                                                                                          \
     for (auto x = 0; x < World::SCREEN_WIDTH; ++x)                                                                     \
         for (auto y = 0; y < World::SCREEN_HEIGHT; ++y)
+
+void World::render(Font &font, int worldX, int worldY) { render(font, Point(worldX, worldY)); }
 
 void World::render(Font &font, const Point worldPos) {
     // If we haven't generated this screen, randomize this (and the screens around it)

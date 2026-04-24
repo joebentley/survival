@@ -5,6 +5,7 @@
 #include "Screen.h"
 
 struct PlayerEntity;
+struct Recipe;
 struct CraftingScreen : Screen {
     explicit CraftingScreen(PlayerEntity &player) : Screen(false), mPlayer(player) {}
 

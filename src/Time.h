@@ -1,5 +1,6 @@
 #ifndef TIME_H_
 #define TIME_H_
+#include <string>
 
 struct Time {
     int mHour;
@@ -8,16 +9,11 @@ struct Time {
     Time() : mHour(0), mMinute(0) {}
     Time(int hour, int minute) : mHour(hour), mMinute(minute) {}
 
-    bool operator==(const Time &rhs) const {
-        return mHour == rhs.mHour &&
-               mMinute == rhs.mMinute;
-    }
+    bool operator==(const Time &rhs) const { return mHour == rhs.mHour && mMinute == rhs.mMinute; }
 
-    bool operator!=(const Time &rhs) const {
-        return !(rhs == *this);
-    }
+    bool operator!=(const Time &rhs) const { return !(rhs == *this); }
 
-    Time& operator+=(const Time& rhs) {
+    Time &operator+=(const Time &rhs) {
         mHour += (mMinute + rhs.mMinute) / 60;
         mMinute = (mMinute + rhs.mMinute) % 60;
         mHour += rhs.mHour;
@@ -26,7 +22,7 @@ struct Time {
         return *this;
     }
 
-    Time& operator-=(const Time& rhs) {
+    Time &operator-=(const Time &rhs) {
         if (mMinute - rhs.mMinute < 0)
             mHour = wrap(mHour - 1, 0, 23);
         mMinute = wrap(mMinute - rhs.mMinute, 0, 59);
@@ -36,7 +32,8 @@ struct Time {
     }
 
     std::string toString() const {
-        return (mHour < 10 ? "0" : "") + std::to_string(mHour) + ":" + (mMinute < 10 ? "0" : "") + std::to_string(mMinute);
+        return (mHour < 10 ? "0" : "") + std::to_string(mHour) + ":" + (mMinute < 10 ? "0" : "") +
+               std::to_string(mMinute);
     }
 
     std::string toWordString() const {
@@ -51,11 +48,9 @@ struct Time {
         return "";
     }
 
-    float getFractionOfDay() const {
-        return static_cast<float>(mHour * 60 + mMinute) / (60 * 24);
-    }
+    float getFractionOfDay() const { return static_cast<float>(mHour * 60 + mMinute) / (60 * 24); }
 
-private:
+  private:
     // https://stackoverflow.com/questions/707370/clean-efficient-algorithm-for-wrapping-integers-in-c
     int wrap(int kX, int const kLowerBound, int const kUpperBound) {
         int range_size = kUpperBound - kLowerBound + 1;
@@ -67,12 +62,12 @@ private:
     }
 };
 
-inline Time operator+(Time lhs, const Time& rhs) {
+inline Time operator+(Time lhs, const Time &rhs) {
     lhs += rhs;
     return lhs;
 }
 
-inline Time operator-(Time lhs, const Time& rhs) {
+inline Time operator-(Time lhs, const Time &rhs) {
     lhs -= rhs;
     return lhs;
 }

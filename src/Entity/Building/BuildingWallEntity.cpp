@@ -1,4 +1,7 @@
 #include "BuildingWallEntity.h"
+#include "../../Color.h"
+#include "../../Font.h"
+#include "../../World.h"
 #include "../EntityManager.h"
 #include "DoorEntity.h"
 

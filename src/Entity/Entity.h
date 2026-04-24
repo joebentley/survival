@@ -3,15 +3,10 @@
 #define ENTITY_H_
 
 #include "../Behaviour/Behaviour.h"
-#include "../Font.h"
-#include "../LightMapTexture.h"
 #include "../Point.h"
 #include "../Property.h"
-#include "../Time.h"
-#include "../World.h"
 #include "EquipmentSlot.h"
 #include <memory>
-#include <queue>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -20,6 +15,8 @@
 /// Tracks the number of initialised entities in the game
 extern int gNumInitialisedEntities;
 
+class Font;
+struct World;
 /// Base entity class for all entities in the game (including player)
 struct Entity {
     /// Initialize a new entity
@@ -33,25 +30,7 @@ struct Entity {
     /// \param hitAmount how much base damage (without considering weapon) should the attack do
     /// \param maxCarryWeight maximum carry weight of entity
     Entity(std::string ID, std::string name, std::string graphic, float hp, float maxhp, float regenPerTick,
-           int hitTimes, int hitAmount, int maxCarryWeight)
-        : mHp(hp), mMaxHp(maxhp), mRegenPerTick(regenPerTick), mHitTimes(hitTimes), mHitAmount(hitAmount),
-          mID(std::move(ID)), mName(std::move(name)), mGraphic(std::move(graphic)), mPos(0, 0),
-          mMaxCarryWeight(maxCarryWeight) {
-        // If we specify an empty string generate a random ID
-        if (this->mID.empty())
-            this->mID = std::to_string(rand());
-        // Add 1 to number of existing entities
-        gNumInitialisedEntities++;
-
-        // Add all equipment slots
-        mEquipment[EquipmentSlot::HEAD] = "";
-        mEquipment[EquipmentSlot::TORSO] = "";
-        mEquipment[EquipmentSlot::LEGS] = "";
-        mEquipment[EquipmentSlot::RIGHT_HAND] = "";
-        mEquipment[EquipmentSlot::LEFT_HAND] = "";
-        mEquipment[EquipmentSlot::FEET] = "";
-        mEquipment[EquipmentSlot::BACK] = "";
-    }
+           int hitTimes, int hitAmount, int maxCarryWeight);
 
     /// Initialize an entity which hits once for damage 2 and has max carry weight 100
     /// \param ID ID of the entity
@@ -163,13 +142,13 @@ struct Entity {
     int getCarryingWeight();
 
     /// Set position of the entity to (x, y)
-    void setPos(int x, int y) { setPos(Point(x, y)); }
+    void setPos(int x, int y);
     /// Set position of the entity to p
-    void setPos(Point p) { mPos = p; }
+    void setPos(Point p);
     /// Get entity position
-    Point getPos() const { return mPos; }
+    Point getPos() const;
     /// Get entity position on the world coordinate grid
-    Point getWorldPos() const { return {this->mPos.mX / World::SCREEN_WIDTH, this->mPos.mY / World::SCREEN_HEIGHT}; }
+    Point getWorldPos() const;
 
     /// Get maximum carry weight considering whether a back item is equipped with property "AdditionalCarryWeight"
     int getMaxCarryWeight() const;

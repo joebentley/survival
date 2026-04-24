@@ -1,10 +1,14 @@
 #pragma once
 
+#include "../Time.h"
 #include "Entity.h"
 
+#include <queue>
 #include <unordered_map>
 #include <vector>
 
+struct LightMapPoint;
+class LightMapTexture;
 /// Singleton class that manages all entities in the game
 class EntityManager {
     /// Map from the entity ID to a unique pointer owning the Entity instance

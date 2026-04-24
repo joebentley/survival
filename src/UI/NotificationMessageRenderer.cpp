@@ -1,4 +1,5 @@
 #include "NotificationMessageRenderer.h"
+#include "../Font.h"
 
 void NotificationMessageRenderer::queueMessage(const std::string &message) {
     mMessagesToBeRendered.push_back(message);

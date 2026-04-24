@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../../Entity/Entity.h"
 #include "../Behaviour.h"
 
+struct Entity;
 /// This behaviour causes the entity to randomly attach to and follow the entity with ID "Player"
 struct AttachmentBehaviour : Behaviour {
     float attachment;

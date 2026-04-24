@@ -1,8 +1,9 @@
 #pragma once
 
-#include "LightMapPoint.h"
 #include "Texture.h"
+#include <vector>
 
+struct LightMapPoint;
 /// Represents a texture used to render the light point
 class LightMapTexture : Texture {
   public:

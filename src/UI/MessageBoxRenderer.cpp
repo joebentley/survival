@@ -1,5 +1,6 @@
 #include "MessageBoxRenderer.h"
 
+#include "../Font.h"
 #include "../World.h"
 #include "../utils.h"
 

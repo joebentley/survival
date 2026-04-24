@@ -2,8 +2,8 @@
 #include "Behaviour/Item/ApplyableBehaviour.h"
 #include "Entity/EntityManager.h"
 #include "Entity/PlayerEntity.h"
-
 #include "UI/Screens/Screens.h"
+#include "World.h"
 #include <any>
 
 void ViewingInventoryState::onEntry(InventoryScreen & /*screen*/) {}

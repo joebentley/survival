@@ -2,20 +2,15 @@
 #ifndef FONT_H_
 #define FONT_H_
 
-#include "Color.h"
-#include "Point.h"
-#include "Texture.h"
-
 #include <SDL3/SDL.h>
 
-#include <algorithm>
-#include <iterator>
-#include <sstream>
 #include <string>
 #include <tuple>
 #include <unordered_map>
-#include <vector>
 
+struct Color;
+struct Point;
+class Texture;
 /// Height in pixels of each character on the character map
 const int CHAR_HEIGHT = 12; // 20; // 12;
 /// Width in pixels of each char
@@ -70,47 +65,24 @@ class Font {
     /// cell, number of cells per row, whitespace-separated characters in order of
     /// appearance, and SDL_Renderer to render to
     Font(Texture &texture, int cellWidth, int cellHeight, int numPerRow, const std::string &characters,
-         SDL_Renderer *renderer)
-        : mTexture(texture), mCellWidth(cellWidth), mCellHeight(cellHeight), mRenderer(renderer) {
-        // Separate characters string by whitespace
-        std::vector<std::string> words;
-        std::istringstream iss(characters);
-        std::copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(),
-                  std::back_inserter(words));
-
-        // Generate the map of character coordinate tuple pairs
-        for (unsigned long i = 0; i < words.size(); ++i) {
-            int x = (int)i % numPerRow;
-            int y = (int)i / numPerRow;
-
-            this->characters[words[i]] = std::make_tuple(x, y);
-        }
-    }
+         SDL_Renderer *renderer);
 
     /// Set the font color via the underlying texture's color and alpha mod
     void setFontColor(Color color);
-    int draw(const std::string &character, int x, int y) {
-        return draw(character, x, y, Color(0xFF, 0xFF, 0xFF, 0xFF), Color(0, 0, 0, 0));
-    }
-    int draw(const std::string &character, Point p) { return draw(character, p.mX, p.mY); }
-    int draw(const std::string &character, int x, int y, Color fColor) {
-        return draw(character, x, y, fColor, Color(0, 0, 0, 0));
-    }
-    int draw(const std::string &character, Point p, Color fColor) { return draw(character, p.mX, p.mY, fColor); }
+    int draw(const std::string &character, int x, int y);
+    int draw(const std::string &character, Point p);
+    int draw(const std::string &character, int x, int y, Color fColor);
+    int draw(const std::string &character, Point p, Color fColor);
     /// Draw character given by `character` onto the screen at grid coordinates
     /// (x, y) with given foreground and background colors
     int draw(const std::string &character, int x, int y, Color fColor, Color bColor);
-    int draw(const std::string &character, Point p, Color fColor, Color bColor) {
-        return draw(character, p.mX, p.mY, fColor, bColor);
-    }
+    int draw(const std::string &character, Point p, Color fColor, Color bColor);
     int drawText(const std::string &text, int x, int y);
-    int drawText(const std::string &text, Point p) { return drawText(text, p.mX, p.mY); }
+    int drawText(const std::string &text, Point p);
     /// Draw a string of characters onto the screen with multicharacter elements
     /// given in $(element)
     int drawText(const std::string &text, int x, int y, Color fColor, Color bColor);
-    int drawText(const std::string &text, Point p, Color fColor, Color bColor) {
-        return drawText(text, p.mX, p.mY, fColor, bColor);
-    }
+    int drawText(const std::string &text, Point p, Color fColor, Color bColor);
     // Only use the background color, use other colors from text
     int drawText(const std::string &text, int x, int y, Color bColor);
 

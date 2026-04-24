@@ -1,6 +1,13 @@
 #include "StatusUIEntity.h"
 
+#include "../../Color.h"
+#include "../../Font.h"
+#include "../../World.h"
 #include "../../flags.h"
+#include "../EntityManager.h"
+
+StatusUIEntity::StatusUIEntity()
+    : StatusUIEntity(dynamic_cast<PlayerEntity &>(*EntityManager::getInstance().getEntityByID("Player"))) {}
 
 void StatusUIEntity::render(Font &font, Point /*currentWorldPos*/) {
     std::string colorStr;

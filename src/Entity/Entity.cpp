@@ -1,6 +1,9 @@
 #include "Entity.h"
 #include "../Behaviour/Behaviour.h"
+#include "../Font.h"
+#include "../Point.h"
 #include "../Properties.h"
+#include "../World.h"
 #include "EntityManager.h"
 
 #include <any>
@@ -8,6 +11,27 @@
 #include <stdexcept>
 
 int gNumInitialisedEntities = 0;
+
+Entity::Entity(std::string ID, std::string name, std::string graphic, float hp, float maxhp, float regenPerTick,
+               int hitTimes, int hitAmount, int maxCarryWeight)
+    : mHp(hp), mMaxHp(maxhp), mRegenPerTick(regenPerTick), mHitTimes(hitTimes), mHitAmount(hitAmount),
+      mID(std::move(ID)), mName(std::move(name)), mGraphic(std::move(graphic)), mPos(0, 0),
+      mMaxCarryWeight(maxCarryWeight) {
+    // If we specify an empty string generate a random ID
+    if (this->mID.empty())
+        this->mID = std::to_string(rand());
+    // Add 1 to number of existing entities
+    gNumInitialisedEntities++;
+
+    // Add all equipment slots
+    mEquipment[EquipmentSlot::HEAD] = "";
+    mEquipment[EquipmentSlot::TORSO] = "";
+    mEquipment[EquipmentSlot::LEGS] = "";
+    mEquipment[EquipmentSlot::RIGHT_HAND] = "";
+    mEquipment[EquipmentSlot::LEFT_HAND] = "";
+    mEquipment[EquipmentSlot::FEET] = "";
+    mEquipment[EquipmentSlot::BACK] = "";
+}
 
 void Entity::addBehaviour(std::unique_ptr<Behaviour> behaviour) { mBehaviours[behaviour->mID] = std::move(behaviour); }
 
@@ -337,3 +361,13 @@ Property *Entity::getProperty(const std::string &propertyName) const {
 }
 
 void Entity::addProperty(std::unique_ptr<Property> property) { mProperties[property->getName()] = std::move(property); }
+
+void Entity::setPos(int x, int y) { setPos(Point(x, y)); }
+
+void Entity::setPos(Point p) { mPos = p; }
+
+Point Entity::getPos() const { return mPos; }
+
+Point Entity::getWorldPos() const {
+    return {this->mPos.mX / World::SCREEN_WIDTH, this->mPos.mY / World::SCREEN_HEIGHT};
+}

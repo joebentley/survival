@@ -1,7 +1,9 @@
 #pragma once
 
-#include "../../Entity/Entity.h"
-#include "../../Font.h"
+#include <SDL3/SDL_events.h>
+
+class Font;
+struct Entity;
 
 void drawDescriptionScreen(Font &font, Entity &item);
 

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../Font.h"
 #include "Behaviour.h"
 #include <SDL3/SDL.h>
 
+struct Font;
 // TODO: This should be a property, but difficult due to virtual methods
 /// Represents an entity that can be interacted with by the player, and can hijack input handling and rendering
 struct InteractableBehaviour : Behaviour {

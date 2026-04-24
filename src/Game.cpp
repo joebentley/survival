@@ -9,6 +9,7 @@
 #include "Entity/Items/WaterskinEntity.h"
 #include "Entity/NPCs/CatEntity.h"
 #include "EntityBuilder.h"
+#include "Properties.h"
 #include "UI/MessageBoxRenderer.h"
 #include "UI/NotificationMessageRenderer.h"
 #include "utils.h"

@@ -1,5 +1,6 @@
 #include "Recipe.h"
 
+#include "Entity/EntityManager.h"
 #include "Entity/FireEntity.h"
 #include "Entity/Items/BagEntity.h"
 #include "Entity/Items/Healing/BandageEntity.h"

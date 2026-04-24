@@ -1,5 +1,6 @@
 #include "DebugScreen.h"
 
+#include "../../Font.h"
 #include "../MessageBoxRenderer.h"
 
 DebugScreen::DebugScreen() : Screen(false) {

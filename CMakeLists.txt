@@ -95,6 +95,19 @@ add_executable(
         src/UI/Screens/DebugScreen.cpp
         src/UI/Screens/DebugScreen.h
         src/UI/Screens/Screens.h
+        src/Behaviour/Item/HealingItemBehaviour.cpp
+        src/Entity/Items/Food/EatableEntity.cpp
+        src/Entity/Items/Healing/BandageEntity.cpp
+        src/Entity/Items/Materials/GrassTuftEntity.cpp
+        src/Entity/Items/Materials/TwigEntity.cpp
+        src/Entity/Items/Food/AppleEntity.cpp
+        src/Entity/Items/Food/BananaEntity.cpp
+        src/Entity/Items/Food/BerryEntity.cpp
+        src/Entity/Items/Food/CorpseEntity.cpp
+        src/Entity/Items/BagEntity.cpp
+        src/Entity/Items/TorchEntity.cpp
+        src/Entity/Items/WaterskinEntity.cpp
+        src/LightMapPoint.cpp
 )
 
 find_package(SDL3 CONFIG QUIET)

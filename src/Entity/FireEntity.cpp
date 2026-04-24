@@ -1,8 +1,15 @@
 #include "FireEntity.h"
 
+#include "../Properties.h"
 #include "../UI/MessageBoxRenderer.h"
 #include "../UI/NotificationMessageRenderer.h"
 #include "EntityManager.h"
+
+FireEntity::FireEntity(std::string ID) : Entity(std::move(ID), "Fire", "") {
+    mIsSolid = true;
+    addProperty(std::make_unique<LightEmittingProperty>(this, 6));
+    addBehaviour(std::make_unique<RekindleBehaviour>(*this));
+}
 
 void FireEntity::render(Font &font, Point currentWorldPos) {
     if (fireLevel < 0.1)

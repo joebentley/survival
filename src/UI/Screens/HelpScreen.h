@@ -2,6 +2,8 @@
 
 #include "Screen.h"
 
+#include <vector>
+
 struct HelpScreen : Screen {
     HelpScreen() : Screen(false) {}
 

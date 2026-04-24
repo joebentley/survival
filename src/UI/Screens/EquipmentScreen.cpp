@@ -1,7 +1,9 @@
 #include "EquipmentScreen.h"
 
+#include "../../Color.h"
 #include "../../Entity/EntityManager.h"
 #include "../../Entity/PlayerEntity.h"
+#include "../../Font.h"
 #include "../MessageBoxRenderer.h"
 
 void EquipmentScreen::handleInput(SDL_KeyboardEvent &e) {

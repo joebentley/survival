@@ -1,4 +1,5 @@
 #include "LightMapTexture.h"
+#include "LightMapPoint.h"
 #include "SDLManager.h"
 
 LightMapTexture::~LightMapTexture() {

@@ -1,7 +1,30 @@
 #include "Font.h"
+#include "Color.h"
+#include "Point.h"
 #include "Texture.h"
+#include <algorithm>
 #include <iostream>
+#include <iterator>
+#include <sstream>
 #include <stdexcept>
+#include <vector>
+
+Font::Font(Texture &texture, int cellWidth, int cellHeight, int numPerRow, const std::string &characters,
+           SDL_Renderer *renderer)
+    : mTexture(texture), mCellWidth(cellWidth), mCellHeight(cellHeight), mRenderer(renderer) {
+    // Separate characters string by whitespace
+    std::vector<std::string> words;
+    std::istringstream iss(characters);
+    std::copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(), std::back_inserter(words));
+
+    // Generate the map of character coordinate tuple pairs
+    for (unsigned long i = 0; i < words.size(); ++i) {
+        int x = (int)i % numPerRow;
+        int y = (int)i / numPerRow;
+
+        this->characters[words[i]] = std::make_tuple(x, y);
+    }
+}
 
 void Font::setFontColor(Color c) {
     SDL_SetTextureColorMod(mTexture.getTexture(), c.r, c.g, c.b);
@@ -265,4 +288,23 @@ int Font::getFontStringLength(const std::string &text) {
     }
 
     return characters;
+}
+
+int Font::draw(const std::string &character, int x, int y) {
+    return draw(character, x, y, Color(0xFF, 0xFF, 0xFF, 0xFF), Color(0, 0, 0, 0));
+}
+int Font::draw(const std::string &character, Point p) { return draw(character, p.mX, p.mY); }
+int Font::draw(const std::string &character, int x, int y, Color fColor) {
+    return draw(character, x, y, fColor, Color(0, 0, 0, 0));
+}
+int Font::draw(const std::string &character, Point p, Color fColor) { return draw(character, p.mX, p.mY, fColor); }
+
+int Font::draw(const std::string &character, Point p, Color fColor, Color bColor) {
+    return draw(character, p.mX, p.mY, fColor, bColor);
+}
+
+int Font::drawText(const std::string &text, Point p) { return drawText(text, p.mX, p.mY); }
+
+int Font::drawText(const std::string &text, Point p, Color fColor, Color bColor) {
+    return drawText(text, p.mX, p.mY, fColor, bColor);
 }

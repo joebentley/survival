@@ -1,5 +1,6 @@
 #include "NotificationMessageScreen.h"
 
+#include "../../Font.h"
 #include "../NotificationMessageRenderer.h"
 
 void NotificationMessageScreen::handleInput(SDL_KeyboardEvent &e) {

@@ -1,4 +1,5 @@
 #include "HelpScreen.h"
+#include "../../Font.h"
 
 void HelpScreen::handleInput(SDL_KeyboardEvent &e) {
     if (e.key == SDLK_ESCAPE || (e.key == SDLK_SLASH && e.mod & SDL_KMOD_SHIFT))

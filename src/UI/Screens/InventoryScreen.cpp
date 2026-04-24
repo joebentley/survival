@@ -1,6 +1,8 @@
 #include "InventoryScreen.h"
 
 #include "../../Entity/PlayerEntity.h"
+#include "../../Font.h"
+#include "../../World.h"
 
 void InventoryScreen::handleInput(SDL_KeyboardEvent &e) {
     auto newState = mState->handleInput(*this, e);

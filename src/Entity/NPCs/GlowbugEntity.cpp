@@ -1,4 +1,11 @@
 #include "GlowbugEntity.h"
+#include "../../Behaviour/AI/WanderBehaviour.h"
+#include "../../Properties.h"
+
+GlowbugEntity::GlowbugEntity(std::string ID) : Entity(std::move(ID), "Glowbug", "$[green]`", 10.0f, 10.0f, 0.05f) {
+    addBehaviour(std::make_unique<WanderBehaviour>(*this));
+    addProperty(std::make_unique<LightEmittingProperty>(this, 3, Color::getColor("green")));
+}
 
 void GlowbugEntity::render(Font &font, Point currentWorldPos) {
     static int timer = 0;

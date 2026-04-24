@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../../Time.h"
 #include "../../UIState.h"
 #include "Screen.h"
 

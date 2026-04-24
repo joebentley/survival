@@ -1,6 +1,10 @@
 #include "EntityManager.h"
 
+#include "../Font.h"
+#include "../LightMapPoint.h"
+#include "../LightMapTexture.h"
 #include "../Properties.h"
+#include "../World.h"
 #include <iostream>
 
 void EntityManager::addEntity(std::unique_ptr<Entity> entity) {

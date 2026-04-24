@@ -3,6 +3,8 @@
 
 #include "Entity/Entity.h"
 #include "Point.h"
+#include "Time.h"
+
 #include <SDL3/SDL.h>
 #include <memory>
 

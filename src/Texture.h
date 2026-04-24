@@ -2,10 +2,7 @@
 
 #include <SDL3/SDL.h>
 
-#include "Color.h"
-#include "Point.h"
 #include <string>
-#include <vector>
 
 /// Handles an SDL texture, and releases it when it goes out of scope
 class Texture {
