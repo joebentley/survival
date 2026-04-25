@@ -22,7 +22,7 @@ struct NotificationMessageRenderer {
   private:
     const int cMaxOnScreen{6};
     const int cInitialYPos{World::SCREEN_HEIGHT - 2};
-    const float cAlphaDecayPerSec{1};
+    const float cAlphaDecayPerSec{0.5};
     std::deque<std::string> mMessagesToBeRendered{};
     std::deque<std::string> mAllMessages{};
     float mAlpha{1};
