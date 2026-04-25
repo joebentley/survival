@@ -1,5 +1,6 @@
 #include "ChoosingRecipeCraftingScreenState.h"
 
+#include "../../../Recipe/RecipeManager.h"
 #include "../../Screens/CraftingScreen.h"
 #include "ChoosingIngredientCraftingScreenState.h"
 

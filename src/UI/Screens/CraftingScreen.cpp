@@ -4,6 +4,7 @@
 #include "../../Entity/PlayerEntity.h"
 #include "../../Font.h"
 #include "../../Properties.h"
+#include "../../Recipe/RecipeManager.h"
 #include "../NotificationMessageRenderer.h"
 
 void CraftingScreen::handleInput(SDL_KeyboardEvent &e) {

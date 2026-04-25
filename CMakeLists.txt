@@ -10,7 +10,6 @@ add_executable(
         src/LightMapTexture.cpp
         src/World.cpp
         src/utils.cpp
-        src/Recipe.cpp
         src/Game.cpp
         src/SDLManager.cpp
         src/Color.cpp
@@ -146,6 +145,17 @@ add_executable(
         src/UI/States/DebugScreenState/ChoosingActionDebugScreenState.h
         src/UI/States/DebugScreenState/ChoosingTimeOfDayDebugScreenState.cpp
         src/UI/States/DebugScreenState/ChoosingTimeOfDayDebugScreenState.h
+        src/Recipe/Recipe.h
+        src/Recipe/RecipeManager.cpp
+        src/Recipe/RecipeManager.h
+        src/Recipe/Recipes/FireRecipe.cpp
+        src/Recipe/Recipes/FireRecipe.h
+        src/Recipe/Recipes/TorchRecipe.cpp
+        src/Recipe/Recipes/TorchRecipe.h
+        src/Recipe/Recipes/BandageRecipe.cpp
+        src/Recipe/Recipes/BandageRecipe.h
+        src/Recipe/Recipes/BagRecipe.cpp
+        src/Recipe/Recipes/BagRecipe.h
 )
 
 find_package(SDL3 CONFIG QUIET)

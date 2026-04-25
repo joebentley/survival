@@ -1,12 +1,13 @@
 #pragma once
 
-#include "../../Recipe.h"
+#include "../../Point.h"
+#include "../../Recipe/Recipe.h"
 #include "../States/CraftingScreenState/ChoosingRecipeCraftingScreenState.h"
 #include "../States/CraftingScreenState/CraftingScreenState.h"
 #include "Screen.h"
+#include <vector>
 
 struct PlayerEntity;
-struct Recipe;
 struct CraftingScreen : Screen {
     explicit CraftingScreen(PlayerEntity &player) : Screen(false), mPlayer(player) {}
 
