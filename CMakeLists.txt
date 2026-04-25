@@ -119,7 +119,7 @@ add_executable(
         src/UI/States/LootingDialogState/ViewingDescriptionLootingDialogState.h
         src/UI/States/LootingDialogState/ShowingTooMuchWeightMessageLootingDialogState.cpp
         src/UI/States/LootingDialogState/ShowingTooMuchWeightMessageLootingDialogState.h
-        src/UI/States/InspectionDialogState/InspectionDialogSTate.h
+        src/UI/States/InspectionDialogState/InspectionDialogState.h
         src/UI/States/InspectionDialogState/ChoosingPositionInspectionDialogState.cpp
         src/UI/States/InspectionDialogState/ChoosingPositionInspectionDialogState.h
         src/UI/States/InspectionDialogState/ViewingDescriptionInspectionDialogState.cpp
