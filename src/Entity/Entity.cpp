@@ -2,11 +2,14 @@
 #include "../Behaviour/Behaviour.h"
 #include "../Font.h"
 #include "../Point.h"
-#include "../Properties.h"
+#include "../Property/Properties/AdditionalCarryWeightProperty.h"
+#include "../Property/Properties/CraftingMaterialProperty.h"
+#include "../Property/Properties/EquippableProperty.h"
+#include "../Property/Properties/MeleeWeaponDamageProperty.h"
+#include "../Property/Properties/PickuppableProperty.h"
 #include "../World.h"
 #include "EntityManager.h"
 
-#include <any>
 #include <iostream>
 #include <stdexcept>
 
@@ -85,10 +88,10 @@ Behaviour *Entity::getBehaviourByID(const std::string &ID) const {
 int Entity::computeMaxDamage() const {
     if (hasEquippedInSlot(EquipmentSlot::RIGHT_HAND)) {
         auto a = EntityManager::getInstance().getEntityByID(getEquipmentID(EquipmentSlot::RIGHT_HAND));
-        auto b = a->getProperty("MeleeWeaponDamage");
+        auto b = a->getProperty<MeleeWeaponDamageProperty>();
 
         if (b != nullptr) {
-            return mHitAmount + std::any_cast<int>(b->getValue());
+            return mHitAmount + b->damage;
         }
     }
 
@@ -109,9 +112,9 @@ bool Entity::addToInventory(const std::string &ID) {
     if (item == nullptr)
         throw std::invalid_argument("ID " + ID + " not found in Entity Manager");
 
-    auto b = item->getProperty("Pickuppable");
+    auto b = item->getProperty<PickuppableProperty>();
     if (b != nullptr) {
-        if (getCarryingWeight() + std::any_cast<int>(b->getValue()) > getMaxCarryWeight())
+        if (getCarryingWeight() + b->weight > getMaxCarryWeight())
             return false;
         item->setPos(mPos);
         mInventory.push_back(item->mID);
@@ -174,9 +177,9 @@ int Entity::getCarryingWeight() {
     int totalWeight = 0;
     for (const auto &ID : mInventory) {
         auto item = EntityManager::getInstance().getEntityByID(ID);
-        auto pickuppable = item->getProperty("Pickuppable");
+        auto pickuppable = item->getProperty<PickuppableProperty>();
         if (pickuppable != nullptr) {
-            totalWeight += std::any_cast<int>(pickuppable->getValue());
+            totalWeight += pickuppable->weight;
         }
     }
     return totalWeight;
@@ -221,10 +224,9 @@ bool Entity::moveTo(Point p) {
 const std::unordered_map<EquipmentSlot, std::string> &Entity::getEquipment() const { return mEquipment; }
 
 bool Entity::equip(EquipmentSlot slot, Entity *entity) {
-    auto equippable = entity->getProperty("Equippable");
+    auto equippable = entity->getProperty<EquippableProperty>();
     if (entity->hasProperty("Pickuppable") && equippable != nullptr) {
-        auto b = std::any_cast<EquippableProperty::Equippable>(equippable->getValue());
-        if (b.isEquippableInSlot(slot)) {
+        if (equippable->isEquippableInSlot(slot)) {
             // Make sure it is in the player inventory (and in turn the entity manager)
             if (!isInInventory(entity->mID))
                 Entity::addToInventory(entity->mID);
@@ -273,12 +275,11 @@ Entity *Entity::getEquipmentEntity(EquipmentSlot slot) const {
 std::vector<std::string> Entity::getInventoryItemsEquippableInSlot(EquipmentSlot slot) const {
     std::vector<std::string> IDs;
 
-    std::copy_if(mInventory.cbegin(), mInventory.cend(), std::back_inserter(IDs), [slot](auto &ID) {
+    std::copy_if(mInventory.cbegin(), mInventory.cend(), std::back_inserter(IDs), [slot](const std::string &ID) {
         auto e = EntityManager::getInstance().getEntityByID(ID);
-        auto equippable = e->getProperty("Equippable");
+        auto equippable = e->getProperty<EquippableProperty>();
         if (!e->mIsEquipped && equippable != nullptr) {
-            auto b = std::any_cast<EquippableProperty::Equippable>(equippable->getValue());
-            return b.isEquippableInSlot(slot);
+            return equippable->isEquippableInSlot(slot);
         }
         return false;
     });
@@ -310,9 +311,9 @@ int Entity::getMaxCarryWeight() const {
     auto a = getEquipmentEntity(EquipmentSlot::BACK);
 
     if (a != nullptr) {
-        auto b = a->getProperty("AdditionalCarryWeight");
+        auto b = a->getProperty<AdditionalCarryWeightProperty>();
         if (b != nullptr) {
-            return mMaxCarryWeight + std::any_cast<int>(b->getValue());
+            return mMaxCarryWeight + b->additionalCarryWeight;
         }
     }
 
@@ -328,13 +329,11 @@ Entity::filterInventoryForCraftingMaterials(const std::vector<std::string> &mate
     std::vector<std::string> materialIDs;
 
     std::copy_if(mInventory.cbegin(), mInventory.cend(), std::back_inserter(materialIDs),
-                 [materialTypes](const auto &ID) {
+                 [materialTypes](const std::string &ID) {
                      auto entity = EntityManager::getInstance().getEntityByID(ID);
-                     auto b = entity->getProperty("CraftingMaterial");
+                     auto b = entity->getProperty<CraftingMaterialProperty>();
                      if (b != nullptr) {
-                         if (std::find(materialTypes.cbegin(), materialTypes.cend(),
-                                       std::any_cast<CraftingMaterialProperty::Data>(b->getValue()).type) !=
-                             materialTypes.cend()) {
+                         if (std::find(materialTypes.cbegin(), materialTypes.cend(), b->type) != materialTypes.cend()) {
                              return true;
                          }
                      }
@@ -345,16 +344,10 @@ Entity::filterInventoryForCraftingMaterials(const std::vector<std::string> &mate
 }
 
 bool Entity::hasProperty(const std::string &propertyName) const {
-    if (!PropertiesManager::getInstance().isPropertyRegistered(propertyName))
-        throw std::out_of_range("Property " + propertyName + " not registered into the list of known properties!");
-
     return mProperties.find(propertyName) != mProperties.cend();
 }
 
 Property *Entity::getProperty(const std::string &propertyName) const {
-    if (!PropertiesManager::getInstance().isPropertyRegistered(propertyName))
-        throw std::out_of_range("Property " + propertyName + " not registered into the list of known properties!");
-
     if (mProperties.find(propertyName) == mProperties.cend())
         return nullptr;
     return mProperties.at(propertyName).get();

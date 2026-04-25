@@ -13,7 +13,6 @@ add_executable(
         src/Game.cpp
         src/SDLManager.cpp
         src/Color.cpp
-        src/Property.cpp
         src/Entity/PlayerEntity.cpp
         src/Entity/PlayerEntity.h
         src/Entity/NPCs/CatEntity.cpp
@@ -156,6 +155,23 @@ add_executable(
         src/Recipe/Recipes/BandageRecipe.h
         src/Recipe/Recipes/BagRecipe.cpp
         src/Recipe/Recipes/BagRecipe.h
+        src/Property/Property.h
+        src/Property/Properties/MeleeWeaponDamageProperty.cpp
+        src/Property/Properties/MeleeWeaponDamageProperty.h
+        src/Property/Properties/PickuppableProperty.cpp
+        src/Property/Properties/PickuppableProperty.h
+        src/Property/Properties/EquippableProperty.cpp
+        src/Property/Properties/EquippableProperty.h
+        src/Property/Properties/CraftingMaterialProperty.cpp
+        src/Property/Properties/CraftingMaterialProperty.h
+        src/Property/Properties/AdditionalCarryWeightProperty.cpp
+        src/Property/Properties/AdditionalCarryWeightProperty.h
+        src/Property/Properties/LightEmittingProperty.cpp
+        src/Property/Properties/LightEmittingProperty.h
+        src/Property/Properties/WaterContainerProperty.cpp
+        src/Property/Properties/WaterContainerProperty.h
+        src/Property/Properties/EatableProperty.cpp
+        src/Property/Properties/EatableProperty.h
 )
 
 find_package(SDL3 CONFIG QUIET)
@@ -191,7 +207,7 @@ endif ()
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL3_image::SDL3_image)
 
-set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14)
 
 option(Emscripten "Build for Emscripten" OFF)
 

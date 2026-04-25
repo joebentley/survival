@@ -1,6 +1,8 @@
 #include "TorchEntity.h"
 
-#include "../../Properties.h"
+#include "../../Property/Properties/EquippableProperty.h"
+#include "../../Property/Properties/LightEmittingProperty.h"
+#include "../../Property/Properties/PickuppableProperty.h"
 
 TorchEntity::TorchEntity(std::string ID) : Entity(std::move(ID), "Torch", "$[red]$(up)") {
     addProperty(std::make_unique<PickuppableProperty>(1));

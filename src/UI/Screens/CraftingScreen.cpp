@@ -1,9 +1,10 @@
 #include "CraftingScreen.h"
 
+#include "../../Color.h"
 #include "../../Entity/EntityManager.h"
 #include "../../Entity/PlayerEntity.h"
 #include "../../Font.h"
-#include "../../Properties.h"
+#include "../../Property/Properties/CraftingMaterialProperty.h"
 #include "../../Recipe/RecipeManager.h"
 #include "../NotificationMessageRenderer.h"
 
@@ -94,16 +95,17 @@ std::vector<Entity *> CraftingScreen::filterInventoryForChosenMaterials() {
 
     std::vector<Entity *> inventoryMaterials;
     auto inventory = mPlayer.getInventory();
-    std::copy_if(inventory.cbegin(), inventory.cend(), std::back_inserter(inventoryMaterials), [this, &rm](auto &a) {
-        if (!a->hasProperty("CraftingMaterial"))
-            return false;
-        if (std::find(mCurrentlyChosenMaterials.begin(), mCurrentlyChosenMaterials.end(), a->mID) !=
-            mCurrentlyChosenMaterials.end())
-            return false;
+    std::copy_if(inventory.cbegin(), inventory.cend(), std::back_inserter(inventoryMaterials),
+                 [this, &rm](const Entity *a) {
+                     if (!a->hasProperty("CraftingMaterial"))
+                         return false;
+                     if (std::find(mCurrentlyChosenMaterials.begin(), mCurrentlyChosenMaterials.end(), a->mID) !=
+                         mCurrentlyChosenMaterials.end())
+                         return false;
 
-        auto type = std::any_cast<CraftingMaterialProperty::Data>(a->getProperty("CraftingMaterial")->getValue()).type;
-        return rm.mRecipes[mChosenRecipe]->mIngredients[mChosenIngredient].mEntityType == type;
-    });
+                     auto type = a->getProperty<CraftingMaterialProperty>()->type;
+                     return rm.mRecipes[mChosenRecipe]->mIngredients[mChosenIngredient].mEntityType == type;
+                 });
 
     return inventoryMaterials;
 }

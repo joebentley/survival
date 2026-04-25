@@ -4,7 +4,7 @@
 
 #include "../Behaviour/Behaviour.h"
 #include "../Point.h"
-#include "../Property.h"
+#include "../Property/Property.h"
 #include "EquipmentSlot.h"
 #include <memory>
 #include <stdexcept>
@@ -209,6 +209,13 @@ struct Entity {
     bool hasProperty(const std::string &propertyName) const;
     /// Return a pointer to the property object with propertyName
     Property *getProperty(const std::string &propertyName) const;
+    /// Return a pointer to the given property object type
+    template <class T> T *getProperty() const {
+        auto p = getProperty(T::name);
+        if (p == nullptr)
+            return nullptr;
+        return dynamic_cast<T *>(p);
+    }
     /// Move the given property to the entity
     void addProperty(std::unique_ptr<Property> property);
 

@@ -1,6 +1,6 @@
 #include "BananaEntity.h"
 
-#include "../../../Properties.h"
+#include "../../../Property/Properties/PickuppableProperty.h"
 
 BananaEntity::BananaEntity(std::string ID) : EatableEntity(std::move(ID), "Banana", "$[yellow]b", 0.5) {
     mShortDesc = SHORT_DESC;

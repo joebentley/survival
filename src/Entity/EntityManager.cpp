@@ -3,8 +3,9 @@
 #include "../Font.h"
 #include "../LightMapPoint.h"
 #include "../LightMapTexture.h"
-#include "../Properties.h"
+#include "../Property/Properties/LightEmittingProperty.h"
 #include "../World.h"
+
 #include <iostream>
 
 void EntityManager::addEntity(std::unique_ptr<Entity> entity) {
@@ -220,13 +221,12 @@ std::vector<LightMapPoint> EntityManager::getLightSources(Point fontSize) const 
 
     for (const auto &a : mCurrentlyOnScreen) {
         const auto &entity = getEntityByID(a);
-        auto b = entity->getProperty("LightEmitting");
+        auto b = entity->getProperty<LightEmittingProperty>();
         if (b != nullptr) {
-            auto light = std::any_cast<LightEmittingProperty::Light>(b->getValue());
-            if (light.isEnabled()) {
-                auto radius = fontSize.mY * light.getRadius();
+            if (b->isEnabled()) {
+                auto radius = fontSize.mY * b->getRadius();
                 auto point = fontSize * World::worldToScreen(entity->getPos()) + fontSize / 2;
-                points.emplace_back(LightMapPoint(point, radius, light.getColor()));
+                points.emplace_back(point, radius, b->getColor());
             }
         }
     }

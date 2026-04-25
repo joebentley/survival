@@ -1,6 +1,7 @@
 #include "ViewingInventoryState.h"
 #include "../../../Behaviour/Item/ApplyableBehaviour.h"
 #include "../../../Entity/PlayerEntity.h"
+#include "../../../Property/Properties/EatableProperty.h"
 #include "../../Screens/InventoryScreen.h"
 #include "ViewingDescriptionInventoryState.h"
 
@@ -51,9 +52,9 @@ std::unique_ptr<InventoryScreenState> ViewingInventoryState::handleInput(Invento
     case SDLK_E:
         if (!player.isInventoryEmpty()) {
             auto item = player.getInventoryItem(mChosenIndex);
-            auto eatable = item->getProperty("Eatable");
+            auto eatable = item->getProperty<EatableProperty>();
             if (eatable != nullptr) {
-                player.addHunger(std::any_cast<float>(eatable->getValue()));
+                player.addHunger(eatable->hungerRestoration);
                 player.removeFromInventory(mChosenIndex);
                 item->destroy();
                 if (player.getInventorySize() - 1 < (size_t)mChosenIndex) {

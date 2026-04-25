@@ -1,5 +1,7 @@
 #include "GrassTuftEntity.h"
-#include "../../../Properties.h"
+
+#include "../../../Property/Properties/CraftingMaterialProperty.h"
+#include "../../../Property/Properties/PickuppableProperty.h"
 
 GrassTuftEntity::GrassTuftEntity(std::string ID) : Entity(std::move(ID), "Tuft of grass", "$[grasshay]$(approx)") {
     mShortDesc = SHORT_DESC;

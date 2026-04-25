@@ -1,6 +1,6 @@
 #include "AppleEntity.h"
 
-#include "../../../Properties.h"
+#include "../../../Property/Properties/PickuppableProperty.h"
 
 AppleEntity::AppleEntity(std::string ID) : EatableEntity(std::move(ID), "Apple", "$[green]a", 0.5) {
     mShortDesc = SHORT_DESC;

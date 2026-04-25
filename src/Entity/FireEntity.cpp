@@ -1,6 +1,6 @@
 #include "FireEntity.h"
 
-#include "../Properties.h"
+#include "../Property/Properties/LightEmittingProperty.h"
 #include "../UI/MessageBoxRenderer.h"
 #include "../UI/NotificationMessageRenderer.h"
 #include "EntityManager.h"
@@ -19,8 +19,7 @@ void FireEntity::render(Font &font, Point currentWorldPos) {
     else
         mGraphic = "${black}$[orange]%";
 
-    std::any_cast<LightEmittingProperty::Light>(getProperty("LightEmitting")->getValue())
-        .setRadius(static_cast<int>(std::round(6 * fireLevel)));
+    getProperty<LightEmittingProperty>()->setRadius(static_cast<int>(std::round(6 * fireLevel)));
 
     Entity::render(font, currentWorldPos);
 }

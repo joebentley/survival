@@ -1,7 +1,12 @@
 #include "Screen.h"
 #include "../../Behaviour/Item/HealingItemBehaviour.h"
+#include "../../Entity/Entity.h"
 #include "../../Font.h"
-#include "../../Properties.h"
+#include "../../Property/Properties/AdditionalCarryWeightProperty.h"
+#include "../../Property/Properties/EquippableProperty.h"
+#include "../../Property/Properties/MeleeWeaponDamageProperty.h"
+#include "../../Property/Properties/PickuppableProperty.h"
+#include "../../Property/Properties/WaterContainerProperty.h"
 #include "../../World.h"
 #include "../../utils.h"
 #include "InventoryScreen.h"
@@ -19,37 +24,36 @@ void drawDescriptionScreen(Font &font, Entity &item) {
     const int yOffset = InventoryScreen::Y_OFFSET + 4 + static_cast<int>(words.size());
 
     {
-        auto b = item.getProperty("Pickuppable");
+        auto b = item.getProperty<PickuppableProperty>();
         if (b != nullptr) {
-            int weight = std::any_cast<int>(b->getValue());
+            int weight = b->weight;
             font.drawText("It weighs " + std::to_string(weight) + (weight == 1 ? " pound" : " pounds"),
                           InventoryScreen::X_OFFSET, yOffset + y++);
         }
     }
 
     {
-        auto b = item.getProperty("MeleeWeaponDamage");
+        auto b = item.getProperty<MeleeWeaponDamageProperty>();
         if (b != nullptr) {
-            int damage = std::any_cast<int>(b->getValue());
+            int damage = b->damage;
             font.drawText("It adds $[red]" + std::to_string(damage) + "$[white] to your damage roll",
                           InventoryScreen::X_OFFSET, yOffset + y++);
         }
     }
 
     {
-        auto b = item.getProperty("AdditionalCarryWeight");
+        auto b = item.getProperty<AdditionalCarryWeightProperty>();
         if (b != nullptr) {
-            int carry = std::any_cast<int>(b->getValue());
+            int carry = b->additionalCarryWeight;
             font.drawText("It adds an extra " + std::to_string(carry) + "lb to your max carry weight",
                           InventoryScreen::X_OFFSET, yOffset + y++);
         }
     }
 
     {
-        auto equippable = item.getProperty("Equippable");
+        auto equippable = item.getProperty<EquippableProperty>();
         if (equippable != nullptr) {
-            auto b = std::any_cast<EquippableProperty::Equippable>(equippable->getValue());
-            const auto &slots = b.getEquippableSlots();
+            const auto &slots = equippable->getEquippableSlots();
             std::string slotsString;
 
             for (auto slot = slots.cbegin(); slot != slots.cend(); ++slot) {
@@ -72,12 +76,11 @@ void drawDescriptionScreen(Font &font, Entity &item) {
     }
 
     {
-        auto prop = item.getProperty("WaterContainer");
-        if (prop != nullptr) {
-            auto waterContainer = std::any_cast<WaterContainerProperty::WaterContainer>(prop->getValue());
-            int current = waterContainer.getAmount();
+        auto waterContainer = item.getProperty<WaterContainerProperty>();
+        if (waterContainer != nullptr) {
+            int current = waterContainer->getAmount();
             font.drawText(
-                "It can hold $[cyan]" + std::to_string(waterContainer.getMaxCapacity()) + "$[white] drams of water." +
+                "It can hold $[cyan]" + std::to_string(waterContainer->getMaxCapacity()) + "$[white] drams of water." +
                     (current > 0 ? " It currently holds $[cyan]" + std::to_string(current) + "$[white] drams of water."
                                  : ""),
                 InventoryScreen::X_OFFSET, yOffset + y + 1);

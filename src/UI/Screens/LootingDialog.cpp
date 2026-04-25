@@ -2,10 +2,10 @@
 
 #include "../../Entity/Entity.h"
 #include "../../Font.h"
+#include "../../Property/Properties/PickuppableProperty.h"
 #include "../../World.h"
 #include "../../utils.h"
 #include "../MessageBoxRenderer.h"
-#include <any>
 
 void LootingDialog::showItemsToLoot(std::vector<Entity *> items) {
     mItemsToShow = std::move(items);
@@ -56,7 +56,7 @@ void LootingDialog::render(Font &font) {
 
     for (int i = 0; i < numItems; ++i) {
         auto item = mItemsToShow[i];
-        int weight = std::any_cast<int>(item->getProperty("Pickuppable")->getValue());
+        const int weight = item->getProperty<PickuppableProperty>()->weight;
 
         std::string weightString = std::to_string(weight);
         std::string string = item->mGraphic + " " + item->mName.substr(0, DIALOG_WIDTH - 6);

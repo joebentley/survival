@@ -4,6 +4,7 @@
 #include "../../Entity/EntityManager.h"
 #include "../../Entity/PlayerEntity.h"
 #include "../../Font.h"
+#include "../../Property/Properties/MeleeWeaponDamageProperty.h"
 #include "../MessageBoxRenderer.h"
 
 void EquipmentScreen::handleInput(SDL_KeyboardEvent &e) {
@@ -60,10 +61,10 @@ void EquipmentScreen::render(Font &font) {
                                entity->mName);
 
             if (mChosenSlot == EquipmentSlot::RIGHT_HAND) {
-                auto b = entity->getProperty("MeleeWeaponDamage");
+                auto b = entity->getProperty<MeleeWeaponDamageProperty>();
                 if (b != nullptr) {
                     lines[i] += " $[red]$(heart)$[white]" + std::to_string(mPlayer.mHitTimes) + "d" +
-                                std::to_string(mPlayer.mHitAmount + std::any_cast<int>(b->getValue()));
+                                std::to_string(mPlayer.mHitAmount + b->damage);
                 }
             }
         }
