@@ -12,6 +12,9 @@ class Property {
 // These macros generate a method and static variable allowing the name of
 // the Property to be looked up at both runtime and compile time
 
+// In C++17 `name` could be an inline variable in the class definition, but
+// in this project we use C++14
+
 // Goes in class body
 #define PROPERTY_SUBCLASS_BODY(propertyName)                                                                           \
     static std::string name;                                                                                           \
